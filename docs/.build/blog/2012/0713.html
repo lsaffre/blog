@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120713 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120714" href="0714.html" />
+    <link rel="prev" title="20120712" href="0712.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0714.html" title="20120714"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0712.html" title="20120712"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120713<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="new-application-attribute-lino-lino-override-modlib-models">
+<h2>New application attribute <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.override_modlib_models</span></code><a class="headerlink" href="#new-application-attribute-lino-lino-override-modlib-models" title="Permalink to this headline">¶</a></h2>
+<p>Following a sudden inspiration, I added the new
+application attribute <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.override_modlib_models</span></code>
+and adapted the applications under <cite>lino.apps</cite>.
+This is finally a solution to the old problem that all Lino applications
+which use lino.modlib.contacts were obliged to define
+themselves a non-abstract Person and a Company model.
+This problem was a perpetual stumbling block when writing
+tutorials and minimal applications.</p>
+</div>
+<div class="section" id="fixed-a-bug-in-lino-utils-dumpy">
+<h2>Fixed a bug in <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dumpy</span></code><a class="headerlink" href="#fixed-a-bug-in-lino-utils-dumpy" title="Permalink to this headline">¶</a></h2>
+<p>Because of the above change I also made a <em>double dump test</em>, which
+revealed the following problem:</p>
+<div class="highlight-python"><div class="highlight"><pre>WARNING Abandoning with 6 unsaved instances from t:\data\luc\lino_local\dsbe\fixtures\d20120713.py:
+- debts.Entry [u&quot;Cannot set both &#39;Distribute&#39; and &#39;Monthly rate&#39;&quot;] (6 object(s) with primary key 135, 136, 137, 140, 141
+, 142)
+</pre></div>
+</div>
+<p>This problem existed already before my sudden inspiration,
+and it would have caused me much more work if I had discovered
+it only after the 1.4.4 release.</p>
+<p>Here is the application code
+(from <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.debts.models.Entry</span></code>)
+which caused it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">full_clean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">periods</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Periods must be &gt; 0&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">monthly_rate</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">distribute</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ValidationError</span><span class="p">(</span>
+          <span class="n">_</span><span class="p">(</span><span class="s">&quot;Cannot set both &#39;Distribute&#39; and &#39;Monthly rate&#39;&quot;</span><span class="p">))</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">Entry</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">full_clean</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Changed this code so that the message becomes more specific:</p>
+<div class="highlight-python"><div class="highlight"><pre>WARNING Abandoning with 6 unsaved instances from t:\data\luc\lino_local\dsbe\fixtures\d20120713.py:
+- debts.Entry [u&quot;Cannot set &#39;Distribute&#39; when &#39;Monthly rate&#39; is &#39;0&#39;&quot;] (6 object(s) with primary key 135, 136, 137, 140,
+141, 142)
+</pre></div>
+</div>
+<p>The generated dumpy file is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_debts_entry</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">seqno</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">monthly_rate</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">debts_Entry</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span><span class="n">seqno</span><span class="o">=</span><span class="n">seqno</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">monthly_rate</span><span class="o">=</span><span class="n">monthly_rate</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">debts_entry_objects</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">yield</span> <span class="n">create_debts_entry</span><span class="p">(</span><span class="mi">135</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="s">&#39;0&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the reason for our problem.
+A DecimalField accepts a <cite>string</cite> value and will convert it to a <cite>Decimal</cite>,
+<em>but</em> only when reading it from the database.
+For example (supposing that <cite>Company.hourly_rate</cite> is a DecimalField):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.apps.pcsw.models</span> <span class="kn">import</span> <span class="n">Company</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">Company</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;test&quot;</span><span class="p">,</span><span class="n">hourly_rate</span><span class="o">=</span><span class="s">&#39;0.25&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">hourly_rate</span><span class="p">)</span>
+<span class="go">&#39;0.25&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">hourly_rate</span><span class="p">)</span>
+<span class="go">&#39;0.25&#39;</span>
+</pre></div>
+</div>
+<p>Only after loading it again from database:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">c2</span> <span class="o">=</span> <span class="n">Company</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">pk</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">c2</span><span class="o">.</span><span class="n">hourly_rate</span><span class="p">)</span>
+<span class="go">Decimal(&#39;0.25&#39;)</span>
+</pre></div>
+</div>
+<p>It is one of Django&#8217;s oddnesses to allow storing a <cite>string</cite>
+value in a DecimalField and leave it there unconverted.
+We&#8217;ll forgive that oddness by modifying
+<code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dumpy</span></code> so that it generates code which instantiates models
+using true Decimal values:</p>
+<div class="highlight-python"><div class="highlight"><pre>def create_debts_entry(id, seqno, ... monthly_rate):
+    if monthly_rate is not None: monthly_rate = Decimal(monthly_rate)
+    return debts_Entry(id=id,seqno=seqno,...,monthly_rate=monthly_rate)
+</pre></div>
+</div>
+<p>Note that another (easier) solution would have been to
+modify <code class="xref py py-meth docutils literal"><span class="pre">lino.utils.dumpy.Serializer.value2string()</span></code> in order to
+write the correct value directly for each debts_entry_objects line
+instead of testing and converting each field in create_debts_entry:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">debts_entry_objects</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">yield</span> <span class="n">create_debts_entry</span><span class="p">(</span><span class="mi">135</span><span class="p">,</span><span class="mi">48</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">Decimal</span><span class="p">(</span><span class="s">&#39;0&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>But we prefer to keep the <em>file size</em> small
+(and <em>load performance</em> is less important).</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0714.html" title="20120714"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0712.html" title="20120712"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0713.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0713.html">Online Link</a>
+    </div>
+  </body>
+</html>

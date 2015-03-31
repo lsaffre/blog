@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Monday, March 9, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Tuesday, March 10, 2015" href="0310.html" />
+    <link rel="prev" title="Friday, March 6, 2015" href="0306.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0310.html" title="Tuesday, March 10, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0306.html" title="Friday, March 6, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monday-march-9-2015">
+<h1>Monday, March 9, 2015<a class="headerlink" href="#monday-march-9-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="avoiding-duplicate-partners">
+<h2>Avoiding duplicate partners<a class="headerlink" href="#avoiding-duplicate-partners" title="Permalink to this headline">¶</a></h2>
+<p>There is hope that SimilarPartners now produces usable results.
+To be verified on a production site.</p>
+<p>The previous implementation did not use an additional table. It simply
+added a field <cite>phonetic_words</cite> (containing the phonetic words
+separated by spaces) and used an SQL statement constructed .</p>
+<p>If we then had two rows <em>a</em> and <em>b</em>, <em>a</em> with <cite>phonetic_words</cite> being
+&#8216;BAR BART FOO&#8217; and <em>b</em> with <cite>phonetic_words</cite> being &#8216;BING BARN FOO&#8217;.</p>
+<p>The find similar rows for <em>a</em>, it used the following WHERE clause
+using all possible <strong>combinations of two</strong> of <em>a</em>&#8216;s phonetic words:</p>
+<div class="highlight-python"><div class="highlight"><pre>WHERE (&#39;BAR&#39;  in pw AND &#39;BART&#39; in pw)
+   or (&#39;BAR&#39;  in pw AND &#39;FOO&#39; in pw)
+   or (&#39;BART&#39; in pw AND &#39;FOO&#39; in pw)
+</pre></div>
+</div>
+<p>But this also (wrongly) matched our <em>b</em> row because &#8216;BAR&#8217; matches
+&#8216;BARN&#8217;. AFAIK the LIKE clause in SQL does not have regular expression
+syntax.</p>
+<p>Note that MySQL has a <a class="reference external" href="http://dev.mysql.com/doc/refman/5.0/en/string-functions.html">SOUNDEX</a>
+function, but this implements only the original Soundex algorithm and
+is not usable for non-english languages.</p>
+<p>These are reasons why we now use an additional table defined by the
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.dupable_partners.models.Word</span></code> model.</p>
+<p>The implementation was rather tricky.  I splitted <cite>lino.modlib.dedupe</cite>
+into a mixin <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.dupable.html#module-lino.mixins.dupable" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.dupable</span></code></a> and a new plugin
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.dupable_partners.html#module-lino.modlib.dupable_partners" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.dupable_partners</span></code></a>.</p>
+<p>All this work has several advantages:</p>
+<ul class="simple">
+<li>there is hope that it works now.</li>
+<li>it is now possible to have more than one dupable model in an
+application. For example both partners and products might be
+dupable, and each of them must get its own table of phonetic words.</li>
+<li>applications can chose to not install
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.dupable_partners.html#module-lino.modlib.dupable_partners" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.dupable_partners</span></code></a> even if their partners model
+inherits from <code class="xref py py-mod docutils literal"><span class="pre">DupablePartner</span></code>.</li>
+</ul>
+</div>
+<div class="section" id="participants-d-un-rendez-vous">
+<h2>Participants d&#8217;un rendez-vous<a class="headerlink" href="#participants-d-un-rendez-vous" title="Permalink to this headline">¶</a></h2>
+<p>Identifié et résolu deux problèmes qui pourraient être l&#8217;explication
+du ticket <a class="reference external" href="http://trac.lino-framework.org/ticket/123">#123</a>. En général le phénomène vient quand Lino n&#8217;a
+pas crée d&#8217;entrée dans le panneau &#8220;Participants&#8221; du rendez-vous en
+question.</p>
+<ul class="simple">
+<li>Quand on crée un rendez-vous manuel avec un bénéficiaire, et quand
+on ne spécifie pas de bénéficiaire dans le dialogue d&#8217;insertion
+(mais plus tard dans le détail en remplissant le champ
+&#8220;Bénéficiaire&#8221;), also Lino ne remplissait pas les participants.</li>
+<li>Quand un rendez-vous a au moins un participant, Lino ne touche plus
+à la liste des participants. Cette règle était trop simpliste. Par
+exemple quand on modifie le bénéficiaire d&#8217;un rendez-vous
+existant. Lino demande maintentant.</li>
+</ul>
+</div>
+<div class="section" id="mysql-performace">
+<h2>MySQL performace<a class="headerlink" href="#mysql-performace" title="Permalink to this headline">¶</a></h2>
+<p>Here is another MySQLTuner report:</p>
+<div class="highlight-python"><div class="highlight"><pre>&gt;&gt;  MySQLTuner 1.4.0 - Major Hayden &lt;major@mhtx.net&gt;
+&gt;&gt;  Bug reports, feature requests, and downloads at http://mysqltuner.com/
+&gt;&gt;  Run with &#39;--help&#39; for additional options and output filtering
+Please enter your MySQL administrative login: django
+Please enter your MySQL administrative password:
+[OK] Currently running supported MySQL version 5.5.41-0+wheezy1-log
+[OK] Operating on 64-bit architecture
+
+-------- Storage Engine Statistics -------------------------------------------
+[--] Status: +ARCHIVE +BLACKHOLE +CSV -FEDERATED +InnoDB +MRG_MYISAM
+[--] Data in MyISAM tables: 1M (Tables: 162)
+[!!] InnoDB is enabled but isn&#39;t being used
+[OK] Total fragmented tables: 0
+
+-------- Security Recommendations  -------------------------------------------
+ERROR 1142 (42000) at line 1: SELECT command denied to user &#39;django&#39;@&#39;localhost&#39; for table &#39;user&#39;
+[OK] All database users have passwords assigned
+
+-------- Performance Metrics -------------------------------------------------
+[--] Up for: 3d 10h 24m 20s (19M q [64.568 qps], 61K conn, TX: 9B, RX: 13B)
+[--] Reads / Writes: 66% / 34%
+[--] Total buffers: 192.0M global + 2.7M per thread (151 max threads)
+[OK] Maximum possible memory usage: 597.8M (3% of installed RAM)
+[OK] Slow queries: 0% (5K/19M)
+[OK] Highest usage of available connections: 10% (16/151)
+[OK] Key buffer size / total MyISAM indexes: 16.0M/2.6M
+[OK] Key buffer hit rate: 100.0% (13M cached / 921 reads)
+[OK] Query cache efficiency: 99.4% (18M cached / 18M selects)
+[!!] Query cache prunes per day: 7763
+[OK] Sorts requiring temporary tables: 0% (1 temp sorts / 3K sorts)
+[!!] Joins performed without indexes: 871
+[OK] Temporary tables created on disk: 19% (2K on disk / 12K total)
+[OK] Thread cache hit rate: 97% (1K created / 61K connections)
+[!!] Table cache hit rate: 4% (141 open / 2K opened)
+[OK] Open file limit used: 24% (249/1K)
+[OK] Table locks acquired immediately: 99% (228K immediate / 228K locks)
+
+-------- Recommendations -----------------------------------------------------
+General recommendations:
+    Add skip-innodb to MySQL configuration to disable InnoDB
+    Adjust your join queries to always utilize indexes
+    Increase table_open_cache gradually to avoid file descriptor limits
+    Read this before increasing table_open_cache over 64: http://bit.ly/1mi7c4C
+Variables to adjust:
+    query_cache_size (&gt; 16M)
+    join_buffer_size (&gt; 128.0K, or always use indexes with joins)
+    table_open_cache (&gt; 400)
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0310.html" title="Tuesday, March 10, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0306.html" title="Friday, March 6, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0309.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0309.html">Online Link</a>
+    </div>
+  </body>
+</html>

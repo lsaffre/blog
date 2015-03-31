@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130202 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130203" href="0203.html" />
+    <link rel="prev" title="20130201" href="0201.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0203.html" title="20130203"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0201.html" title="20130201"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20130202<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="is-multi-table-inheritance-bad">
+<h2>Is multi-table inheritance bad?<a class="headerlink" href="#is-multi-table-inheritance-bad" title="Permalink to this headline">¶</a></h2>
+<p>Daniel and Audrey were so nice to offer me a free copy
+of their book <a class="reference external" href="https://django.2scoops.org/">Two scoops of Django</a>.
+I gratefully accept it as a gift and an encouragement for my work on Lino.</p>
+<p>Wow! this book is so great! I just can&#8217;t wait to try all the new ideas I
+got already during the five first chapters! Examples: use relative
+imports, use pip and virtualenv, move all settings to the code
+repository, ...</p>
+<p>... but I stopped at the beginning of chapter 6 because it&#8217;s too dangerous
+to continue right now: I must keep Lino and my mind <em>stable</em> during the
+next 2 weeks because I&#8217;m going to travel to Belgium and show Lino to
+potential partners and customers.</p>
+<p>The question continued to haunt me,
+however, I had a sleepless night because the authors write:</p>
+<blockquote>
+<div>Multi-table inheritance, sometimes called ‘concrete inheritance’,
+is considered by the authors and many other developers to be a
+bad thing. We strongly recommend against using it.</div></blockquote>
+<p>That statement was a challenge to me.
+I had to either <em>understand</em>
+that they are right or <em>show</em> that they are wrong.</p>
+<p>I had to reopen ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/22">docs/tickets/22</a>!
+Sigh!
+Everything there seemed so clear to me!</p>
+<p>And after some meditation I understood that indeed it&#8217;s not clear!
+An important observation was the fact that
+a Partner is <strong>either</strong> a Person
+<strong>or</strong> an Organization, <strong>not both</strong>.
+Another hint is the fact that <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.mti.html#module-lino.utils.mti" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.mti</span></code></a>
+will break in Django 1.6.
+Conclusion:
+I was wrong.
+We <em>can</em> do it without MTI,
+it just depends on how the user interface handles it!</p>
+<p>As a proof of concept I wrote the new module <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.partners</span></code>
+which is going to replace <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.html#module-lino.modlib.contacts" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts</span></code></a>.</p>
+<p>This also caused some small optimizations:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.core.inject.html#lino.core.inject.when_prepared" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">when_prepared</span></code></a>
+now supports more than one argument,
+each of them being a model_spec.</li>
+<li>Better error messages at some internal places</li>
+</ul>
+<p>But this proof of concept is not finised.
+The main challenge is <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/73">docs/tickets/73</a>.</p>
+<p>Also opened new ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/72">docs/tickets/72</a>.</p>
+</div>
+<div class="section" id="pre-release-rush">
+<h2>Pre-release rush<a class="headerlink" href="#pre-release-rush" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The Lino Cosi online demo had a
+&#8220;&#8216;State&#8217; object has no attribute &#8216;editable&#8217;&#8221; traceback
+caused by lino.modlib.vat.models.DelarationStates.
+Fixed.</li>
+<li>Increased the version counters.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0203.html" title="20130203"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0201.html" title="20130201"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0202.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0202.html">Online Link</a>
+    </div>
+  </body>
+</html>

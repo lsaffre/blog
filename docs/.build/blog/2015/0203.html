@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tuesday, February 3, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Wednesday, February 4, 2015" href="0204.html" />
+    <link rel="prev" title="Monday, February 2, 2015" href="0202.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0204.html" title="Wednesday, February 4, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0202.html" title="Monday, February 2, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-february-3-2015">
+<h1>Tuesday, February 3, 2015<a class="headerlink" href="#tuesday-february-3-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="recurrent-polls">
+<h2>Recurrent polls<a class="headerlink" href="#recurrent-polls" title="Permalink to this headline">¶</a></h2>
+<p>Wow. I finished a first proof of concept for the
+<a class="reference external" href="http://welfare.lino-framework.org/tested/polls.html#welfare-tested-polls" title="(in Lino Welfare Reference Manual v1.1)"><span>Polls tested tour</span></a> as the users in Chatelet want them.</p>
+<p>Especially <code class="xref py py-meth docutils literal"><span class="pre">AnswersByResponse.answer_buttons</span></code> and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.polls.models.html#lino.modlib.polls.models.AnswersByResponse.get_slave_summary" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">AnswersByResponse.get_slave_summary</span></code></a> were a
+challenge.</p>
+<p>I invented some new API methods for working with action requests.
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.actions" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">lino.core.actors.Actor.actions</span></code></a> is now part of the public API.
+Started to write documentation (but yes, there is much to do):</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.lino-framework.org/dev/ar.html">/dev/ar</a></li>
+<li><a class="reference external" href="http://www.lino-framework.org/dev/html.html">/dev/html</a></li>
+<li><a class="reference external" href="http://www.lino-framework.org/dev/custom_actions.html">/dev/custom_actions</a></li>
+</ul>
+</div>
+<div class="section" id="cannot-create-humanlinks-links-when-working-as-alicia">
+<h2>Cannot create humanlinks.Links when working as Alicia<a class="headerlink" href="#cannot-create-humanlinks-links-when-working-as-alicia" title="Permalink to this headline">¶</a></h2>
+<p>Created, reproduced and fixed <a class="reference external" href="http://trac.lino-framework.org/ticket/88">#88</a>.</p>
+<p>The quick solution was simply to replace <code class="docutils literal"><span class="pre">sar</span> <span class="pre">=</span> <span class="pre">ar.spawn(Links,</span>
+<span class="pre">...)</span></code> by <code class="docutils literal"><span class="pre">sar</span> <span class="pre">=</span> <span class="pre">ar.spawn(self,</span> <span class="pre">...)</span></code> in
+<code class="xref py py-meth docutils literal"><span class="pre">LinksByPerson.get_slave_summary()</span></code>.</p>
+<p>But why was the button there, although the insert action was not
+available?  This shows that <code class="xref py py-meth docutils literal"><span class="pre">insert_button</span></code> is not a good API.</p>
+<p>Code cleanup en passant: I removed <cite>quick_upload_buttons</cite> method from
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.extjs.ext_renderer.html#lino.modlib.extjs.ext_renderer.ExtRenderer" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.extjs.ext_renderer.ExtRenderer</span></code></a>, and the three
+deprecated fields <cite>residence_permit</cite> <cite>work_permit</cite> and
+<cite>driving_license</cite> from
+<code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.pcsw.models.Client.</span></code></p>
+</div>
+<div class="section" id="show-all-appointable-users-in-create-visit">
+<h2>Show all appointable users in <cite>create_visit</cite><a class="headerlink" href="#show-all-appointable-users-in-create-visit" title="Permalink to this headline">¶</a></h2>
+<p>The user field of <code class="xref py py-class docutils literal"><span class="pre">CreateClientVisit</span></code>, the &#8220;manual&#8221; dialog
+action for creating a prompt meeting, now shows all appointable users,
+not only those whose <cite>newcomer_consultations</cite> checkbox is checked.</p>
+</div>
+<div class="section" id="fehlermeldung-nach-neuzugang-zuweisen">
+<h2>Fehlermeldung nach &#8220;Neuzugang zuweisen&#8221;<a class="headerlink" href="#fehlermeldung-nach-neuzugang-zuweisen" title="Permalink to this headline">¶</a></h2>
+<p>Ticket <a class="reference external" href="http://trac.lino-framework.org/ticket/87">#87</a> was a tough one. But it seems that I got it.</p>
+<p>I observed that the Save button sends a PUT to
+<cite>/api/newcomers/NewClients/121</cite>, but this PUT returns with
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ValidActionResponses.detail_handler_name" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">detail_handler_name</span></code></a> set to
+&#8220;pcsw.Clients.detail&#8221;. This is wrong. And BTW it opens a second Detail
+window: if you click now the window&#8217;s &#8220;Close&#8221; button, you see the
+&#8220;same&#8221; detail a second time. The <cite>newcomers.NewClients</cite> and
+<cite>pcsw.Clients</cite> tables share the same <cite>detail_layout</cite>, but they have
+different <cite>parameters</cite>.</p>
+<p>The mystery lied in the collaboration of <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ActorRequest.goto_instance" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.goto_instance</span></code></a> and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.get_detail_action" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">obj.get_detail_action</span></code></a>.
+If the action requests&#8217;s actor can be used for the object instance, then it must have priority over the object&#8217;s default table.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0204.html" title="Wednesday, February 4, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0202.html" title="Monday, February 2, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0203.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0203.html">Online Link</a>
+    </div>
+  </body>
+</html>

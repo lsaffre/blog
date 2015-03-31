@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2010-09-21...23 VBorderPanel und Layout-Editor &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="0927...28 Layout-Editor fertig" href="0927.html" />
+    <link rel="prev" title="2010-09-17" href="0917.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0927.html" title="0927...28 Layout-Editor fertig"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0917.html" title="2010-09-17"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="vborderpanel-und-layout-editor">
+<h1>2010-09-21...23 VBorderPanel und Layout-Editor<a class="headerlink" href="#vborderpanel-und-layout-editor" title="Permalink to this headline">¶</a></h1>
+<p>Bin noch immer mit den Grids in der vbox dran.
+Es war nicht leicht, Lino dazu zu bringen, dass der generierte Code
+das neue VBorderPanel dann auch korrekt benutzt...</p>
+<p>Ich sollte unbedingt mal anfangen, automatisierte test cases zu
+schreiben für diese Layout-Probleme.</p>
+<p>Das passt zusammen mit dem Plan, Layouts online ändern zu können ohne Server-Restart.</p>
+<div class="section" id="id1">
+<h2>22.09.<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Also ran an den Speck. Lino geht in Vollnarkose.</p>
+<p>In einem ersten Schritt will ich die Layouts komplett aus dem Python-Code raus verlagern.
+Also die Layouts wären dann gar keine Python-Klassen mehr, sondern einfache Strings.
+Denn das Feature der Vererbbarkeit von Layout-Elementen erweist sich als unpraktisch und unwichtig.</p>
+</div>
+<div class="section" id="id2">
+<h2>23.09.<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>10.20 Uhr. Na das ging ja noch relativ flink: Check-in.</p>
+<p>Layouts sind jetzt keine Actors mehr,
+sondern werden mit der class method <cite>reports.Report.add_detail</cite> definiert.
+Wobei der Parameter <cite>desc</cite> die wichtigste Neuerung ist: es ist jetzt ein einziger String,
+den ich mit einem primitiven selbstgemachten Parser interpretiere.</p>
+<p>Also statt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ProjectDetail</span><span class="p">(</span><span class="n">layouts</span><span class="o">.</span><span class="n">DetailLayout</span><span class="p">):</span>
+    <span class="n">datalink</span> <span class="o">=</span> <span class="s">&#39;projects.Project&#39;</span>
+    <span class="n">main</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    name type</span>
+<span class="s">    started stopped</span>
+<span class="s">    text</span>
+<span class="s">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Mach ich:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Projects</span><span class="o">.</span><span class="n">add_detail</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">main =</span>
+<span class="s">    name type</span>
+<span class="s">    started stopped</span>
+<span class="s">    text</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Hier noch ein komplexeres Beispiel:</p>
+<div class="highlight-python"><div class="highlight"><pre>main =
+  intro_box
+  address_box
+  bottom_box
+
+intro_box = box1 box2
+address_box = box3 box4 box5
+bottom_box = remarks:70 image:30
+
+box1 = last_name first_name:15 title:10
+box2 = id language
+box3 =
+  country region
+  city zip_code:10
+  street:25 street_no street_box
+  addr1:40
+
+box4 =
+  email:30
+  phone
+  fax
+  gsm
+
+box5 =
+  url:30
+  bank_account1
+  bank_account2
+  gesdos_id
+</pre></div>
+</div>
+<p>Syntax-Regeln:
+Leere Zeilen werden ignoriert.
+Felder und SlaveReports stehen als Elemente automatisch zur Verfügung und brauchen nicht definiert zu werden.
+Mit <cite>NAME = WERT</cite> wird ein neues Element definiert, das dann ein Panel wird.
+NAME muss ein neuer Name sein.
+WERT is a space-delimited List of element names.
+Es muss ein Element namens <cite>main</cite> definiert werden.
+Man kann beliebig viele sonstige Elemente definieren.
+Zeilen, die mit Whitespace beginnen, sind Fortsetzungen einer zuvor begonnenen Definition.</p>
+<p>11.15 Uhr : Der Permalink eines mehrtabbigen Details enthält jetzt auch den aktiven Tab. Super. Check-in.</p>
+</div>
+<div class="section" id="id3">
+<h2>24.09.<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Bisher wurde die lokale Report-Konfigurationsdatei in <cite>ExtUI.save_grid_config</cite> generiert.
+Das wird jetzt in <cite>Report.save_config</cite> gemacht, weil da jetzt auch die detail_layouts rein kommen.
+Neue URL mit Methoden GET und PUT und Parameter <cite>tab</cite></p>
+<p>Die Operation ist fast fertig: Detail-Fenster haben jetzt einen Button &#8220;Layout Editor&#8221;, wenn man darauf klickt kommt ein Fenster mit einem Texteditor, der das Layout (das des aktuellen Tabs) zum Bearbeiten anbietet. Der Editor kriegt dieses Layout mit <cite>GET /layout_config/contacts/Persons?tab=X</cite>. Und wenn man auf <cite>Save</cite> klickt, macht er ein <cite>PUT</cite> zur gleichen Adresse, der Server speichert das in der Report-Konfigurations-Datei und generiert dann seinen site.js neu. Der Save-Button schließt das Editorfenster und lädt document.location neu, damit man gleich das Resultat sehen kann. Super! Ich kann beruhigt ins Wochenende gehen. Check-In.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>Der Layout-Editor wird noch nicht mit dem richtigen tab-Parameter aufgerufen.</li>
+<li>Das Neuladen funktioniert noch nicht. Er generiert zwar die site.js neu, aber die hat die Änderung noch nicht mitbekommen.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0927.html" title="0927...28 Layout-Editor fertig"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0917.html" title="2010-09-17"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0921.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0921.html">Online Link</a>
+    </div>
+  </body>
+</html>

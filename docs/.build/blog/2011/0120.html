@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110120 ShowOrCreateButton &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110125" href="0125.html" />
+    <link rel="prev" title="20110119" href="0119.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20110125"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0119.html" title="20110119"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="showorcreatebutton">
+<h1>20110120 ShowOrCreateButton<a class="headerlink" href="#showorcreatebutton" title="Permalink to this headline">¶</a></h1>
+<p>Also der Schnellhochladeknopf  (quick upload button)
+für Führerschein, Aufenthalts- und Arbeitsgenehmigung.
+Das ist ein DisplayField, dessen Funktion
+die recht spezielle Methode
+<code class="xref py py-meth docutils literal"><span class="pre">quick_upload_buttons()</span></code> benutzt.</p>
+<p><code class="xref py py-meth docutils literal"><span class="pre">quick_upload_buttons()</span></code>
+rendert einen ReportRequest als eine Serie von Buttons.
+Wenn der ReportRequest leer ist, ein Button &#8220;Upload&#8221;,
+ansonsten zwei Buttons &#8220;Show&#8221; und &#8220;Edit&#8221;.</p>
+<p>&#8220;Show&#8221; und &#8220;Edit&#8221; funktionierten schon seit Längerem.</p>
+<p>Der Upload-Knopf ist komplexer.
+Dazu musste ich zuerst noch das Konzept der &#8220;known values&#8221;
+eines Requests erfinden. Beobachtung am Rande:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.modlib.uploads.models</span> <span class="kn">import</span> <span class="n">Upload</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Upload</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[&lt;Upload: Arbeitserlaubnis 1.pdf&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Upload</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">type__exact</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">[&lt;Upload: Arbeitserlaubnis 1.pdf&gt;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Upload</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;console&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;l:\snapshots\django\django\db\models\base.py&quot;</span>, line <span class="m">351</span>, in <span class="n">__init__</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">rel_obj</span><span class="p">)</span>
+  File <span class="nb">&quot;l:\snapshots\django\django\db\models\fields\related.py&quot;</span>, line <span class="m">320</span>, in <span class="n">__set__</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="o">.</span><span class="n">rel</span><span class="o">.</span><span class="n">to</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">object_name</span><span class="p">))</span>
+<span class="gr">ValueError</span>: <span class="n">Cannot assign &quot;3&quot;: &quot;Upload.type&quot; must be a &quot;UploadType&quot; instance.</span>
+</pre></div>
+</div>
+<p>Auch musste ich in der API ändern:
+Methoden von virtuellen Feldern (also die mit dem <cite>return_type</cite>)
+müssen jetzt einen zweiten Parameter <cite>rr</cite>  (den ReportRequest, der sie aufruft)
+empfangen.
+Denn <code class="xref py py-meth docutils literal"><span class="pre">quick_upload_buttons()</span></code> braucht die Information, welcher Benutzer danach fragt.</p>
+<p>Das onclick-Event des Buttons für &#8220;Upload&#8221; auf einer Aufenthaltserlaubtnis
+sieht dann jetzt wie folgt aus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Lino</span><span class="o">.</span><span class="n">uploads</span><span class="o">.</span><span class="n">UploadsByPerson</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">undefined</span><span class="p">,</span> <span class="p">{</span>
+  <span class="n">data_record</span><span class="p">:</span> <span class="p">{</span>
+      <span class="n">data</span><span class="p">:</span> <span class="p">{</span>
+          <span class="n">delay_value</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="n">description</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">created</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">reminder_date</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">company</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">modified</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">typeHidden</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+          <span class="n">personHidden</span><span class="p">:</span> <span class="mi">115</span><span class="p">,</span>
+          <span class="n">companyHidden</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="n">person</span><span class="p">:</span> <span class="s">&quot;Altenberg Hans (115)&quot;</span><span class="p">,</span>
+          <span class="n">delay_type</span><span class="p">:</span> <span class="s">&quot;Tage&quot;</span><span class="p">,</span>
+          <span class="n">delay_typeHidden</span><span class="p">:</span> <span class="s">&quot;D&quot;</span><span class="p">,</span>
+          <span class="nb">file</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+          <span class="n">reminder_text</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+          <span class="nb">type</span><span class="p">:</span> <span class="s">&quot;Aufenthaltserlaubnis&quot;</span><span class="p">,</span>
+          <span class="nb">id</span><span class="p">:</span> <span class="n">null</span>
+      <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>Zu beachten ist, dass man in der lokalen <cite>site.py</cite> diese drei quick-upload-Felder
+konfigurieren muss:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setup_main_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="n">Base</span><span class="o">.</span><span class="n">setup_main_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">lino.modlib.uploads.models</span> <span class="kn">import</span> <span class="n">UploadType</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">work_permit_upload_type</span> <span class="o">=</span> <span class="n">UploadType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">residence_permit_upload_type</span> <span class="o">=</span> <span class="n">UploadType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">diving_licence_upload_type</span> <span class="o">=</span> <span class="n">UploadType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>N.B.: Das virtuelle Feld <cite>driving_license</cite> heißt jetzt <cite>driving_licence</cite>.
+In Amerika schreiben sie &#8220;license&#8221; mit &#8220;s&#8221;, hier in Europa mit &#8220;c&#8221;.
+Nicht dass Lino sich auf Europa beschränken will, aber in Amerika sagt man
+scheinbar eher &#8220;driver&#8217;s license&#8221; als &#8220;driving license&#8221;.</p>
+<p>Release <a class="reference external" href="http://www.lino-framework.org/releases/2011/0120.html">/releases/2011/0120</a> in Eupen.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20110125"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0119.html" title="20110119"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0120.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0120.html">Online Link</a>
+    </div>
+  </body>
+</html>

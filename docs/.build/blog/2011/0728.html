@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110728 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110730" href="0730.html" />
+    <link rel="prev" title="20110727" href="0727.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0730.html" title="20110730"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0727.html" title="20110727"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110728<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="watch-tim-noch-immer-nicht-bugfrei">
+<h2><a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> noch immer nicht bugfrei<a class="headerlink" href="#watch-tim-noch-immer-nicht-bugfrei" title="Permalink to this headline">¶</a></h2>
+<p>Wer hätte das gedacht! Es gibt noch immer Bugs <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a>!
+(Seriös: natürlich gibt es noch Bugs in <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a>,
+denn der ist hochkomplex und schwer zu warten.
+Aber ich bin im Grunde sehr zufrieden, wie stabil das Ding läuft und
+wie die Bugs immer subtiler werden.
+Diesmal lag es daran, dass mein Bugfix von gestern noch Bug hatte.</p>
+</div>
+<div class="section" id="unicodedecodeerror">
+<h2>UnicodeDecodeError<a class="headerlink" href="#unicodedecodeerror" title="Permalink to this headline">¶</a></h2>
+<p>Meine <code class="xref py py-func docutils literal"><span class="pre">lino.tools.obj2str()</span></code> hatte einen Bug, der auf einem
+Django-Pitfall beruht (oder findet ihr das normal, dass die
+Python-Funktion <code class="xref py py-func docutils literal"><span class="pre">repr()</span></code> auch unsaubere Strings
+(d.h. basestrings mit non-ascii chars darin)
+zurückgeben darf?
+Jedenfalls ist der Bug nun hoffentlich behoben.
+<code class="xref py py-func docutils literal"><span class="pre">lino.apps.dsbe.tests.dsbe_tests.test05()</span></code>.</p>
+<p>Aber trotzdem macht <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> noch UnicodeDecodeErrors
+im Modul <cite>logging</cite>.
+Um rauszufinden, was er da loggen will,
+habe ich in der <code class="file docutils literal"><span class="pre">/usr/lib/python2.6/logging/__init__.py</span></code>
+auf Jana ein paar Änderungen gemacht.
+Mein Fazit nach stundenlangem Suchen: das <cite>logging</cite> vom Python 2.6.6
+hat noch irgendwelche subtilen Probleme, wenn man ihm unicode-Strings
+zu loggen gibt.
+Ich ändere meine <code class="xref py py-func docutils literal"><span class="pre">lino.tools.obj2str()</span></code> so das sie immer
+garantiert einen basestring zurückgibt (also Sonderzeichen stehen
+dann im Stil <code class="docutils literal"><span class="pre">\xe9</span></code> da).</p>
+<p>Für Meldungen an den Benutzer, die in Unicode sein dürfen und sollen,
+gibt es jetzt die neue Funktion <code class="xref py py-func docutils literal"><span class="pre">lino.tools.obj2unicode()</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0730.html" title="20110730"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0727.html" title="20110727"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0728.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0728.html">Online Link</a>
+    </div>
+  </body>
+</html>

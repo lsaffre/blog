@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120914 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120915" href="0915.html" />
+    <link rel="prev" title="20120913" href="0913.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="20120915"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="20120913"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120914<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Diverse Änderungen Endspurt &#8220;Coachings und Contacts&#8221;.
+Vor allem an der Demo-Fixture habe ich einiges geschwitzt.
+Coaching stories.</p>
+<div class="section" id="rendering-tables-to-plain-text">
+<h2>Rendering tables to plain text<a class="headerlink" href="#rendering-tables-to-plain-text" title="Permalink to this headline">¶</a></h2>
+<p>New method <code class="xref py py-meth docutils literal"><span class="pre">lino.core.tables.TableRequest.to_rst()</span></code>.
+Here is a usage example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Run using::</span>
+
+<span class="sd">  python manage.py run 0914.py</span>
+<span class="sd">  </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="k">if</span> <span class="bp">False</span><span class="p">:</span> <span class="c"># TIMTOWTDI: the following is equivalent  </span>
+    <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+    <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">user_model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pcsw</span><span class="o">.</span><span class="n">UsersWithClients</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">ar</span><span class="o">.</span><span class="n">to_rst</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">lino.api</span> <span class="kn">import</span> <span class="n">dd</span><span class="p">,</span> <span class="n">rt</span>
+    <span class="n">pcsw</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_app</span><span class="p">(</span><span class="s">&#39;pcsw&#39;</span><span class="p">)</span>
+    <span class="n">User</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_model</span><span class="p">(</span><span class="s">&#39;users.User&#39;</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+    <span class="k">print</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">UsersWithClients</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">to_rst</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The result is:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO Starting Lino...
+INFO Analyzing models...
+INFO Lino Site &#39;DSBE@armand&#39; started. Languages: de, fr, en. 260 actors.
+INFO Using Lino/Welfare 0.1.0, Lino 1.5.0, Django 1.5.dev17942, python-dateutil 1.5, Cheetah
+2.4.4, OdfPy ODFPY/0.9.4, docutils 0.7, suds 0.4.1, PyYaml 3.08, Appy 0.8.0 (2011/12/15 22:41),
+Python 2.7.1.
+=============== ===== ========= ========= ======= ======= =============== =============== =====
+Begleiter 1     Bilan Formation Recherche Travail Standby Komplette Akten Aktive Klienten Total
+=============== ===== ========= ========= ======= ======= =============== =============== =====
+Hubert Huppertz       1                                                   1               1
+Mélanie Mélard        1                                                   1               1
+Root User             1                                                   1               1
+Total           0     3         0         0       0       0               3               3
+=============== ===== ========= ========= ======= ======= =============== =============== =====
+</pre></div>
+</div>
+<p>Where the table is rendered as follows:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="6%" />
+<col width="10%" />
+<col width="10%" />
+<col width="8%" />
+<col width="8%" />
+<col width="17%" />
+<col width="17%" />
+<col width="6%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Begleiter 1</th>
+<th class="head">Bilan</th>
+<th class="head">Formation</th>
+<th class="head">Recherche</th>
+<th class="head">Travail</th>
+<th class="head">Standby</th>
+<th class="head">Komplette Akten</th>
+<th class="head">Aktive Klienten</th>
+<th class="head">Total</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Hubert Huppertz</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>Mélanie Mélard</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>Root User</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>Total</td>
+<td>0</td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>3</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>More changes in how ActionRequest.__init__() handles parameter values.</li>
+<li>add_detail_tab()</li>
+</ul>
+</div>
+<div class="section" id="mausefalle">
+<h2>Mausefalle<a class="headerlink" href="#mausefalle" title="Permalink to this headline">¶</a></h2>
+<p>Ich wollte die CoachingsByUser sichtbar machen. Ist doch einfach:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">site</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_detail_panel</span><span class="p">(</span><span class="s">&#39;coaching&#39;</span><span class="p">,</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">pcsw.CoachingsByUser</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">,</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Coaching&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Dachte ich zumindest. Richtig wäre gewesen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">site</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">users</span><span class="o">.</span><span class="n">Users</span><span class="o">.</span><span class="n">add_detail_tab</span><span class="p">(</span><span class="s">&#39;coaching&#39;</span><span class="p">,</span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">pcsw.CoachingsByUser</span>
+<span class="s">&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Und weil das einzige Symptom folgender Traceback war:</p>
+<div class="highlight-python"><div class="highlight"><pre>LayoutHandle for UserDetail on users.Users has no attribute &#39;coaching&#39;
+(layout.main is &#39;general cal newcomers.CompetencesByUser&#39;)
+</pre></div>
+</div>
+<p>... habe ich zwei Stunden lang an allen möglichen Ecken gesucht,
+bevor ich die tatsächliche Erklärung hatte.</p>
+</div>
+<div class="section" id="ein-layout-bug-weniger">
+<h2>Ein Layout-Bug weniger<a class="headerlink" href="#ein-layout-bug-weniger" title="Permalink to this headline">¶</a></h2>
+<p>Lino.VBorderPanel.onBodyResize hatte einen Bug:</p>
+<div class="highlight-python"><div class="highlight"><pre>...
+this.items.each(function(item){
+  ...
+          availableHeight -= item.getHeight();
+</pre></div>
+</div>
+<p>Das produzierte machmal einen JS-Fehler in der Console.
+Weil noch nicht alle Kinder gerendert waren.
+Folge war, dass dass z.B. der zweite Reiter (Kalender)
+vom UserDetail nicht beim ersten Mal korrekt war.
+Jetzt geht es besser:</p>
+<div class="highlight-python"><div class="highlight"><pre>...
+this.items.each(function(item){
+  ...
+          if (item.rendered) availableHeight -= item.getHeight();
+</pre></div>
+</div>
+</div>
+<div class="section" id="userswithclients">
+<h2>UsersWithClients<a class="headerlink" href="#userswithclients" title="Permalink to this headline">¶</a></h2>
+<p>In UsersWithClients, bei Alicia in Kolonne &#8220;Bilan&#8221; steht eine 6.
+Also Alicia hat angeblich sech Bilan-Kunden.
+Die 6 ist ein <code class="docutils literal"><span class="pre">&lt;a&gt;</span></code> mit folgendem <cite>href</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>javascript:Lino.pcsw.MyClientsByGroup.default_action.run({ &quot;param_values&quot;: {
+  &quot;only_coached_on&quot;: &quot;14.09.2012&quot;,
+  &quot;group&quot;: &quot;Bilan&quot;, &quot;client_stateHidden&quot;: null, &quot;show_deprecated&quot;: false,
+  &quot;groupHidden&quot;: 1, &quot;client_state&quot;: null
+  }, &quot;base_params&quot;: { &quot;mt&quot;: 79, &quot;mk&quot;: 1, &quot;su&quot;: 8 } })
+</pre></div>
+</div>
+<p>Wenn ich drauf klicke, zeigt er aber nur 2 Klienten an.
+Der Perma-Link dieser Liste lautet:</p>
+<div class="highlight-python"><div class="highlight"><pre>http://127.0.0.1:8000/api/pcsw/MyClientsByGroup?mt=79&amp;mk=1&amp;su=8&amp;pv=14.09.2012&amp;pv=&amp;pv=1&amp;pv=false
+</pre></div>
+</div>
+<p>Erklärung war: ich musste distinct() benutzen, weil der Filter von
+z.B. <cite>only_coached_by</cite> jetzt einen outer join produziert:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">only_coached_by</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span><span class="n">user</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">qs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">pcsw_coaching_set_by_project__user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">distinct</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Das folgende Skript hat mir geholfen, das zu verstehen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lino.api</span> <span class="kn">import</span> <span class="n">dd</span><span class="p">,</span> <span class="n">rt</span>
+<span class="n">pcsw</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_app</span><span class="p">(</span><span class="s">&#39;pcsw&#39;</span><span class="p">)</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_app</span><span class="p">(</span><span class="s">&#39;users&#39;</span><span class="p">)</span>
+<span class="n">alicia</span> <span class="o">=</span> <span class="n">users</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;alicia&#39;</span><span class="p">)</span>
+<span class="n">root</span> <span class="o">=</span> <span class="n">users</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+<span class="n">pg</span> <span class="o">=</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">PersonGroup</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">ar</span> <span class="o">=</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">CoachingsByUser</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">master_instance</span><span class="o">=</span><span class="n">alicia</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">ar</span><span class="o">.</span><span class="n">to_rst</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> rows&quot;</span> <span class="o">%</span> <span class="n">ar</span><span class="o">.</span><span class="n">get_total_count</span><span class="p">()</span>
+
+<span class="n">ar</span> <span class="o">=</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">MyClientsByGroup</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+    <span class="n">user</span><span class="o">=</span><span class="n">root</span><span class="p">,</span><span class="n">subst_user</span><span class="o">=</span><span class="n">alicia</span><span class="p">,</span>
+    <span class="n">master_instance</span><span class="o">=</span><span class="n">pg</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">ar</span><span class="o">.</span><span class="n">to_rst</span><span class="p">(</span><span class="s">&#39;name_column national_id address_column&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;</span><span class="si">%d</span><span class="s"> rows&quot;</span> <span class="o">%</span> <span class="n">ar</span><span class="o">.</span><span class="n">get_total_count</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="20120915"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="20120913"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0914.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0914.html">Online Link</a>
+    </div>
+  </body>
+</html>

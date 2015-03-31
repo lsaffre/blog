@@ -1,0 +1,35 @@
+======================
+Sunday, April 27, 2014
+======================
+
+I removed support for the (deprecated) old-fashioned way of defining
+model methods with a ``return_type`` attribute. 
+
+Something like this::
+
+    class Foo(dd.Model):
+        ...
+        def bar(self, ar):
+            return "baz"
+        bar.return_type = dd.DisplayField(_("bar"))
+
+These should be replaced by virtual fields::
+
+    class Foo(dd.Model):
+        ...
+        @displayfield(_("bar"))
+        def bar(self, ar):
+            return "baz"
+
+
+I replaced the `slave_as_summary_meth` by something more
+straightforward :meth:`lino.core.actors.Actor.get_slave_summary_method`
+
+    @classmethod
+    def slave_as_summary_meth(self, row_separator):
+    
+
+The 
+
+ by `MethodStoreField`
+`_return_type_for_method`

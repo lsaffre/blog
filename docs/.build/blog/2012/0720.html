@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120720 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120721" href="0721.html" />
+    <link rel="prev" title="20120718" href="0718.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0721.html" title="20120721"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0718.html" title="20120718"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120720<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="printing-the-lino-version">
+<h2>Printing the Lino version<a class="headerlink" href="#printing-the-lino-version" title="Permalink to this headline">¶</a></h2>
+<p>In a Tx25 it is meaningful to also print the Lino version
+because if a user executes a Tx25, prints it out, then dicovers
+and reports a &#8220;missing handler&#8221; error, I fix it,
+the user prints it again and zack! we two different documents
+of the same request.
+That&#8217;s not ISO 9002 compatible.
+Solution is to always print the Lino version and the date
+of printing.</p>
+<p>New method <code class="xref py py-meth docutils literal"><span class="pre">lino.Lino.site_header()</span></code>.</p>
+</div>
+<div class="section" id="keyerror-u-row">
+<h2>KeyError: u&#8217;row&#8217;<a class="headerlink" href="#keyerror-u-row" title="Permalink to this headline">¶</a></h2>
+<p>When an IdentifyPersonRequest has no answer because there were error messages
+(e.g. requests no.
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/modlib/cbss/fixtures/demo_ipr_2.xml">2</a>
+and
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/modlib/cbss/fixtures/demo_ipr_5.xml">5</a>
+of the demo fixture), then trying to print it causes
+the following traceback:</p>
+<div class="highlight-python"><div class="highlight"><pre>201207-17 10:00:14 WARNING ext_ui : Action &quot;Drucken&quot; failed for IdentifyPerson-Anfrage &quot;IdentifyPerson-Anfrage #18&quot;:
+u&#39;row&#39;. Ein Fehlerbericht wurde an den Systemverwalter geschickt.
+201207-17 10:00:14 ERROR ext_ui : u&#39;row&#39;
+Traceback (most recent call last):
+  File &quot;/var/snapshots/lino/lino/ui/extjs3/ext_ui.py&quot;, line 1817, in api_element_view
+    rv = a.run(elem,ar)
+  File &quot;/var/snapshots/lino/lino/mixins/printable.py&quot;, line 595, in run
+    bm.build(ar,self,elem)
+  File &quot;/var/snapshots/lino/lino/mixins/printable.py&quot;, line 274, in build
+    return self.simple_build(ar,elem,tplfile,target)
+  File &quot;/var/snapshots/lino/lino/mixins/printable.py&quot;, line 322, in simple_build
+    renderer.run()
+  File &quot;/var/snapshots/appy-current/appy/pod/renderer.py&quot;, line 350, in run
+    self.currentParser.parse(self.contentXml)
+  File &quot;/var/snapshots/appy-current/appy/shared/xml_parser.py&quot;, line 193, in parse
+    self.parser.parse(inputSource)
+  File &quot;/usr/lib/python2.6/xml/sax/expatreader.py&quot;, line 107, in parse
+    xmlreader.IncrementalParser.parse(self, source)
+  File &quot;/usr/lib/python2.6/xml/sax/xmlreader.py&quot;, line 123, in parse
+    self.feed(buffer)
+  File &quot;/usr/lib/python2.6/xml/sax/expatreader.py&quot;, line 207, in feed
+    self._parser.Parse(data, isFinal)
+  File &quot;/usr/lib/python2.6/xml/sax/expatreader.py&quot;, line 304, in end_element
+    self._cont_handler.endElement(name)
+  File &quot;/var/snapshots/appy-current/appy/pod/pod_parser.py&quot;, line 279, in endElement
+    e.currentBuffer.action.execute()
+  File &quot;/var/snapshots/appy-current/appy/pod/actions.py&quot;, line 76, in execute
+    self.do()
+  File &quot;/var/snapshots/appy-current/appy/pod/actions.py&quot;, line 198, in do
+    del context[self.iter]
+KeyError: u&#39;row&#39;
+</pre></div>
+</div>
+<p>The document template has the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>do text for row in self.get_result_table(ar)
+</pre></div>
+</div>
+<p>And <cite>get_result_table</cite> in our case is a generator function that yields no results.</p>
+<p>The bug is in <a class="reference external" href="http://bazaar.launchpad.net/~appy-dev/appy/trunk/view/head:/pod/actions.py">appy.pod.actions.ForAction</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">ForAction</span><span class="p">(</span><span class="n">BufferAction</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">do</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">env</span><span class="o">.</span><span class="n">context</span>
+        <span class="o">...</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exprResult</span><span class="p">:</span>
+            <span class="n">context</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+            <span class="o">...</span>
+        <span class="k">if</span> <span class="n">hasHiddenVariable</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exprResult</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">context</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>When <cite>self.exprResult</cite> is an empty iterator, the above traceback will occur.
+Discovered that I had already posted this bug to
+the <a class="reference external" href="https://bugs.launchpad.net/appy/+bug/897755">appy forum</a>.
+Applied my own workaround described there:</p>
+<div class="highlight-python"><div class="highlight"><pre>do text for row in list/self.get_result_table(ar))
+</pre></div>
+</div>
+<p>Posted my suggestion for a solution.</p>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<p>Acting as another user will not give you the access permissions of that user.
+A secretary who has authority to act as her boss in order to manage his calendar
+should not also see e.g. statistic reports to which she has no access.
+New exception to this rule:
+For system admins it is different:
+when a system admin acts as another user,
+he inherits this user&#8217;s access permissions.
+System admins use this feature to test the permissions of other users.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0721.html" title="20120721"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0718.html" title="20120718"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0720.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0720.html">Online Link</a>
+    </div>
+  </body>
+</html>

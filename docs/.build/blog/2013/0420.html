@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130420 (Saturday, 20 April 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130421 (Sunday, 21 April 2013)" href="0421.html" />
+    <link rel="prev" title="20130419 (Friday, 19 April 2013)" href="0419.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0421.html" title="20130421 (Sunday, 21 April 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0419.html" title="20130419 (Friday, 19 April 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-20-april-2013">
+<h1>20130420 (Saturday, 20 April 2013)<a class="headerlink" href="#saturday-20-april-2013" title="Permalink to this headline">¶</a></h1>
+<p>I am converting the production server &#8220;dsbe&#8221; from the obsolete
+system &#8220;without pip and virtualenv&#8221; to the new system which
+uses these tools.</p>
+<div class="section" id="miscellaneous-notes">
+<h2>Miscellaneous notes<a class="headerlink" href="#miscellaneous-notes" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">I learned that you cannot (easily) rename nor copy virtual environments.</p>
+</li>
+<li><p class="first">The following Python packages (pip install ) are optional
+and therefore not automatically installed:</p>
+<blockquote>
+<div><ul class="simple">
+<li>mysql-python</li>
+<li>python-daemon (there are many PyPI modules for &#8220;daemon&#8221;,
+but we need this one)</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">&#8220;appy&#8221; was missing in <cite>install_requires</cite> of <a class="reference external" href="http://www.lino-framework.org/api/index.html#module-lino" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino</span></code></a>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="including-data-files-with-a-python-egg">
+<h2>Including data files with a Python egg<a class="headerlink" href="#including-data-files-with-a-python-egg" title="Permalink to this headline">¶</a></h2>
+<p>Yesterday I wasn&#8217;t yet sure whether the <cite>testing</cite> environment
+should use a local source repository (pip install -e) or rather
+a temporary packages index.
+The following log message showed me that I do need the latter method:</p>
+<div class="highlight-python"><div class="highlight"><pre>[Sat Apr 20 03:38:54 2013] [error] [client 10.187.17.134]
+IOError: [Errno 2] No such file or directory:
+&#39;.../env/lib/python2.6/site-packages/lino_welfare/modlib/cbss/WSDL/RetrieveTIGroupsV3.wsdl&#39;
+</pre></div>
+</div>
+<p>The sdist of lino_welfare was missing all the &#8220;data&#8221; files.
+Not only <cite>*.wsdl</cite> and <cite>*.xsd</cite> were missing, also <cite>*.mo* and `*.odt</cite>.</p>
+<p>IOW: The testing environment must use the unofficial sdists
+from lino-framework.org. A new &#8220;dev&#8221; environment uses the development
+code.</p>
+<p>Solving the problem itself took me even more time.
+It seems that there are still many white areas on the map of this land!
+The most correct documentation seems to be <a class="reference external" href="http://pythonhosted.org/distribute/setuptools.html#including-data-files">Including Data Files</a></p>
+<p>These files are being listed in <cite>global-include</cite>
+of the <cite>MANIFEST.in</cite>.
+This causes them to be included into the <cite>sdist</cite> archive file.</p>
+<p>And because until now I unpacked
+these files manually they were available.</p>
+<p>But they are <em>not</em> available when installing a package using pip.
+For this I have to also declare them in the
+<cite>package_data</cite> keyword of the setup function.
+Or some other combination of <cite>include_package_data</cite>.</p>
+<p>Okay, there is
+<a class="reference external" href="https://bitbucket.org/jezdez/setuptools_hg/wiki/Home">setuptools_hg</a>
+but I&#8217;m afraid that this might cause even more complications due to
+dependencies.</p>
+<blockquote>
+<div>&lt;<a class="reference external" href="http://docs.python.org/2/distutils/setupscript.html#installing-package-data">http://docs.python.org/2/distutils/setupscript.html#installing-package-data</a>&gt;</div></blockquote>
+<p>something like the following to
+setup_info.py:</p>
+<div class="highlight-python"><div class="highlight"><pre>package_data={&#39;lino_welfare.modlib.cbss&#39;: [
+  &#39;WSDL/*.wsdl&#39;,
+  &#39;XSD/*.xsd&#39;,
+  &#39;XSD/SSDN/Common/*.xsd&#39;,
+  &#39;XSD/SSDN/OCMW_CPAS/IdentifyPerson/*.xsd&#39;,
+  &#39;XSD/SSDN/OCMW_CPAS/ManageAccess/*.xsd&#39;,
+  &#39;XSD/SSDN/OCMW_CPAS/PerformInvestigation/*.xsd&#39;,
+  &#39;XSD/SSDN/OCMW_CPAS/Loi65Wet65/*.xsd&#39;,
+  &#39;XSD/SSDN/Person/*.xsd&#39;,
+  &#39;XSD/SSDN/Service/*.xsd&#39;,
+  ]
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>find lino -name &#39;*.odt&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-testing-environment">
+<h2>The <cite>testing</cite> environment<a class="headerlink" href="#the-testing-environment" title="Permalink to this headline">¶</a></h2>
+<p>This environment is used for final tests before the official release.
+These final tests include the packaging process.</p>
+<p>How to do a release cycle in <cite>testing</cite> (here as example for <cite>welfare</cite>):</p>
+<p><strong>On the development machine</strong></p>
+<p>Create a &#8220;source distribution&#8221; archive file:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ go welfare
+$ fab sdist
+</pre></div>
+</div>
+<p>The <cite>fab sdist</cite> command stores the archive file in the download
+section of the Lino website.
+To make it available for the production server you must build
+and publish the website:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ go lino
+$ fab docs pub
+</pre></div>
+</div>
+<p><strong>On the testing server</strong></p>
+<ul>
+<li><p class="first">Activate the &#8220;testing&#8221; environment</p>
+</li>
+<li><p class="first">Uninstall and the re-install the package:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pip uninstall lino-welfare
+$ pip install --extra-index-url http://lino-framework.org/dl lino-welfare
+</pre></div>
+</div>
+</li>
+<li><p class="first">Restart the web server:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apache2ctl restart
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="translations">
+<h2>Translations<a class="headerlink" href="#translations" title="Permalink to this headline">¶</a></h2>
+<p>The German menu entry &#8220;Termine&#8221; wasn&#8217;t translated.
+It took me some time to find out that this had a double cause.
+First it uses pgettext, and on hoppel I was using the released
+version of Babel.
+See <a class="reference external" href="oops">2013-03-23</a>&#8221;.
+Solution was
+<a class="reference external" href="http://babel.edgewall.org/wiki/SubversionCheckout">Setting up Babel from a Subversion Checkout</a>.</p>
+<p>Another thing was that Babel doesn&#8217;t recognize Django&#8217;s
+<cite>pgettext_lazy</cite>. So instead of writing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">pgettext_lazy</span>
+<span class="o">...</span>
+<span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">pgettext_lazy</span><span class="p">(</span><span class="s">u&quot;cal&quot;</span><span class="p">,</span><span class="s">u&quot;Events&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>I must write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">pgettext_lazy</span> <span class="k">as</span> <span class="n">pgettext</span>
+<span class="o">...</span>
+<span class="n">verbose_name_plural</span> <span class="o">=</span> <span class="n">pgettext</span><span class="p">(</span><span class="s">u&quot;cal&quot;</span><span class="p">,</span><span class="s">u&quot;Events&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="which-daemon-package-which-lockfile-package">
+<h2>Which <cite>daemon</cite> package? Which  <cite>lockfile</cite> package?<a class="headerlink" href="#which-daemon-package-which-lockfile-package" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.daemoncommand.html#module-lino.utils.daemoncommand" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.daemoncommand</span></code></a> now works with
+versions of <cite>daemon</cite> who use &#8220;pidfile&#8221; instead
+of &#8220;pidlockfile&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre>try:
+    import daemon # pip install python-daemon
+    # in older versions it&#39;s called pidlockfile, later just pidfile
+    try:
+        from daemon import pidlockfile
+    except ImportError:
+        from daemon import pidfile as pidlockfile
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0421.html" title="20130421 (Sunday, 21 April 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0419.html" title="20130419 (Friday, 19 April 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0420.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0420.html">Online Link</a>
+    </div>
+  </body>
+</html>

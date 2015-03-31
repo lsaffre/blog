@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130910 (Tuesday, 10 September 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130911 (Wednesday, 11 September 2013)" href="0911.html" />
+    <link rel="prev" title="20130909 (Monday, 09 September 2013)" href="0909.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0911.html" title="20130911 (Wednesday, 11 September 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0909.html" title="20130909 (Monday, 09 September 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-10-september-2013">
+<h1>20130910 (Tuesday, 10 September 2013)<a class="headerlink" href="#tuesday-10-september-2013" title="Permalink to this headline">¶</a></h1>
+<p>Worked on this:</p>
+<ul class="simple">
+<li>In <cite>reception.WaitingVisitors</cite> it should not be allowed to delete a row because
+that would leave the cal.Event without Guest.</li>
+</ul>
+<p>The solution is to simply make all variants of <cite>Visitors</cite> tables
+readonly by setting <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.editable" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">editable</span></code></a>
+to <cite>False</cite>.
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.editable" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">editable</span></code></a>
+does not deactivate the
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.workflow_buttons" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">editable</span></code></a>.</p>
+<p>This made me stumble on something similar to what we had a few
+days ago where the <cite>label</cite> of an Actor wasn&#8217;t inherited.
+Now it is the <cite>editable</cite> property.
+I applied the same changes for <cite>editable</cite>.</p>
+<p>MyWaitingVisitors is maybe not needed as a menu entry since it is also
+a get_admin_main_items.
+But if i remove it then i must edit pcsw_tests.py.
+Waiting for user feedback before doing this.</p>
+<p>Removed a test case from <a class="reference external" href="http://welfare.lino-framework.org/tested/debts.html#welfare-tested-debts" title="(in Lino Welfare Reference Manual v1.1)"><span>Debts mediation</span></a>
+because (1) it failed und (2) was rather strange anyway.</p>
+<p>Updated the <a class="reference external" href="http://www.lino-framework.org/demos.html#demos" title="(in Lino v1.6)"><span>Demo sites</span></a>.</p>
+<div class="section" id="how-to-configure-additional-text-to-appear-in-sales-invoices">
+<h2>How to configure additional text to appear in sales invoices<a class="headerlink" href="#how-to-configure-additional-text-to-appear-in-sales-invoices" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.appy_pod.html#lino.utils.appy_pod.Renderer" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.appy_pod.Renderer</span></code></a>
+has now a new built-in function  <cite>jinja</cite></p>
+<p>New file <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/modlib/sales/config/sales/Invoice/trailer.body.html">sales/Invoice/trailer.body.html</a>
+Used from <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/modlib/sales/config/sales/Invoice/Default.odt">sales/Invoice/Default.odt</a></p>
+<p>And <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a>: has a special <cite>trailer.body.html</cite> which adds
+one item for each enrolment mentioned in this invoice:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;p&gt;{{_(&quot;Your enrolments:&quot;)}}&lt;/p&gt;
+{% for enr in this.get_invoiceables(settings.SITE.modules.courses.Enrolment) %}
+&lt;ul&gt;
+&lt;li&gt;{{enr.course}} : {{enr.course.events_text()}}&lt;/li&gt;
+&lt;/ul&gt;
+{% endfor %}
+&lt;/div&gt;
+</pre></div>
+</div>
+<p>Some optimizations:</p>
+<ul class="simple">
+<li>Until now sales.Invoice used the hard-coded build method
+<a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.AppyPdfBuildMethod" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">appypdf</span></code></a>.
+Journal is now a PrintableType (and thus has a new field build_template)
+Note that not every Voucher is necessarily a TypedPrintable.</li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.core.web.html#lino.core.web.site_setup" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">lino.core.web.site_setup()</span></code></a> :
+changed order of discovery for the loaders:
+first come the <code class="xref py py-meth docutils literal"><span class="pre">get_settings_subdirs</span></code>,
+then only the packageloaders.</li>
+</ul>
+</div>
+<div class="section" id="continued-on-faggio">
+<h2>Continued on <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a>:<a class="headerlink" href="#continued-on-faggio" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Removed EventStates &#8220;draft&#8221; and &#8220;published&#8221;.</li>
+<li>Event guest are now filled with the enrolled pupils.
+New SiteConfig field pupil_guestroles.</li>
+</ul>
+</div>
+<div class="section" id="custom-fields-of-choicelist-choices">
+<h2>Custom fields of Choicelist Choices<a class="headerlink" href="#custom-fields-of-choicelist-choices" title="Permalink to this headline">¶</a></h2>
+<p>Something cool: application code can now simply define
+custom fields of a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.choicelists.html#lino.core.choicelists.Choice" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.core.choicelists.Choice</span></code></a>
+by declaring them on the
+<code class="xref py py-class docutils literal"><span class="pre">lino.core.choicelists.Choicelist</span></code>.
+First usage example are <cite>cal.EventStates</cite>
+and <cite>lino.UserLevel</cite>.
+If you wanted to show such custom fields
+in a table, then you had to define a virtual field:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@fields.virtualfield</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Short name&quot;</span><span class="p">),</span><span class="n">max_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">help_text</span><span class="o">=</span><span class="s">&quot;used to fill UserProfiles&quot;</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">short_name</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">choice</span><span class="p">,</span><span class="n">ar</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">choice</span><span class="o">.</span><span class="n">short_name</span>
+</pre></div>
+</div>
+<p>Now you can just write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">short_name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Short name&quot;</span><span class="p">),</span><span class="n">max_length</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">help_text</span><span class="o">=</span><span class="s">&quot;used to fill UserProfiles&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="todo">
+<h2>todo<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>demo.py : pupil_guestrole</li>
+<li>Anwesenheiten erfassen können</li>
+<li>suggest_guests wieder raus? weil es auf dem Papier reicht?</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0911.html" title="20130911 (Wednesday, 11 September 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0909.html" title="20130909 (Monday, 09 September 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0910.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0910.html">Online Link</a>
+    </div>
+  </body>
+</html>

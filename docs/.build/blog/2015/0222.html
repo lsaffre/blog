@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sunday, February 22, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Monday, February 23, 2015" href="0223.html" />
+    <link rel="prev" title="Saturday, February 21, 2015" href="0221.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0223.html" title="Monday, February 23, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0221.html" title="Saturday, February 21, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sunday-february-22-2015">
+<h1>Sunday, February 22, 2015<a class="headerlink" href="#sunday-february-22-2015" title="Permalink to this headline">¶</a></h1>
+<p>Mahmoud caused me another sleepless night ;-) He inpired me to find a
+solution for a problem in <a class="reference external" href="http://cosi.lino-framework.org/index.html#cosi" title="(in Lino Cosi Reference Manual v0.0)"><span>Lino Così</span></a> which had been dangling around
+for too long: how to manage grouped payments when entering a bank
+statement or other financial document.</p>
+<p><strong>The problem</strong> is about what happens when you enter the <cite>partner</cite> of
+a row of a <cite>BankStatement</cite>. Lino should analyze existing movements of
+this partner and suggest an amount for this row.  For example, if the
+partner has an open sales invoice, Lino should suggest that invoice&#8217;s
+amount on the <span class="guilabel">Income</span> side.  Or if the partner has an open
+purchase invoice, Lino should suggest that invoice&#8217;s amount on the
+<span class="guilabel">Expense</span> side.</p>
+<p>While we solved together some simple cases, the current solution was
+in no way usable in more complex situations like users who need to
+manually select a few invoices from a list of many open invoices, or a
+payment of the balance of a series of sales and purchase invoices.</p>
+<p><strong>The solution</strong> is that we need a new type of financial document, which
+I&#8217;ll call <cite>finan.Grouper</cite> (whose rows are stored in
+<cite>finan.GrouperItem</cite> accordingly). Groupers are regular vouchers which
+need their own journal and which will be included in the general
+ledger. Unlike other vouchers they are generated automatically on the
+fly.</p>
+<p>I started with the implementation:</p>
+<ul class="simple">
+<li>Converted <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.vat.html#module-lino.modlib.vat" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.vat</span></code></a>, <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.finan.html#module-lino.modlib.finan" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.finan</span></code></a>,
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.ledger.html#module-lino.modlib.ledger" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.ledger</span></code></a> and <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.accounts.html#module-lino.modlib.accounts" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.accounts</span></code></a> to a more
+modern coding style.</li>
+<li>Added the new models and tables.</li>
+<li>Moved some documentation to <a class="reference external" href="http://www.lino-framework.org/dev/accounting.html">/dev/accounting</a>.</li>
+</ul>
+<p>But decided to leave this half-finished because two production releases
+for <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> are more urgent.</p>
+<div class="section" id="upgrade-in-eupen">
+<h2>Upgrade in Eupen<a class="headerlink" href="#upgrade-in-eupen" title="Permalink to this headline">¶</a></h2>
+<p>Continued in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contenttypes.models.html#module-lino.modlib.contenttypes.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contenttypes.models</span></code></a>.  Renamed
+<cite>StaleGenericRelated</cite> to <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contenttypes.models.html#lino.modlib.contenttypes.models.BrokenGFKs" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">BrokenGFKs</span></code></a>, and only now it starts
+to be useful and complete.</p>
+<p>New unit test <a class="reference external" href="http://www.lino-framework.org/tutorials/gfks/index.html">/tutorials/gfks/index</a> brings another
+observation to my problem discovered yestarday (described in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.eupen.tests.test_broken_gfks.html#module-lino_welfare.projects.eupen.tests.test_broken_gfks" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">test_broken_gfks</span></code></a>).</p>
+<p>Restoring the database from snapshot (without migration) gave an error
+message <code class="docutils literal"><span class="pre">Deferred</span> <span class="pre">IncomeConfirmation</span> <span class="pre">#24</span>
+<span class="pre">(u'Auslxe4nderbeihilfe/5/1/12/6517/24')</span> <span class="pre">:</span> <span class="pre">'Role'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span>
+<span class="pre">attribute</span> <span class="pre">'language'</span></code> on two objects.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0223.html" title="Monday, February 23, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0221.html" title="Saturday, February 21, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0222.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0222.html">Online Link</a>
+    </div>
+  </body>
+</html>

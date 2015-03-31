@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tuesday, March 17, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="20150318 (Wednesday, 18 March 2015)" href="0318.html" />
+    <link rel="prev" title="Sunday, March 15, 2015" href="0315.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0318.html" title="20150318 (Wednesday, 18 March 2015)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0315.html" title="Sunday, March 15, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-march-17-2015">
+<h1>Tuesday, March 17, 2015<a class="headerlink" href="#tuesday-march-17-2015" title="Permalink to this headline">¶</a></h1>
+<p>Worked on <a class="reference external" href="http://trac.lino-framework.org/ticket/38">#38</a> (Make Lino run with Django 1.7).  Mahmoud and I
+had been stuck for a while on a problem problem which occured in Lino
+with Django 1.7. Already the <cite>fab initdb</cite> failed with a
+ValidationError stating that <code class="docutils literal"><span class="pre">'en'</span></code> were not a valid choice for the
+<cite>language</cite> field.</p>
+<p>The problem was in <code class="xref py py-func docutils literal"><span class="pre">LanguageField</span></code> which was defining the
+<a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/models/fields/#choices">choices</a>
+attribute as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">choices</span><span class="o">=</span><span class="nb">iter</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">LANGUAGE_CHOICES</span><span class="p">),</span>
+</pre></div>
+</div>
+<p>The solution was to remove the call to <a class="reference external" href="https://docs.python.org/2/library/functions.html#iter">iter()</a></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">choices</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">LANGUAGE_CHOICES</span><span class="p">,</span>
+</pre></div>
+</div>
+<p>I don&#8217;t remember why I did that <cite>iter()</cite> around
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.LANGUAGE_CHOICES" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">LANGUAGE_CHOICES</span></code></a>.  I
+guess that I was worried what happens when <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.languages" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">languages</span></code></a> changes after having defined these
+fields.  But for the moment I cannot remember why this should happen.
+But the test suite of Lino with Django 1.6 passes, so this change
+doesn&#8217;t break anything.  And thus we can consider the problem as
+solved.  Explanation is that &#8220;Django 1.7 does some trickery with our
+choices, and specifying an iterator over a list instead of the list
+itself produces strange behaviour.&#8221;  This is not a full explanation,
+but it is satisfying as long as our solution does not cause any other
+problems.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0318.html" title="20150318 (Wednesday, 18 March 2015)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0315.html" title="Sunday, March 15, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0317.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0317.html">Online Link</a>
+    </div>
+  </body>
+</html>

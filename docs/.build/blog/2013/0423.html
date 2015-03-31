@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130423 (Tuesday, 23 April 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130424 (Wednesday, 24 April 2013)" href="0424.html" />
+    <link rel="prev" title="20130422 (Monday, 22 April 2013)" href="0422.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0424.html" title="20130424 (Wednesday, 24 April 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0422.html" title="20130422 (Monday, 22 April 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-23-april-2013">
+<h1>20130423 (Tuesday, 23 April 2013)<a class="headerlink" href="#tuesday-23-april-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="wsgirequest-object-has-no-attribute-subst-user">
+<h2>&#8216;WSGIRequest&#8217; object has no attribute &#8216;subst_user&#8217;<a class="headerlink" href="#wsgirequest-object-has-no-attribute-subst-user" title="Permalink to this headline">¶</a></h2>
+<p>I finally looked up why I received often a series of error messages
+&#8220;&#8216;WSGIRequest&#8217; object has no attribute &#8216;subst_user&#8217;&#8221; from the demo
+sites. These server tracebacks were caused by html HEAD requests
+issued by my own monitor.
+<code class="xref py py-mod docutils literal"><span class="pre">lino.utils.auth</span></code> forgot to set <cite>request.subst_user</cite> to <cite>None</cite>
+in such cases.
+Wrote some docstrings in module <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.auth</span></code>.
+New class <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.auth.AuthMiddleWareBase</span></code>.</p>
+</div>
+<div class="section" id="user-message-when-contract-type-empty">
+<h2>User message when contract type empty<a class="headerlink" href="#user-message-when-contract-type-empty" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>type</cite> field of
+<span class="xref std std-ref">welfare.isip.Contract</span>
+and
+<span class="xref std std-ref">welfare.jobs.Contract</span>
+is declared <cite>blank=True</cite> but <cite>null=False</cite>.
+Which is what we want:
+if the user submits an empty value for this field,
+Lino should fill a default value before saving it.
+But in some cases Lino cannot determine a default value.
+In this cases, the user saw only a message &#8220;Server-side failure&#8221;
+instead of something meaningful which says that she just forgot
+to fill in the &#8220;Contract type&#8221; field.
+<code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.isip.models.ContractBase</span></code>
+now raises ValidationErrror &#8220;You must specify a contract type.&#8221;
+Optimizations in
+:mod:lino.ui.views`
+and :mod:lino.ui.store`.</p>
+</div>
+<div class="section" id="pdf-table-doesn-t-always-render">
+<h2>.pdf table doesn&#8217;t always render<a class="headerlink" href="#pdf-table-doesn-t-always-render" title="Permalink to this headline">¶</a></h2>
+<p><span class="xref std std-ref">welfare.jobs.NewJobsOverview</span> implements the new user-requested
+layout and works very well... on <cite>hoppel</cite> and on <cite>lf.org</cite>,
+but <em>not</em> on <cite>weleup</cite>.</p>
+<p>Here is a table with some first observations:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="5%" />
+<col width="21%" />
+<col width="47%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">machine</th>
+<th class="head">ok</th>
+<th class="head">LO/OOo</th>
+<th class="head">OS</th>
+<th class="head">Python</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hoppel</td>
+<td>ok</td>
+<td>libreoffice</td>
+<td>Ubuntu</td>
+<td>2.7</td>
+</tr>
+<tr class="row-odd"><td>lf.org</td>
+<td>ok</td>
+<td>openoffice</td>
+<td>Debian Lenny stable</td>
+<td>2.6.6</td>
+</tr>
+<tr class="row-even"><td>dsbe</td>
+<td><ul class="first last simple">
+<li></li>
+</ul>
+</td>
+<td>libreoffice</td>
+<td>Debian Lenny stable</td>
+<td>2.6.6</td>
+</tr>
+</tbody>
+</table>
+<p>To gather more information I added a temporary call to <cite>logging.info</cite> in
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.appy_pod.html#lino.utils.appy_pod.Renderer.insert_table" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.utils.appy_pod.Renderer.insert_table()</span></code></a>.</p>
+<p>Ha! The problem had nothing to do with the LO or OOo version but
+with the fact that the production site wanted to render some italic
+text. And that wasn&#8217;t yet supported.
+Printing the document <span class="xref std std-ref">welfare.jobs.NewJobsOverview</span>
+caused a &#8220;NotImplementedError: &lt;i&gt; inside &lt;text:p&gt;&#8221; traceback
+when one of the jobs had a remark.</p>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.html2odf.html#module-lino.utils.html2odf" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.html2odf</span></code></a> now converts the text formats <cite>&lt;i&gt;</cite>
+and <cite>&lt;em&gt;</cite> to a style &#8220;Emphasis&#8221;.</p>
+<p>En passant:
+<cite>&lt;b&gt;</cite> is no longer converted to &#8220;Bold Text&#8221; but to &#8220;Strong Emphasis&#8221;.</p>
+<p>Added some remarks to the jobs generated by the
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.fixtures.demo</span></code> fixture,
+and a test case in <a class="reference external" href="http://welfare.lino-framework.org/tested/misc.html#welfare-tested-misc" title="(in Lino Welfare Reference Manual v1.1)"><span>Miscellaneous</span></a>
+so that this is now covered by the test suite.</p>
+<p>This testcase required a little change in EmptyTableRow:
+For Actions of an EmptyTable it wasn&#8217;t yet possible to access
+the <code class="xref py py-class docutils literal"><span class="pre">lino.core.actions.InstanceAction</span></code>.</p>
+</div>
+<div class="section" id="inaktive-kursanfragen">
+<h2>Inaktive Kursanfragen<a class="headerlink" href="#inaktive-kursanfragen" title="Permalink to this headline">¶</a></h2>
+<p>Wir brauchen kein neues Feld &#8220;Status&#8221; einer Kursanfrage,
+weil es das schon gibt:
+<span class="xref std std-ref">welfare.courses.CourseRequestStates</span></p>
+<p>Was fehlte, war ein weiterer Status &#8220;Inaktiv&#8221; und dass dass
+Feld nicht sichtbar war in der
+<span class="xref std std-ref">welfare.courses.PendingCourseRequests</span>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0424.html" title="20130424 (Wednesday, 24 April 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0422.html" title="20130422 (Monday, 22 April 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0423.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0423.html">Online Link</a>
+    </div>
+  </body>
+</html>

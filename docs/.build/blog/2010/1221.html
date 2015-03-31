@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101221 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101222" href="1222.html" />
+    <link rel="prev" title="20101220" href="1220.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1222.html" title="20101222"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1220.html" title="20101220"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101221<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Done:</p>
+<ol class="arabic">
+<li><p class="first">Vorbelegung <cite>Contract.user_asd</cite> von <cite>Person.user</cite>
+(zumindest wenn <cite>Person.user</cite> ein anderer als <cite>Contract.user</cite> ist).</p>
+</li>
+<li><p class="first">Upps, wenn man ins Detail einer Person gehen will, machte der Server
+&#8220;FieldError: Cannot resolve keyword &#8216;sort_name&#8217; into field. Choices are: ...&#8221;
+scheinbar hat <cite>QuerySet.values_list(&#8216;pk&#8217;,flat=True)</cite> ein Problem damit,
+dass ich auf einer virtuellen (mit <cite>extra</cite> erzeugten) Kolonne sortiere.
+Aber laut <a class="reference external" href="http://www.djangoproject.com/documentation/models/lookup/">http://www.djangoproject.com/documentation/models/lookup/</a>
+müsste das doch kein Problem sein?
+Ein Fehler war:
+wenn ich auf einer extra-Kolonne sortieren will, dann darf ich nicht
+das normale <cite>order_by</cite> benutzen, sondern das muss ich
+in <cite>extra(order_by=[&#8216;foo&#8217;]</cite> deklarieren.
+Aber das reicht noch nicht: siehe Ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/19">docs/tickets/19</a>.
+En attendant habe ich die Sortierung von Personen wieder auf den
+Standardwert (ASCII) gesetzt, also Kleinbuchstaben kommen wieder
+hinter den Großbuchstaben.</p>
+</li>
+<li><p class="first">Auswahllisten FR für aid_nature und aid_rate waren noch leer</p>
+</li>
+<li><p class="first">Development release in Eupen mit den obigen Änderungen.</p>
+</li>
+<li><p class="first">Außerdem habe ich auf dem Server in Eupen folgendes gemacht:</p>
+<div class="highlight-python"><div class="highlight"><pre>aptitude install sqlite3
+aptitude remove sqlite
+aptitude install python-pysqlite2
+</pre></div>
+</div>
+</li>
+<li><p class="first"><cite>Uncaught TypeError: Cannot read property &#8216;id&#8217; of undefined</cite>
+wenn man <span class="menuselection">Kontakte ‣ Firmen</span> wählt.
+Das lag daran, dass es eine lokale contacts.Companies.py gab,
+die noch das alte Feld <cite>addr1</cite> enthielt, das ja inzwischen <cite>addr2</cite> heißt.
+In so einem Fall sollte natürlich eine Fehlermeldung kommen
+statt mich eine halbe Stunde lag suchen zu lassen.</p>
+<p>Wenn ich schon daran arbeite, ändere ich auch das Format von py nach yaml.
+Wie ging das nochmal? Richtig:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">yaml</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">b</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="go">&#39;a: 1\nb: [1, 2, 3]\nc: null\n&#39;</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>15.08 Uhr. Voilà, die <cite>.py</cite>-Dateien im <cite>DATA_DIR</cite> können jetzt gelöscht werden.
+Stattdessen benutzt er jetzt <cite>.rpt</cite>-Dateien, die im YAML-Format geschrieben sind.
+Ich schätze mal, dass die leichter zu bearbeiten sind.</p>
+</li>
+<li><p class="first">Die folgenden beiden Probleme sind momentan nicht reproduzierbar:</p>
+</li>
+</ol>
+<blockquote>
+<div><ol class="arabic simple">
+<li>TypeError: Cannot convert Decimal(&#8220;350&#8221;) to Decimal wenn er <cite>Company.hourly_rate</cite>
+in einen Vertrag übernimmt.</li>
+<li>Nach dem Löschen eines Vertrags verschwindet dieser erst aus
+der Grid wenn man ein Refresh macht.
+Refresh wird nicht automatisch gemacht.</li>
+</ol>
+</div></blockquote>
+<ol class="arabic simple">
+<li>Upgrade ExtJS (to 3.3.1) and Django (to rev. 14995) in Eupen.</li>
+<li>Neue Methode <code class="xref py py-meth docutils literal"><span class="pre">Person.get_full_name()</span></code></li>
+</ol>
+<p>(Release)</p>
+<ol class="arabic simple">
+<li><cite>__unicode__</cite> in ContractType und ExamPolicy benutzen
+jetzt <cite>babelattr(self,&#8217;name&#8217;)</cite>.
+Mal sehen, ob das funktioniert.</li>
+<li><cite>Report.order_by</cite> muss jetzt eine Liste von Feldnamen sein und nicht mehr ein
+space-separated string. Sonst ist das zu irritierend für Leute, die Django
+kennen.</li>
+<li>Wenn man <cite>Contract.user_asd</cite> auf leer setzte, dann setzte Lino erneut den
+Standardwert (nämlich <cite>self.person.user</cite>) dort ein.
+Jetzt macht er das nur noch in <cite>on_create</cite>.
+Eigentlich müsste er es auch noch machen, wenn <cite>self.person</cite> verändert wurde.</li>
+</ol>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1222.html" title="20101222"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1220.html" title="20101220"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1221.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1221.html">Online Link</a>
+    </div>
+  </body>
+</html>

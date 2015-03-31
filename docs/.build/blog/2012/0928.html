@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120928 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120929" href="0929.html" />
+    <link rel="prev" title="20120927" href="0927.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0929.html" title="20120929"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0927.html" title="20120927"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120928<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="neuzugange">
+<h2>Neuzugänge<a class="headerlink" href="#neuzugange" title="Permalink to this headline">¶</a></h2>
+<p>Im Modul Neuzugänge wird langsam einiges klarer,
+nachdem Gerd und ich über Klienten-Workflows geredet haben.</p>
+<p>Die Liste &#8220;Neue Klienten&#8221; zeigt eine &#8220;andere&#8221; Liste von Klienten,
+speziell auf die Bedürfnisse der Neuantragsverwaltung zugeschnitten.
+Hat ein eigenes Parameter-Panel mit folgenden Optionen:</p>
+<ul class="simple">
+<li>auch abgewiesene Klienten</li>
+<li>auch veraltete Klienten</li>
+<li>neu begleitete Klienten seit</li>
+</ul>
+<p>Insbesondere auch einen Reiter &#8220;Neuzugänge&#8221;, in dem man eine Liste der
+verfügbaren Agenten für diesen Klienten sehen kann.
+Diese Tabelle hat eine Zeilenaktion &#8220;Attribute&#8221; (&#8220;Zuweisen&#8221;):
+momentan wird dann
+(1) ein Coaching erstellt und
+(2) der Status des Klienten auf &#8220;Begleitet&#8221; gesetzt.
+(TODO: auch Mails verschicken)</p>
+<p>Der Button &#8220;[Refuse]&#8221; (&#8220;Abweisen&#8221;) ist zwar schon da und versucht schon das
+Dialogfenster zur Eingabe der Begründung zu öffnen,
+aber dieses zerknallt bevor es überhaupt da ist:
+der entsprechende Code JS-wird z.B. momentan noch nicht mal generiert.</p>
+</div>
+<div class="section" id="kontaktpersonen-und-vertrage">
+<h2>Kontaktpersonen und Verträge<a class="headerlink" href="#kontaktpersonen-und-vertrage" title="Permalink to this headline">¶</a></h2>
+<p>Fallbeispiel:
+Bei Firma Soundso wechselt der Direktor.
+In den Kontaktpersonen der Firma wollen wir den alten Direktor nicht mehr sehen.
+Aber es gibt Verträge, bei denen der die Firma vertritt.
+Diese Situation war bisher nicht gut gehandhabt.
+Man musste eine neue Kontaktperson anlegen und durfte den alten Direktor nicht löschen.
+Und oops: wenn man in der bestehenden Kontaktperson die Person änderte,
+wurde der alte Direktor auch in bestehenden Verträgen rückwirkend ersetzt.
+Nicht sehr legal...</p>
+<p>Deshalb ersetzen wir
+<code class="xref py py-class docutils literal"><span class="pre">CompanyContact</span></code>
+durch das neue Mixin
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.contacts.models.ContactRelated</span></code>.
+En passant (wo wir ja jetzt doch migrieren müssen) benennen
+wir das Feld <cite>person</cite> nach <cite>client</cite> um.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="21%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Vorher</th>
+<th class="head">Nachher</th>
+<th class="head">&nbsp;</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>company</td>
+<td>company</td>
+<td>die Firma</td>
+</tr>
+<tr class="row-odd"><td>person</td>
+<td>client</td>
+<td>der Klient</td>
+</tr>
+<tr class="row-even"><td>contact</td>
+<td>get_contact()</td>
+<td>der Record aus der Tabelle Firmenkontakte</td>
+</tr>
+<tr class="row-odd"><td>contact.person</td>
+<td>contact_person</td>
+<td>die vertretende Person</td>
+</tr>
+<tr class="row-even"><td>contact.type</td>
+<td>contact_role</td>
+<td>die Rolle (&#8220;Direktor&#8221;)</td>
+</tr>
+</tbody>
+</table>
+<p>This change caused a new challenge for migrating the database.
+The natural approach would be something like:</p>
+<div class="highlight-python"><div class="highlight"><pre>def find_contact(contact_id):
+    try:
+        return contacts_Role.objects.get(pk=contact_id)
+    except contacts_Role.DoesNotExist:
+        return None
+
+def create_isip_contract(id, user_id, ...):
+    contact = find_contact(contact_id)
+    return isip_Contract(id=id,...
+      client_id=person_id,
+      company_id=company_id,
+      contact_person=contact.person,
+      contact_role=contact.type,
+      #~ contact_id=contact_id,
+      language=language,...)
+</pre></div>
+</div>
+<p>But that fails because
+the contacts.Role entries aren&#8217;t guaranteed to exist
+when a person is being deserialized.</p>
+<p>The most elegant solution seems a way to add
+a possibility of specifying custom code per instance
+to be run from
+<code class="xref py py-meth docutils literal"><span class="pre">lino.utils.dumpy.FakeDeserializedObject.try_save()</span></code>.
+to <cite>before_dumpy_save</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>def add_contact_fields(obj,contact_id):
+    def fn():
+        contact = find_contact(contact_id)
+        obj.contact_person=contact.person
+        obj.contact_role=contact.type
+    return fn
+
+def create_isip_contract(id, user_id, build_time, person_id, company_id, contact_id, language, applies_from, applies_until, date_decided, date_issued, user_asd_id, exam_policy_id, ending_id, date_ended, type_id, stages, goals, duties_asd, duties_dsbe, duties_company, duties_person):
+    obj = isip_Contract(id=id,...
+      client_id=person_id,
+      company_id=company_id,
+      #~ contact_id=contact_id,
+      language=language,...)
+    obj.before_dumpy_save = add_contact_fields(obj,contact_id)
+    return obj
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0929.html" title="20120929"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0927.html" title="20120927"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0928.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0928.html">Online Link</a>
+    </div>
+  </body>
+</html>

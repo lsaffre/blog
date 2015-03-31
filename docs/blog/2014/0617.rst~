@@ -1,0 +1,41 @@
+======================
+Tuesday, June 17, 2014
+======================
+
+Before starting to work on :doc:`/tickets/110` I'd like to do an
+official release on PyPI of the current version of Lino,
+:ref:`welfare`, :ref:`cosi` & Co.  And also :ref:`faggio`.  Before
+this it would be good to do an upgrade for Roger who will soon
+reactivate.
+
+This upgrade needs a decision:
+(1) convert :ref:`faggio` to use :mod:`ml.excerpts`
+or (2) convert :mod:`ml.excerpts` to be optional?
+
+The :mod:`ml.excerpts` module seems a great concept which will be of
+wide use. But (1) Roger did not ask for it, (2) it is annoying for
+that I must now care about database migration.
+
+I must care about database migration because :mod:`ml.cal` and
+:mod:`ml.notes` *did* convert to use :mod:`ml.excerpts`. It is a bit
+suboptimal for the :ref:`faggio` users when :mod:`ml.courses` does
+*not* use it.
+
+The (2) alternative above means that I see a strategic injustice: two
+modules (:mod:`ml.cal` and :mod:`ml.notes`) *force* an application
+(:ref:`faggio`) to use a given new module (:mod:`ml.excerpts`). While
+this is okay in the given case (for Faggio it is anyway a good thing),
+this is fundamentally wrong.  I don't yet see a solution for it.  It
+comes because the choice of using :mod:`ml.excerpts` is done per app
+and not per application: All "printable" objects must inherit either
+from :class:`ml.excerpts.Certifiable` or from
+:class:`lino.mixins.printable.BasePrintable` Resolution: this
+conversion can wait. It is not such a big catastrophe that
+:class:`ml.courses.Topic` :class:`ml.courses.Course` and
+:class:`ml.courses.Enrolment` are still printable instead of
+certifiable.
+
+
+But I must still fix at least one problem in :ref:`faggio` which comes
+because I stopped to inject a `course` field into
+:class:`ml.cal.Event`.

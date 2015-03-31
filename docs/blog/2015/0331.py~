@@ -1,0 +1,33 @@
+from lino.api.shell import *
+from lino.utils import i2d
+from lino.core.utils import PseudoRequest, ChangeWatcher
+
+# rt.show(pcsw.ClientStates)
+
+former = pcsw.ClientStates.former
+# refused = pcsw.ClientStates.refused
+
+qs = pcsw.Coaching.objects.filter(
+   client__client_state=former, end_date__isnull=True)
+
+print qs.count(), "unbeendete Begleitungen auf Ehemaligen"
+
+clients = dict()
+for o in qs:
+    lst = clients.setdefault(o.client.id, [])
+    lst.append(o)
+
+print len(clients), "Klienten"
+print "Davon Klienten mit mehr als einer Begleitung:"
+for lst in clients.values():
+    if len(lst) != 1:
+        print "-", lst[0].client, ":", [o.user for o in lst]
+
+REQUEST = PseudoRequest("lsaffre")
+
+for obj in qs:
+    md = obj.client.modified.date()
+    cw = ChangeWatcher(o)
+    obj.full_clean()
+    obj.save()
+    cw.send_update(REQUEST)

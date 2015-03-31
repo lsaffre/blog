@@ -1,0 +1,41 @@
+===========================
+Thursday, February 19, 2015
+===========================
+
+I discovered a layout problem in the insert window of
+:class:`aids.IncomeConfirmationsByGranting
+<lino_welfare.modlib.aids.models.IncomeConfirmationsByGranting>`: all
+form fields except `remark` are hidden.  That's a side effect of
+another new feature from some days ago (hidden form fields).
+
+Before solving the problem itself I thought that this was the occasion
+to try `WeasyPrint <http://weasyprint.org>`_:
+
+>>> url = '/api/pcsw/Clients/-99999?an=insert'
+>>> res = test_client.get(url, REMOTE_USER='rolf')
+>>> res.status_code
+200
+>>> html = res.content
+>>> from weasyprint import HTML, CSS
+>>> css = CSS(string='body { font-family: serif !important }')
+>>> outfile = 'tmp.png'
+>>> HTML(string=html).write_png(outfile, stylesheets=[css])
+
+That would have been a cool thing for generating screenshots and
+testing them. But it was of course utopic: the `<body>` of a normal
+Lino html page is empty because it uses ExtJS. It works using a
+javascript `<script>` tag which defines an `Ext.onReady` handler::
+
+    <script type="text/javascript">
+        Ext.onReady(function() {
+            ...
+            Lino.viewport.render("body");
+            Lino.pcsw.Clients.insert.run(null,...)
+        }); // end of onReady()"
+    </script></head>
+
+No... this shows again that we need `phantomjs
+<http://phantomjs.org>`_ if we want to generate screenshots. I once
+started this in :mod:`makescreenshots
+<lino.management.commands.makescreenshots>`, but as far as I remember
+there was a problem with getting them to play fair in a batch process.

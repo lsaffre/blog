@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130507 (Tuesday, 07 May 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130508 (Wednesday, 08 May 2013)" href="0508.html" />
+    <link rel="prev" title="20130506 (Monday, 06 May 2013)" href="0506.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0508.html" title="20130508 (Wednesday, 08 May 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0506.html" title="20130506 (Monday, 06 May 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-07-may-2013">
+<h1>20130507 (Tuesday, 07 May 2013)<a class="headerlink" href="#tuesday-07-may-2013" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Worked on the docstring of <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.accounts.utils.html#module-lino.modlib.accounts.utils" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.accounts.utils</span></code></a>.</li>
+<li>Adapted the test suite to yesterdays&#8217;s changes (new column <cite>bailiff</cite>
+in in <span class="xref std std-ref">welfare.debts.Entries</span>.</li>
+</ul>
+<div class="section" id="cannot-resolve-keyword-watched-user-into-field">
+<h2>Cannot resolve keyword &#8216;watched_user&#8217; into field<a class="headerlink" href="#cannot-resolve-keyword-watched-user-into-field" title="Permalink to this headline">¶</a></h2>
+<p>A request to
+<cite>/restful/cal/PanelEvents?sd=05.05.2013&amp;ed=11.05.2013&amp;tv=true</cite>
+(i.e. clicking the &#8220;Team View&#8221; button in the calendar panel)
+caused a FieldError
+&#8220;Cannot resolve keyword &#8216;watched_user&#8217; into field.
+Choices are: id, team, user&#8221;.</p>
+<p>The bug was there since <a class="reference external" href="oops">2013-03-20</a>.</p>
+<p>Fixing the bug is easy, but how to write a testcase for this?</p>
+<p>This is the occasion for a new style of test cases:
+test cases that uses a <cite>django.test.Client</cite>,
+but <em>on the project demo database</em>
+(and <em>not</em> on a test database as the Django test runner creates it).
+The advantage is that they access the existing demo database
+and thus don&#8217;t need to populate it (load the demo fixtures)
+for each test run.</p>
+<p>One limitation of these cases is of course that they may
+not modify the database.</p>
+<p>It took me some time to understand how easy it actually is:
+I just wrote a module <cite>lino.projects.presto.settings.doctest</cite>,
+then wrote the following code snippet directly into my blog entry:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;lino.projects.presto.settings.doctests&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.api.shell</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;/restful/extensible/PanelEvents?sd=05.05.2013&amp;ed=11.05.2013&amp;tv=true&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">REMOTE_USER</span><span class="o">=</span><span class="s">&#39;robin&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span>
+<span class="go">200</span>
+</pre></div>
+</div>
+<p>To run this test, I added the following to the
+project test suite:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">BlogTest</span><span class="p">(</span><span class="n">LinoTestCase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">test_20130507</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_simple_doctests</span><span class="p">(</span><span class="s">&#39;docs/blog/2013/0507.rst&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The effect is that
+<cite>python setup.py test</cite>
+or
+<cite>python setup.py test -s tests.BlogTest.test_20130507</cite>
+will test the above code.</p>
+<p>Writing this test case took me several hours
+(because as i said this was a new system),
+but then I fixed the bug in a few minutes.</p>
+<p>Because the <code class="xref py py-meth docutils literal"><span class="pre">run_simple_doctests</span></code>
+is run in a separate subprocess, it has its own
+Python interpreter and thus I can use it for as many Django projects
+as I want (one project per .rst file).</p>
+<p>Now I can remove the following item from my todo list...</p>
+<ul class="simple">
+<li>write unit tests to test the bootstrap ui.
+The best place would be a tested document with a Django test client.
+But how to instantiate a Django test client from a testcase which
+does <em>not</em> use a test database but the project&#8217;s demo database?</li>
+</ul>
+<p>... by writing a few lines of code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">url</span> <span class="o">=</span> <span class="s">&#39;/bs3/products/Products&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">REMOTE_USER</span><span class="o">=</span><span class="s">&#39;robin&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">res</span><span class="o">.</span><span class="n">status_code</span>
+<span class="go">200</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="new-version-numbers">
+<h2>New version numbers<a class="headerlink" href="#new-version-numbers" title="Permalink to this headline">¶</a></h2>
+<p>The release of <a class="reference external" href="oops">2013-05-05</a> is now a few days in production,
+time to increase the version numbers.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="62%" />
+<col width="19%" />
+<col width="19%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Project</th>
+<th class="head">Old version</th>
+<th class="head">New version</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference external" href="http://atelier.lino-framework.org">atelier</a> &#8211; A collection of
+tools for software artists</td>
+<td>0.0.1</td>
+<td>0.0.2</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="http://site.lino-framework.org">djangosite</a> &#8211; A server startup
+signal for Django</td>
+<td>0.1.3</td>
+<td>0.1.4</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="http://north.lino-framework.org">north</a> &#8211; Another way to
+migrate Django databases</td>
+<td>0.1.3</td>
+<td>0.1.4</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="http://www.lino-framework.org">lino</a>
+&#8211; A framework for writing desktop-like
+web applications using Django and ExtJS</td>
+<td>1.6.6</td>
+<td>1.6.7</td>
+</tr>
+<tr class="row-even"><td><a class="reference external" href="http://welfare.lino-framework.org">lino_welfare</a> &#8211; A Lino application
+for Belgian Public Welfare Centres</td>
+<td>1.1.3</td>
+<td>1.1.4</td>
+</tr>
+<tr class="row-odd"><td><a class="reference external" href="http://patrols.lino-framework.org">lino_patrols</a> &#8211; A Lino application
+for managing patrols</td>
+<td>0.0.1</td>
+<td>0.0.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="virtualbox-windows-guest-cannot-see-shared-folders">
+<h2>VirtualBox Windows guest cannot see shared folders<a class="headerlink" href="#virtualbox-windows-guest-cannot-see-shared-folders" title="Permalink to this headline">¶</a></h2>
+<p>I discovered the solution for one problem:
+I had the network adapter configured as &#8220;NAT&#8221;, but what
+I wanted was &#8220;Bridged&#8221;.</p>
+<p>The other problem remains: the Windows guest doesnt see any
+host named &#8220;vboxsrv&#8221;.</p>
+<p>Observation: The services manager says that &#8220;VirtualBox Guest Additions Service&#8221; ist not started.
+And when I start it, it says &#8220;Could not start the VirtualBox Guest Additions Service service on Local Computer.
+Error 1053: The service did not respond to the start or control request in a timely fashion.&#8221;</p>
+<p>Edit 20130509 : the solution for this was to find two virtual devices
+in Windows device manager which were disabled. Enable them, then
+restart the VM.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0508.html" title="20130508 (Wednesday, 08 May 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0506.html" title="20130506 (Monday, 06 May 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0507.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0507.html">Online Link</a>
+    </div>
+  </body>
+</html>

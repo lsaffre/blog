@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120710 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120711" href="0711.html" />
+    <link rel="prev" title="20120709" href="0709.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0711.html" title="20120711"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0709.html" title="20120709"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120710<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="dumpdata-and-userprofiles">
+<h2>dumpdata and UserProfiles<a class="headerlink" href="#dumpdata-and-userprofiles" title="Permalink to this headline">¶</a></h2>
+<p>Because Django&#8217;s <cite>dumpdata</cite> command doesn&#8217;t call <code class="xref py py-meth docutils literal"><span class="pre">lino.Lino.startup()</span></code>, it says:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;manage.py&quot;, line 19, in &lt;module&gt;
+    execute_manager(settings)
+  File &quot;/var/snapshots/django/django/core/management/__init__.py&quot;, line 442, in execute_manager
+    utility.execute()
+  File &quot;/var/snapshots/django/django/core/management/__init__.py&quot;, line 379, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/var/snapshots/django/django/core/management/base.py&quot;, line 191, in run_from_argv
+    self.execute(*args, **options.__dict__)
+  File &quot;/var/snapshots/django/django/core/management/base.py&quot;, line 220, in execute
+    output = self.handle(*args, **options)
+  File &quot;/var/snapshots/django/django/core/management/commands/dumpdata.py&quot;, line 110, in handle
+    objects.extend(model._default_manager.using(using).all())
+  File &quot;/var/snapshots/django/django/db/models/query.py&quot;, line 84, in __len__
+    self._result_cache.extend(self._iter)
+  File &quot;/var/snapshots/django/django/db/models/query.py&quot;, line 286, in iterator
+    obj = model(*row[index_start:aggregate_start])
+  File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 300, in __init__
+    setattr(self, field.attname, val)
+  File &quot;/var/snapshots/django/django/db/models/fields/subclassing.py&quot;, line 34, in __set__
+    obj.__dict__[self.field.name] = self.field.to_python(value)
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/utils/choicelists.py&quot;, line 450, in to_python
+    return self.choicelist.to_python(value)
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/utils/choicelists.py&quot;, line 316, in to_python
+    raise Exception(&quot;Unresolved value %r for %s&quot; % (value,cls))
+Exception: Unresolved value u&#39;200&#39; for &lt;class &#39;lino.core.perms.UserProfiles&#39;&gt;
+</pre></div>
+</div>
+<p>That&#8217;s why Lino now includes an override of that
+command: <code class="xref py py-mod docutils literal"><span class="pre">lino.management.commands.dumpdata</span></code>.</p>
+</div>
+<div class="section" id="database-change-in-lino-modlib-cal">
+<h2>Database change in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a><a class="headerlink" href="#database-change-in-lino-modlib-cal" title="Permalink to this headline">¶</a></h2>
+<p>This is to be considered an experiment:</p>
+<ul class="simple">
+<li>removed cal.EventType (functionally replaced by cal.Calendar)</li>
+<li>Calender is no longer UserAuthored</li>
+<li>Calendar Events and Tasks no longer <em>need</em> to have a &#8216;calender&#8217;</li>
+</ul>
+</div>
+<div class="section" id="kalender">
+<h2>Kalender<a class="headerlink" href="#kalender" title="Permalink to this headline">¶</a></h2>
+<p>Eine prinzipielle Entscheidung ist für mich gefallen:
+die experimentelle Änderung von dieser Nacht bleibt.
+Es gibt nicht einen Kalender pro Benutzer, sondern einen pro Terminart.
+Denn auch in der Demo von Ext.ensible benutzen sie
+die verschiedenen Kalender zum Differenzieren von Terminarten
+(nicht von Benutzern):
+<a class="reference external" href="http://ext.ensible.com/deploy/dev/examples/calendar/TestApp/test-app.html">http://ext.ensible.com/deploy/dev/examples/calendar/TestApp/test-app.html</a></p>
+<p>Das Verwalten von Gruppenterminen fängt jetzt an:</p>
+<ul class="simple">
+<li>CalendarPanel hat jetzt einen Button &#8220;Team View&#8221;, der
+zwischen &#8220;Meine Termine&#8221; und &#8220;Team-Ansicht&#8221; umschaltet.</li>
+<li>Kalenderliste wird momentan für alle Benutzer die gleiche genommen.
+Braucht man nicht zu abonnieren.
+Dafür muss man sein &#8220;Team&#8221; definieren: eine Liste aller anderen
+Benutzer,  deren Termine man in der Team-Ansicht sehen möchte.</li>
+<li>Die Workflow-Buttons für Gäste eines Termins funktionierten noch nicht.</li>
+<li>Neue Tabellen:<ul>
+<li>MyInvitations (Meine Einladungen) : alle Einladungen, die ich erhalten habe.
+Das sind alle Einträge, wo ich als Gast eines Termins vorkomme.</li>
+<li>MyPendingInvitations (Meine offenen Einladungen) : idem, aber diesmal
+nur die Einladungen die im Status &#8220;zu bestätigen&#8221; sind.
+Hier sollte man normalerweise auf &#8220;Bestätigen&#8221; klicken, damit der
+Verantwortliche des Termins</li>
+<li>MySentInvitations</li>
+<li>MyPendingSentInvitations</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Setting a column filter on a ForeignKey field didn&#8217;t work on
+all models. Now it uses exactly like the quick search field of a table on that model would work
+Using <code class="xref py py-attr docutils literal"><span class="pre">lino.core.modeltools.Model.quick_search_fields</span></code>
+of the foreign model. Works fine. It&#8217;s now also possible to search for a primary key.</li>
+<li>Offene Kursabfragen war nur für Manager sichtbar.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0711.html" title="20120711"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0709.html" title="20120709"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0710.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0710.html">Online Link</a>
+    </div>
+  </body>
+</html>

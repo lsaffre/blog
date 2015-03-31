@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110928 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110929" href="0929.html" />
+    <link rel="prev" title="20110923" href="0923.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0929.html" title="20110929"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0923.html" title="20110923"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110928<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="swapping-notetype-and-eventtype">
+<h1>Swapping NoteType and EventType<a class="headerlink" href="#swapping-notetype-and-eventtype" title="Permalink to this headline">¶</a></h1>
+<p>Die Felder <cite>Kontruktionsmethode</cite> und <cite>Vorlage</cite> (die den Ausdruck bestimmen)
+müssen aus der Notizart rüber zur Ereignisart.
+Oder anders gesagt: der Inhalt beider Tabellen muss ausgetauscht
+werden.</p>
+<p>Anschließend muss lediglich der Lebenslauf manuell aus der Liste
+&#8220;Form&#8221; in die Liste &#8220;Inhalt&#8221; verschoben werden.</p>
+<p>Die Benutzer werden diese Änderung gar nicht bemerken.</p>
+<ul>
+<li><p class="first">notes.Note : <cite>verbose_name</cite> changed:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="38%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Field</th>
+<th class="head">before</th>
+<th class="head">after</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><cite>type</cite></td>
+<td>Note Type (Form)</td>
+<td>Note Type (Content)</td>
+</tr>
+<tr class="row-odd"><td><cite>event_type</cite></td>
+<td>Event Type (Content)</td>
+<td>Event Type (Form)</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li><p class="first">notes.NoteType is now also a <cite>babel.BabelNamed</cite>.</p>
+</li>
+<li><p class="first">Adapted <code class="xref py py-func docutils literal"><span class="pre">lino.apps.dsbe.migrate.migrate_from_1_2_2()</span></code></p>
+</li>
+</ul>
+<div class="section" id="error-contact-with-this-id-already-exists">
+<h2>ERROR: &#8216;Contact with this ID already exists.&#8217;<a class="headerlink" href="#error-contact-with-this-id-already-exists" title="Permalink to this headline">¶</a></h2>
+<p>This happened in <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> when
+<cite>PAR.swap_class</cite> was called (i.e. when TIM data was
+modified so that a Person became a Company or vice-versa).
+This bug was due to <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/48">docs/tickets/48</a> (since <a class="reference external" href="http://code.google.com/p/lino/source/browse/docs/blog/2011/0822.rst">2011-08-22</a>).</p>
+<p>When fixing this bug I fixed a related bug that wasn&#8217;t yet discovered:
+When a a Person became a Company or vice-versa, then all related data in Lino
+(e.g. contact persons) were <em>deleted</em>.
+Now a swapping will delete only the data that needs to be deleted
+(i.e. person specific data when a person becomes a company).</p>
+</div>
+<div class="section" id="preparing-release-1-2-3">
+<h2>Preparing release 1.2.3<a class="headerlink" href="#preparing-release-1-2-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Adapted <code class="xref py py-func docutils literal"><span class="pre">lino.apps.dsbe.migrate.migrate_from_1_2_2()</span></code>
+to the changes of <a class="reference external" href="http://code.google.com/p/lino/source/browse/docs/blog/2011/0915.rst">2011-09-15</a>.</li>
+</ul>
+</div>
+<div class="section" id="disable-fields-in-imported-contacts">
+<h2>Disable fields in imported Contacts<a class="headerlink" href="#disable-fields-in-imported-contacts" title="Permalink to this headline">¶</a></h2>
+<p>The following todo was more challenging than one could expect:</p>
+<ul class="simple">
+<li><span class="menuselection">Kontakte ‣ Alle Kontakte</span>:
+in dieser Liste konnte man bisher auch importierte Partner
+bearbeiten. Behoben.</li>
+</ul>
+<p>We had to redefine a Report <cite>dsbe.AllContacts</cite> to install the
+application specific behaviour for disabled_fields.</p>
+<p>There was a bug, too:
+when <cite>disabled_fields</cite> was defined on a <em>Report</em> (not on the Model),
+then the method was called with the wrong parameter order.</p>
+<p>It wasn&#8217;t yet possible to disable virtual fields. Now it is.</p>
+<p>Another undiscovered bug: The <cite>id</cite> field of a Company or Person
+gets never disabled. A request
+<a class="reference external" href="http://localhost:8080/api/contacts/Companies/199233?an=detail&amp;fmt=json">http://localhost:8080/api/contacts/Companies/199233?an=detail&amp;fmt=json</a>
+returns the following value for <cite>disabled_fields</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span> <span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;remarks&quot;</span><span class="p">,</span> <span class="s">&quot;zip_code&quot;</span><span class="p">,</span> <span class="s">&quot;city&quot;</span><span class="p">,</span> <span class="s">&quot;country&quot;</span><span class="p">,</span> <span class="s">&quot;street&quot;</span><span class="p">,</span> <span class="s">&quot;street_no&quot;</span><span class="p">,</span>
+<span class="s">&quot;street_box&quot;</span><span class="p">,</span> <span class="s">&quot;language&quot;</span><span class="p">,</span> <span class="s">&quot;vat_id&quot;</span><span class="p">,</span> <span class="s">&quot;phone&quot;</span><span class="p">,</span> <span class="s">&quot;fax&quot;</span><span class="p">,</span> <span class="s">&quot;email&quot;</span><span class="p">,</span>
+<span class="s">&quot;bank_account1&quot;</span><span class="p">,</span> <span class="s">&quot;bank_account2&quot;</span><span class="p">,</span> <span class="s">&quot;activity&quot;</span><span class="p">,</span>
+<span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span>
+<span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span>
+<span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span>
+<span class="s">&quot;contact_ptr&quot;</span><span class="p">,</span> <span class="s">&quot;contact_ptr&quot;</span> <span class="p">]</span>
+</pre></div>
+</div>
+<p>Note that there was one &#8220;contact_ptr&#8221; added at each request.
+This bug is fixed.
+But the <cite>id</cite> field is still not disabled.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0929.html" title="20110929"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0923.html" title="20110923"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0928.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0928.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111114 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111115" href="1115.html" />
+    <link rel="prev" title="20111112" href="1112.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1115.html" title="20111115"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1112.html" title="20111112"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111114<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="choice-lists">
+<h2>Choice Lists<a class="headerlink" href="#choice-lists" title="Permalink to this headline">¶</a></h2>
+<p>Choice Lists had a design flaw: they used <cite>babel.BabelText</cite>
+instances to store the items, but it is better to use simple
+translatable strings (<cite>gettext_lazy</cite>) and Django&#8217;s translation
+machine.
+All currently existing choicelists have been converted:</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.CefLevel</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.mails.utils.DurationUnit</span></code></li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.utils.html#lino.modlib.cal.utils.DurationUnit" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.utils.DurationUnit</span></code></a></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.utils.choicelists.HowWell</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.utils.choicelists.HowMuch</span></code></li>
+</ul>
+</div>
+<div class="section" id="data-fields-sex-renamed-to-gender">
+<h2>Data fields <cite>sex</cite> renamed to <cite>gender</cite><a class="headerlink" href="#data-fields-sex-renamed-to-gender" title="Permalink to this headline">¶</a></h2>
+<p>The new choicelist
+<code class="xref py py-class docutils literal"><span class="pre">lino.utils.choicelists.Gender</span></code>
+is now being used
+to create the <cite>gender</cite> fields in
+<code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.Person</span></code>
+and <code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.PersonSearch</span></code>.
+Unit test cases and fixtures have been adapted.
+One advantage is that Lino no longer accepts
+a simple &#8216;M&#8217; as valid value on a gender field.
+User code must import the <cite>Gender</cite> choicelist
+and use the &#8220;constants&#8221; defined there.</p>
+</div>
+<div class="section" id="calendar-statuses-now-configurable">
+<h2>Calendar statuses now configurable<a class="headerlink" href="#calendar-statuses-now-configurable" title="Permalink to this headline">¶</a></h2>
+<p>The following new models replace the formerly
+used choice list of same name.
+It became clear from recent user
+interviews that these lists cannot be hard-coded.</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.TaskStatus</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.EventStatus</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.AccessClass</span></code></li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models.html#lino.modlib.cal.models.Priority" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.Priority</span></code></a></li>
+</ul>
+<p>The previously hard-coded values are now in a
+new fixture <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.fixtures.std.html#module-lino.modlib.cal.fixtures.std" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal.fixtures.std</span></code></a></p>
+<p>Note:
+What is the plural of &#8220;Status&#8221;?
+Answer: &#8220;Statuses&#8221;. At least in English.
+But in German the official plural form is &#8220;Status&#8221;,
+written like the singular form and pronounced with a long &#8220;u&#8221;.
+That&#8217;s why I&#8217;m going to translate &#8220;Status&#8221; by &#8220;Zustand&#8221;
+which has a better plural form.</p>
+</div>
+<div class="section" id="bcss-connection">
+<h2>BCSS connection<a class="headerlink" href="#bcss-connection" title="Permalink to this headline">¶</a></h2>
+<p>Worked on <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.bcss.models</span></code> to explore the BCSS functionality:</p>
+<p>There were two problems in
+<code class="xref py py-meth docutils literal"><span class="pre">IdentifyPersonRequest.build_service()</span></code>:</p>
+<ul class="simple">
+<li>a simple bug:
+if national_id known, it filled both LastName and FirstName with the person&#8217;s <cite>last_name</cite>.</li>
+<li>if national_id and birth_date empty,
+the reply said
+&#8220;An error occurred during the parsing of the request body. Please check your message format.&#8221;
+and
+&#8220;Uncompleted content model. expecting: &lt;BirthDate&gt;,&lt;MiddleName&gt;&#8221;.
+Seems that in the MiddleName element in PhoneticSearch must be present even if it is empty.
+These are probably the kind of things which <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-generateds" title="(in Lino v1.6)"><span class="xref std std-term">generateDS</span></a> would detect already when
+generating the XML.</li>
+</ul>
+<p>More changes:</p>
+<ul class="simple">
+<li>enhanced <code class="xref py py-meth docutils literal"><span class="pre">RequestStatus.execute_request()</span></code></li>
+<li>new field <code class="xref py py-attr docutils literal"><span class="pre">BCSSRequest.status</span></code></li>
+<li>new choicelist  <code class="xref py py-class docutils literal"><span class="pre">RequestStatus</span></code></li>
+<li>new utility functions
+<code class="xref py py-func docutils literal"><span class="pre">lino.utils.bcss.reply2lines()</span></code>
+and <code class="xref py py-func docutils literal"><span class="pre">lino.utils.bcss.xml2reply()</span></code></li>
+</ul>
+<p>Check-in 20111114b at 23:41, time to go to bed. TODO:</p>
+<dl class="docutils">
+<dt><a class="reference external" href="http://127.0.0.1:8000/api/contacts/Persons/117?query=&amp;an=detail&amp;tab=11">http://127.0.0.1:8000/api/contacts/Persons/117?query=&amp;an=detail&amp;tab=11</a></dt>
+<dd><ul class="first last simple">
+<li>non-editable fields are not shown in a grid</li>
+<li>console message about disabled_actions doesn&#8217;t appear</li>
+</ul>
+</dd>
+</dl>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1115.html" title="20111115"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1112.html" title="20111112"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1114.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1114.html">Online Link</a>
+    </div>
+  </body>
+</html>

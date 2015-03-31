@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100208 Arbeitsbericht &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0211.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0207.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0211.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0207.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="arbeitsbericht">
+<h1>20100208 Arbeitsbericht<a class="headerlink" href="#arbeitsbericht" title="Permalink to this headline">¶</a></h1>
+<p>Heute habe ich zuerst mal in den Tests weiter aufgeräumt. Die waren ja nicht mehr zu gebrauchen. Der Impuls dazu war, dass ich für <cite>lino.modlib.properties</cite> wohl am besten mit ein paar ordentlichen Tests beginne.</p>
+<hr class="docutils" />
+<p>Wieso erkennt der Testrunner den docstring von <cite>lino.modlib.properties.modules</cite> nicht als Test? Neue <cite>lino.test_apps.properties</cite> und docstring dort rein. Das wäre sowieso bald nötig geworden, weil ich zum Testen eine weitere Tabelle brauche. Aber Hackerzacker, auch dort findet er ihn nicht! Wie kommt denn das? Liegt es etwa daran, dass ich in <cite>settings.INSTALLED_APPS</cite> zwei Applications habe, die auf <cite>&#8216;.properties&#8217;</cite> enden? Nein. Liegt es an der Indentierung der Testsequenzen? Vielleicht. Aber der Fehler ist plötzlich wieder verschwunden, ohne dass ich wüsste, wie ich das gemacht habe... Ich schätze mal, das liegt mal wieder daran, dass Djangos Testrunner eine abgespeckte eingefrorene Version von doctests hat (Siehe [<a class="reference external" href="http://lsaffre.blogspot.com/2009/10/when-your-django-doctests-never-fail.html">http://lsaffre.blogspot.com/2009/10/when-your-django-doctests-never-fail.html</a> 20091015]). Hier noch was, das dieser alte Testrunner nicht verträgt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">favdish</span><span class="o">.</span><span class="n">create_values</span><span class="p">(</span><span class="s">&quot;Cookies</span><span class="se">\n</span><span class="s">Fish</span><span class="se">\n</span><span class="s">Meat</span><span class="se">\n</span><span class="s">Vegetables&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Er sagt dann:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">favdish</span><span class="o">.</span><span class="n">create_values</span><span class="p">(</span><span class="s">&quot;&quot;&quot;Cookies</span>
+<span class="go">                                       ^</span>
+<span class="go">SyntaxError: invalid syntax</span>
+</pre></div>
+</div>
+<p>Das Gleiche sagt er, wenn ich es umformuliere:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">favdish</span><span class="o">.</span><span class="n">create_values</span><span class="p">(</span><span class="s">&quot;&quot;&quot;Cookies</span>
+<span class="gp">... </span><span class="s">  Fish</span>
+<span class="gp">... </span><span class="s">  Meat</span>
+<span class="gp">... </span><span class="s">  Vegetables&quot;&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Also die neue Methode <cite>.create_value()</cite> habe ich wegen des doofen Testrunners auslagern müssen.  Ich geb aber zu, dass meine <cite>.create_values()</cite>, die einen mehrzeiligen String erwartet, nicht unbedingt die eleganteste API ist (aber bequem in dpy-fixtures).</p>
+<p>Aber weiter mit den Tests für <cite>lino.modlib.properties</cite> (die also jetzt
+[<a class="reference external" href="http://code.google.com/p/lino/source/browse/src/lino/test_apps/properties/models.py">http://code.google.com/p/lino/source/browse/src/lino/test_apps/properties/models.py</a> hier] stehen).</p>
+<p>Habe begonnen, <cite>Report.as_text()</cite> wieder ans Laufen zu bringen. Aber das ist relativ viel Arbeit. Das lass ich vorerst mal offen, denn es gibt Wichtigeres zu tun.</p>
+<p><cite>properties.PropValuesByOwner().get_queryset(fred)</cite> kann momentan nicht funktionieren, weil <cite>Report.model</cite> keine abstrakte Klasse sein darf. Ich könnte freilich <cite>PropValue.Meta.abstract</cite> ausschalten, aber dann hätte ich für jeden einzelnen Wert einer jeden Eigenschaft zwei Records in zwei verschiedenen Tabellen. Neues Issue 101 (Reports on abstract models).</p>
+<hr class="docutils" />
+<p>Ich frage mich, ob ich mit meinem <cite>lino.modlib.properties</cite> nicht das Rad neu am erfinden bin. Aber Google meldet zu &#8220;django generic properties&#8221; nichts Interessantes. Das Wort &#8220;generic&#8221; wird in Django meistens im Kontext von &#8220;generic views&#8221; benutzt, die mit properties nichts zu tun. Und bei &#8220;properties&#8221; denken die meisten Django-Benutzer an Python properties. Höchstens
+[<a class="reference external" href="http://code.djangoproject.com/ticket/6818">http://code.djangoproject.com/ticket/6818</a> hier]
+hat jemand ein Problem mit
+[<a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1">http://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1</a> Generic Relations],
+und das angeführte Beispiel erinnert an meine Datenstruktur.</p>
+<p>Also schreibe ich&#8217;s selber. Nach gut 3 Stunden Arbeit halte ich Datenbankstruktur und API für zufriedenstellend.</p>
+<p>Was fehlt, ist freilich noch der Eigenschaften-Editor.
+Vielleicht reicht die bestehende Slave Grid. Die muss jetzt sowieso zuerst mal auf Mausklicks reagieren, indem sie ihren Report in einem eigenen Fenster öffnet. Dnach sehen wir weiter. Aber das kommt morgen...</p>
+<hr class="docutils" />
+<p>Ich lag schon im Bett als mir noch auffiel, dass <cite>order_by(&#8216;value_text&#8217;)</cite> ersetzt werden kann durch <cite>order_by(&#8216;value&#8217;)</cite>. Das ist besser, weil Fred dann auch 110 Kg wiegen kann. Leider muss das redundante Feld <cite>value_text</cite> trotzdem bleiben, damit <cite>PropValuesByOwner</cite> was zum anzeigen hat...</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0211.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0207.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0208.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0208.html">Online Link</a>
+    </div>
+  </body>
+</html>

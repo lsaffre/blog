@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0121.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0119.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0121.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0119.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <dl class="docutils">
+<dt>Issue 84 (Extend window_config) habe ich begonnen, weil wir beim Speichern der Fensterpositionen momentan eine Serie von kleinen Bugs haben:</dt>
+<dd><ul class="first last simple">
+<li>Speichern der Fensterposition klappt schinbar nicht auf dem oeshz</li>
+<li>Kolonnenbreite und -reihenfolge werden nicht gespeichert;</li>
+</ul>
+</dd>
+</dl>
+<p>Es lohnt sich aber nicht, diese jetzt zu bearbeiten, weil das System mit der einen Pickle-Datei ja früher oder später komplett ersetzt wird. Das ist es, was ich mit Issue 84 meine:</p>
+<blockquote>
+<div><ul class="simple">
+<li>One file per Report (or per View)</li>
+<li>Use a central repository settings.CONFIG_DIRS (or <cite>config</cite> subdir in each application)</li>
+<li>Server saves only to &#8220;local&#8221; directory</li>
+</ul>
+</div></blockquote>
+<p>Neues Issue 86 (Grid does 2 useless data requests) ist eine Nebenwirkung von Issue 70 (Dynamic number of rows per page). Stört die Benutzer nicht allzu sehr, aber muss natürlich weg.</p>
+<p>Issue 83 (New models City (and maybe Street) in contacts) ist fertig.
+<cite>City</cite> ist natürlich nicht in <cite>lino.modlib.contacts</cite>, sondern in <cite>lino.modlib.countries</cite>.
+<cite>load_tim.py</cite> holt jetzt die Städte ebenfalls. Straßen als eigene Tabelle lass ich in der Tat für später mal.</p>
+<p>Zugleich habe ich auch ein bisschen für Issue 87 vorbereitet.</p>
+<p>Jetzt stechen natürlich Issue 80 (ForeignKey fields in Detail window display value instead of display_field) und Issue 49 (ForeignKey choices that depends on recipient) wieder ins Auge: Auswahl einer Stadt sollte pro Land erfolgen (momentan werden alle Städte der Welt angezeigt).</p>
+<hr class="docutils" />
+<p>Tagesplan: Ich fange an mit 49 und 80.</p>
+<p>Wie ein Auswahlfilter definiiert wird, ist mir schon klar. Zum
+Beispiel wie er für <cite>lino.modlib.properties.models.PropValue</cite> schon
+definiert (aber nicht benutzt) wird:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">prop_choices_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">recipient</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">only_for__in</span><span class="o">=</span><span class="p">(</span><span class="n">recipient</span><span class="o">.</span><span class="n">owner_type</span><span class="p">,</span><span class="bp">None</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><cite>lino.modlib.contacts.models.Contact</cite> kriegt jetzt auch schon mal so
+einen Auswahlfilter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">city_choices_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">recipient</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">country__in</span><span class="o">=</span><span class="p">(</span><span class="n">recipient</span><span class="o">.</span><span class="n">country</span><span class="p">,))</span>
+</pre></div>
+</div>
+<p>Aber wie mach ich das Dingen nutzbar?
+Prinzipiell muss die ComboBox ihrem Store mitteilen, wer der &#8220;Empfänger&#8221; der Auswahlliste ist. Es reicht ja der <cite>pk</cite> des Empfängers.
+Dann kann die <cite>choices_view()</cite> schauen, ob das Modell eine Methode <cite>FOO_choices_filter</cite> hat.
+Zuerst mal die [<a class="reference external" href="http://www.extjs.com/deploy/dev/docs/?class=Ext.form.ComboBox">http://www.extjs.com/deploy/dev/docs/?class=Ext.form.ComboBox</a> Doku zu ComboBox] lesen.</p>
+<p>ComboBox benutzt momentan gar nicht <cite>/choices/</cite>, sondern <cite>list</cite>. Jeder <cite>ReportHandle</cite> hat momentan nur einen <cite>extjs.Store</cite>, und der hat eine feste URL, und die ist immer dieselbe. Das muss ich ändern. Und das wird nicht leicht.</p>
+<p>Zwischendurch: permalink geht jetzt wieder. Ich speichere den Namen im Window-Objekt in einem Attribut <cite>_permalink</cite>. Permalink ist zugegebenermaßen sehr gefrickelt und müsste mal revidiert werden (Neues Issue 88 notiert), aber beim Testen erspart es mir viele Mausklicks.</p>
+<p>Und noch ne Spielerei zwischendurch: Neue Felder <cite>street</cite>, <cite>street_no</cite> und <cite>street_box</cite>, in <cite>contacts.Contact</cite> sowie neue Funktion <cite>street2kw()</cite> in <cite>lino.modlib.contacts.utils</cite>, die von <cite>load_tim.py</cite> benutzt wird.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0121.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0119.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0120.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0120.html">Online Link</a>
+    </div>
+  </body>
+</html>

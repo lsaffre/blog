@@ -1,0 +1,323 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110730 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110806" href="0806.html" />
+    <link rel="prev" title="20110728" href="0728.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0806.html" title="20110806"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0728.html" title="20110728"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110730<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Cannot boot after upgrade to kernel 2.6.32</p>
+<p>Here is rose&#8217;s`/etc/fstab` (whitespaces adapted):</p>
+<div class="highlight-python"><div class="highlight"><pre># /etc/fstab: static file system information.
+#
+# Use &#39;blkid -o value -s UUID&#39; to print the universally unique identifier
+# for a device; this may be used with UUID= as a more robust way to name
+# devices that works even if disks are added and removed. See fstab(5).
+#
+# &lt;file system&gt; &lt;mount point&gt; &lt;type&gt; &lt;options&gt;           &lt;dump&gt; &lt;pass&gt;
+proc            /proc         proc   nodev,noexec,nosuid 0      0
+# / was on /dev/sda1 during installation
+UUID=2aa602b2-9cab-4686-9f9e-37437e63b55f /     ext4  errors=remount-ro 0       1
+# swap was on /dev/sda5 during installation
+UUID=dc90b49c-0ea2-469c-a383-5d3904014d5f none  swap  sw              0       0
+</pre></div>
+</div>
+<p>None of the following commands gives any output:</p>
+<div class="highlight-python"><div class="highlight"><pre>blkid -o value -s UUID
+blkid -o value -s UUID /dev/sda
+blkid -o value -s UUID /dev/sda1
+</pre></div>
+</div>
+<p>Here is my <code class="file docutils literal"><span class="pre">/etc/default/grub</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre># If you change this file, run &#39;update-grub&#39; afterwards to update
+# /boot/grub/grub.cfg.
+
+GRUB_DEFAULT=0
+GRUB_HIDDEN_TIMEOUT=0
+GRUB_HIDDEN_TIMEOUT_QUIET=true
+GRUB_TIMEOUT=10
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2&gt; /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT=&quot;quiet splash&quot;
+GRUB_CMDLINE_LINUX=&quot;&quot;
+
+# Uncomment to disable graphical terminal (grub-pc only)
+#GRUB_TERMINAL=console
+
+# The resolution used on graphical terminal
+# note that you can use only modes which your graphic card supports via VBE
+# you can see them in real GRUB with the command `vbeinfo&#39;
+#GRUB_GFXMODE=640x480
+
+# Uncomment if you don&#39;t want GRUB to pass &quot;root=UUID=xxx&quot; parameter to Linux
+#GRUB_DISABLE_LINUX_UUID=true
+
+# Uncomment to disable generation of recovery mode menu entries
+#GRUB_DISABLE_LINUX_RECOVERY=&quot;true&quot;
+
+# Uncomment to get a beep at grub start
+#GRUB_INIT_TUNE=&quot;480 440 1&quot;
+</pre></div>
+</div>
+<p>I uncommented the <code class="docutils literal"><span class="pre">GRUB_HIDDEN_TIMEOUT=0</span></code> line and removed the <code class="docutils literal"><span class="pre">quiet</span></code>
+from <cite>GRUB_CMDLINE_LINUX_DEFAULT</cite>, then ran <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">update-grub</span></code>.</p>
+<p>The boot menu now appears, and it has a lot of entries:</p>
+<div class="highlight-python"><div class="highlight"><pre>2.6.32-33-generic
+2.6.32-32-generic
+2.6.32-31-generic
+2.6.32-28-generic
+2.6.32-27-generic
+2.6.32-25-generic
+2.6.32-24-generic
+</pre></div>
+</div>
+<p>each entry is twice (the second time with recovery mode).</p>
+<p>Selecting either of the 2.6.32-33 kernel options leads to my behaviour.
+Since I removed the <code class="docutils literal"><span class="pre">quiet</span></code> boot option, I can now see the last
+message before it hangs:</p>
+<div class="highlight-python"><div class="highlight"><pre>[    1.251341] scsi0 : ahci
+[    1.251546] scsi1 : ahci
+[    1.251785] ata1: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408100 irq 22
+[    1.251824] ata2: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408180 irq 22
+</pre></div>
+</div>
+<p>and there it stops, displaying after a while the
+&#8220;Gave up waiting for root device.&#8221; messages.</p>
+<p>This thread seems to have the same problem:
+<a class="reference external" href="http://ubuntuforums.org/showthread.php?t=1806708">http://ubuntuforums.org/showthread.php?t=1806708</a>
+And benneton&#8217;s answer seems right:
+<a class="reference external" href="http://ubuntuforums.org/showpost.php?p=11091566&amp;postcount=16">http://ubuntuforums.org/showpost.php?p=11091566&amp;postcount=16</a></p>
+<div class="section" id="linux-notebooks-and-power-management">
+<h2>Linux, notebooks and power management<a class="headerlink" href="#linux-notebooks-and-power-management" title="Permalink to this headline">¶</a></h2>
+<p>Aha, ich habe gerade erst erfahren, dass es wohlbekannte Gründe dafür
+gibt, dass der Ventilator auf <a class="reference internal" href="../../glossary.html#term-rose"><span class="xref std std-term">Rose</span></a> ständig läuft:
+<a class="reference external" href="http://de.wikipedia.org/wiki/ACPI">http://de.wikipedia.org/wiki/ACPI</a> (s.h. Untertitel &#8220;Kritik&#8221;)</p>
+<p>Dabei funktioniert ACPI doch scheinbar ausgezeichnet.
+Die Spielereien im Artikel
+<a class="reference external" href="http://studiawan.blogspot.com/2011/04/how-many-watt-consumed-in-ubuntu-laptop.html">How Many Watt Consumed in Ubuntu Laptop?</a>
+konnte ich jedenfalls leicht nachvollziehen.</p>
+<dl class="docutils">
+<dt>Ich habe mal die Pakete</dt>
+<dd><cite>uswsusp</cite> und <cite>acpitail</cite> ausprobiert.</dd>
+</dl>
+<p><cite>uswsusp</cite> scheint nicht mehr maintained zu sein:</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@rose:~$ sudo s2ram
+Machine is unknown.
+This machine can be identified by:
+    sys_vendor   = &quot;Hewlett-Packard&quot;
+    sys_product  = &quot;Presario CQ61 Notebook PC&quot;
+    sys_version  = &quot;0396100000010D10000000000&quot;
+    bios_version = &quot;F.07&quot;
+See http://suspend.sf.net/s2ram-support.html for details.
+
+If you report a problem, please include the complete output above.
+</pre></div>
+</div>
+<p>Die besagte Adresse wird dann jedoch automatisch nach
+<a class="reference external" href="http://en.opensuse.org/SDB:Suspend_to_RAM">http://en.opensuse.org/SDB:Suspend_to_RAM</a>
+weitergeleitet, und dort steht:</p>
+<blockquote>
+<div>Note that the s2ram whitelist described here is
+deprecated and no longer maintained. Do not send additional
+machines details to the maintainers. Instead, use a kernel
+with KMS drivers where suspend should just work. If it doesn&#8217;t,
+file a bug against the Linux kernel.</div></blockquote>
+<p><cite>acpitail</cite> funktioniert, aber scheint mir nicht sehr wichtig:</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@rose:~$ acpitail
+Sat Jul 30 07:23:57 2011
+BAT0 remaining capacity: 100% (0 minutes)
+Adapter ACAD: AC
+</pre></div>
+</div>
+<p>Nee, das Problem ist vielleicht gar nicht ACPI, sondern ein Bug:</p>
+<p><a class="reference external" href="https://bugs.launchpad.net/ubuntu/+source/acpi/+bug/107937">https://bugs.launchpad.net/ubuntu/+source/acpi/+bug/107937</a></p>
+<p><a class="reference external" href="https://bugs.launchpad.net/ubuntu/+source/linux/+bug/370173">https://bugs.launchpad.net/ubuntu/+source/linux/+bug/370173</a></p>
+<p>Die beiden Bugs sind scheinbar genau mein Problem: der Ventilator
+läuft ständig, aber nicht unnützerweise, sondern da ist es
+wirklich heiß drin. Ubuntu auf einem Compaq Presario wirkt
+quasi wie ein Heizgebläse. Im Winter mag das noch angehen,
+aber <em>gut</em> ist das bestimmt nicht. Außerdem beklagt Ly sich,
+dass er sich ab und zu von selber ausschaltet.</p>
+<p>Aber hier:
+<a class="reference external" href="http://ubuntuforums.org/archive/index.php/t-3267.html">http://ubuntuforums.org/archive/index.php/t-3267.html</a></p>
+<p>Fehlanzeige, dieser Tipp scheint zu alt zu sein.
+Ein Kernelmodul &#8220;powernow-k7&#8221; scheint es nicht mehr zu geben.
+Und überhaupt ist mir das alles ein bisschen zu technisch.</p>
+<p>Ich probiere es mal mit der neuesten Ubuntu-Version:
+Uprade von 10.04. LTS zum letzten &#8220;normalen Release&#8221; 10.10
+(über Menüs wie auf Seite
+<a class="reference external" href="https://help.ubuntu.com/community/MaverickUpgrades">https://help.ubuntu.com/community/MaverickUpgrades</a>
+beschrieben).</p>
+<p>Während des Runterladens habe ich mich schlafen gelegt.
+Als ich wieder schauen kam, war der Rechner ausgeschaltet.
+Verdächtig.
+Kann sein, dass es eine Strompanne gegeben hat.
+Einschalten.
+Im Boot-Menü ist jetzt ein neuer Kernel 2.6.35-30 hinzugekommen.
+wenn ich den auswähle, kriege ich aber die gleichen Symptome
+wie oben, er hängt sich auf nach der Zeile:</p>
+<div class="highlight-python"><div class="highlight"><pre>[    1.251824] ata2: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408180 irq 22
+</pre></div>
+</div>
+<p>Wenn ich mit dem alten Kernel starte, meldet Gnome:
+&#8220;Your system has not yet been configured, please
+contact your computer administrator&#8221;</p>
+<p>Ich gehe mit Ctrl+Alt+F1 in eine Textkonsole und starte dort
+nochmal dist-upgrade.
+Der lädt nochmal eine Stunde lang Dateien runter,
+aber als ich wieder schauen komme hängt sich aber wieder auf</p>
+<p>Aha, jetzt weiß ich, woher meine Probleme kommen:</p>
+<p>In <a class="reference external" href="http://forums.debian.net/viewtopic.php?f=3&amp;t=54519">einem Thread auf forums.debian.net</a>
+schrieb Bulkley im August 2010:</p>
+<blockquote>
+<div>Consider that this problem is not about either Ubuntu or Debian. Consider that your new laptop is so new that Linux has not caught up with it. Consider that your compaq pressario cxq61-405sa is so locked into Windows that the Linux kernel and X can&#8217;t get around it. Consider that some proprietary hardware is &#8220;host driven&#8221; much like some old modems were. Consider returning that laptop for a refund. Consider that Compaq has no incentive to be Linux friendly.
+(<a class="reference external" href="http://forums.debian.net/viewtopic.php?f=3&amp;t=54519#p315551">http://forums.debian.net/viewtopic.php?f=3&amp;t=54519#p315551</a>)</div></blockquote>
+<p>Im gleichen Thread schrieb stevepusser tags darauf:</p>
+<blockquote>
+<div><p>As for Ubuntu, many laptops have a poorly written BIOS and poor acpi implementations. You can test this by booting Ubuntu with the kernel cheat</p>
+<p>acpi=off</p>
+<p>and see if that fixes the issue. It will cause much more trouble than it fixes, though, because you will lose power control, screen dimming, battery monitoring, and everything else that acpi handles. The command is just for diagnostics.</p>
+<p>Steve (whose Toshiba laptop freezes up the same way with the 2.6.35 kernel unless booted with that command. Previous kernels work well on the machine)</p>
+</div></blockquote>
+<p>In der Tat, mit der Kernel-Option <code class="docutils literal"><span class="pre">acpi=off</span></code> scheint alles
+zu klappen (außer natürlich das Power-Management).</p>
+<p>Also nicht nur mit HP Compaq, sondern auch mit Toshiba hat Linux dieses Problem.</p>
+<p>Aber gibt es denn keine Liste
+&#8220;Hardware, die Linux-Benutzer besser gar nicht erst kaufen sollten&#8221;?
+Or positively formulated a &#8220;Ubuntu Laptop buyer&#8217;s guide&#8221;?
+Aha, Google &#8220;linux laptop shopping guide&#8221; meldet:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.cyberciti.biz/tips/linux-laptop.html">http://www.cyberciti.biz/tips/linux-laptop.html</a></li>
+<li><a class="reference external" href="http://www.laptopical.com/buying-guide.html">http://www.laptopical.com/buying-guide.html</a></li>
+</ul>
+<p>Diese beiden sagen eigentlich eher, dass Linux auf allen Laptops funktioniert.
+Ich kann das aber nicht bestätigen, da ich es auf unserem HP Compaq Presario
+nur ohne acpi laufen lassen kann...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0806.html" title="20110806"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0728.html" title="20110728"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0730.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0730.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2010-09-13 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="2010-09-14" href="0914.html" />
+    <link rel="prev" title="2010-09-12" href="0912.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0914.html" title="2010-09-14"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0912.html" title="2010-09-12"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>2010-09-13<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="switching-from-mod-python-to-mod-wsgi">
+<h2>Switching from mod_python to mod_wsgi<a class="headerlink" href="#switching-from-mod-python-to-mod-wsgi" title="Permalink to this headline">¶</a></h2>
+<p>Oho, was les&#8217; ich <a class="reference external" href="http://docs.djangoproject.com/en/dev/howto/deployment/modpython/">da</a>:
+ich muss von Apache mod_python auf mod_wsgi umsteigen.</p>
+<p>Na dann mal los. Dokumentation steht auf</p>
+<ul class="simple">
+<li><a class="reference external" href="http://docs.djangoproject.com/en/dev/howto/deployment/modwsgi/">http://docs.djangoproject.com/en/dev/howto/deployment/modwsgi/</a></li>
+<li><a class="reference external" href="http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide">http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide</a></li>
+</ul>
+<p>Ich muss vor allem <code class="docutils literal"><span class="pre">aptitude</span> <span class="pre">install</span> <span class="pre">libapache2-mod-wsgi</span></code> machen und dann ein paar Kleinigkeiten ändern, die ich gar nicht erst hier, sondern gleich in <a class="reference external" href="http://www.lino-framework.org/admin/install.html">/admin/install</a> notiert habe. Endlich habe ich auch mal die seit langem wartende Änderung gemacht, dass jedes Projekt sein lokales Django Project Directory kriegt statt wie bisher direkt auf die demo-Verzeichnisse im source repository zuzugreifen. Auch die Datenbank (sqlite) ist jetzt in <cite>/usr/local/django/dsbe-demo</cite>. Das media-Verzeichnis steht momentan noch in <cite>/usr/local/lino</cite>.</p>
+<p>Auf <a class="reference external" href="http://dsbe-demo.saffre-rumma.net/">dsbe-demo</a> klappt es schon (der ist allerdings sehr sehr langsam).</p>
+</div>
+<div class="section" id="when-django-says-improperlyconfigured">
+<h2>When Django says <cite>ImproperlyConfigured</cite>...<a class="headerlink" href="#when-django-says-improperlyconfigured" title="Permalink to this headline">¶</a></h2>
+<p>Auf <cite>dsbe-eupen</cite> habe ich jetzt folgende Fehlermeldung im Apache-Log:</p>
+<blockquote>
+<div>ImproperlyConfigured: The Django remote user auth middleware requires the authentication middleware to be installed.  Edit your MIDDLEWARE_CLASSES setting to insert &#8216;django.contrib.auth.middleware.AuthenticationMiddleware&#8217; before the RemoteUserMiddleware class.</div></blockquote>
+<p>Das ist eine von Djangos Macken: mich für dumm zu halten.
+Denn natürlich hab ich in meiner <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-MIDDLEWARE_CLASSES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></code></a>
+die AuthenticationMiddleware vor der RemoteUserMiddleware stehen.</p>
+<p>Ein erster Blick in den Code zeigt, dass die Meldung in Wirklichkeit daher kommt,
+dass RemoteUserMiddleware einen <cite>request</cite> kriegt, der kein Attribut <cite>user</cite> hat.
+Offenbar ist also irgendwo anders ein Fehler passiert, und Django hat den für
+mich (weil ich ja dumm bin) abgefangen und weggeworfen.</p>
+<p>Jetzt würde ich gerne vom Django-Code aus mal schnell in den Apache error log loggen können.
+Hier ist dazu was Interessantes:
+<a class="reference external" href="http://djangosnippets.org/snippets/1731/">http://djangosnippets.org/snippets/1731/</a>
+Also ich brauche unter Apache gar keine <code class="xref std std-xfile docutils literal"><span class="pre">lino.log</span></code> mehr,
+sondern <cite>lino.log</cite> geht einfach nach <cite>sys.stderr</cite>, der dann seinerseits vom Apache
+in dessen <code class="file docutils literal"><span class="pre">error.log</span></code> geschrieben wird.
+Super, das gefällt mir.</p>
+<p>In der <code class="file docutils literal"><span class="pre">/var/snapshots/django/django/contrib/auth/middleware.py</span></code> füge ich diverse Aufrufe von <cite>lino.log.debug()</cite> ein:</p>
+<div class="highlight-python"><div class="highlight"><pre>import lino
+from django.conf import settings
+
+class LazyUser(object):
+    def __get__(self, request, obj_type=None):
+        if not hasattr(request, &#39;_cached_user&#39;):
+            lino.log.debug(&quot;LazyUser.__get__() : install _cached_user&quot;)
+            from django.contrib.auth import get_user
+            request._cached_user = get_user(request)
+            lino.log.debug(&quot;LazyUser.__get__() : install _cached_user ok&quot;)
+        return request._cached_user
+
+
+class AuthenticationMiddleware(object):
+    def process_request(self, request):
+        lino.log.debug(&quot;AuthenticationMiddleware %s&quot;,settings.MIDDLEWARE_CLASSES)
+        assert hasattr(request, &#39;session&#39;), &quot;The Django authentication middleware requires sessi
+        request.__class__.user = LazyUser()
+        if hasattr(request, &#39;user&#39;):
+            lino.log.debug(&quot;AuthenticationMiddleware ok&quot;)
+        else:
+            lino.log.debug(&quot;hasattr(request,&#39;user&#39;) returned False&quot;)
+        lino.log.debug(&quot;AuthenticationMiddleware str(request.user) is %s&quot;,request.user)
+        return None
+</pre></div>
+</div>
+<p>Hier daraufhin die <code class="file docutils literal"><span class="pre">/var/log/apache2/error.log</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre>[notice] Apache/2.2.9 (Debian) mod_python/3.3.1 Python/2.5.2 mod_wsgi/2.5 configured -- resuming normal operations
+[error] INFO __init__ : Lino-DSBE 0.1.3 &lt;http://dsbe.saffre-rumma.ee&gt;
+[error] Lino 0.8.4 &lt;http://code.google.com/p/lino/&gt;
+[error] Django 1.3 pre-alpha SVN-13818 &lt;http://www.djangoproject.com&gt;
+[error] Python 2.5.2 &lt;http://www.python.org/&gt;
+[error] ReportLab Toolkit 2.1 &lt;http://www.reportlab.org/rl_toolkit.html&gt;
+[error] PyYaml  &lt;http://pyyaml.org/&gt;
+[error] python-dateutil 1.4.1 &lt;http://labix.org/python-dateutil&gt;
+[error] DEBUG middleware : AuthenticationMiddleware (&#39;django.middleware.common.CommonMiddleware&#39;, &#39;django.contrib.sessions.middleware.SessionMiddleware&#39;, &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39;,&#39;django.middleware.doc.XViewMiddleware&#39;,&#39;django.contrib.auth.middleware.RemoteUserMiddleware&#39;)
+[error] DEBUG middleware : LazyUser.__get__() : install _cached_user
+[error] DEBUG actions : /var/snapshots/lino/lino/actions.pyc : done
+[error] DEBUG middleware : hasattr(request,&#39;user&#39;) returned False
+[error] DEBUG middleware : LazyUser.__get__() : install _cached_user
+[error] DEBUG middleware : LazyUser.__get__() : install _cached_user ok
+[error] DEBUG middleware : AuthenticationMiddleware str(request.user) is AnonymousUser
+[error] [client 12.123.12.123] mod_wsgi (pid=20547): Exception occurred processing WSGI script &#39;/usr/local/django/dsbe-eupen/apache.wsgi&#39;.
+[error] [client 12.123.12.123] Traceback (most recent call last):
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/wsgi.py&quot;, line 241, in __call__
+[error] [client 12.123.12.123]     response = self.get_response(request)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 141, in get_response
+[error] [client 12.123.12.123]     return self.handle_uncaught_exception(request, resolver, sys.exc_info())
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 80, in get_response
+[error] [client 12.123.12.123]     response = middleware_method(request)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/contrib/auth/middleware.py&quot;, line 78, in process_request
+[error] [client 12.123.12.123]     auth.login(request, user)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/contrib/auth/__init__.py&quot;, line 69, in login
+[error] [client 12.123.12.123]     user.save()
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 434, in save
+[error] [client 12.123.12.123]     self.save_base(using=using, force_insert=force_insert, force_update=force_update)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 500, in save_base
+[error] [client 12.123.12.123]     rows = manager.using(using).filter(pk=pk_val)._update(values)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/models/query.py&quot;, line 491, in _update
+[error] [client 12.123.12.123]     return query.get_compiler(self.db).execute_sql(None)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/models/sql/compiler.py&quot;, line 861, in execute_sql
+[error] [client 12.123.12.123]     cursor = super(SQLUpdateCompiler, self).execute_sql(result_type)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/models/sql/compiler.py&quot;, line 727, in execute_sql
+[error] [client 12.123.12.123]     cursor.execute(sql, params)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/backends/util.py&quot;, line 15, in execute
+[error] [client 12.123.12.123]     return self.cursor.execute(sql, params)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/db/backends/sqlite3/base.py&quot;, line 200, in execute
+[error] [client 12.123.12.123]     return Database.Cursor.execute(self, query, params)
+[error] [client 12.123.12.123] DatabaseError: unable to open database file
+</pre></div>
+</div>
+<p>Zum Vergleich: ohne meine loggings sieht es so aus:</p>
+<div class="highlight-python"><div class="highlight"><pre>[notice] Apache/2.2.9 (Debian) mod_python/3.3.1 Python/2.5.2 mod_wsgi/2.5 configured -- resuming normal operations
+[error] INFO __init__ : Lino-DSBE 0.1.3 &lt;http://dsbe.saffre-rumma.ee&gt;
+[error] Lino 0.8.4 &lt;http://code.google.com/p/lino/&gt;
+[error] Django 1.3 pre-alpha SVN-13818 &lt;http://www.djangoproject.com&gt;
+[error] Python 2.5.2 &lt;http://www.python.org/&gt;
+[error] ReportLab Toolkit 2.1 &lt;http://www.reportlab.org/rl_toolkit.html&gt;
+[error] PyYaml  &lt;http://pyyaml.org/&gt;
+[error] python-dateutil 1.4.1 &lt;http://labix.org/python-dateutil&gt;
+[error] DEBUG actions : /var/snapshots/lino/lino/actions.pyc : done
+[error] [client 12.123.12.123] mod_wsgi (pid=20603): Exception occurred processing WSGI script &#39;/usr/local/django/dsbe-eupen/apache.wsgi&#39;.
+[error] [client 12.123.12.123] Traceback (most recent call last):
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/wsgi.py&quot;, line 241, in __call__
+[error] [client 12.123.12.123]     response = self.get_response(request)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 141, in get_response
+[error] [client 12.123.12.123]     return self.handle_uncaught_exception(request, resolver, sys.exc_info())
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 80, in get_response
+[error] [client 12.123.12.123]     response = middleware_method(request)
+[error] [client 12.123.12.123]   File &quot;/var/snapshots/django/django/contrib/auth/middleware.py&quot;, line 53, in process_request
+[error] [client 12.123.12.123]     &quot;The Django remote user auth middleware requires the&quot;
+[error] [client 12.123.12.123] ImproperlyConfigured: The Django remote user auth middleware requires the authentication middleware to be installed.  Edit your MIDDLEWARE_CLASSES setting to insert &#39;django.contrib.auth.middleware.AuthenticationMiddleware&#39; before the RemoteUserMiddleware class.
+</pre></div>
+</div>
+<p>Interessant ist, dass <code class="docutils literal"><span class="pre">hasattr(request,'user')</span></code> False zurückgibt, nachdem er das Attribut
+doch in der Zeile davor gesetzt hat (<code class="docutils literal"><span class="pre">request.__class__.user</span> <span class="pre">=</span> <span class="pre">LazyUser()</span></code>).
+Dass er es in die Klasse und nicht in die Instanz setzt, macht da keinen Unterschied:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Request</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">Request</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">hasattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="s">&#39;foo&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">foo</span>
+<span class="go">1</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Das hat damit zu tun, dass LazyUser eine <a class="reference external" href="http://docs.python.org/reference/datamodel.html#implementing-descriptors">owner
+class</a> ist
+(weil sie eine Methode <cite>__get__</cite> definiert).
+Sobald man <code class="docutils literal"><span class="pre">request.user</span></code> anfragt, wird die <cite>__get__()</cite> ausgeführt
+Den Trick kannte ich noch nicht. Hab ich wieder was gelernt.</p>
+<p>(...)</p>
+<p>Oh Mann! Nachdem ich über drei Stunden lang im obigen Stil rumprobiert habe, kann ich sagen,
+dass es bloß am Zugriffsrecht auf die Datenbank lag!
+Die Fehlermeldung &#8220;DatabaseError: unable to open database file&#8221; hätte mich sogleich darauf gebracht.
+Aber Django fängt sie ja ab und liefert mir stattdessen seinen wohlgemeinten Rat,
+ich solle meine MIDDLEWARE_CLASSES in der richtigen Reihenfolge konfigurieren.
+So ein Ekel ist dieser Django!</p>
+<p>... und trotzdem besteht kein Zweifel, dass ich ihm seine Macken verzeihe, weil er so gut ist :-)</p>
+</div>
+<div class="section" id="weiter">
+<h2>Weiter<a class="headerlink" href="#weiter" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Die <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a> von <cite>dsbe.demo</cite> erbt nun aus der von <cite>lino.demo</cite>.
+So wie die lokalen settings.py seit heute morgen schon aus der <cite>dsbe.demo.settings</cite> erben.
+Ich möchte dahin kommen, dass eine lohnenswerte Reihe von Einstellungen zentral von Lino übernommen werden.</li>
+<li>Die Konstante <cite>USE_FF_CONSOLE</cite> in ext_windows ist ersetzt durch <code class="xref std std-setting docutils literal"><span class="pre">USE_FIREBUG</span></code>.</li>
+<li>Bisher habe ich für die PersonDetail-Fenster in DSBE auf expliziten
+Wunsch des Kunden sehr volle Bildschirme gemacht: alle Daten in nur drei Tabs,
+und die Bildschirme passen nur wenn der Browser auf einem üblichen Desktop-Bildschirm
+maximiert ist.
+Um über Alternativen nachdenken zu können, habe ich eine zweite Serie von 5 weiteren Detail-Layouts gemacht.
+Dabei stellte sich raus, dass es bislang nicht möglich ist, ein Feld durch zwei verschiedene
+Elemente (auf verschiedenen Tabs) vertreten zu haben.
+Erstens waren die Variablen im JS-Code dadurch doppelt, das ist behoben durch den neuen Zähler <cite>variable_counter</cite> in
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.jsgen.html#module-lino.utils.jsgen" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.jsgen</span></code></a>.
+Dadurch werden jetzt zwar immerhin alle Felder angezeigt, aber dann merkte ich, dass
+ExtJS mehrere Felder mit dem gleichen Namen innerhalb einer Form nicht kapiert
+(siehe <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.form.BasicForm">Ext.form.BasicForm</a>.`setValues()`).
+Also es würde ziemlich aufwändig, dieses Feature zu implementieren.</li>
+<li>Um dennoch die beiden Serien von Detail-Fenstern gleichzeitig demonstrieren zu können,
+arbeite ich mit zwei Reports Persons1 und Persons2. Vorher musste ich mir noch was ausdenken,
+um sagen zu können, dass ein PageLayout nur in einem bestimmten Report verwendet werden soll:
+das ist das neue Attribut <code class="xref py py-attr docutils literal"><span class="pre">lino.layouts.DetailLayout.only_for_report</span></code>.</li>
+</ul>
+<p>Check-in und Release nach dsbe-eupen.</p>
+<p>Erstmals versuche ich jetzt nach dem <code class="xref std std-xfile docutils literal"><span class="pre">load_tim.py</span></code> auch die <code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code> zu starten.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0914.html" title="2010-09-14"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0912.html" title="2010-09-12"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0913.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0913.html">Online Link</a>
+    </div>
+  </body>
+</html>

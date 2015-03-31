@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101209 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101210" href="1210.html" />
+    <link rel="prev" title="20101208" href="1208.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1210.html" title="20101210"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1208.html" title="20101208"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101209<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="erste-sitzung">
+<h2>Erste Sitzung<a class="headerlink" href="#erste-sitzung" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Die Lösung für Ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/18">docs/tickets/18</a> war einfach: ich darf nicht <strong>application/json</strong>
+als content type angeben, sondern muss <strong>text/html</strong> sagen.
+Obschon das ja eigentlich falsch ist.
+Aber weil es nicht ganz einfach ist, Formulare mit file uploads per Ajax abzuschicken,
+muss ExtJS da ziemlich tricksen, und der Trick funktioniert nur wenn der Server
+seine JSON-Antwort als <strong>text/html</strong> deklariert.</li>
+<li>Die Standard-Logger-Konfiguration (<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.log.html#module-lino.utils.log" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.log</span></code></a>) testet jetzt,
+ob <cite>sys.stdout</cite> ein Terminal ist.
+Damit diese Meldungen nicht mehr im <cite>error.log</cite> von Apache erscheinen.
+Upps, neee: <cite>sys.stdout.isatty()</cite> ist nicht erlaubt unter mod_wsgi
+(sh.
+<a class="reference external" href="http://code.google.com/p/modwsgi/wiki/ApplicationIssues">Application Issues</a> und
+<a class="reference external" href="http://code.google.com/p/modwsgi/wiki/DebuggingTechniques">Debugging Techniques</a>).
+Also teste ich auf <cite>sys.platform</cite>.</li>
+<li>&#8220;Wenn ich eine Firma lösche, dann sehe ich das nicht in der <code class="xref std std-xfile docutils literal"><span class="pre">db.log</span></code>.&#8221;
+In der Tat. Der Fall wurde noch gar nicht an den dblogger geschickt.
+Außerdem sahen neu erstellte Records (create) genau so aus als hätte man
+einen Record verändert.
+Neue Funktionen <cite>log_created</cite> und <cite>log_deleted</cite> in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dblogger.html#module-lino.utils.dblogger" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dblogger</span></code></a>.</li>
+<li>Check-in.</li>
+</ol>
+</div>
+<div class="section" id="zweite-sitzung">
+<h2>Zweite Sitzung<a class="headerlink" href="#zweite-sitzung" title="Permalink to this headline">¶</a></h2>
+<p>Folgende Punkte sind jetzt behoben:</p>
+<ol class="arabic simple">
+<li>Neues Feld Contract.refund_rate für Prozentsatz Rückerstattung.</li>
+<li>Neues Feld Company.hourly_rate, das einen Standardwert für
+Contract.hourly_rate enthalten kann.</li>
+<li>TIM-Partner mit ungültiger E-Mail-Adresse wurden überhaupt nicht importiert.
+Stattdessen sollte nur ihre E-Mail-Adresse leer sein.</li>
+<li><cite>watch_tim</cite> meldet <cite>AttributeError &#8216;datetime.date&#8217; object has no attribute &#8216;read&#8217;</cite></li>
+</ol>
+<p>Zwischenrelease 0.8.14+ in Eupen mit den bisher behobenen Punkten.</p>
+</div>
+<div class="section" id="dritte-sitzung">
+<h2>Dritte Sitzung<a class="headerlink" href="#dritte-sitzung" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Zwei Bugs weniger: <cite>NameError: global name &#8216;auth&#8217; is not defined</cite> und
+<cite>AttributeError: &#8216;datetime.date&#8217; object has no attribute &#8216;read&#8217;</cite>
+in <code class="xref py py-mod docutils literal"><span class="pre">watch_tim</span></code>.</li>
+<li>Endlich: Nach submit_insert zeigt er jetzt den neuen Record im Detail an.</li>
+<li>Noch ein Bug weniger und ein Feature mehr:
+Beim Importieren der USR aus TIM wurden Vor- und Nachname verwechselt.
+<code class="xref py py-func docutils literal"><span class="pre">lino.modlib.contacts.utils.name2kw()</span></code> war zum Parsen von Strings im
+Format &#8220;Nachname Vorname&#8221; konzipiert und noch gar nicht für die &#8220;normale&#8221;
+Anordnung &#8220;Vorname Nachname&#8221; vorgesehen. Hat jetzt einen neuen Parameter
+<cite>last_name_first</cite>.
+Sie Doku und test cases in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.utils.html#module-lino.modlib.contacts.utils" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts.utils</span></code></a></li>
+<li>Released <a class="reference external" href="http://www.lino-framework.org/releases/2010/1209.html">/releases/2010/1209</a> in Eupen.</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1210.html" title="20101210"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1208.html" title="20101208"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1209.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1209.html">Online Link</a>
+    </div>
+  </body>
+</html>

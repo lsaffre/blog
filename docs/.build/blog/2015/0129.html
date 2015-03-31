@@ -1,0 +1,232 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Thursday, January 29, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Friday, January 30, 2015" href="0130.html" />
+    <link rel="prev" title="Wednesday, January 28, 2015" href="0128.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0130.html" title="Friday, January 30, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0128.html" title="Wednesday, January 28, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-january-29-2015">
+<h1>Thursday, January 29, 2015<a class="headerlink" href="#thursday-january-29-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="some-tests-where-not-being-run">
+<h2>Some tests where not being run<a class="headerlink" href="#some-tests-where-not-being-run" title="Permalink to this headline">¶</a></h2>
+<p>I noticed that some test cases in <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> were not being run
+during the test suite. For example
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.docs.tests</span></code>.  Fixed.</p>
+</div>
+<div class="section" id="the-lino-cache-root-environment-variable">
+<h2>The <span class="target" id="index-0"></span><a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#envvar-LINO_CACHE_ROOT" title="(in Lino v1.6)"><code class="xref std std-envvar docutils literal"><span class="pre">LINO_CACHE_ROOT</span></code></a> environment variable<a class="headerlink" href="#the-lino-cache-root-environment-variable" title="Permalink to this headline">¶</a></h2>
+<p>Lino now makes use of a <span class="target" id="index-1"></span><a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#envvar-LINO_CACHE_ROOT" title="(in Lino v1.6)"><code class="xref std std-envvar docutils literal"><span class="pre">LINO_CACHE_ROOT</span></code></a> environment
+variable.  If this variable is set, then the cached data of demo
+databases are no longer written into the file tree of the source code
+repository but below the given directory.</p>
+<p>On my machine I have now the following line in my <code class="file docutils literal"><span class="pre">.bashrc</span></code> file:</p>
+<div class="highlight-python"><div class="highlight"><pre>export LINO_CACHE_ROOT=/home/luc/tmp/cache
+</pre></div>
+</div>
+<p>Note that the path should be absolute and without a <code class="docutils literal"><span class="pre">~</span></code>.</p>
+<p>This feature was needed because we want to get Lino build on a
+continuous integratio site such as <a class="reference external" href="https://en.wikipedia.org/wiki/Travis_CI">Travis CI</a>. To enable it for Travis,
+I modified Lino&#8217;s <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/.travis.yml">.travis.yml</a> file, changing:</p>
+<div class="highlight-python"><div class="highlight"><pre>script: fab initdb test
+</pre></div>
+</div>
+<p>into:</p>
+<div class="highlight-python"><div class="highlight"><pre>script: export LINO_CACHE_ROOT=$(TRAVIS_BUILD_DIR) ; fab initdb test
+</pre></div>
+</div>
+<p>(To be honest, I <em>hope</em> that this was the reason. Confirmation will
+follow.)</p>
+<p>This feature caused quite some subtle internal changes. The changes
+which might cause problems when upgrading are:</p>
+<ul class="simple">
+<li>The Site attributes <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.project_dir" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">project_dir</span></code></a> and <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.project_name" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">project_name</span></code></a> have slightly different meanings
+and default values, and they are no longer simple strings but
+<a class="reference external" href="https://github.com/mikeorr/Unipath">unipath.Path</a> objects.</li>
+<li>New Site attribute <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.cache_dir" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">cache_dir</span></code></a>.</li>
+</ul>
+</div>
+<div class="section" id="new-api-for-defining-demo-databases">
+<h2>New API for defining demo databases<a class="headerlink" href="#new-api-for-defining-demo-databases" title="Permalink to this headline">¶</a></h2>
+<p>Users of <a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#module-atelier.fablib" title="(in atelier v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">atelier.fablib</span></code></a> who used &#8220;demo databases&#8221; (which we now
+call &#8220;Django demo projects&#8221;, see
+<a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#atelier.fablib.env.demo_projects" title="(in atelier v0.0)"><code class="xref py py-attr docutils literal"><span class="pre">atelier.fablib.env.demo_projects</span></code></a>) must adapt their
+<a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#xfile-fabfile.py" title="(in atelier v0.0)"><code class="xref std std-xfile docutils literal"><span class="pre">fabfile.py</span></code></a> as follows:</p>
+<p>Before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">add_demo_database</span><span class="p">(</span><span class="s">&#39;lino_welfare.projects.docs.settings.demo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">add_demo_project</span><span class="p">(</span><span class="s">&#39;lino_welfare/projects/docs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(I guess that I am the only one who needed to do this...)</p>
+</div>
+<div class="section" id="about-all">
+<h2>About <code class="docutils literal"><span class="pre">__all__</span></code><a class="headerlink" href="#about-all" title="Permalink to this headline">¶</a></h2>
+<p>I removed the <code class="docutils literal"><span class="pre">__all__</span></code> definitions from all modules.</p>
+<p>The first reason is that they caused a problem when Mahmoud tried to
+build the docs:</p>
+<div class="highlight-python"><div class="highlight"><pre>Warning, treated as error:
+/...lino/docs/api/lino.api.ad.rst:4: WARNING: __all__ should be a list of strings, not [u&#39;Site&#39;, u&#39;TestSite&#39;, u&#39;Plugin&#39;, u&#39;configure_plugin&#39;, u&#39;_&#39;] (in module lino.api.ad) -- ignoring __all__
+</pre></div>
+</div>
+<p>Note that this warning is rather a false alert, and thus
+I&#8217;d call it a bug in the latest Sphinx version.</p>
+<p>OTOH I am not a friend of <code class="docutils literal"><span class="pre">__all__</span></code>. Anyway it is not
+recommended to do <code class="docutils literal"><span class="pre">from</span> <span class="pre">xxx</span> <span class="pre">import</span> <span class="pre">*</span></code>. I never recommend to use it
+except for some special situations:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/ad.py">lino/ad.py</a> imports <code class="docutils literal"><span class="pre">*</span></code> from <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/api/ad.py">lino/api/ad.py</a>. This
+module exists only for backwards compatibility.</li>
+<li>Another good reason for <code class="docutils literal"><span class="pre">import</span> <span class="pre">*</span></code> is when you extend a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.plugin.html#lino.core.plugin.Plugin" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.core.plugin.Plugin</span></code></a>.</li>
+</ul>
+</div>
+<div class="section" id="results-from-travis">
+<h2>Results from travis<a class="headerlink" href="#results-from-travis" title="Permalink to this headline">¶</a></h2>
+<p>Here is the first feedback from travis:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ export LINO_CACHE_ROOT=$(TRAVIS_BUILD_DIR) ; fab initdb test
+/home/travis/build.sh: line 41: TRAVIS_BUILD_DIR: command not found
+</pre></div>
+</div>
+<p>The following might work better:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ export LINO_CACHE_ROOT=$TRAVIS_BUILD_DIR ; fab initdb test
+</pre></div>
+</div>
+</div>
+<div class="section" id="todo">
+<h2>TODO<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Wenn man bei den Neuanträgen jemanden ablehnt, kommt ein internal
+server error</li>
+<li>Add a TestCase which automatically runs <code class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">test</span></code> in
+every demo project.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0130.html" title="Friday, January 30, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0128.html" title="Wednesday, January 28, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0129.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0129.html">Online Link</a>
+    </div>
+  </body>
+</html>

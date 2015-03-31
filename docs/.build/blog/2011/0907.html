@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110907 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110909" href="0909.html" />
+    <link rel="prev" title="20110906" href="0906.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0909.html" title="20110909"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0906.html" title="20110906"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110907<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="lino-1-2-2-has-been-released">
+<h1>Lino 1.2.2 has been released<a class="headerlink" href="#lino-1-2-2-has-been-released" title="Permalink to this headline">¶</a></h1>
+<p>I just discovered that I had many of my <cite>CharField</cite> with null=True.
+This is just the opposite of what Django wants.
+Added assertion in Lino kernel to avoid this in the future.
+<a class="reference external" href="https://code.djangoproject.com/ticket/9590">https://code.djangoproject.com/ticket/9590</a></p>
+<p><code class="xref py py-mod docutils literal"><span class="pre">initdb</span></code> now no longer
+displays the disturbing &#8220;No fixtures found&#8221;. It came from
+the implicit flush (or syncdb) command who looked for <cite>initial_data</cite> fixtures
+and never found any (because I prefer <cite>std</cite>).</p>
+<p>I reverted my yesterday&#8217;s changes to initdb
+(see ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/50">docs/tickets/50</a>).
+Django&#8217;s <cite>flush</cite>
+command caused the following error during the
+database migration:</p>
+<div class="highlight-python"><div class="highlight"><pre>Error: Database mysite couldn&#39;t be flushed. Possible reasons:
+  * The database isn&#39;t running or isn&#39;t configured correctly.
+  * At least one of the expected database tables doesn&#39;t exist.
+  * The SQL was invalid.
+Hint: Look at the output of &#39;django-admin.py sqlflush&#39;. That&#39;s the SQL this command wasn&#39;t able to run.
+The full error: (1146, &quot;Table &#39;mysite.contacts_roletype&#39; doesn&#39;t exist&quot;)
+</pre></div>
+</div>
+<p>This is because Django&#8217;s flush tries to delete all tables
+that <em>should</em> exist, without asking whether they actually do.
+initdb must work after an upgrade and before the database migration.</p>
+<p>Released <a class="reference external" href="http://www.lino-framework.org/releases/2011/0907.html">/releases/2011/0907</a> and installed in Eupen.</p>
+</div>
+<div class="section" id="another-method-for-initdb">
+<h1>Another method for initdb<a class="headerlink" href="#another-method-for-initdb" title="Permalink to this headline">¶</a></h1>
+<p>Another idea I tried for ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/50">docs/tickets/50</a>,
+but which turned out to be nonsense
+(because &#8220;flush&#8221; only empties all tables does not drop them).</p>
+<p>The Django code of the flush command shows that the
+<cite>sql_flush</cite> method of
+<cite>DatabaseOperations</cite> (in
+<code class="file docutils literal"><span class="pre">django/db/backends/mysql/base.py</span></code> )
+does quite some tricks and uses <code class="docutils literal"><span class="pre">SET</span> <span class="pre">FOREIGN_KEY_CHECKS</span></code>.
+So it is probably better to use this method.
+But Django&#8217;s <cite>flush</cite> management command calls it only
+on Django tables
+(calls <cite>sql_flush</cite> with with a hard-coded
+<cite>only_django=True</cite>).</p>
+<p>My next idea is to have initdb do exactly what flush does, except
+for calling <cite>sql_flush</cite> with <cite>only_django=False</cite>
+(and except for the confirmation and calling emit_post_sync).</p>
+<p><a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-initdb" title="(in Lino v1.6)"><span class="xref std std-term">initdb</span></a> should now really delete all tables from the database.
+That may sound dangerous, but that&#8217;s what we want when we have a
+dpy dump to restore our database.
+You know that you should rather not let
+Lino and some other application share the same database!</p>
+</div>
+<div class="section" id="continued-on-pp2lino">
+<h1>Continued on <cite>pp2lino</cite><a class="headerlink" href="#continued-on-pp2lino" title="Permalink to this headline">¶</a></h1>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0909.html" title="20110909"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0906.html" title="20110906"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0907.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0907.html">Online Link</a>
+    </div>
+  </body>
+</html>

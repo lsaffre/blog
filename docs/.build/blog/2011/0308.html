@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110308 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110309" href="0309.html" />
+    <link rel="prev" title="20110307" href="0307.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0309.html" title="20110309"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0307.html" title="20110307"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110308<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-qooxdoo-user-interface-for-lino">
+<h2>A Qooxdoo User Interface for Lino<a class="headerlink" href="#a-qooxdoo-user-interface-for-lino" title="Permalink to this headline">¶</a></h2>
+<p>The final goal is that you simply change
+the value of your local
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-ROOT_URLCONF" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">ROOT_URLCONF</span></code></a> from
+<code class="docutils literal"><span class="pre">'lino.ui.extjs.urls'</span></code>
+(currently the only allowed value)
+to <code class="docutils literal"><span class="pre">'lino.ui.qx.urls'</span></code>.
+Lino would do the rest for you.</p>
+<p>But there is some work to do before we get there.</p>
+<div class="section" id="step-1-the-qooxdoo-application-lino">
+<h3>Step 1 : The Qooxdoo application &#8220;Lino&#8221;<a class="headerlink" href="#step-1-the-qooxdoo-application-lino" title="Permalink to this headline">¶</a></h3>
+<p>I started to write a standalone
+Qooxdoo application called &#8220;Lino&#8221;.
+The code is here:
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/ui/qx/app">/lino/ui/qx/app</a>.</p>
+<p>This application currently doesn&#8217;t do very much:
+it just issues an AJAX call to request the main menu,
+which it then uses to actually build and show the menu.
+The menu items are correctly shown,
+but they currently don&#8217;t do anything.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="47%" />
+<col width="53%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Qooxdoo</td>
+<td>ExtJS</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="../../_images/0308a.jpg"><img alt="qx" src="../../_images/0308a.jpg" style="width: 312.8px; height: 243.2px;" /></a></td>
+<td><a class="reference internal" href="../../_images/0308b.jpg"><img alt="extjs" src="../../_images/0308b.jpg" style="width: 312.8px; height: 243.2px;" /></a></td>
+</tr>
+</tbody>
+</table>
+<p>And that&#8217;s enough for the moment.
+Before going on, we must solve another problem:
+how to get our Qooxdoo application
+integrated into the Django server?</p>
+</div>
+<div class="section" id="step-2-running-a-qooxdoo-application-on-a-django-server">
+<h3>Step 2 : Running a Qooxdoo application on a Django server<a class="headerlink" href="#step-2-running-a-qooxdoo-application-on-a-django-server" title="Permalink to this headline">¶</a></h3>
+<p>Here is how I do it for the moment.
+Unfortunately I need to do a <strong class="command">generate.py build</strong>
+each time I want to test a code change.
+See <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/30">docs/tickets/30</a></p>
+<ol class="arabic">
+<li><p class="first">On the development server I have in my
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/ui/qx/urls.py">urls.py</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="bp">False</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+    <span class="c"># doesn&#39;t yet work.</span>
+    <span class="n">QXAPP_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span><span class="s">&#39;app&#39;</span><span class="p">,</span><span class="s">&#39;source&#39;</span><span class="p">))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">QXAPP_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span><span class="s">&#39;app&#39;</span><span class="p">,</span><span class="s">&#39;build&#39;</span><span class="p">))</span>
+<span class="n">QX_PATH</span> <span class="o">=</span> <span class="s">&quot;L:/snapshots/qooxdoo/qooxdoo&quot;</span><span class="p">,</span>
+
+<span class="n">prefix</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="k">assert</span> <span class="n">prefix</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span>
+
+<span class="n">urlpatterns</span> <span class="o">+=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;django.views.static&#39;</span><span class="p">,</span>
+<span class="p">(</span><span class="s">r&#39;^</span><span class="si">%s</span><span class="s">qxapp/(?P&lt;path&gt;.*)$&#39;</span> <span class="o">%</span> <span class="n">prefix</span><span class="p">,</span>
+    <span class="s">&#39;serve&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s">&#39;document_root&#39;</span><span class="p">:</span> <span class="n">QXAPP_PATH</span><span class="p">,</span>
+    <span class="p">}))</span>
+
+<span class="n">urlpatterns</span> <span class="o">+=</span> <span class="n">patterns</span><span class="p">(</span><span class="s">&#39;django.views.static&#39;</span><span class="p">,</span>
+<span class="p">(</span><span class="s">r&#39;^</span><span class="si">%s</span><span class="s">qx/(?P&lt;path&gt;.*)$&#39;</span> <span class="o">%</span> <span class="n">prefix</span><span class="p">,</span>
+    <span class="s">&#39;serve&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="s">&#39;document_root&#39;</span><span class="p">:</span> <span class="n">QX_PATH</span><span class="p">,</span>
+    <span class="p">}))</span>
+</pre></div>
+</div>
+<p>On a production server, I&#8217;ll create symbolic links in the server&#8217;s media directory:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /usr/local/django/myproject/media
+ln -s /var/snapshots/lino/lino/ui/qx/app/build qxapp
+ln -s /var/snapshots/qooxdoo-1.3-sdk qx
+</pre></div>
+</div>
+</li>
+<li><p class="first">Here is my index view:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">index_view</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">False</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span>
+        <span class="c"># doesn&#39;t yet work.</span>
+        <span class="n">QXAPP_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span><span class="s">&#39;app&#39;</span><span class="p">,</span><span class="s">&#39;source&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">QXAPP_ROOT</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">__file__</span><span class="p">),</span><span class="s">&#39;app&#39;</span><span class="p">,</span><span class="s">&#39;build&#39;</span><span class="p">))</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">QXAPP_ROOT</span><span class="p">,</span><span class="s">&quot;index.html&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="nb">file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">In file <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/ui/qx/app/source/index.html">/lino/ui/qx/app/source/index.html</a>,
+I manually replaced the line</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;script type=&quot;text/javascript&quot; src=&quot;script/lino.js&quot;&gt;&lt;/script&gt;
+</pre></div>
+</div>
+<p>by</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;script type=&quot;text/javascript&quot; src=&quot;media/qx/script/lino.js&quot;&gt;&lt;/script&gt;
+</pre></div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0309.html" title="20110309"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0307.html" title="20110307"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0308.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0308.html">Online Link</a>
+    </div>
+  </body>
+</html>

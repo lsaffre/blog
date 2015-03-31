@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130914 (Saturday, 14 September 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130915 (Sunday, 15 September 2013)" href="0915.html" />
+    <link rel="prev" title="20130913 (Friday, 13 September 2013)" href="0913.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="20130915 (Sunday, 15 September 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="20130913 (Friday, 13 September 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-14-september-2013">
+<h1>20130914 (Saturday, 14 September 2013)<a class="headerlink" href="#saturday-14-september-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="davlink">
+<h2><a class="reference external" href="http://www.lino-framework.org/davlink/index.html#davlink" title="(in Lino v1.6)"><span>DavLink</span></a><a class="headerlink" href="#davlink" title="Permalink to this headline">¶</a></h2>
+<p>Fixed several problems in <a class="reference external" href="http://www.lino-framework.org/davlink/index.html#davlink" title="(in Lino v1.6)"><span>DavLink</span></a>:</p>
+<ul>
+<li><p class="first">Added a <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/media/applets/davlink.jnlp">davlink.jnlp</a>
+file and a <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//java/davlink/manifest.txt">manifest.txt</a> file
+as explained in the <a class="reference external" href="http://docs.oracle.com/javase/tutorial/deployment/TOC.html">Deployment Trail</a>.</p>
+</li>
+<li><p class="first">Added a file <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/media/applets/davlink_jnlp_test.html">davlink_jnlp_test.html</a> which
+is like <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/media/applets/davlink_test.html">davlink_test.html</a>
+but using JNLP.</p>
+</li>
+<li><p class="first">To facilitate further experimenting,
+<code class="xref py py-mod docutils literal"><span class="pre">lino.extjs.ext_renderer</span></code> can now generate either with or
+without JNLP depending on whether <code class="docutils literal"><span class="pre">USE_DAVLINK_JNLP</span></code> is True or
+False.</p>
+</li>
+<li><p class="first">AFAICS both methods work the same, so I prefer the simple
+applet method until proof of the opposite.</p>
+</li>
+<li><p class="first">It seems that the main problem was the fact that <code class="xref py py-meth docutils literal"><span class="pre">DavLink.init()</span></code>
+tried to set the SecurityManager.
+It seems that this was some obsolete technique,
+that it is simply not allowed and not necessary to change the
+security manager.</p>
+</li>
+<li><p class="first"><code class="xref py py-meth docutils literal"><span class="pre">DavLink.open()</span></code> did not write a traceback to the console
+when some Exception occured.</p>
+</li>
+<li><p class="first"><code class="xref py py-meth docutils literal"><span class="pre">DavLink.open()</span></code>
+returns a string with the error message when it fails,
+but
+<cite>davlink_test.html</cite> did not report this error message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">document</span><span class="o">.</span><span class="n">applets</span><span class="o">.</span><span class="n">DavLink</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">webdavURL</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Replaced this by:</p>
+<div class="highlight-python"><div class="highlight"><pre>var msg = document.applets.DavLink.open(webdavURL);
+if (msg) alert(msg);
+</pre></div>
+</div>
+</li>
+<li><p class="first">Could not find any reason for a NullPointerException on Windows7
+reported by Gerd.
+Added a message &#8220;DavLink.generate_default_prefs() done&#8221; in order to
+continue testing on Monday.</p>
+</li>
+<li><p class="first">In <cite>davlink_test.html</cite> and <cite>davlink_jnlp_test.html</cite> added a JavaScript
+function and a link to
+invoke <code class="xref py py-meth docutils literal"><span class="pre">DavLink.generate_default_prefs()</span></code> with one click instead
+of using the brute force method of deleting the <code class="file docutils literal"><span class="pre">prefs.xml</span></code> file.</p>
+</li>
+</ul>
+<p>All the above has been tested only using IcedTea and OpenJDK.</p>
+<p>Note: for efficient testing on a live webdav-enabled <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>
+database:</p>
+<ul>
+<li><p class="first">go once to the detail of some Event/Note which is being
+printed as webdav (i.e. a CV)</p>
+</li>
+<li><p class="first">click the permalink button</p>
+</li>
+<li><p class="first">Copy the URL line of your browser and then launch it directly to this
+url from the command line:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ chromium-browser http://127.0.0.1:8000/api/notes/MyNotes/28?an=detail
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+<div class="section" id="test-sdist">
+<h2>test_sdist<a class="headerlink" href="#test-sdist" title="Permalink to this headline">¶</a></h2>
+<p>I finally got <code class="docutils literal"><span class="pre">fab</span> <span class="pre">test_sdist</span></code> to run.
+And found the reason for
+the problem with the last release reported by Joe:
+The <cite>install_requires</cite> of Lino specified
+&#8216;north&#8217; instead of &#8216;North&#8217;.
+Also &#8216;PyYAML&#8217; was missing in <cite>install_requires</cite>.</p>
+<p>Now there&#8217;s just one ImportError:</p>
+<div class="highlight-python"><div class="highlight"><pre>Could not import settings &#39;lino.projects.belref.settings&#39; (Is it on sys.path?): No module named lino_welfare.modlib.statbel
+</pre></div>
+</div>
+<p>(which is normal. TODO: move
+lino.projects.belref to lino_welfare)
+or statbel from lino_welfare to lino)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="20130915 (Sunday, 15 September 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="20130913 (Friday, 13 September 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0914.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0914.html">Online Link</a>
+    </div>
+  </body>
+</html>

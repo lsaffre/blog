@@ -1,0 +1,24 @@
+==========================
+Saturday, January 10, 2015
+==========================
+
+Termin erstellen für Klient ohne Begleitung
+===========================================
+
+Working for :ticket:`55`
+
+So yesterday I noticed that after creating an appointment, the client
+is not automatically added as a Guest to that appointment.  
+
+The basic problem is in
+:meth:`lino.modlib.cal.models_event.Event.suggest_guests`::
+
+    def suggest_guests(self):
+        if self.owner:
+            for obj in self.owner.suggest_cal_guests(self):
+                yield obj
+
+It's not enough to ask only the owner. Manually created events don't
+have an owner, but in :ref:`welfare` we have `EventType.invite_client`
+which means that the `Event.project` (which always is a Client in
+:ref:`welfare`) should be suggested as Guest.

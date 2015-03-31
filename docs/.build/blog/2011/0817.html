@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110817 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110818" href="0818.html" />
+    <link rel="prev" title="20110816" href="0816.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0818.html" title="20110818"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0816.html" title="20110816"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110817<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Today I continued with the CalDAV functionality (<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/47">docs/tickets/47</a>).
+As a first step I got the introduction script from <a class="reference external" href="http://packages.python.org/caldav/">python-caldav</a> running:</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">caldav</span>
+<span class="kn">from</span> <span class="nn">caldav.elements</span> <span class="kn">import</span> <span class="n">dav</span><span class="p">,</span> <span class="n">cdav</span>
+
+<span class="c"># Principal url</span>
+<span class="c">#~ url = &quot;https://user:pass@hostname/user/Calendar&quot;</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s">&#39;luc.saffre@gmail.com&#39;</span>
+<span class="n">pwd</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;Please enter password for </span><span class="si">%s</span><span class="s">: &quot;</span> <span class="o">%</span> <span class="n">username</span><span class="p">)</span>
+
+<span class="n">loc</span> <span class="o">=</span> <span class="s">&#39;/calendar/dav/</span><span class="si">%s</span><span class="s">/&#39;</span> <span class="o">%</span> <span class="n">username</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&quot;https://</span><span class="si">%s</span><span class="s">:</span><span class="si">%s</span><span class="s">@www.google.com</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span><span class="n">pwd</span><span class="p">,</span><span class="n">loc</span><span class="p">)</span>
+
+<span class="n">vcal</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;BEGIN:VCALENDAR</span>
+<span class="s">VERSION:2.0</span>
+<span class="s">PRODID:-//Example Corp.//CalDAV Client//EN</span>
+<span class="s">BEGIN:VEVENT</span>
+<span class="s">UID:1234567890</span>
+<span class="s">DTSTAMP:20100510T182145Z</span>
+<span class="s">DTSTART:20100512T170000Z</span>
+<span class="s">DTEND:20100512T180000Z</span>
+<span class="s">SUMMARY:This is an event</span>
+<span class="s">END:VEVENT</span>
+<span class="s">END:VCALENDAR</span>
+<span class="s">&quot;&quot;&quot;</span>
+
+<span class="c"># the above raw data can be done using vobject:</span>
+
+<span class="kn">import</span> <span class="nn">vobject</span>
+<span class="n">mycal</span> <span class="o">=</span> <span class="n">vobject</span><span class="o">.</span><span class="n">iCalendar</span><span class="p">()</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;vevent&#39;</span><span class="p">)</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">vevent</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;uid&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;1234567890&quot;</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">vevent</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;dtstamp&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">45</span><span class="p">)</span>
+<span class="c">#~ mycal.vevent.add(&#39;dtstamp&#39;).value = datetime.now()</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">vevent</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;dtstart&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">17</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">vevent</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;dtend&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">18</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mycal</span><span class="o">.</span><span class="n">vevent</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s">&#39;summary&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s">&quot;This is still my event&quot;</span>
+<span class="n">vcal</span> <span class="o">=</span> <span class="n">mycal</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span>
+
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">caldav</span><span class="o">.</span><span class="n">DAVClient</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="n">principal</span> <span class="o">=</span> <span class="n">caldav</span><span class="o">.</span><span class="n">Principal</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+<span class="c">#~ print &quot;url.username:&quot;, principal.url.username</span>
+<span class="c">#~ print &quot;url.hostname:&quot;, principal.url.hostname</span>
+
+<span class="n">calendars</span> <span class="o">=</span> <span class="n">principal</span><span class="o">.</span><span class="n">calendars</span><span class="p">()</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">calendars</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;Sorry, no calendar&quot;</span>
+    <span class="k">print</span> <span class="n">principal</span><span class="o">.</span><span class="n">children</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+    
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">calendars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: more than 1 calendar&quot;</span>
+    
+<span class="n">calendar</span> <span class="o">=</span> <span class="n">calendars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">print</span> <span class="s">&quot;Using calendar&quot;</span><span class="p">,</span> <span class="n">calendar</span>
+
+<span class="k">print</span> <span class="s">&quot;Renaming (works, but is deactivated)&quot;</span>
+<span class="k">if</span> <span class="bp">False</span><span class="p">:</span>
+    <span class="n">calendar</span><span class="o">.</span><span class="n">set_properties</span><span class="p">([</span><span class="n">dav</span><span class="o">.</span><span class="n">DisplayName</span><span class="p">(</span><span class="s">&quot;Test calendar&quot;</span><span class="p">),])</span>
+<span class="k">print</span> <span class="n">calendar</span><span class="o">.</span><span class="n">get_properties</span><span class="p">([</span><span class="n">dav</span><span class="o">.</span><span class="n">DisplayName</span><span class="p">(),])</span>
+
+<span class="c">#~ event = caldav.Event(client, data = vcal, parent = calendar).save()</span>
+<span class="c">#~ print &quot;Event&quot;, event, &quot;created&quot;</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Looking for events on &quot;</span><span class="p">,</span> <span class="n">d</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">date_search</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">d</span><span class="o">+</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;Found&quot;</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">prettyPrint</span><span class="p">()</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2011</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&quot;Looking for events after&quot;</span><span class="p">,</span> <span class="n">d</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">date_search</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">d</span><span class="o">+</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">&quot;Found&quot;</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">instance</span><span class="o">.</span><span class="n">prettyPrint</span><span class="p">()</span>
+    
+</pre></div>
+</td></tr></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0818.html" title="20110818"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0816.html" title="20110816"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0817.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0817.html">Online Link</a>
+    </div>
+  </body>
+</html>

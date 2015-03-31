@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131018 (Friday, 18 October 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131019 (Saturday, 19 October 2013)" href="1019.html" />
+    <link rel="prev" title="20131017 (Thursday, 17 October 2013)" href="1017.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1019.html" title="20131019 (Saturday, 19 October 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1017.html" title="20131017 (Thursday, 17 October 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-18-october-2013">
+<h1>20131018 (Friday, 18 October 2013)<a class="headerlink" href="#friday-18-october-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-faggio">
+<h2>Lino Faggio<a class="headerlink" href="#lino-faggio" title="Permalink to this headline">¶</a></h2>
+<p>Continued on yesterday&#8217;s &#8220;To-Do-Liste Sven&#8221; (<a class="reference external" href="oops">2013-10-17</a>).</p>
+<ul>
+<li><p class="first">The <cite>cal.Calendar</cite> model is back. I had replaced it by a system of
+subscriptions where each user could define application-specific
+filter criteria per Subscription. This resulted in a system where it was
+possible for an Event to appear in different Calendars.
+Which would have been nice, but the problem with that idea is
+that <cite>Ext.ensible.CalendarPanel</cite> isn&#8217;t designed for it, it wants
+a list of calendars and each Event pointing to exactly one of them.</p>
+<p>So I return back to <em>almost</em> the old system
+(and that &#8220;almost&#8221; is what Lino has learned):
+<cite>cal.Event</cite> has no direct FK to Calendar, but a <cite>get_calendar</cite> method.
+And
+<a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> users see one Calendar per <cite>User</cite>
+while
+<a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a> users see one Calendar per <cite>Room</cite>.</p>
+</li>
+<li><p class="first">Updated the <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> test suite to several recent changes.</p>
+</li>
+<li><p class="first">New item &#8220;Once&#8221; in Recurrencies.</p>
+</li>
+<li><p class="first">insert_layout for <cite>courses.Line</cite></p>
+</li>
+<li><p class="first">New field courses.Line every_unit (Recurrencies)</p>
+</li>
+</ul>
+<p>Split up <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models.html#module-lino.modlib.cal.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal.models</span></code></a> into more digestable chunks:
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models_task.html#module-lino.modlib.cal.models_task" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">models_task</span></code></a>
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models_guest.html#module-lino.modlib.cal.models_guest" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">models_guest</span></code></a>
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models_event.html#module-lino.modlib.cal.models_event" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">models_event</span></code></a>
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models_calendar.html#module-lino.modlib.cal.models_calendar" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">models_calendars</span></code></a></p>
+<p>In a first checkin I had tried to turn
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models.html#module-lino.modlib.cal.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal.models</span></code></a>
+into a package containing the above files.
+But that would require me to add an explicit <a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/models/options/#app-label">app_label</a>
+(the feature that app_label &#8220;is no longer required for models that are
+defined in a models package within an app&#8221; is only available in the
+development version).</p>
+<p>I also did the mistake of naming them
+<code class="docutils literal"><span class="pre">task</span></code>,
+<code class="docutils literal"><span class="pre">guest</span></code>,
+<code class="docutils literal"><span class="pre">event</span></code> and
+<code class="docutils literal"><span class="pre">calendar</span></code> in a first go.
+And didn&#8217;t notice that a module called
+<a class="reference external" href="http://docs.python.org/2.7/library/calendar.html#module-calendar">calendar</a>
+is part of the Python standard library.
+The funny thing was that this bomb didn&#8217;t explode in the Lino test suite,
+only in <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;/usr/lib/python2.7/runpy.py&quot;, line 162, in _run_module_as_main
+    &quot;__main__&quot;, fname, loader, pkg_name)
+  File &quot;/usr/lib/python2.7/runpy.py&quot;, line 72, in _run_code
+    exec code in run_globals
+  File &quot;/home/luc/hgwork/atelier/atelier/doctest_utf8.py&quot;, line 52, in &lt;module&gt;
+    sys.exit(_test())
+  File &quot;/home/luc/hgwork/atelier/atelier/doctest_utf8.py&quot;, line 38, in _test
+    m = __import__(filename[:-3])
+  File &quot;lino/modlib/cal/utils.py&quot;, line 31, in &lt;module&gt;
+    from north.utils import to_locale
+  File &quot;/home/luc/hgwork/north/north/__init__.py&quot;, line 16, in &lt;module&gt;
+    from north.site import Site
+  File &quot;/home/luc/hgwork/north/north/site.py&quot;, line 10, in &lt;module&gt;
+    from djangosite import Site, DJANGO_DEFAULT_LANGUAGE, assert_django_code
+  File &quot;/home/luc/hgwork/site/djangosite/__init__.py&quot;, line 36, in &lt;module&gt;
+    from atelier.utils import AttrDict, ispure
+  File &quot;/home/luc/hgwork/atelier/atelier/utils.py&quot;, line 17, in &lt;module&gt;
+    from dateutil import parser as dateparser
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/dateutil/parser.py&quot;, line 26, in &lt;module&gt;
+    from . import relativedelta
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/dateutil/relativedelta.py&quot;, line 10, in &lt;module&gt;
+    import calendar
+  File &quot;lino/modlib/cal/calendar.py&quot;, line 27, in &lt;module&gt;
+    from django.db import models
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/django/db/__init__.py&quot;, line 11, in &lt;module&gt;
+    if settings.DATABASES and DEFAULT_DB_ALIAS not in settings.DATABASES:
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/django/conf/__init__.py&quot;, line 53, in __getattr__
+    self._setup(name)
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/django/conf/__init__.py&quot;, line 48, in _setup
+    self._wrapped = Settings(settings_module)
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/django/conf/__init__.py&quot;, line 132, in __init__
+    mod = importlib.import_module(self.SETTINGS_MODULE)
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/django/utils/importlib.py&quot;, line 35, in import_module
+    __import__(name)
+  File &quot;lino/__init__.py&quot;, line 79, in &lt;module&gt;
+    from .site import Site
+  File &quot;lino/site.py&quot;, line 103, in &lt;module&gt;
+    from lino.utils.xmlgen import html as xghtml
+  File &quot;lino/utils/__init__.py&quot;, line 60, in &lt;module&gt;
+    from atelier.utils import AttrDict, iif, ispure, assert_pure, confirm
+ImportError: cannot import name AttrDict
+</pre></div>
+</div>
+<p>An interesting example of a subtle pitfall!</p>
+</div>
+<div class="section" id="citadel">
+<h2>Citadel<a class="headerlink" href="#citadel" title="Permalink to this headline">¶</a></h2>
+<p>Oops, it seems that citadel caused some trouble to my mailman
+configuration...</p>
+<div class="highlight-python"><div class="highlight"><pre>(demo)luc@vps:~$ sudo aptitude purge citadel-server
+
+The following packages will be REMOVED:
+  citadel-server{p}
+0 packages upgraded, 0 newly installed, 1 to remove and 40 not upgraded.
+Need to get 0 B of archives. After unpacking 2,470 kB will be freed.
+Do you want to continue? [Y/n/?]
+(Reading database ... 44499 files and directories currently installed.)
+Removing citadel-server ...
+.Purging configuration files for citadel-server ...
+/var/lib/citadel/data not removed, as it may contain your personal data.
+dpkg: warning: while removing citadel-server, directory &#39;/var/spool/citadel/network&#39; not empty so not removed.
+dpkg: warning: while removing citadel-server, directory &#39;/var/spool/citadel&#39; not empty so not removed.
+dpkg: warning: while removing citadel-server, directory &#39;/var/lib/citadel/data&#39; not empty so not removed.
+dpkg: warning: while removing citadel-server, directory &#39;/var/lib/citadel&#39; not empty so not removed.
+Processing triggers for man-db ...
+
+
+
+
+(demo)luc@vps:~$ sudo rm -R /var/spool/citadel
+(demo)luc@vps:~$ sudo rm -R /var/lib/citadel
+
+(demo)luc@vps:~$ sudo aptitude purge libcitadel2
+
+
+(demo)luc@vps:~$ sudo tail -f /var/log/mail.log
+(demo)luc@vps:~$ sudo /etc/init.d/postfix restart
+
+
+Oct 18 14:15:28 vps postfix/local[18004]: EB4F42A2502: to=&lt;www-data@lino-framework.org&gt;, orig_to=&lt;www-data&gt;, relay=local, delay=1319126, delays=1319126/0/0/0.01, dsn=2.0.0, status=sent (delivered to command: procmail -a &quot;$EXTENSION&quot;)
+Oct 18 14:15:28 vps postfix/qmgr[15874]: EB4F42A2502: removed
+Oct 18 14:15:29 vps postfix/pickup[15873]: F07572A24F9: uid=33 from=&lt;www-data&gt;
+Oct 18 14:15:29 vps postfix/cleanup[18044]: F07572A24F9: message-id=&lt;20131018101528.F07572A24F9@lino-framework.org&gt;
+Oct 18 14:15:29 vps postfix/qmgr[15874]: F07572A24F9: from=&lt;www-data@lino-framework.org&gt;, size=985, nrcpt=1 (queue active)
+Oct 18 14:15:29 vps postfix/local[18046]: EFBF02A24D2: to=&lt;www-data@lino-framework.org&gt;, orig_to=&lt;www-data&gt;, relay=local, delay=23727, delays=23727/0.01/0/0.01, dsn=2.0.0, status=sent (delivered to command: procmail -a &quot;$EXTENSION&quot;)
+Oct 18 14:15:29 vps postfix/qmgr[15874]: EFBF02A24D2: removed
+Oct 18 14:15:29 vps postfix/local[18089]: F07572A24F9: to=&lt;www-data@lino-framework.org&gt;, orig_to=&lt;www-data&gt;, relay=local, delay=755726, delays=755726/0/0/0, dsn=2.0.0, status=sent (delivered to command: procmail -a &quot;$EXTENSION&quot;)
+Oct 18 14:15:29 vps postfix/qmgr[15874]: F07572A24F9: removed
+Oct 18 14:15:35 vps postfix/local[16188]: 2DBCD2A3BB9: to=&lt;www-data@lino-framework.org&gt;, orig_to=&lt;www-data&gt;, relay=local, delay=649533, delays=649499/0.65/0/33, dsn=2.0.0, status=sent (delivered to command: procmail -a &quot;$EXTENSION&quot;)
+Oct 18 14:15:35 vps postfix/qmgr[15874]: 2DBCD2A3BB9: removed
+
+
+(demo)luc@vps:~$ sudo /etc/init.d/mailman restart
+
+
+(demo)luc@vps:~$ sudo less /var/log/mailman/vette
+
+Oct 17 15:43:31 2013 (5058) kakoor: Discarded posting:
+        From: dtuulik@gmail.com
+        Subject: Re: Kontsertreis Saksamaale 23.-30. sept. 2013
+        Reason: Palun l&lt;FC&gt;henda adressaatide nimekirja: see on liiga pikk.
+Oct 17 15:44:18 2013 (5061) kakoor: Discarded posting:
+        From: reet.lend@ksg.edu.ee
+        Subject: =?iso-8859-15?Q?Proov_8.10_ja_laulmine_L=F5ikust=E4nup=FChal_13.10?=
+        Reason: Kiri oli liiga suur; palun l&lt;FC&gt;hendage seda nii, et see oleks v&lt;E4&gt;iksem kui 40 KB.
+/var/log/mailman/vette (END)
+</pre></div>
+</div>
+<p>Sent a test mail to kakoor:</p>
+<div class="highlight-python"><div class="highlight"><pre>/var/log/mailman/error shows:
+
+Oct 18 14:23:09 2013 (18198) send_digests() failed: [Errno 13] Permission denied
+: &#39;/var/lib/mailman/archives/private/kakoor/attachments&#39;
+Oct 18 14:23:10 2013 (18195) Archive file access failure:
+        /var/lib/mailman/archives/private/kakoor.mbox/kakoor.mbox [Errno 13] Permission denied: &#39;/var/lib/mailman/archives/private/kakoor.mbox/kakoor.mbox&#39;
+Oct 18 14:23:10 2013 (18195) Uncaught runner exception: [Errno 13] Permission denied: &#39;/var/lib/mailman/archives/private/kakoor.mbox/kakoor.mbox&#39;
+Oct 18 14:23:10 2013 (18195) Traceback (most recent call last):
+  File &quot;/var/lib/mailman/Mailman/Queue/Runner.py&quot;, line 120, in _oneloop
+    self._onefile(msg, msgdata)
+  File &quot;/var/lib/mailman/Mailman/Queue/Runner.py&quot;, line 191, in _onefile
+    keepqueued = self._dispose(mlist, msg, msgdata)
+  File &quot;/var/lib/mailman/Mailman/Queue/ArchRunner.py&quot;, line 73, in _dispose
+    mlist.ArchiveMail(msg)
+  File &quot;/var/lib/mailman/Mailman/Archiver/Archiver.py&quot;, line 198, in ArchiveMail
+    self.__archive_to_mbox(msg)
+  File &quot;/var/lib/mailman/Mailman/Archiver/Archiver.py&quot;, line 167, in __archive_to_mbox
+    mbox = self.__archive_file(afn)
+  File &quot;/var/lib/mailman/Mailman/Archiver/Archiver.py&quot;, line 155, in __archive_file
+    return Mailbox.Mailbox(open(afn, &#39;a+&#39;))
+IOError: [Errno 13] Permission denied: &#39;/var/lib/mailman/archives/private/kakoor:
+
+
+root@vps:/var/log/mailman# ls -al /var/lib/mailman/archives/private/kakoor
+total 12
+drwxrwsr-x 2 root www-data 4096 Jul 30 15:14 .
+drwxrws--- 8 list www-data 4096 Aug 26 15:53 ..
+-rw-rw-r-- 1 root www-data  503 Jul 30 15:14 index.html
+
+
+
+$ sudo new_list pppk
+$ sudo nano /etc/aliases (add aliases as instructed and run)
+$ sudo newaliases
+
+$ sudo nano /etc/postfix/valias.txt
+$ sudo postmap /etc/postfix/valias.txt
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1019.html" title="20131019 (Saturday, 19 October 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1017.html" title="20131017 (Thursday, 17 October 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1018.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1018.html">Online Link</a>
+    </div>
+  </body>
+</html>

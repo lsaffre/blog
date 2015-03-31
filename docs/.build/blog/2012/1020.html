@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121020 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121022" href="1022.html" />
+    <link rel="prev" title="20121018" href="1018.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1022.html" title="20121022"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1018.html" title="20121018"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121020<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="changes-and-mti">
+<h2>changes and mti<a class="headerlink" href="#changes-and-mti" title="Permalink to this headline">¶</a></h2>
+<p>Voilà: the changes framework now logs changes in MTI children to their master,
+including delete_child and create_child.</p>
+</div>
+<div class="section" id="get-action-permission">
+<h2>get_action_permission<a class="headerlink" href="#get-action-permission" title="Permalink to this headline">¶</a></h2>
+<p>Changed signature of <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.Action.get_action_permission" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.actions.Action.get_action_permission()</span></code></a>:
+first argument is an action request, not only a user.
+This is necessary for
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.newcomers.models.html#lino_welfare.modlib.newcomers.models.AssignCoach" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.newcomers.models.AssignCoach</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_action_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ar</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">state</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">is_valid_niss</span><span class="p">(</span><span class="n">ar</span><span class="o">.</span><span class="n">master_instance</span><span class="o">.</span><span class="n">national_id</span><span class="p">):</span>
+        <span class="c">#~ logger.info(&quot;20121016 %s has invalid NISS &quot;,ar.master_instance)</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">AssignCoach</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_action_permission</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span><span class="n">obj</span><span class="p">,</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="wer-die-wahl-hat-hat-die-qual">
+<h2>Wer die Wahl hat, hat die Qual<a class="headerlink" href="#wer-die-wahl-hat-hat-die-qual" title="Permalink to this headline">¶</a></h2>
+<p>Momentan gilt die Regel, dass Klienten im Status &#8220;Begleitet&#8221;
+auch eine gültige NISS haben müssen.
+Klienten (Neuanträge) mit ungültiger NISS können folglich keinem
+Begleiter zugewiesen werden,
+weil sie dadurch in den Status &#8220;Begleitet&#8221; wechseln würden.</p>
+<p>Erste Implementierung dieser Regel war, dass Lino eine
+Fehlermeldung &#8220;Kann Klient X mit ungültiger NISS nicht zuweisen&#8221;
+macht, wenn man es trotzdem versucht.
+Aber das ist nicht zumutbar, weil die Meldung erst kommt
+wenn man schon die Begründung ausgefüllt hat.
+Folglich muss die Aktion <cite>[Zuweisen]</cite> deaktiviert werden.</p>
+<p>Aber auch das ist nicht so super. Wozu brauche ich überhaupt
+eine Liste der eventuell in Frage kommenden Begleiter, wenn der
+Klient noch keine NISS hat.</p>
+<p>Neues kleines Feature: wenn get_data_row eine <cite>Warning</cite> raist,
+dann ist die Grid leer und es kommt besagter Text als <cite>emptyText</cite>.
+Wird in <cite>ActionRequest.no_data_text</cite> zwischengespeichert.</p>
+<p>Gefällt mir!</p>
+</div>
+<div class="section" id="die-ersten-bilder-buttons">
+<h2>Die ersten Bilder-Buttons<a class="headerlink" href="#die-ersten-bilder-buttons" title="Permalink to this headline">¶</a></h2>
+<p>Samstagabend. Kinder im Bett, Frau unterwegs, da
+habe ich mal zum Spaß Icons gemalt:
+ein rotes X für den Delete-Button,
+ein unbeschriebenes Blatt für den Neu-Button,
+eine Diskette für den Save-Button
+und ein Detail-Fenster:</p>
+<a class="reference internal image-reference" href="../../_images/1020.jpg"><img alt="../../_images/1020.jpg" src="../../_images/1020.jpg" style="width: 720.0px; height: 404.5px;" /></a>
+<p>Ich wollte vor allem sehen, ob es überhaupt funktioniert.
+Eure Vorschläge für schönere Buttons sind willkommen!
+Und außer diesen braucht Lino noch eine ganze Serie von Buttons!</p>
+<p><a class="reference external" href="https://github.com/lsaffre/lino/blob/master//media/extjs/images/default/grid">/media/extjs/images/default/grid</a></p>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Worked on lino.apps.az</li>
+<li>Moved the definition of <cite>welcome</cite> from lino_welfare.pcsw to lino.modlib.cal</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1022.html" title="20121022"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1018.html" title="20121018"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1020.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1020.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111112 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111114" href="1114.html" />
+    <link rel="prev" title="20111111" href="1111.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1114.html" title="20111114"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1111.html" title="20111111"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111112<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="user-specific-language-selection">
+<h2>user-specific language selection<a class="headerlink" href="#user-specific-language-selection" title="Permalink to this headline">¶</a></h2>
+<p>More details to do for the support of
+user-specific language selection.</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.CefLevel</span></code> overrides <cite>display_text</cite>,
+and this method wasn&#8217;t yet adapted to yesterday&#8217;s changes.</p>
+<p>There were still some places where Lino translates too early:</p>
+<ul class="simple">
+<li>the headers of tabs</li>
+<li>labels of buttons and menus</li>
+</ul>
+<p>Worked on the French translations which are far from being
+perfect but start to get usable.</p>
+<p>Das Geschlecht (m/w) einer Person wird in Englisch &#8220;Gender&#8221; und
+nicht &#8220;Sex&#8221; genannt. Ich habe jetzt wenigstens die Feldbezeichnung
+geändert. Bei Gelegenheit auch den internen Feldnamen
+(obschon das mehr Arbeit sein wird).</p>
+<p>There is one conceptual detail which needed a design decision:
+how to mark <strong>hotkey letters in menu items</strong>.
+Until now we had the following temporary solution:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">prepare_label</span><span class="p">(</span><span class="n">mi</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">label</span><span class="p">)</span> <span class="c"># trigger translation</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">HOTKEY_MARKER</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">mi</span><span class="o">.</span><span class="n">HOTKEY_MARKER</span><span class="p">,</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">label</span>
+</pre></div>
+</div>
+<p>This method doesn&#8217;t work any longer with lazy translation.
+But anyway it wasn&#8217;t used since lino.ui.extjs3 simply removed the markers.</p>
+</div>
+<div class="section" id="listings">
+<h2>Listings<a class="headerlink" href="#listings" title="Permalink to this headline">¶</a></h2>
+<p>Optimizations when printing a <code class="xref py py-class docutils literal"><span class="pre">Listing</span></code>:</p>
+<ul class="simple">
+<li>It didn&#8217;t use the DavLink applet when
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.use_davlink</span></code> was <cite>True</cite>. Fixed.</li>
+<li>It no longer uses a hard-coded site-wide template &#8220;Listing.odt&#8221;
+but a <cite>Default.odt</cite> in the model&#8217;s config directory.</li>
+</ul>
+<p>Check-in 20111112b</p>
+</div>
+<div class="section" id="miscellaneous-bugfixes">
+<h2>Miscellaneous Bugfixes<a class="headerlink" href="#miscellaneous-bugfixes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Candidates of a Course : this print action was erroneously moved
+from Course to CourseOffer. Fixed.</li>
+<li>The Labels of menu entries for Listings were strange:
+twice the listing title, separated by a space. Fixed.</li>
+<li>There is now also a command to view the existing records for
+each Listing type.
+<span class="menuselection">Explorer ‣ Listings</span>.</li>
+<li>Fixed the &#8220;Irritating scrollbar&#8221; bug:
+The welcome page gets a vertical scrollbar when it has more than
+a screenful of information to display.
+That&#8217;s normal, but it was irritating
+that this scrollbar &#8220;didn&#8217;t disappear&#8221; when another window is opened.
+And even worse, it disturbed the layout of some windows (e.g. detail of a course)
+because their layout manager isn&#8217;t obviously aware of that scrollbar when creating
+the canvas, and thus each window now also has a horizontal scrollbar.<ul>
+<li><cite>html_lines</cite> inserts the <cite>welcome.html</cite> now only if <code class="docutils literal"><span class="pre">not</span> <span class="pre">on_ready</span></code>.</li>
+<li>Quick Links now also use a <cite>http:</cite> instead of a <cite>javascript:</cite> link.</li>
+</ul>
+</li>
+</ul>
+<p>Check-in 20111112c</p>
+</div>
+<div class="section" id="sunday">
+<h2>Sunday<a class="headerlink" href="#sunday" title="Permalink to this headline">¶</a></h2>
+<p>Started a new experimental application for internal use.</p>
+<p>Some general optimizations:</p>
+<ul class="simple">
+<li>Added new configuration setting <code class="xref py py-attr docutils literal"><span class="pre">languages</span></code>.</li>
+<li>e.g. PersonMixin replaced by Person.
+Note that in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.models.html#module-lino.modlib.contacts.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts.models</span></code></a>, Person and Company are
+abstract and are not automatically subclasses of Contact.
+There may be applications who want &#8220;persons&#8221; that are not a Contact.</li>
+<li>Field &#8220;sex&#8221; renamed to &#8220;gender&#8221; (this will need data migration)</li>
+</ul>
+<p>Added new module <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.tickets.html#module-lino.modlib.tickets" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.tickets</span></code></a>.</p>
+<p>Check-in 20111113b</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1114.html" title="20111114"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1111.html" title="20111111"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1112.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1112.html">Online Link</a>
+    </div>
+  </body>
+</html>

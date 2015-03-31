@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110110 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110114" href="0114.html" />
+    <link rel="prev" title="20110107" href="0107.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0114.html" title="20110114"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0107.html" title="20110107"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110110<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-job-office-synchronisierung">
+<h2>a) job_office, Synchronisierung<a class="headerlink" href="#a-job-office-synchronisierung" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><cite>Person.clean</cite> prüft jetzt auf &#8220;Circular reference&#8221;.
+Sonst kommt irgendwann mal ein Schlaumeier auf die Idee,
+einer Kontaktperson des ADG sich selbst als Kontaktperson einzutragen.
+<cite>demo.dpy</cite> tries to create a circular reference and tests whether it fails:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.core.exceptions</span> <span class="kn">import</span> <span class="n">ValidationError</span>
+<span class="c"># a circular reference: bernard is contact for company adg and also has himself as `job_office_contact`</span>
+<span class="n">bernard</span> <span class="o">=</span> <span class="n">Person</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name__exact</span><span class="o">=</span><span class="s">&quot;Bodard Bernard&quot;</span><span class="p">)</span>
+<span class="n">adg</span> <span class="o">=</span> <span class="n">company</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">u&quot;Arbeitsamt der D.G.&quot;</span><span class="p">,</span><span class="n">city</span><span class="o">=</span><span class="n">eupen</span><span class="p">,</span><span class="n">country</span><span class="o">=</span><span class="s">&#39;BE&#39;</span><span class="p">)</span>
+<span class="k">yield</span> <span class="n">adg</span>
+<span class="n">adg_dir</span> <span class="o">=</span> <span class="n">contact</span><span class="p">(</span><span class="n">company</span><span class="o">=</span><span class="n">adg</span><span class="p">,</span><span class="n">person</span><span class="o">=</span><span class="n">bernard</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">yield</span> <span class="n">adg_dir</span>
+<span class="k">try</span><span class="p">:</span>
+  <span class="n">bernard</span><span class="o">.</span><span class="n">job_office_contact</span> <span class="o">=</span> <span class="n">adg_dir</span>
+  <span class="n">bernard</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+  <span class="c">#~ bernard.save()</span>
+<span class="k">except</span> <span class="n">ValidationError</span><span class="p">:</span>
+    <span class="k">pass</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;Expected ValidationError&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Vielleicht müsste lino.dsbe eher ein neues Modell CoachedPerson(contacts.Person)
+definieren. Dann hätten &#8220;normale&#8221; Kontaktpersonen gar nicht die vielen Felder
+des DSBE.
+Dazu wäre ein Feld Person.type nötig.</p>
+</li>
+<li><p class="first">Noch drei neue Felder in Person:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="60%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Lino</th>
+<th class="head">TIM</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>card_type</td>
+<td>CARDTYPE</td>
+</tr>
+<tr class="row-odd"><td>card_issuer</td>
+<td>CARDISSUER</td>
+</tr>
+<tr class="row-even"><td>noble_condition</td>
+<td>NOBLECOND</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p class="first">Statt eines Klassenattributs <cite>job_office</cite> im LinoSite
+habe ich jetzt ein FK-Feld <cite>job_office</cite> in SiteConfig.
+Dieser Parameter ist wie <cite>site_company</cite> auf der Grenze zwischen
+statischen und dynamischen Konfigurationsparametern.
+Eindeutig dynamisch ist bisher eigentlich nur <cite>next_partner_id</cite>.
+Aber <cite>job_office</cite> und <cite>site_company</cite> sind übers UI leichter
+einzugeben.</p>
+</li>
+<li><p class="first"><cite>street_box</cite> wurde beim Synchronisieren aus TIM vergessen.</p>
+</li>
+<li><p class="first">Neue Funktion <code class="xref py py-meth docutils literal"><span class="pre">lino.Site.setup_dblogger()</span></code>.
+Dadurch kann man nun den loglevel des dbloggers lokal verändern.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="b-cache-bug">
+<h2>b) Cache-Bug<a class="headerlink" href="#b-cache-bug" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Auf der Suche nach dem &#8220;Cache-Bug&#8221;.
+master params sind die Parameter, die ein slave dieses Panels als base params übernehmen soll.
+master- und baseparams dürfen immer nur mk und mt sein.
+Der Fehler ist scheinbar, dass ich &#8216;query&#8217; auch da rein speichere.
+Für &#8216;query&#8217; brauche ich eine weitere variable query_params.
+Bug behoben. Da waren im Anschluss noch einige Nebenwirkungen mit dem refresh.
+Aber jetzt scheint alles zu klappen.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0114.html" title="20110114"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0107.html" title="20110107"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0110.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0110.html">Online Link</a>
+    </div>
+  </body>
+</html>

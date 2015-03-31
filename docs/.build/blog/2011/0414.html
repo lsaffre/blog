@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110414 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110415" href="0415.html" />
+    <link rel="prev" title="20110412" href="0412.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0415.html" title="20110415"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0412.html" title="20110412"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110414<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="doppelklicks">
+<h2>Doppelklicks<a class="headerlink" href="#doppelklicks" title="Permalink to this headline">¶</a></h2>
+<p>Nach einigen Tagen mit Fieber im Bett geht es jetzt weiter mit folgendem Punkt:</p>
+<ol class="arabic simple">
+<li>In einer Grid, die auch ein Detail hat,
+wird durch Doppelklick auf einer CheckColumn gleichzeitig auch das
+Detail-Fenster geöffnet. Das muss behoben werden, bevor ich mit
+den &#8220;allgemeinen Uploads&#8221; anfangen kann.</li>
+</ol>
+<p>Die <cite>processEvent</cite> der <cite>Ext.grid.GridView</cite> feuert in folgender Reihenfolge:
+- <code class="docutils literal"><span class="pre">grid.fireEvent('dblclick')</span></code>
+- <code class="docutils literal"><span class="pre">grid.fireEvent('celldblclick')</span></code> (die dann <cite>onCellDblClick</cite> meiner <cite>Lino.GridPanel</cite> ruft)
+- <code class="docutils literal"><span class="pre">column.processEvent</span></code> (die im Fall einer <cite>Lino.CheckColumn</cite> den Wert umschaltet)
+- <code class="docutils literal"><span class="pre">grid.fireEvent('rowdblclick')</span></code></p>
+<p>Wie kriege ich die beiden miteinander kombiniert? Oder zuerst mal:
+was will ich eigentlich genau?
+Soll ein Doppelklick auf der Zelle einer CheckColumn (in einer Grid mit Detail)
+(1) den Wert umschalten und nicht das Detail-Fenster öffnen?
+oder (2) den Wert nicht umschalten und stattdessen das Detail öffnen?
+oder (3) will ich das pro Report konfigurierbar machen?</p>
+<p>Spontan würde ich für Lösung (1) tendieren, aber Lösung (2) ist
+ganz leicht zu implementieren, und deshalb habe ich das jetzt mal so gemacht.
+Also in der Grid eines Reports, der ein Detail hat,
+können CheckColumns nicht per Doppelklick umgeschaltet werden.
+Doppelklick heißt in solchen Grids immer &#8220;Detail öffnen&#8221;.
+Mir gefällt das so.</p>
+</div>
+<div class="section" id="dumping-courseproviders-and-companies">
+<h2>Dumping CourseProviders and Companies<a class="headerlink" href="#dumping-courseproviders-and-companies" title="Permalink to this headline">¶</a></h2>
+<p>Der folgende Punkt ist jetzt auch fertig:</p>
+<ol class="arabic simple">
+<li>dpy.Serializer schreibt momentan in den dump eines CourseProvider alle Felder
+der Company nochmal rein. Er muss aber statt dieser Felder nur <cite>company_ptr</cite> setzen.</li>
+</ol>
+<p>War im Grunde ganz einfach, ich musste nur <cite>_meta.local_fields</cite> statt <cite>_meta.fields</cite> nehmen.
+Ich habe auch eigens einen Testcase
+<code class="xref py py-func docutils literal"><span class="pre">lino.projects.dsbe.tests.dsbe_tests.test01()</span></code>
+geschrieben, der allerdings nicht wirklich testet
+sondern mir beim Überlegen behilflich war.</p>
+<p>Ärgerlich auch wieder mal, dass ich den besagten Testcase nicht in autodoc
+rein kriege, wegen der <cite>DJANGO_SETTINGS_MODULE</cite>. Aber bon, das ist weniger dringend.
+Sorry, wenn in diesem Blog viele Links noch immer nicht funktionieren.</p>
+<p>Abends mach ich die Probe aufs Exempel:</p>
+<ul class="simple">
+<li>Dump mit der alten Version</li>
+<li>Check-in, Upgrade und Dump mit der neuen Version</li>
+<li>Dateivergleich, ob auch wirklich nur die CourseProvider sich verändert haben. Alles klar.</li>
+</ul>
+<p>(Nachtrag: hier habe ich dann gar nicht daran gedacht zu testen, diesen neuen Dump dann auch einzulesen. Sh. <a class="reference external" href="http://www.lino-framework.org0415.html">0415</a>)</p>
+</div>
+<div class="section" id="date-formatting">
+<h2>Date formatting<a class="headerlink" href="#date-formatting" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Wenn man als Datum <code class="docutils literal"><span class="pre">13/12/2010</span></code> eingibt, macht er daraus <code class="docutils literal"><span class="pre">12.01.2011</span></code>.
+Weil er das als ein amerikanisches Format ansieht.</li>
+</ol>
+<p>Der Fehler war nicht wie anfangs vermutet auf der Serverseite, sondern der
+Client schickte schon <code class="docutils literal"><span class="pre">12.01.2011</span></code>.
+Das lag lediglich am Konfigurationsparameter <cite>altFormats</cite>
+des <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.form.DateField">Ext.form.DateField</a>.
+Um kompakteren Code zu generieren, habe ich jetzt außerdem
+eine Klasse <cite>Lino.DateField</cite> in der :xfile`linolib.js`.</p>
+<p>Den Parameter <cite>Report.date_format</cite> habe ich vorläufig mal rausgeholt.
+Und statt
+<code class="docutils literal"><span class="pre">lino.DATE_FORMAT_STRFTIME</span></code>,
+<code class="docutils literal"><span class="pre">lino.DATE_FORMAT_EXTJS</span></code> und
+<code class="docutils literal"><span class="pre">lino.PARSE_DATE()</span></code>
+heißt es jetzt
+<code class="docutils literal"><span class="pre">settings.LINO.date_format_strftime</span></code> usw.
+Denn das Datumsformat konnte man bisher überhaupt nicht konfigurieren,
+jetzt kann man das bis auf weiteres immerhin global pro Site.</p>
+<p>Check-in und Upgrade in Eupen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0415.html" title="20110415"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0412.html" title="20110412"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0414.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0414.html">Online Link</a>
+    </div>
+  </body>
+</html>

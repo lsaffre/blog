@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120510 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120511" href="0511.html" />
+    <link rel="prev" title="20120509" href="0509.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0511.html" title="20120511"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0509.html" title="20120509"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120510<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-on-a-shared-host">
+<h2>Lino on a shared host<a class="headerlink" href="#lino-on-a-shared-host" title="Permalink to this headline">¶</a></h2>
+<p>Got Lino running in the shell of a shared host.</p>
+<p>The <cite>welcome.html</cite> template isn&#8217;t used anymore but was still parsed. Fixed.</p>
+<p>In <cite>django.core.management.__init__.py</cite> there&#8217;s a function <cite>get_commands()</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">global</span> <span class="n">_commands</span>
+<span class="k">if</span> <span class="n">_commands</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">_commands</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">([(</span><span class="n">name</span><span class="p">,</span> <span class="s">&#39;django.core&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">find_commands</span><span class="p">(</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+
+    <span class="c"># Find the installed apps</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+        <span class="n">apps</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">INSTALLED_APPS</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">EnvironmentError</span><span class="p">,</span> <span class="ne">ImportError</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="c"># &lt;&lt;-- add this to correct Django&#39;s behaviour</span>
+        <span class="n">apps</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+<p>Django features a very strange behaviour of silently ignoring
+any <cite>(AttributeError, EnvironmentError, ImportError)</cite>
+that occurs during initialization.
+I ignore why they did this, but it has at least one side effect:
+if the logger config (the function defined in <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-LOGGING" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">LOGGING</span></code></a>)
+tries and fails to create a logfile, then it raises an <cite>IOError</cite>
+(a subclass of EnvironmentError).
+And you get no error message at all.
+<cite>manage.py validate</cite> reports &#8220;0 errors&#8221;,
+but nothing works because not all <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a>
+have been loaded.
+Changed <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.log.html#lino.utils.log.configure" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">lino.utils.log.configure()</span></code></a>
+so that in case of an IOError when trying to open the log file
+it just logs an exception to the other handlers.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/?from=olddocs">https://docs.djangoproject.com/en/dev/howto/deployment/fastcgi/?from=olddocs</a></li>
+<li>Documentation needs update <a class="reference external" href="http://www.lino-framework.org/admin/install_debian.html">/admin/install_debian</a></li>
+</ul>
+</div>
+<div class="section" id="schuldnerberatung">
+<h2>Schuldnerberatung<a class="headerlink" href="#schuldnerberatung" title="Permalink to this headline">¶</a></h2>
+<p>Continued with <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/63">docs/tickets/63</a>.
+Moved lino.modlib.debts to lino.obsolete.debts.
+Moved lino.sandbox.debts to lino.modlib.debts.</p>
+<p>New table <code class="xref py py-class docutils literal"><span class="pre">DebtsSummaryByBudget</span></code>.</p>
+<p>Done:</p>
+<ul class="simple">
+<li>SummaryTable für Schulden. Diese werden nicht gruppiert, aber wohl in die Kolonne
+ihres Akteurs eingetragen und insgesamt nach Datum o.ä. sortiert.</li>
+</ul>
+<p>Remains to do:</p>
+<ul class="simple">
+<li>Hide the &#8220;Debts Mediation&#8221; tab (BudgetsByPartner) for Users without <cite>is_debts</cite>.</li>
+<li>How to render zero values on screen and paper</li>
+<li>Print general summary of a budget:<ul>
+<li>Monatliche Einkünfte</li>
+<li>Monatliche Ausgaben inkl Raten der laufenden Kredite</li>
+<li>Monatliche Reserve Steuern</li>
+<li>Monatliche Reserve Versicherungen</li>
+<li>Restbetrag für Kredite und Zahlungsrückstände:</li>
+<li>Total Kredite / Schulden / Gerichtsvollzieher / Zahlungsrückstände</li>
+</ul>
+</li>
+<li>Eingabe in der Grid ist umständlich:<ul>
+<li>handleKeyDown optimieren</li>
+<li>nicht nach jeder Zelle ein refresh machen</li>
+</ul>
+</li>
+<li>Jährliche Beträge</li>
+</ul>
+<p>To discuss when first prototype is available:</p>
+<ul class="simple">
+<li>Debt.status : &#8220;Kredit&#8221;, &#8220;Schuld&#8221;, &#8220;Gerichtsvollzieher&#8221;?</li>
+<li>Debt.rate (Monatsrate)?</li>
+<li>Entries are printed by Group, but displayed on screen by type...</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0511.html" title="20120511"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0509.html" title="20120509"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0510.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0510.html">Online Link</a>
+    </div>
+  </body>
+</html>

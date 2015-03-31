@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0516.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0514.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0516.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0514.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100514 ←] [20100515 15.05.2010] [20100516 →] =</p>
+<p>== Dokumente ==</p>
+<p>Ein Dokument ist ein in sich abgeschlossener Text, der zu einem bestimmten Moment durch einen bestimmten Benutzer aus Lino heraus erstellt worden ist.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Rechnungen, Angebote, Lieferscheine</li>
+<li>Bescheinigungen, Genehmigungen, Urkunden</li>
+<li>Protokolle, Gesprächsnotizen</li>
+<li>Briefe, E-Mails</li>
+</ul>
+</div></blockquote>
+<p>Jedes erstellte Dokument ist ein Record in der entsprechenden Datenbanktabelle, die außer <cite>django.db.models.Model</cite> auch <cite>lino.modlib.documents.utils.Printable</cite> implementiert.</p>
+<p>Dokumente, die außerhalb von Lino mit anderen Mitteln erstellt (und durch einen Lino-Benutzer eingescannt) worden sind, werden in Lino als &#8220;Links&#8221; bezeichnet und erfasst. Lino speichert solche Dokumente nicht in seiner eigenen Datenbank, sondern lediglich die URL oder den Dateinamen.
+Es gibt auch eine Tabelle von Link-Arten, z.B. Aufenthaltsgenehmigung, Arbeitserlaubnis, Personalausweis, Geburtsurkunde, Mietvertrag, ... Für manche dieser Links muss ein Gültigkeitsdatum eingetragen werden.</p>
+<p>Kann aber sein, dass ich in DSBE <cite>notes.Notes</cite> für alle Dokumente benutze. In NoteType kommen dann die oben erwähnten Dokumentarten. Jede &#8220;Notiz&#8221; wäre dann wie ein Chronikeintrag in TIM.</p>
+<p>== Abschied vom Eigenschaften-Editor ==</p>
+<p>Pro Person braucht der DSBE eine Fülle von Angaben wie:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Atomare Eigenschaften:
+* Führerschein
+* Zivilstand
+* und viele andere</li>
+<li>Komplexe Eigenschaften:
+* Dokumente (type, date, ...)
+* Links (type, date_issued, date_expired, url)
+* Sprachkenntnisse (language, written, spoken)
+* Studien (type, content, year, language,...)</li>
+</ul>
+</div></blockquote>
+<p>Der Sozialdienst braucht andere Angaben, die Buchhaltung wiederum andere.</p>
+<dl class="docutils">
+<dt>Führerschein: ein atomares Feld mit einer Auswahlliste. Es sollte kein doofes CharField sein, in dem der Text (z.B. &#8220;Klasse B&#8221;) gespeichert wird, sondern lediglich der Code muss gespeichert werden, denn wir wollen ja mehrsprachige Bedienung und sprachunabhängige Suchabfragen. Also muss es eine weitere Tabelle DrivingLicense geben mit den möglichen Arten von Führerscheinen. Das hört sich an als würden wir Kanonen benutzen, um auf Spatzen zu schießen. Um das zu vermeiden, hatten wir ja den Eigenschaften-Editor gemacht. Aber der entpuppt sich als Sackgasse, weil:</dt>
+<dd><ul class="first last simple">
+<li>die Tabelle DrivingLicense wird dadurch nicht vermieden</li>
+<li>man kann Eigenschaften nicht strukturiert in Layouts einbauen</li>
+<li>um Abfragen zu ermöglichen, müssten Eigenschaften noch weiter abstrahiert werden</li>
+</ul>
+</dd>
+</dl>
+<p>14.45 Uhr: Check-in. Diese Gedanken bestätigen sich durch die Änderungen von heute morgen.</p>
+<p>== site.js ==</p>
+<p>Jetzt wo die Detail-Fenster keine Sklaven mehr sind, werden sie natürlich häufiger geöffnet und geschlossen. Und natürlich sollte da nicht bei jedem Klick ein Ajax-Call nötig sein bloß um den JS-Code zu erhalten. Der bisher von <cite>ui_view()</cite> bei GET generierte Code steht jetzt in einer &#8220;relativ statischen&#8221; Datei <cite>media/cache/js/site.js</cite>, die bei jedem Serverstart neu generiert wird.</p>
+<p>Erfreuliche Nebenwirkung: die Speichergefräßigkeit des Clients verringert sich. Und das obwohl die Datei site.js allein für Lino-DSBE momentan 580 KB dick ist.</p>
+<p>Insgesamt hat diese imposante Neuerung erstaunlich wenig Zeit genommen. Abgesehen von ein paar Warnungen im Firebug funktioniert alles wie vor 6 Stunden, außer dass jetzt weniger Ajax-Calls laufen.</p>
+<p>21.20 Uhr. Check-in.</p>
+<p>Der eigentliche Sinn dieser Übung war aber, dass ich die Fenster leichter von allen möglichen Stellen aus aufrufen kann. Zum Beispiel sollte ein Doppelklick zumindest in manchen Reports automatisch das Detail öffnen.</p>
+<p>Das muss nun warten, weil <a class="reference external" href="http://www.extjs.com/deploy/dev/docs/">http://www.extjs.com/deploy/dev/docs/</a> nicht online ist, und dann ist die Doku unbequem zu lesen. Deshalb fang ich mal mit i18n an.</p>
+<p>== i18n ==</p>
+<p>In den models-Modulen muss ich ugettext_lazy verwenden. Und dann muss ich an einigen Stellen explizit <cite>unicode()</cite> aufrufen, damit die Übersetzung stattfindet. Dann musste ich in den betreffenden Modulen <cite>#coding: utf8</cite> durch <cite>#coding: UTF-8</cite> ersetzen, weil xgettext das sonst nicht versteht.</p>
+<p><cite>django django-admin.py makemessages -l de</cite> funktioniert nun, zumindest in
+<cite>weleup</cite> und in <cite>lino.modlib.contacts</cite>.</p>
+<p>Auch <cite>django django-admin.py compilemessages</cite> funktioniert, und die ersten Labels erscheinen nun in übersetztem Deutsch. Aber jetzt mach ich erstmal Feierabend. Dritter Check-in für heute.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0516.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0514.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0515.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0515.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130722 (Monday, 22 July 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130723 (Tuesday, 23 July 2013)" href="0723.html" />
+    <link rel="prev" title="20130721 (Sunday, 21 July 2013)" href="0721.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0723.html" title="20130723 (Tuesday, 23 July 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0721.html" title="20130721 (Sunday, 21 July 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monday-22-july-2013">
+<h1>20130722 (Monday, 22 July 2013)<a class="headerlink" href="#monday-22-july-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="expectedguests-waitingguests-createclientevent">
+<h2>ExpectedGuests, WaitingGuests, CreateClientEvent<a class="headerlink" href="#expectedguests-waitingguests-createclientevent" title="Permalink to this headline">¶</a></h2>
+<p>Worked on the <span class="xref std std-ref">welfare.reception</span> module.</p>
+<ul class="simple">
+<li><span class="xref std std-ref">welfare.reception.ExpectedGuests</span>
+and
+<span class="xref std std-ref">welfare.reception.WaitingGuests</span>
+start to be ready.</li>
+<li>New action &#8220;Appointment&#8221; (pcsw.Clients.create_event = CreateClientEvent())
+for checking in visitors without appointment.
+This action is currently declared <cite>show_in_workflow</cite>, so it is not in
+the top toolbar but in the workflow buttons (Status tab).</li>
+</ul>
+</div>
+<div class="section" id="how-to-mount-a-samba-share-on-a-linux-client">
+<h2>How to mount a Samba share on a Linux client<a class="headerlink" href="#how-to-mount-a-samba-share-on-a-linux-client" title="Permalink to this headline">¶</a></h2>
+<p>Q: I have a server named <cite>jana</cite> on my LAN and would like to
+tell Shotwell to store its photos on this server and to use the
+same pictures from different Linux clients.</p>
+<p>On each client (here hoppel):</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@hoppel:~$ mkdir jana
+luc@hoppel:~$ sshfs luc@jana:/smb ~/jana
+luc@jana&#39;s password:
+</pre></div>
+</div>
+<p>That&#8217;s all. Verify that it worked:</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@hoppel:~$ ls jana
+audio  backup  collect  fotos  screencasts  tmp  to_print  videos
+luc@hoppel:~/jana$
+</pre></div>
+</div>
+<p>Edit: that&#8217;s not yet all.
+How can I now automatically mount this each time I start?
+But in fact not really each time... e.g. not when I&#8217;m not home.
+This is where <a class="reference external" href="https://help.ubuntu.com/community/Autofs">autofs</a>
+becomes interesting:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo aptitude install autofs
+[sudo] password for luc:
+The following NEW packages will be installed:
+  autofs autofs5{a} libgssglue1{a} libnfsidmap2{a} libtirpc1{a} nfs-common{a} rpcbind{a}
+0 packages upgraded, 7 newly installed, 0 to remove and 0 not upgraded.
+Need to get 1,064 kB of archives. After unpacking 2,842 kB will be used.
+Do you want to continue? [Y/n/?]
+</pre></div>
+</div>
+</div>
+<div class="section" id="checkin-in-will-reassign-the-event">
+<h2>Checkin in will reassign the event<a class="headerlink" href="#checkin-in-will-reassign-the-event" title="Permalink to this headline">¶</a></h2>
+<p>Worked on <cite>CreateClientEvent</cite>.
+Lino can now handle a client checkin without prior appointment.</p>
+<p>The basic idea is to simply first create an appointment.</p>
+<p>Let&#8217;s say that Theresia is reception clerk and the
+client wants to see Alicia.</p>
+<p>Theresia opens the Detail of the Client and
+clicks on &#8220;Appointment&#8221;, selects
+Alicia as user, then OK.</p>
+<p>Lino won&#8217;t store directly Alicia as responsible user.
+That&#8217;s because we have the rule: when somebody creates a calendar
+event for a colleague, then the colleague must first accept her
+responsibility for that event by clicking &#8220;Accept&#8221; in the
+&#8220;My assigned events&#8221; table.</p>
+<p>But when a client is physically present and checked in,
+then that rule is not realistic,
+there will be a real-time solution.
+That&#8217;s why the reception clerk has the right
+to shortcut that responsibility.</p>
+<p>New warning &#8220;Checkin in will reassign the event from Theresia to Alicia&#8221;</p>
+<p>New field SiteConfig.client_calender needed because
+CreateClientEvent must set this, otherwise the Guest won&#8217;t get created.</p>
+</div>
+<div class="section" id="reading-belgian-eid-cards">
+<h2>Reading Belgian eID cards<a class="headerlink" href="#reading-belgian-eid-cards" title="Permalink to this headline">¶</a></h2>
+<p>Re-vamped once more an old topic (see <a class="reference external" href="oops">2013-01-05</a>).</p>
+<p>Most Lino-Welfare users, but especially those of the
+<span class="xref std std-ref">welfare.reception</span> module,
+need to electronically read Belgian eID cards of clients and
+store the data of these cards (name, birth date, picture,...)
+in their database.</p>
+<p>This is currently working well thanks to Johan De Schutter&#8217;s
+<a class="reference external" href="http://code.google.com/p/eid-javascript-lib/">eid-javascript-lib</a>,
+which does exactly what we need:
+a JavaScript class &#8220;CardReader&#8221; which I can instantiate and call it&#8217;s <cite>read</cite> method.</p>
+<p>But <cite>eid-javascript-lib</cite> is built on
+<a class="reference external" href="http://code.google.com/p/eid-mw">Middleware</a> 3.5
+and therefore causes a compatibility warning on computers with a
+newer MW (version 4.0. was released in January 2012).
+Furthermore I&#8217;m afraid that Johan won&#8217;t easily upgrade <cite>eid-javascript-lib</cite>
+because in the <a class="reference external" href="https://code.google.com/p/eid-mw/wiki/SDK40">wiki</a> of the MW
+I read &#8220;This 4.0 eidmw SDK will break radically with
+the older 2.x and 3.5 SDK API&#8217;s. (...) SDK 4.0 will not provide Java
+examples. Java has evolved over time and smartcard access is now
+provided by the JVM. Applets can do smartcard operations right in the
+JVM. This fact removes the need for client side middleware dependencies.&#8221;</p>
+<p>Note that I still don&#8217;t really understand what the MW actually does:
+it &#8220;offers components for using the Belgian eID on your computer.&#8221;,
+but what does that mean concretely?</p>
+<p>I just need an applet like the eid-javascript-lib, but one that doesn&#8217;t
+depend on the old Middleware.</p>
+<p>The official <a class="reference external" href="https://code.google.com/p/eid-applet/">eid-applet</a>
+is not what we want. We don&#8217;t want authentication via eID,
+we just want to read the data <em>without</em> prior authentication.
+Even if some day in the future we would want our users to authenticate
+using the eID, then we won&#8217;t use the eid-applet to read data from
+clients eID cards. The reception clerk is not going to ask
+clients to enter a PIN of their eID card.
+Some excerpts from the applet dev guide confirm this: &#8220;The eID
+Applet will not proceed when it detects a non SSL browser session. ...
+The eID Applet cannot be accessed from Javascript for cross-site
+scripting security reasons.&#8221;
+and then the eID Applet requires an &#8220;applet service&#8221; to run.</p>
+<p>Should I write my own applet which accesses the smartcard directly?
+Johan obviously started a project like that, <a class="reference external" href="https://code.google.com/p/eid-nomw-sdk-applet/source/list">eid-nomw-sdk-applet</a>,
+but that was in September 2012 and I have no news since then.</p>
+<p>Other projects:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://code.google.com/p/eid-viewer">eid-viewer</a>
+seems to be the current GUI viewer.</li>
+<li><a class="reference external" href="https://code.google.com/p/commons-eid-viewer/">commons-eid-viewer</a>:
+Next-Gen eID viewer built upon the robust commons-eid classes.
+Only one commit &#8220;first experiments&#8221; from June 12, 2013
+Owner: .</li>
+<li><a class="reference external" href="https://code.google.com/p/commons-eid/">commons-eid</a>:
+The Commons eID Library provides a very generic library to handle
+the Belgian eID. The library can be used both for desktop
+applications as well as browser based applets.</li>
+</ul>
+<p>This last one sounds interesting. But the README says:</p>
+<div class="highlight-python"><div class="highlight"><pre>The following is required for compiling the Commons eID software:
+* Oracle Java 1.6.0_33
+* Apache Maven 3.0.4
+* Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy
+</pre></div>
+</div>
+<p>So before continuing in this direction I&#8217;d have to learn about
+<a class="reference external" href="http://maven.apache.org/">Maven</a>.
+Okay... not feeling ready for this right now...</p>
+<p>So it seems that the Lino users in Eupen will start to
+actively Johan&#8217;s eid-javascript-lib within the next months
+because AFAICS this library remains the only working solution.</p>
+</div>
+<div class="section" id="final-sprint-before-release">
+<h2>Final sprint before release<a class="headerlink" href="#final-sprint-before-release" title="Permalink to this headline">¶</a></h2>
+<p>The <span class="xref std std-ref">welfare.reception</span> module isn&#8217;t yet perfect,
+but tonight we plan to release Lino-Welfare 1.1.8.
+See <a class="reference external" href="http://welfare.lino-framework.org/changes.html#welfare-changes" title="(in Lino Welfare Reference Manual v1.1)"><span>Changes in Lino Welfare</span></a>.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>The confirmation &#8220;Client X started waiting for user Y&#8221; at the end of
+CreateClientEvent mentions the wrong user when you use the Event
+Detail to click on &#8220;checkin&#8221;.</li>
+<li>Maybe a direct button &#8220;Checkin&#8221; on Client which create an
+appointment without using the deviation via <cite>assigned_to</cite>.
+But also check whether the client truly doesn&#8217;t have any appointment.</li>
+<li>Checkin action should check for valid eid card and issue a warning
+when appropriate.</li>
+<li>more todo_tables</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0723.html" title="20130723 (Tuesday, 23 July 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0721.html" title="20130721 (Sunday, 21 July 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0722.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0722.html">Online Link</a>
+    </div>
+  </body>
+</html>

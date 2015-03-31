@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saturday, February 21, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Sunday, February 22, 2015" href="0222.html" />
+    <link rel="prev" title="Friday, February 20, 2015" href="0220.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0222.html" title="Sunday, February 22, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0220.html" title="Friday, February 20, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-february-21-2015">
+<h1>Saturday, February 21, 2015<a class="headerlink" href="#saturday-february-21-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="stale-controllables">
+<h2>235 stale controllables<a class="headerlink" href="#stale-controllables" title="Permalink to this headline">¶</a></h2>
+<p>I am investigating what to do with the 235 stale controllables in Eupen.</p>
+<p>In <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contenttypes.html#module-lino.modlib.contenttypes" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contenttypes</span></code></a>, I changed <code class="docutils literal"><span class="pre">StaleControllables</span></code>
+to <code class="xref py py-class docutils literal"><span class="pre">StaleGenericRelateds</span></code> and <code class="docutils literal"><span class="pre">StaleControllablesByModel</span></code> to
+<code class="xref py py-class docutils literal"><span class="pre">StaleGenericRelatedByModel</span></code>. They no longer detect only stale
+<cite>owner</cite> fields of <code class="xref py py-class docutils literal"><span class="pre">Controllable</span></code> rows but any stale
+GenericForeignKey field in the database.</p>
+<p>Added a new test module for testing this table:
+<code class="xref py py-mod docutils literal"><span class="pre">test_stale_gfk</span></code>.</p>
+<p>Which made me discover that when I delete an object, Django <em>does</em>
+automatically delete any objects which have a GenericForeignKey
+pointing at it as well. Already in <a class="reference external" href="https://docs.djangoproject.com/en/1.6/ref/contrib/contenttypes/">1.6</a>.</p>
+<p>So theoretically I can remove my custom <a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.delete" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">Model.delete</span></code></a> method which did exactly that.
+I have been reinventing the wheel once more.  And I am going to adapt
+Lino to Django.  Yes (sigh!), that&#8217;s the disadvantage of being a poor
+lonesome codeboy.</p>
+<p>One problem is that in Lino you can configure the cascading behaviour
+using the <code class="xref py py-attr docutils literal"><span class="pre">allow_stale_generic_foreignkey</span></code>.  Okay, in
+Django you can write a pre_delete signal.</p>
+<p>Another problem is that in Lino you can inform the user and ask for
+confirmation before deleting them.</p>
+<p>Another problem is that in Django this automatism happens only if the
+object being deleted has a <a class="reference external" href="https://docs.djangoproject.com/en/1.7/ref/contrib/contenttypes/#django.contrib.contenttypes.fields.GenericRelation">GenericRelation</a>
+field. Which is confirmed by <a class="reference external" href="http://stackoverflow.com/questions/6803018/why-wont-my-genericforeignkey-cascade-when-deleting">Why won&#8217;t my GenericForeignKey cascade
+when deleting?</a>.
+OTOH this statement seems to be wrong: it happens also in my projects
+which do <em>not</em> use any <cite>GenericRelation</cite>.  As <code class="xref py py-mod docutils literal"><span class="pre">test_broken_gfk</span></code> shows.</p>
+<p>Which means that <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.changes.models.html#lino.modlib.changes.models.Change" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Change</span></code></a>
+objects are currently <em>not</em> preserved if their <cite>master</cite> or <cite>object</cite>
+pointer becomes stale.  See <a class="reference external" href="http://trac.lino-framework.org/ticket/30">#30</a> (Keep change records when
+partner gets deleted).  I must probably write a signal handler for
+<cite>pre_delete</cite>. A minor problem, though.  <cite>Clear nullable foreign keys
+on delete &lt;https://djangosnippets.org/snippets/1231/&gt;</cite></p>
+<p>All this raises the question: How then did these stale generic
+pointers get into the database in Eupen?  Okay, I can imagine that if
+some bug in some user code raises an exception at the right (i.e. the
+wrong) moment.</p>
+<p>And last but not least:</p>
+<ul class="simple">
+<li>how then can I artificially produce some stale GenericRelated
+objects for testing purposes?</li>
+<li>how to clean up these?</li>
+</ul>
+</div>
+<div class="section" id="about-journals-and-invoices">
+<h2>About Journals and Invoices<a class="headerlink" href="#about-journals-and-invoices" title="Permalink to this headline">¶</a></h2>
+<p>While working on <a class="reference external" href="http://trac.lino-framework.org/ticket/9">#9</a>, Mahmoud correctly pointed out that there
+were some redundant table definitions in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.sales.html#module-lino.modlib.sales" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.sales</span></code></a> and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.ledger.html#module-lino.modlib.ledger" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.ledger</span></code></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0222.html" title="Sunday, February 22, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0220.html" title="Friday, February 20, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0221.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0221.html">Online Link</a>
+    </div>
+  </body>
+</html>

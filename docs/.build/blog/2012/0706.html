@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120706 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120707" href="0707.html" />
+    <link rel="prev" title="20120705" href="0705.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0707.html" title="20120707"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0705.html" title="20120705"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120706<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuring-user-profiles">
+<h2>Configuring User Profiles<a class="headerlink" href="#configuring-user-profiles" title="Permalink to this headline">¶</a></h2>
+<p>There was still a problem with yesterday&#8217;s version.</p>
+<p>A development server on <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.presto</span></code> answered
+with an <cite>AttributeError</cite> &#8220;&#8216;UserProfile&#8217; object has no attribute &#8216;office_level&#8217;&#8221;
+to the first request.</p>
+<p>To understand the problem, let&#8217;s make a tour to the internals
+of Lino and Django:</p>
+<div class="highlight-python"><div class="highlight"><pre>T:\data\luc\lino_local\presto&gt;python manage.py shell
+Python 2.7.1 (r271:86832, Nov 27 2010, 18:30:46) [MSC v.1500 32 bit (Intel)] on win32
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+(InteractiveConsole)
+&gt;&gt;&gt; from lino.modlib.users.models import User
+&gt;&gt;&gt; User.objects.all()
+[&lt;User: Root User&gt;, &lt;User: Luc Saffre&gt;]
+&gt;&gt;&gt; u = User.objects.all()[0]
+&gt;&gt;&gt; print repr(u.profile)
+UserProfile:900(level=blank_item)
+</pre></div>
+</div>
+<p>Indeed, UserProfile has no attribute <cite>office_level</cite>.
+That&#8217;s because the application&#8217;s
+<code class="xref py py-meth docutils literal"><span class="pre">setup_user_profiles</span></code>
+(which redefines the UserProfiles choicelist
+and adds an <cite>office_level</cite> attribute) has not yet been
+called.</p>
+<p>Before loading a user, I must somehow call
+<code class="xref py py-func docutils literal"><span class="pre">analyze_models</span></code>,
+e.g. by doing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+<span class="go">INFO Starting Lino...</span>
+<span class="go">INFO Analyzing models...</span>
+<span class="go">INFO Lino Site &#39;presto@armand&#39; started. Languages: de. 117 actors.</span>
+<span class="go">INFO Using Lino 1.4.4, Django 1.5.dev17937, python-dateutil 1.5, Cheetah 2.4.4, OdfPy ODFPY/0.9.4, docutils 0.7, suds 0.4.1, PyYaml 3.08, Appy 0.8.0 (2011/12/15 22:41), Python 2.7.1.</span>
+</pre></div>
+</div>
+<p>And now the magic has happened:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">profile</span><span class="p">)</span>
+<span class="go">UserProfile:900(level=admin,office=admin)</span>
+</pre></div>
+</div>
+<p>Lino does this magic (calling <cite>settings.LINO.startup()</cite>)
+when the first web request comes in.
+But more precisely,
+until now this magic was done in <code class="xref py py-mod docutils literal"><span class="pre">lino.extjs3.urls</span></code>.
+Now it is also done in <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.auth</span></code> because
+it&#8217;s there where the User gets loaded.</p>
+<p>Again, it&#8217;s a pity that Django doesn&#8217;t provide a &#8220;startup&#8221; signal which is
+launched once when all INSTALLED_APPS have been imported.
+A startup signal would make these things less magic,
+and save a few ticks per request for not needing to
+check again and again whether it is the first one or not.</p>
+<p>Moved <cite>perms</cite> and <cite>menus</cite> from <cite>lino.utils</cite> to <cite>lino.core</cite>.
+This  was an absolutely internal change, but it made me
+discover a bug in <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw</span></code>:</p>
+<ul class="simple">
+<li><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.jobs</span></code> still used the old syntax for
+specifying requirements</li>
+</ul>
+</div>
+<div class="section" id="calendar">
+<h2>Calendar<a class="headerlink" href="#calendar" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>New model <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.Subscription</span></code>.
+Users now see other people&#8217;s Events only if they have subscribed to their calendar.</li>
+<li>Calendar Panel now refreshes after editing the detail of an event</li>
+<li>Day and Week view of calendar Panel now display hours between 8 and 18
+(and no longer between 0 and 24). This is currently a hard-coded value
+(<cite>viewStartHour: 8, viewEndHour: 18</cite>) and cannot be configured.</li>
+</ul>
+</div>
+<div class="section" id="lino-at-pixelbar">
+<h2>Lino at Pixelbar<a class="headerlink" href="#lino-at-pixelbar" title="Permalink to this headline">¶</a></h2>
+<p>A new Lino is born!
+There is now a first public demo of Lino at
+<a class="reference external" href="http://lino.pixelbar-bahamut.net/">http://lino.pixelbar-bahamut.net/</a></p>
+<p>Note: the following error message was due to the fact that it used Django 1.3:</p>
+<blockquote>
+<div>NotImplementedError at /
+No LayoutElement for permissions (&lt;class &#8216;django.db.models.fields.related.ManyToManyField&#8217;&gt;) in ListLayout on auth.GroupTable</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0707.html" title="20120707"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0705.html" title="20120705"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0706.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0706.html">Online Link</a>
+    </div>
+  </body>
+</html>

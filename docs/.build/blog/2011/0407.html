@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110407 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110408" href="0408.html" />
+    <link rel="prev" title="20110406" href="0406.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0408.html" title="20110408"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0406.html" title="20110406"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110407<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="noch-fehlerjagd">
+<h2>Noch Fehlerjagd<a class="headerlink" href="#noch-fehlerjagd" title="Permalink to this headline">¶</a></h2>
+<p>Die Methode von Daniel Haas (sh. <a class="reference external" href="http://www.lino-framework.org0407.html">gestern</a> brachte dann noch eine Reihe
+von Nebenwirkungen (Combobox- und Date-Felder schickt sie ebenfalls &#8220;richtiger&#8221;,
+was ich aber nicht brauchen kann; sie schickt auch bei PUT via GET; file Uploads
+kann sie nicht...).</p>
+<p>Aber JC Watsons Methode ist elegant und simpel:
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?28449">A &#8220;fix&#8221; for unchecked checkbox submission  behaviour</a>,
+ich brauchte sie lediglich  für Ext 3 anzupassen.</p>
+<p>Noch ein Bug: Checkboxen in einer Grid sind nicht editierbar.
+Da gefällt mir als Lösung die CheckColumn von ExtJS, die ich
+dank <a class="reference external" href="http://www.sencha.com/forum/showthread.php?116082-SOLVED-Convert-BooleanColumn-to-CheckColumn-in-EditorGridPanel">dieses
+Threads</a>
+gefunden habe.</p>
+<p>Ich habe sie aber in meine <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-linolib.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linolib.js</span></code></a> kopiert und dort erweitert:</p>
+<ul class="simple">
+<li>in <cite>render()</cite> noch eine Zeile hinzugefügt habe, damit er auf phantom
+records keine Checkbox anzeigt.</li>
+<li>Die Originalversion von ExtJS feuerte kein afteredit-Event.</li>
+<li>Nicht ein einfacher Klick, sondern ein Doppelklick löst das toggle aus.</li>
+</ul>
+<p>TODO:
+Ein kleines Problem ist noch da: in einer Grid, die auch ein Detail hat,
+wird durch Doppelklick auf einer CheckColumn gleichzeitig auch das
+Detail-Fenster geöffnet.</p>
+</div>
+<div class="section" id="zwischenrelease">
+<h2>Zwischenrelease<a class="headerlink" href="#zwischenrelease" title="Permalink to this headline">¶</a></h2>
+<p>So, nun wo die schlimmsten Bugs raus sind, mach ich in Eupen ein Upgrade.
+Ich habe auch ein neues Dokument <a class="reference external" href="http://www.lino-framework.org/dsbe/testlauf.html">/dsbe/testlauf</a> begonnen.</p>
+</div>
+<div class="section" id="lino-modlib-auth-wird-lino-modlib-users">
+<h2><cite>lino.modlib.auth</cite> wird <cite>lino.modlib.users</cite><a class="headerlink" href="#lino-modlib-auth-wird-lino-modlib-users" title="Permalink to this headline">¶</a></h2>
+<p>Hier ein Bug, der offenbar schon seit Wochen drin ist und noch von
+niemandem bemerkt worden ist:</p>
+<ol class="arabic simple">
+<li>Man kann keine neuen Benutzer anlegen.
+Er sagt dann &#8220;password: Dieses Feld darf nicht leer sein&#8221;.
+Dabei gibt es ja gar kein Passwort mehr in <cite>lino.modlib.auth</cite>.</li>
+</ol>
+<p>In der Tat: <cite>django.contrib.auth</cite> wird an bestimmten Stellen im Django-Code
+importiert, dadurch kommen diese Models auch in den Model-Pool, und dort
+überschreiben Sie dann das von mir in <cite>lino.modlib.auth</cite> definierte Modell für <cite>User</cite>.
+Ohne Warnung...</p>
+<p>Also jetzt ist das app_label nicht mehr <cite>auth</cite>, sondern <cite>users</cite>.
+Was im Grunde logischer ist, weil ich ja nicht Authentifizierung mache,
+sondern lediglich eine Benutzertabelle.</p>
+<p>Das bedeutet aber auch, dass Djangos System mit dem <cite>app_label</cite> vielleicht gar
+nicht nutzbar ist, um wiederverwertbare verknüpfbare Module zu schreiben.
+Und oh mein Gott, die Tests von <cite>django.contrib.contentypes</cite>
+sind abhängig von <cite>django.contrib.auth</cite>.
+Die Testsuite von contenttpyes müsste für gut darauf
+testen, ob ein <cite>app_label</cite> names <cite>auth</cite> überhaupt installiert ist.</p>
+<p>Na ja, also meine Idee, das auth-Modul von Django zu ersetzen,
+ist zwar mutig, aber vielleicht auch verrückt.
+Wir werden sehen. Kommt Zeit, kommt Rat.
+Zur Zeit funktioniert <code class="docutils literal"><span class="pre">manage.py</span> <span class="pre">test</span></code> jedenfalls mal wieder nicht.</p>
+</div>
+<div class="section" id="release-1-1-8">
+<h2>Release 1.1.8<a class="headerlink" href="#release-1-1-8" title="Permalink to this headline">¶</a></h2>
+<p>Wegen obigem Bug mache ich ein Release in Eupen mit DB-Migration,
+deshalb gönnen wir uns auch die nächste Versionsnummer.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0408.html" title="20110408"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0406.html" title="20110406"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0407.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0407.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100212 Arbeitsbericht" href="0212.html" />
+    <link rel="prev" title="20100208 Arbeitsbericht" href="0208.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0212.html" title="20100212 Arbeitsbericht"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0208.html" title="20100208 Arbeitsbericht"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100211 Arbeitsbericht] =</p>
+<p>Die Idee für Issue 94 wird mir langsam klarer. Ich werde es &#8220;Dialoge&#8221; nennen. Ein Dialog ist eine Serie von Requests (c2s) und Responses (s2c).</p>
+<p>Der Client sagt zum Server <cite>POST /action/contacts/Persons</cite>, worauf der Server einen neuen Dialog eröffnet. Bei <cite>/action/contacts/Persons</cite> wird es ein kurzer Dialog: der Server antwortet dem Client mit JS-Code (&#8220;führ mal folgenden Code aus&#8221;).</p>
+<p>Ein bisschen schade ist, dass der Server dann diesen Dialog dennoch offen hält, weil eine Generatorfunktion nicht sagen kann wieviele Steps sie hat. Der Client muss also gleich nach dem Ausführen des JS-Codes kurz antworten (z.B. ´POST /step/1´) und auf die nächste Anweisung warten. Erst dann darf der Server <cite>dialog.next()</cite> rufen und wird feststellen, dass keine Anweisung mehr kommt.</p>
+<p>Der Server hat eine Liste von allen laufenden Dialogen. Die Dialognummern brauchen nur innerhalb ihrer Sitzung identifizierend zu sein.</p>
+<p>Auch Issue 100 dürfte relativ leicht werden. Das API der <cite>FOO_choice</cite>-Methoden kann so bleiben, aber der <cite>/choices/</cite>-Request muss einfach fast das Gleiche wie <cite>/submit/</cite> machen, außer dass er die Instanz nicht speichert.</p>
+<p>Habe an Issue 86 (Grid does 2 useless data requests) gearbeitet. Funktioniert immer noch nicht richtig. Ich erinnere mich nicht, weshalb ich auch in <cite>render</cite> die <cite>pageSize</cite> setze. Nach dem Render wird scheinbar auch resize getriggert, daher der doppelte Aufruf. Die Einbindung in die Events scheint jetzt okay zu sein, aber woher kriege ich eine verlässliche Angabe über die Größe der Grid?
+<cite>this.getInnerHeight()</cite>? <cite>this.getView().mainBody.getHeight()</cite>?
+Kann es sein, dass das <cite>autoHeight=True</cite> der Grid stört?
+Wahrscheinlich... jedenfalls ohne <cite>autoHeight=True</cite> klappt es einigermaßen.
+Warum ich aber noch 3 Zeilen abziehen muss, habe ich nicht ganz verstanden. Eine für die extra row, vielleicht eine weitere für die Kolonnentitel, aber die Dritte kann ich nicht erklären.</p>
+<p>Weiter mit der Einbindung der Slave Grids (Issue 102). Die load()s der slave_grids müssen nicht in DetailMainPanel generiert werden, sondern die slave_grids selber müssen sich als row_listener registrieren.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0212.html" title="20100212 Arbeitsbericht"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0208.html" title="20100208 Arbeitsbericht"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0211.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0211.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130622 (Saturday, 22 June 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130623 (Sunday, 23 June 2013)" href="0623.html" />
+    <link rel="prev" title="20130621 (Friday, 21 June 2013)" href="0621.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0623.html" title="20130623 (Sunday, 23 June 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0621.html" title="20130621 (Friday, 21 June 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-22-june-2013">
+<h1>20130622 (Saturday, 22 June 2013)<a class="headerlink" href="#saturday-22-june-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-learns-portuguese">
+<h2>Lino learns Portuguese<a class="headerlink" href="#lino-learns-portuguese" title="Permalink to this headline">¶</a></h2>
+<p>Added pt-br to the list of supported locales:</p>
+<ul class="simple">
+<li>.po and .mo files contributed by Flavio</li>
+<li><cite>env.languages</cite> in <code class="file docutils literal"><span class="pre">fabfile.py</span></code></li>
+</ul>
+<p>Demo users in <code class="xref py py-mod docutils literal"><span class="pre">lino.ui.fixtures.demo</span></code> :</p>
+<p>Added a warning &#8220;No demo user for language %r.&#8221; to be
+issued when <code class="xref std std-setting docutils literal"><span class="pre">languages</span></code>
+contains an unsupported language.</p>
+<p>Added a fictive demo user &#8220;Ronaldo Rosa&#8221; for <cite>pt-br</cite>.</p>
+<p>Added <cite>pt-br</cite> as language in <a class="reference external" href="http://www.lino-framework.org/api/lino.projects.min1.settings.html#module-lino.projects.min1.settings" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.min1.settings</span></code></a>.</p>
+<p>Added this blog entry to the list of tested docs which makes
+it part of the test suite. When working on it I do:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python setup.py test -s tests.BlogTest.test_20130622
+</pre></div>
+</div>
+<p>(EDIT: later I removed the entry again. The following snippets
+are now obsolete and no longer being tested
+and are only for history documentation purposes.)</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="s">&#39;ronaldo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span><span class="o">.</span><span class="n">set_language</span><span class="p">(</span><span class="s">&#39;pt-br&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Django silently ignores it when you try to activate an invalid language,
+so we explicitely test whether pt-br is activated:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.utils</span> <span class="kn">import</span> <span class="n">translation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">translation</span><span class="o">.</span><span class="n">get_language</span><span class="p">()</span>
+<span class="go">&#39;pt-br&#39;</span>
+</pre></div>
+</div>
+<p>The following table should render in Portuguese:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="s">&#39;users.UsersOverview&#39;</span><span class="p">)</span>
+<span class="go">================= ================== ==========</span>
+<span class="go"> Nome de usuário   Perfil do usuário  Idioma</span>
+<span class="go">----------------- ------------------ ----------</span>
+<span class="go"> robin             Administrator      en</span>
+<span class="go"> ronaldo           Administrator      pt-br</span>
+<span class="go">================= ================== ==========</span>
+</pre></div>
+</div>
+<p>But it doesn&#8217;t (the above snippet fails).</p>
+<p>And the same table in German? This works:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span><span class="o">.</span><span class="n">set_language</span><span class="p">(</span><span class="s">&#39;de&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="s">&#39;users.UsersOverview&#39;</span><span class="p">)</span>
+<span class="go">============== ================ =========</span>
+<span class="go"> Benutzername   Benutzerprofil   Sprache</span>
+<span class="go">-------------- ---------------- ---------</span>
+<span class="go"> robin          Administrator    en</span>
+<span class="go"> ronaldo        Administrator    pt-br</span>
+<span class="go">============== ================ =========</span>
+</pre></div>
+</div>
+<p>Hm... still meditating on that (no checkin).</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0623.html" title="20130623 (Sunday, 23 June 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0621.html" title="20130621 (Friday, 21 June 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0622.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0622.html">Online Link</a>
+    </div>
+  </body>
+</html>

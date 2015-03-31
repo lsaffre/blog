@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110613 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110615" href="0615.html" />
+    <link rel="prev" title="20110611" href="0611.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0615.html" title="20110615"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0611.html" title="20110611"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110613<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="disable-slave-elements-in-insert-window">
+<h2>Disable slave elements in Insert Window<a class="headerlink" href="#disable-slave-elements-in-insert-window" title="Permalink to this headline">¶</a></h2>
+<p>Hier die Problemmeldung eines Benutzers:</p>
+<blockquote>
+<div>Es ist es für den Benutzer nicht logisch, dass er keinen
+Drittpartner hinzufügen kann, solange er eine neue Notiz nicht
+mindestens einmal gespeichert hat.</div></blockquote>
+<p>Ja klar.
+Das hatte ich schon immer geahnt und bisher lediglich noch nicht implementiert:
+im InsertWindow  müssen natürlich
+alle Slave-Elemente disabled werden.
+Nicht nur der &#8220;Insert&#8221;-Button des HtmlPanels, sondern auch
+die HtmlPanels selber und alle SlaveGridPanels.</p>
+<p>Anders als bei <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-disabled-fields" title="(in Lino v1.6)"><span class="xref std std-term">disabled fields</span></a> brauchen diese Felder
+natürlich nicht eigens in der AJAX-Response genannt zu werden,
+sondern die sind ja automatisch bekann und immer die gleichen.
+Deshalb haben Lino.GridPanel und Lino.HtmlBoxPanel
+in der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-linolib.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linolib.js</span></code></a> einfach ein Attribut
+<cite>disabled_in_insert_window</cite>.</p>
+<p>En passant zwei Bugs weniger:
+Wenn man ein Insert-Fenster per Permalink aufrief, z.B.
+<a class="reference external" href="http://127.0.0.1:8000/api/notes/MyNotes?fmt=insert&amp;mt=1&amp;mk=1">http://127.0.0.1:8000/api/notes/MyNotes?fmt=insert&amp;mt=1&amp;mk=1</a>,
+dann kam ein <cite>UnboundLocalError: local variable &#8216;params&#8217; referenced before assignment&#8221;</cite>.
+Und nachdem dieser Bug behoben kam, kam außerdem nicht der
+richtige Titel &#8220;Einfügen nach...&#8221;.</p>
+</div>
+<div class="section" id="intuitiveres-bearbeiten-der-drittpartner">
+<h2>Intuitiveres Bearbeiten der Drittpartner<a class="headerlink" href="#intuitiveres-bearbeiten-der-drittpartner" title="Permalink to this headline">¶</a></h2>
+<p>Und noch eine Problemmeldung eines Benutzers:</p>
+<blockquote>
+<div>Beim Erstellen eines Drittpartners einer Notiz kann man eine Person UND eine Firma
+gleichzeitig auswählen. Eigentlich geht das aber nicht und führt zu Reaktionen, die
+für den Benutzer nicht nachvollziehbar sind.</div></blockquote>
+<p>Es ist richtig und nötig, dass man beide Felder (Person und Firma)
+eines Drittpartners ausfüllen kann,
+und das bedeutet dann &#8220;Person X als Vertreter für Firma Y&#8221;.
+Das wurde dann bisher im Panel allerdings als &#8220;Person / Firma&#8221; angezeigt.
+In der Tat nicht gerade selbsterklärend.
+Für die nächste Version ändere ich diese Anzeige mal nach
+&#8220;&lt;Firma&gt; z.Hd. &lt;Person&gt;&#8221;, dann ist der Verwendungszweck
+wahrscheinlich intuitiv klarer.</p>
+<p>Eine andere störende Sache beim Erstellen von Drittpartnern war,
+dass das Insert-Fenster als solches verwirrte. Deshalb habe ich es
+jetzt probeweise mal rausgeschmissen. Was allerdings dazu führt, dass
+auch der &#8220;Einfügen&#8221;-Button verschwindet. Um Drittpartner einzufügen,
+muss man momentan also das Drittpartner-Panel &#8220;im eigenen Fenster öffnen&#8221;.
+Später kommt dann das Erstellen per Drag &amp; Drop hinzu.</p>
+<p>Check-in
+Revision <a class="reference external" href="http://code.google.com/p/lino/source/detail?r=4bf5a53447140dc9d9deb14c636451de8f98ef43">4bf5a5344714</a></p>
+</div>
+<div class="section" id="lino-location-other-than">
+<h2>Lino location other than &#8220;/&#8221;<a class="headerlink" href="#lino-location-other-than" title="Permalink to this headline">¶</a></h2>
+<p>Um auf unserem internen Webserver (jana) mehrere Lino-Anwendungen
+parallel laufen lassen zu können,
+habe ich erstmals den Fall, dass Lino nicht auf &#8220;/&#8221; sitzt.
+Um das zu ermöglichen, habe ich einige Stunden gewurstelt und
+eine ganze Serie von Check-ins gemacht.</p>
+<p>Die momentane Lösung ist möglicherweise auch nicht definitiv,
+aber sie geht so:
+wenn Lino nicht unter <code class="docutils literal"><span class="pre">/</span></code> läuft, dann muss man
+das ebenfalls in der <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a>
+im neuen Klassenattribut <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.root_url</span></code> angeben.</p>
+<p>In der Apache-Konfig:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;VirtualHost *:80&gt;
+  ServerAdmin webmaster@localhost
+  DocumentRoot /usr/share/apache2/default-site
+  &lt;Directory /&gt;
+          Options FollowSymLinks
+          AllowOverride None
+  &lt;/Directory&gt;
+
+  WSGIDaemonProcess example.com processes=2 threads=15
+  WSGIProcessGroup example.com
+
+  WSGIScriptAlias /prj1 /usr/local/django/prj1/apache/django.wsgi
+  Alias /prj1/media/ /usr/local/django/prj1/media/
+  &lt;Location /prj1/media/&gt;
+     SetHandler none
+  &lt;/Location&gt;
+
+  WSGIScriptAlias /prj2 /usr/local/django/prj2/apache/django.wsgi
+  Alias /prj2/media/ /usr/local/django/prj2/media/
+
+  ErrorLog ${APACHE_LOG_DIR}/error.log
+  # Possible values include: debug, info, notice, warn, error, crit,
+  # alert, emerg.
+  LogLevel warn
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</pre></div>
+</div>
+<p>Nebenbei sind bei diesen Arbeiten auch noch einige kleine Änderungen gekommen:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.fixtures.ee.html#module-lino.modlib.countries.fixtures.ee" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.fixtures.ee</span></code></a> funktioniert noch nicht</li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.fixtures.few_cities.html#module-lino.modlib.countries.fixtures.few_cities" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.fixtures.few_cities</span></code></a> ist jetzt intelligenter
+und funktioniert auch mit <cite>be</cite> zusammen.</li>
+</ul>
+<p>Der folgende Traceback kommt noch mit Django 1.3, aber
+mindestens ab Revision 16392 nicht mehr:</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@mops:/usr/local/django/igen_demo$ python manage.py  test
+Creating test database for alias &#39;default&#39;...
+.E....
+======================================================================
+ERROR: test_shortcut_view (django.contrib.contenttypes.tests.ContentTypesTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/contrib/contenttypes/tests.py&quot;, line 64, in test_shortcut_view
+    obj = User.objects.create(username=&quot;john&quot;)
+  File &quot;/var/snapshots/django/django/db/models/manager.py&quot;, line 138, in create
+    return self.get_query_set().create(**kwargs)
+  File &quot;/var/snapshots/django/django/db/models/query.py&quot;, line 360, in create
+    obj.save(force_insert=True, using=self.db)
+  File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 460, in save
+    self.save_base(using=using, force_insert=force_insert, force_update=force_update)
+  File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 553, in save_base
+    result = manager._insert(values, return_id=update_pk, using=using)
+  File &quot;/var/snapshots/django/django/db/models/manager.py&quot;, line 195, in _insert
+    return insert_query(self.model, values, **kwargs)
+  File &quot;/var/snapshots/django/django/db/models/query.py&quot;, line 1436, in insert_query
+    return query.get_compiler(using=using).execute_sql(return_id)
+  File &quot;/var/snapshots/django/django/db/models/sql/compiler.py&quot;, line 791, in execute_sql
+    cursor = super(SQLInsertCompiler, self).execute_sql(None)
+  File &quot;/var/snapshots/django/django/db/models/sql/compiler.py&quot;, line 735, in execute_sql
+    cursor.execute(sql, params)
+  File &quot;/var/snapshots/django/django/db/backends/util.py&quot;, line 34, in execute
+    return self.cursor.execute(sql, params)
+  File &quot;/var/snapshots/django/django/db/backends/sqlite3/base.py&quot;, line 234, in execute
+    return Database.Cursor.execute(self, query, params)
+DatabaseError: no such table: auth_user
+
+----------------------------------------------------------------------
+Ran 6 tests in 13.871s
+
+FAILED (errors=1)
+Destroying test database for alias &#39;default&#39;...
+</pre></div>
+</div>
+</div>
+<div class="section" id="lino-1-1-16">
+<h2>Lino 1.1.16<a class="headerlink" href="#lino-1-1-16" title="Permalink to this headline">¶</a></h2>
+<p>Und die heutigen Änderungen releasen wir als <a class="reference external" href="http://www.lino-framework.org/releases/2011/0613.html">/releases/2011/0613</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0615.html" title="20110615"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0611.html" title="20110611"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0613.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0613.html">Online Link</a>
+    </div>
+  </body>
+</html>

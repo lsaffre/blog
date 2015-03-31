@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110214 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110216" href="0216.html" />
+    <link rel="prev" title="20110212" href="0212.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0216.html" title="20110216"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0212.html" title="20110212"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110214<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ol class="arabic simple">
+<li>Anpassungen <a class="reference external" href="http://www.lino-framework.org/admin/install.html">/admin/install</a> an Debian Squeeze</li>
+<li>Die beiden Felder
+<code class="xref py py-attr docutils literal"><span class="pre">noble_condition</span></code>
+und
+<code class="xref py py-attr docutils literal"><span class="pre">card_issuer</span></code>
+von der eID waren nicht readonly.</li>
+<li>Zwischenrelease in Eupen.</li>
+</ol>
+<div class="section" id="ein-bug-in-lino">
+<h2>Ein Bug in Lino<a class="headerlink" href="#ein-bug-in-lino" title="Permalink to this headline">¶</a></h2>
+<p>In der momentanen Version ist offenbar ein Bug, der gefährlich aussieht.
+Wenn man im Detail einer Person rumblättert, kommt manchmal die Frage
+&#8220;Änderungen speichern?&#8221;, obwohl man nichts verändert hat.
+Wenn man darauf Ja geantwortet, werden manchmal auch tatsächlich Daten geändert.
+Zum Beispiel:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO Person #16 (Altenberg Hans (16)) modified by root :
+- is_cpas : True --&gt; False
+- is_active : True --&gt; False
+</pre></div>
+</div>
+<p>Sieht nach was Subtilem aus.</p>
+<ol class="arabic">
+<li><p class="first">dblogger ist jetzt nur noch ein Wrapper zum Systemlogger (also in die <code class="xref std std-xfile docutils literal"><span class="pre">system.log</span></code>).
+Kann nämlich sein, dass diese Trennung von system.log und db.log
+lediglich eine Schnapsidee von mir war.
+Erster Eindruck: genau, eine Schnapsidee.
+Jetzt kann ich auf dem Development Server Einträge im dblogger direkt am Bildschirm sehen,
+Konfiguration wird klarer,
+und falls das jemand irgendwann mal will, kann er ja manuell einen logger
+<code class="docutils literal"><span class="pre">lino.utils.dblogger</span></code> definieren und da noch zusätzliche Handler einbauen.</p>
+</li>
+<li><p class="first">Ein paar eher unscheinbare Bugs behoben,
+die zu JavaScript-Fehlermeldungen führten:</p>
+<div class="highlight-python"><div class="highlight"><pre>- (empty.jpg) Failed to load resource: the server responded with a status of 404 (NOT FOUND)
+</pre></div>
+</div>
+<ul class="simple">
+<li>Vor dem Anzeigen eines Records im Detail kam in der JS-Konsole eine Warnung
+<cite>Uncaught TypeError: Cannot read property &#8216;data&#8217; of undefined</cite></li>
+</ul>
+<p>Aber unser Bug ist immer noch da.</p>
+</li>
+<li><p class="first">(Nach 4 Stunden Debugging)
+Wir kommen der Sache näher, denn ich habe ihn jetzt
+zumindest ungefähr lokalisiert: meine ComboBox.setValue()
+setzt die originalValue nicht korrekt.
+Dadurch dünkt sich die Combobox später dirty.
+Der Fehler war schon immer da, fällt aber erst auf seit
+Lino bei jeder Gelegenheit fragt &#8220;Änderungen speichern&#8221;.</p>
+<p>Aber jetzt muss ich erst mal Feierabend machen.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="markup-formatierte-memofelder-drucken">
+<h2>Markup-formatierte Memofelder drucken<a class="headerlink" href="#markup-formatierte-memofelder-drucken" title="Permalink to this headline">¶</a></h2>
+<p>appy.pod 0.6.3 löst das Problem
+<a class="reference external" href="https://answers.launchpad.net/appy/+question/138830">Insérer du markup (reStructuredText)</a>,
+also kann man jetzt theoretisch
+per Markup (reStructuredText) formatierte Textfragmente in Memofeldern machen.</p>
+<p>Zum Beispiel in
+<code class="xref py py-attr docutils literal"><span class="pre">lino.projects.dsbe.models.Contract.responsibilities</span></code> kommt in der Dokumentvorlage
+anstelle des bisherigen Befehls <cite>self.responsibilities</cite> (im &#8220;track changes&#8221;-Modus)
+ein leerer Absatz (evtl. mit Absatzformatierung, z.B. linker/rechter Einzug)
+mit folgender Notiz:</p>
+<div class="highlight-python"><div class="highlight"><pre>do text
+from xhtml(restify(self.responsibilities))
+</pre></div>
+</div>
+<p>Erste Versuche zeigen allerdings, dass da noch einige Dinge nicht funktionieren.
+Offenbar muss ich noch Stylezuweisungen o.ä. korrekt konfigurieren...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0216.html" title="20110216"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0212.html" title="20110212"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0214.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0214.html">Online Link</a>
+    </div>
+  </body>
+</html>

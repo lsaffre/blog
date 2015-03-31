@@ -1,0 +1,266 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110923 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110928" href="0928.html" />
+    <link rel="prev" title="20110922" href="0922.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0928.html" title="20110928"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0922.html" title="20110922"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110923<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="bcss">
+<h2>BCSS<a class="headerlink" href="#bcss" title="Permalink to this headline">¶</a></h2>
+<p>There is not <em>one</em> .xsd file but a vast set of .xsd files,
+each of them,
+corresponding to the many services of the <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-bcss" title="(in Lino v1.6)"><span class="xref std std-term">BCSS</span></a>.</p>
+<p>Maybe Dave Kuhlmann&#8217;s <a class="reference external" href="http://www.rexx.com/~dkuhlman/generateDS.html">generateDS</a>
+module will be helpful to explore them.</p>
+</div>
+<div class="section" id="startfile-js">
+<h2>startfile.js<a class="headerlink" href="#startfile-js" title="Permalink to this headline">¶</a></h2>
+<p>News for <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/45">docs/tickets/45</a>:
+I found the answer to my question &#8220;Is there a method in Firefox to find out the full path
+application associated with a given file type in the client&#8217;s desktop?&#8221;
+(a question which I posted also in the German
+<a class="reference external" href="http://www.selfhtml.de/forum/zeigebeitrag_2_134298_134298_0.php">selfhtml.de forum</a>).</p>
+<p>The answer for Windows client is search the windows registry
+(<a class="reference external" href="https://developer.mozilla.org/en/Accessing_the_Windows_Registry_Using_XPCOM">Accessing the Windows Registry Using XPCOM</a>).
+For Unix and Mac clients the solution is less elegant,
+but I&#8217;ll wait for real use cases to investigate more on this.</p>
+<p>Here is the new version of my <code class="xref std std-xfile docutils literal"><span class="pre">startfile.js</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre>/*
+
+  Copyright 2011 Luc Saffre
+  This file is part of the Lino project.
+  Lino is free software; you can redistribute it and/or modify 
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 3 of the License, or
+  (at your option) any later version.
+  Lino is distributed in the hope that it will be useful, 
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with Lino; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+
+  Accessing the Windows Registry Using XPCOM:
+  https://developer.mozilla.org/en/Accessing_the_Windows_Registry_Using_XPCOM
+  
+*/
+
+
+function get_associated_app(extension) {
+  var candidates = new Array();
+  // try and find launcher on Windows
+  var classInst = Components.classes[&quot;@mozilla.org/windows-registry-key;1&quot;]
+  if (classInst) {
+    var wrk = classInst.createInstance(Components.interfaces.nsIWindowsRegKey);
+    if (wrk) {
+      wrk.open(wrk.ROOT_KEY_CLASSES_ROOT, &quot;.&quot; + extension, wrk.ACCESS_READ);
+      var n = wrk.readStringValue(&quot;&quot;);
+      wrk.close();
+      wrk.open(wrk.ROOT_KEY_CLASSES_ROOT, n + &quot;\\shell\\Open\\command&quot;, wrk.ACCESS_READ);
+      var cmd = wrk.readStringValue(&quot;&quot;);
+      wrk.close();
+      console.log(cmd);
+      //~ cmd now may contain for example:
+      //~ &quot;C:\Program Files\Microsoft Office\OFFICE11\WINWORD.EXE&quot; /n /dde
+      //~ &quot;C:\Program Files\Microsoft Office\OFFICE11\WINWORD.EXE&quot; /n /dde
+      if (cmd.charAt(0) == &#39;&quot;&#39;) {
+          cmd = cmd.substr(1);
+          cmd = cmd.substr(0,cmd.indexOf(&#39;&quot;&#39;));
+      }
+      candidates.push(cmd);
+    }
+  }
+  if (navigator.platform.indexOf(&quot;Mac&quot;) != -1) {
+      candidates.push(&quot;/Applications/NeoOffice.app&quot;);
+  } else if (navigator.platform.indexOf(&quot;Linux&quot;) != -1) {
+      candidates.push(&quot;/usr/bin/ooffice&quot;);
+  }
+  for (i = 0; i &lt; candidates.length; i++) {
+      var file = Components.classes[&quot;@mozilla.org/file/local;1&quot;]  
+                          .createInstance(Components.interfaces.nsILocalFile);  
+      console.log(candidates[i]);
+      try {
+        file.initWithPath(candidates[i]);
+        return file;
+      } catch (e) {
+        //~ catch and ignore any exception, e.g.
+        //~ [Exception... &quot;Component returned failure code: 0x80520001 (NS_ERROR_FILE_UNRECOGNIZED_PATH) 
+        //~ [nsILocalFile.initWithPath]&quot;  nsresult: &quot;0x80520001 (NS_ERROR_FILE_UNRECOGNIZED_PATH)&quot;  ]
+      }
+  }
+}
+
+function startfile(filename) {
+  if (navigator.userAgent.indexOf(&#39;Firefox&#39;) != -1) {
+    //~ console.log(&quot;It&#39;s a Firefox&quot;);
+    netscape.security.PrivilegeManager.enablePrivilege(&#39;UniversalXPConnect&#39;);
+    var ext = filename.substr(filename.lastIndexOf(&quot;.&quot;) + 1);
+    var file = get_associated_app(ext);
+    if (file) {
+        var process = Components.classes[&quot;@mozilla.org/process/util;1&quot;]  
+                                .createInstance(Components.interfaces.nsIProcess);  
+        process.init(file);
+        var args = [ filename ];
+        //~ args.push(&#39;/n&#39;);
+        process.run(false, args, args.length); 
+        // If first param is true, calling thread will be blocked until  
+        // called process terminates.  
+    //~ } else {
+        //~ console.log(&quot;Sorry, startfile() could not find application to start .&quot;+ext+&quot; files.&quot;);
+    }
+  //~ } else if (navigator.userAgent.indexOf(&#39;MSIE&#39;) != -1) {
+    //~ WshShell = new ActiveXObject(&quot;WScript.Shell&quot;);
+    //~ WshShell.Run(cmd + &#39; &quot;&#39; + filename + &#39;&quot;&#39;); // ,1,true);
+    //~ todo: search the registry using MSIE
+  //~ } else {
+    //~ console.log(&quot;Sorry, startfile() not yet implemented for &quot; + navigator.userAgent);
+  }
+  //~ console.log(filename.substr(0,4))
+  if (filename.substr(0,4) == &#39;http&#39;) window.open(filename);
+}
+</pre></div>
+</div>
+<p>To be used from HTML code like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;html&gt;
+&lt;head&gt;
+&lt;script type=&quot;text/javascript&quot; src=&quot;startfile.js&quot;&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+Try it (but edit the urls first):
+&lt;br&gt;&lt;a href=&quot;javascript:startfile(&#39;http://example.com/webdav/test.rtf&#39;);&quot;&gt;test.rtf&lt;/a&gt;
+&lt;br&gt;&lt;a href=&quot;javascript:startfile(&#39;http://example.com/webdav/test.foo&#39;);&quot;&gt;test.foo&lt;/a&gt;
+&lt;br&gt;&lt;a href=&quot;javascript:startfile(&#39;http://example.com/webdav/test.jpg&#39;);&quot;&gt;test.jpg&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0928.html" title="20110928"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0922.html" title="20110922"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0923.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0923.html">Online Link</a>
+    </div>
+  </body>
+</html>

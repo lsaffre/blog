@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110401 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110402" href="0402.html" />
+    <link rel="prev" title="20110331" href="0331.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0402.html" title="20110402"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0331.html" title="20110331"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110401<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-1-1-7">
+<h2>Lino 1.1.7<a class="headerlink" href="#lino-1-1-7" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> ist ein Bug aufgetreten, den wir jetzt jagen wollen.
+Allgemein kann man zu den Bugs im <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> sagen: theoretisch müsste
+ich ein System bauen, um test cases sammeln zu können. Aber das wäre
+sehr viel Aufwand, und ich halte den in unserem Fall für unangemessen.
+Lieber optimiere ich das Logging, damit wir die Bugs, wenn sie
+auftreten, möglichst schmerzlos beseitigt kriegen.</p>
+<ul>
+<li><p class="first"><a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> loggt im Falle von <cite>Validation failed for</cite>
+jetzt den kompletten Traceback.</p>
+</li>
+<li><p class="first">Released <a class="reference external" href="http://www.lino-framework.org/releases/2011/0401.html">/releases/2011/0401</a>.
+Several minor bugs fixed during the upgrade in Eupen:</p>
+<ul>
+<li><p class="first"><a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a> erstellte bei Berufscode &#8220;00&#8221; jedesmal einen neuen
+Record (was nur halb funktionierte: der neue Record bekam nicht 0
+als id, sondern einen automatischen Wert).
+Bug behoben und erstmals eine lokale Datenreparatur, die die
+Berufe &#8216;00&#8217; löscht, die sich fälschlicherweise im Laufe der
+Zeit angesammelt hatten:</p>
+<div class="highlight-python"><div class="highlight"><pre>python manage.py shell &lt; 20110401.py
+</pre></div>
+</div>
+<p>Wobei in der <cite>20110401.py</cite> folgendes steht:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lino.projects.dsbe.models</span> <span class="kn">import</span> <span class="n">Activity</span>
+<span class="n">q</span> <span class="o">=</span> <span class="n">Activity</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;00&#39;</span><span class="p">)</span>
+<span class="n">q</span><span class="o">.</span><span class="n">delete</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Wenn man versuchte, etwas auszudrucken, bekam man
+<cite>&#8216;Lino&#8217; object has no attribute &#8216;config&#8217;</cite>.
+Das war noch eine späte Folge
+der Änderungen vom <a class="reference external" href="http://code.google.com/p/lino/source/browse/docs/blog/2011/0307.rst">2011-03-07</a>.</p>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="qooxdoo-wochenruckblick">
+<h2>Qooxdoo Wochenrückblick<a class="headerlink" href="#qooxdoo-wochenruckblick" title="Permalink to this headline">¶</a></h2>
+<p>Mir waren diese Woche nur ca. 7 Arbeitsstunden für die
+Qooxdoo-Anpassung gegönnt. Demensprechend dürftig ist
+das Resultat.</p>
+<p>Immerhin habe ich mit den Detail-Fenstern begonnen,
+und mir ist das Rahmengerüst nun einigermaßen klar.
+Jetzt kommt &#8220;nur&#8221; noch die eher lästige
+Arbeit der eigentlichen Implementierung.
+Da ist noch viel zu tun (wenn ich <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-makeui" title="(in Lino v1.6)"><span class="xref std std-term">makeui</span></a>
+laufen lasse, bringt er eine ganze Latte von
+Warnungen &#8220;Unknown global symbol referenced&#8221;.
+Jedes einzelne Layout-Element muss natürlich jetzt
+ganz anderen JS-Code generieren.
+Diese Arbeit ist besonders unangenehm, wenn man dabei
+ständig unterbrochen wird.</p>
+<p>Die meiste Zeit dieser 7 Stunden habe ich aber noch mit den
+eher internen Tickets <a class="reference external" href="http://www.lino-framework.org/tickets/30.html">30</a> und <a class="reference external" href="http://www.lino-framework.org/tickets/36.html">36</a>
+verbracht.
+<a class="reference external" href="http://www.lino-framework.org/tickets/30.html">#30</a> ist ja nun immerhin gelöst.
+Leider ist die Source-Version wirklich sehr langsam, und zum Debuggen
+hat sie mir zumindest für <a class="reference external" href="http://www.lino-framework.org/tickets/36.html">#36</a>
+bisher nichts gebracht.
+Heute habe ich zuletzt immerhin gemerkt,
+dass <a class="reference external" href="http://www.lino-framework.org/tickets/36.html">#36</a>
+nur in Chrome auftritt und nicht in Firefox.
+Also werde ich das jetzt mal reifen lassen
+und mich ab nächste Woche in die Implementierung stürzen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0402.html" title="20110402"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0331.html" title="20110331"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0401.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0401.html">Online Link</a>
+    </div>
+  </body>
+</html>

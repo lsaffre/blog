@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130808 (Thursday, 08 August 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130809 (Friday, 09 August 2013)" href="0809.html" />
+    <link rel="prev" title="20130807 (Wednesday, 07 August 2013)" href="0807.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0809.html" title="20130809 (Friday, 09 August 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0807.html" title="20130807 (Wednesday, 07 August 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-08-august-2013">
+<h1>20130808 (Thursday, 08 August 2013)<a class="headerlink" href="#thursday-08-august-2013" title="Permalink to this headline">¶</a></h1>
+<p>Added the
+<a class="reference external" href="https://docs.djangoproject.com/en/dev/ref/models/options/#ordering">ordering</a>
+model meta option to <cite>contacts.Person.Meta</cite></p>
+<p>Cleaned up some dependency issues between different lino_welfare apps.
+Moved <cite>pcsw.UsersWithClients</cite> to <cite>integ.UsersWithClients</cite>,
+<cite>pcsw.IntegClients</cite> to <cite>integ.Clients</cite>.</p>
+<p class="graphviz">
+<img src="../../_images/graphviz-e6c4f25d688b073fcc7a16fa3beca4053b5407e1.png" alt="digraph foo {
+
+    pcsw -&gt; isip
+    pcsw -&gt; jobs
+    isip -&gt; jobs
+    isip -&gt; integ
+    jobs -&gt; integ
+    properties -&gt; integ
+}" />
+</p>
+<p>All this is not yet perfect.
+TODO:
+convert all App.verbose_name to their translations on startup?
+store the App class object in <cite>Site.modules</cite>.</p>
+<div class="section" id="find-an-appointment">
+<h2>Find an appointment<a class="headerlink" href="#find-an-appointment" title="Permalink to this headline">¶</a></h2>
+<p>The new virtual field <cite>find_appointment</cite> in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.reception.models.html#lino_welfare.modlib.reception.models.Clients" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.reception.models.Clients</span></code></a>
+is cool.
+It required some subtle javascript enhancements
+for CalendarPanel.</p>
+<ul class="simple">
+<li>Replaced the one global Lino.eventStore and Lino.calendarStore
+by instance variables ot Lino.CalendarApp.</li>
+<li>possibility to call the calendar of another user via an action button
+using subst_user</li>
+<li>new url variable URL_PARAM_PROJECT is used in order to have new
+appointments attributed to the correct client when created via this
+link.</li>
+<li>Show the ar.get_request_title() in the calendar view&#8217;s main window
+title, because otherwise it was difficult to guess whose calendar was being
+displayed.</li>
+</ul>
+<p>cal.Calendar is now Sequenced. The sequence is important because the
+first calendar is default value for new events.</p>
+</div>
+<div class="section" id="action-api">
+<h2>Action API<a class="headerlink" href="#action-api" title="Permalink to this headline">¶</a></h2>
+<p>Another new virtual field <cite>checkin_for</cite> in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.reception.models.html#lino_welfare.modlib.reception.models.Clients" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.reception.models.Clients</span></code></a>
+doesn&#8217;t yet work.
+The API for rendering buttons with action calls is getting very
+complex and intransparent and would deserve a cleanup.</p>
+<p>But after 22 hours in two days I make a checkin and upgrade on <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#lf" title="(in Lino v1.6)"><span>lino-framework.org</span></a>.
+Lino is probably not very stable, but an upgrade can help to
+discover bugs.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0809.html" title="20130809 (Friday, 09 August 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0807.html" title="20130807 (Wednesday, 07 August 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0808.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0808.html">Online Link</a>
+    </div>
+  </body>
+</html>

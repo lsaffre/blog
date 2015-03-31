@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110531 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110601-02" href="0601.html" />
+    <link rel="prev" title="20110530" href="0530.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0601.html" title="20110601-02"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0530.html" title="20110530"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110531<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="settings">
+<h2>settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DATABASES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></code></a> is now no longer predefined in
+<cite>lino.apps.xyz.settings</cite> because that resulted in a file name
+inside the Lino source tree.
+Local settings.py files must now set this,
+otherwise they get a
+<cite>ImproperlyConfigured</cite> exception &#8220;You must define a &#8216;default&#8217; database&#8221;.</p>
+<p>When we need a customizable parameter or method in Lino,
+our strategy is now to define it in
+<code class="xref py py-class docutils literal"><span class="pre">lino.Lino</span></code>
+as class attribute or method.
+Some Lino-specific settings are still
+from the time before we found the
+<code class="xref py py-class docutils literal"><span class="pre">lino.Lino</span></code> trick.
+Starting to tidy up:</p>
+<ul class="simple">
+<li><code class="xref std std-setting docutils literal"><span class="pre">APPY_PARAMS</span></code> replaced by <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.appy_params</span></code>.</li>
+<li>Removed settings <cite>DBLOGFILE</cite> and <cite>BYPASS_PERMS</cite> which were no longer used.</li>
+</ul>
+<p>Updated <a class="reference external" href="http://www.lino-framework.org/admin/install.html">/admin/install</a> to give a useful example
+of recommended settings for new local settings files.</p>
+<p>Class <cite>lino.Lino</cite> has been moved to <code class="xref py py-class docutils literal"><span class="pre">lino.Lino</span></code>.</p>
+</div>
+<div class="section" id="initdb-fails-on-empty-database">
+<h2>initdb fails on empty database<a class="headerlink" href="#initdb-fails-on-empty-database" title="Permalink to this headline">¶</a></h2>
+<p>Django&#8217;s <cite>reset</cite> command has been deprecated because <a class="reference external" href="http://code.djangoproject.com/ticket/14268">it breaks a lot</a>.
+That&#8217;s why Lino&#8217;s <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-initdb" title="(in Lino v1.6)"><span class="xref std std-term">initdb</span></a> was replaced it by <cite>flush</cite>.
+Now I discovered that <cite>flush</cite> didn&#8217;t work on an empty database: it raised a
+<cite>django.db.utils.DatabaseError</cite> &#8220;no such table: django_content_type&#8221;.
+Fixed: <cite>initdb</cite> now is a combination of syncdb, flush and loaddata</p>
+</div>
+<div class="section" id="small-bug-in-all-languages-fixture">
+<h2>Small bug in all_languages fixture<a class="headerlink" href="#small-bug-in-all-languages-fixture" title="Permalink to this headline">¶</a></h2>
+<p>Removed a bug that caused the all_languages fixture to not find
+the french names for languages &#8220;Arabe&#8221; and &#8220;Bihari&#8221;.
+This was visible as 2 warnings &#8220;Ignored french:9 (len(rec) is 7)&#8221; during <cite>initdb</cite>.</p>
+</div>
+<div class="section" id="test-suite-dsbe-demo-tests-failed">
+<h2>Test suite dsbe_demo_tests failed<a class="headerlink" href="#test-suite-dsbe-demo-tests-failed" title="Permalink to this headline">¶</a></h2>
+<p>In dsbe_demo_tests war ja eine Failure, die nur auftrat in einer
+Datenbank mit Französisch als Hauptsprache:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;t:\hgwork\lino\lino\utils\test.py&quot;, line 87, in test_them_all
+    v(self)
+  File &quot;t:\hgwork\lino\lino\apps\dsbe\tests\dsbe_demo_tests.py&quot;, line 71, in test02
+    self.assertEqual(len(result[&#39;rows&#39;]),3)
+AssertionError: 2 != 3
+</pre></div>
+</div>
+<p>Wenn ich da ein <code class="docutils literal"><span class="pre">print</span></code> davorsetze:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">unicode</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="s">&#39;rows&#39;</span><span class="p">]])</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s">&#39;rows&#39;</span><span class="p">]),</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>dann kriege ich in einer deutschen Datenbank:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">u&#39;Gehorsam&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s">u&#39;mittelm</span><span class="se">\xe4\xdf</span><span class="s">ig&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="s">u&#39;Sozialkompetenzen&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;F</span><span class="se">\xfc</span><span class="s">hrungsf</span><span class="se">\xe4</span><span class="s">higkeit&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s">u&#39;mittelm</span><span class="se">\xe4\xdf</span><span class="s">ig&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="s">u&#39;Sozialkompetenzen&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s">u&#39;Sozialkompetenzen&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>und in einer französischen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">u&#39;Ob</span><span class="se">\xe9</span><span class="s">issant&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s">u&#39;moyennement&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="s">u&#39;Comp</span><span class="se">\xe9</span><span class="s">tences sociales&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;Leader&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s">u&#39;moyennement&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="s">u&#39;Comp</span><span class="se">\xe9</span><span class="s">tences sociales&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Was hat das zu bedeuten?
+Scheint was damit zu tun zu haben, dass der deutsche Benutzer
+Records erstellen darf und der französische nicht.</p>
+<p>First of all, we now also make sure that the response is always in English
+so that this test works on any site.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">u&#39;Obedient&#39;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s">u&#39;moderate&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="s">u&#39;Soft skills&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="s">u&#39;Leader&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="s">u&#39;moderate&#39;</span><span class="p">,</span> <span class="s">u&#39;2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="s">u&#39;Soft skills&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s">u&#39;Soft skills&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Dadurch wird klar, dass es nicht an der Sprache liegt, sondern
+an was anderem.
+Tilt! Genau: ich hatte den Test bisher immer nur in meinem Test-Environment
+laufenlassen, und der benutzt ja <code class="xref py py-class docutils literal"><span class="pre">SimulateRemoteUserMiddleware</span></code>.
+Das tun natürlich nicht alle, sondern im Gegenteil eher die
+wenigsten.
+Deshalb machen wir in den Tests jetzt an bestimmten Stellen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">REMOTE_USER</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Checkin <a class="reference external" href="http://code.google.com/p/lino/source/detail?r=5d4875dac7cfbb7d95683980abd2b936e28cb783">20110531</a>.</p>
+</div>
+</div>
+<div class="section" id="about-settings">
+<h1>About settings<a class="headerlink" href="#about-settings" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://www.lino-framework.org/blog/2011/0526.html">Vorigen Donnerstag</a> schrieb ich:</p>
+<blockquote>
+<div><p>In der neuen Django-Version (wahrscheinlich wegen
+<a class="reference external" href="http://code.djangoproject.com/ticket/14297">Django ticket #14297</a>) funktioniert mein elegantes System mit
+den cascaded settings nicht mehr. Da muss ich mir
+also was anderes einfallen lassen. Provisorischer Workaround:</p>
+<div class="highlight-python"><div class="highlight"><pre>mv settings.py lino_settings.py
+echo &quot;from myproject.lino_settings import *&quot; &gt; settings.py
+</pre></div>
+</div>
+</div></blockquote>
+<p>Das war eine totale Fehldiagnose.
+Mein elegantes System mit den cascaded settings funktioniert weiterhin,
+und der beschriebene Workaround ist nicht nötig und bringt auch keine Abhilfe,
+wenn das Problem auftritt.</p>
+<p>Die Ursache ist <a class="reference external" href="http://code.djangoproject.com/ticket/15064">Django ticket #15064</a>.
+Was sich geändert hat: wenn die Umgebungsvariable <cite>DJANGO_SETTINGS_MODULE</cite>
+gesetzt ist, dann hat die absolute Priorität.
+Habe das mal im Ticket als <a class="reference external" href="https://code.djangoproject.com/ticket/15064#comment:17">Kommentar</a> gepostet.</p>
+<p>En attendant werde ich wohl damit leben müssen, und
+die einfachste Lösung scheint mir, zwei Zeilen in
+meinen lokalen <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-manage.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">manage.py</span></code></a> einzufügen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;myproject.settings&#39;</span>
+</pre></div>
+</div>
+<p>Anschließend Aufräumaktion.
+Zum Beispiel muss in der <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.std.settings</span></code> doch ein <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DATABASES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DATABASES</span></code></a> definiert werden, damit Django nicht schimpft, wenn autodoc die Module zu importieren versucht. Diese Datenbank hat aber keinen Dateinamen, sondern nur <code class="docutils literal"><span class="pre">:memory:</span></code>.</p>
+<p>Sphinx meldet jetzt beim Generieren der Dokumentation wieder ein paar Warnungen weniger.</p>
+<div class="section" id="weiter-mit-tinymce">
+<h2>Weiter mit TinyMCE<a class="headerlink" href="#weiter-mit-tinymce" title="Permalink to this headline">¶</a></h2>
+<p>Einen der offenen Punkte hab ich geschafft:</p>
+<ul class="simple">
+<li>Wenn die Notiz ausgedruckt wurde, ist die HtmlBox disabled
+(weil body in disabled_fields mit dabei ist, was bei inline editing
+auch nötig ist). Aber das <cite>disabled</cite> einer HtmlBox sollte die Anzeige nicht
+grau werden lassen, auch die Scrollbars nicht deaktivieren, sondern
+lediglich den Button &#8220;Bearbeiten&#8221;</li>
+</ul>
+<p>Checkin <a class="reference external" href="http://code.google.com/p/lino/source/detail?r=c798dfd44c552c93aee8b58b0b8b3f5a57756d83">20110531b</a> und ab in die Heia.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0601.html" title="20110601-02"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0530.html" title="20110530"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0531.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0531.html">Online Link</a>
+    </div>
+  </body>
+</html>

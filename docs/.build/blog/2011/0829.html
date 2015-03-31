@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110829 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110830" href="0830.html" />
+    <link rel="prev" title="20110827" href="0827.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0830.html" title="20110830"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0827.html" title="20110827"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110829<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-export-to-remote-calendars">
+<h2>20110829a Export to remote calendars<a class="headerlink" href="#a-export-to-remote-calendars" title="Permalink to this headline">¶</a></h2>
+<p>Continuing on remote calendars (<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/47">docs/tickets/47</a>).
+So far Lino can import data from remote calendars, now I&#8217;ll
+start the opposite direction: modifying an event through
+the Lino must trigger an update of the remote calendar.</p>
+<p>Event.save() should not directly update the remote calendar,
+just set a status flag to &#8220;ready to send&#8221;
+because the save should not fail when
+the calendar server has a problem.
+Sending the modifications to the calendar server should be
+done by a background process.
+<a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-calendars" title="(in Lino v1.6)"><span class="xref std std-term">watch_calendars</span></a> command can do both directions.</p>
+<p>New special model method <cite>on_user_change</cite> gets called each
+time an instance of this model was changed
+(created, modified, deleted) <em>though a user interface</em>.</p>
+<p>First success after only one hour of programming!</p>
+</div>
+<div class="section" id="b-field-sets">
+<h2>20110829b Field Sets<a class="headerlink" href="#b-field-sets" title="Permalink to this headline">¶</a></h2>
+<p>Ich hatte eine spontane Vision, wie ich den folgenden
+todo-Punkt lösen kann:</p>
+<ol class="arabic simple">
+<li>Field groups. Die Felder alarm_value und alarm_unit sollten
+wirklich gruppiert sein.</li>
+</ol>
+<p>Am elegantesten wäre in der Model definition:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">alarm</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">FieldGroup</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Alarm&quot;</span><span class="p">),</span><span class="s">&#39;alarm_value alarm_unit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Und siehe da, es funktioniert!
+Noch nicht zufriedenstellend, aber cool dass das überhaupt so einfach ging.</p>
+</div>
+<div class="section" id="c-renamed-attendee-to-guest">
+<h2>20110829c Renamed &#8220;attendee&#8221; to &#8220;guest&#8221;<a class="headerlink" href="#c-renamed-attendee-to-guest" title="Permalink to this headline">¶</a></h2>
+<p>Google nennt die Teilnehmer eines Termins einfach &#8220;Gäste&#8221;.
+Nicht &#8220;attendees&#8221; wie im RFC, und auch nicht &#8220;participants&#8221;
+wie man es oft sieht. Genial.</p>
+</div>
+<div class="section" id="d-makeui">
+<h2>20110829d makeui<a class="headerlink" href="#d-makeui" title="Permalink to this headline">¶</a></h2>
+<p>Ich habe noch nicht rausgefunden, wie ich es schaffe,
+dass <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-makeui" title="(in Lino v1.6)"><span class="xref std std-term">makeui</span></a> und <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-makedocs" title="(in Lino v1.6)"><span class="xref std std-term">makedocs</span></a> für alle
+user interfaces funktionieren können.
+Vielleicht muss ich eine neue Konvention beschließen:
+dass das in <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-ROOT_URLCONF" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">ROOT_URLCONF</span></code></a> angegebene Modul außer der
+von Django erwarteten Variablen <code class="docutils literal"><span class="pre">urlpatterns</span></code>
+für Lino auch eine Variable <code class="docutils literal"><span class="pre">ui</span></code> definieren muss.
+Hm... das ist nicht schön...</p>
+<p>Oder könnten wir es so machen: in der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-urls.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">urls.py</span></code></a> stünde nur:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="n">urlpatterns</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">urlpatterns</span>
+</pre></div>
+</div>
+<p>Aber das geht momentan noch nicht, weil kernel.analyze_models
+den parameter make_messages hat...
+Lassen wir das mal was reifen...</p>
+</div>
+<div class="section" id="e-field-sets">
+<h2>20110829e Field Sets<a class="headerlink" href="#e-field-sets" title="Permalink to this headline">¶</a></h2>
+<p>Lino now offers a way to define fieldsets.
+A fieldset is a group of fields that are visually together in an extra box
+than can have a label for the group. The labels of the fields are not displayed by
+default but can optionally be overridden.</p>
+<p>This change wasn&#8217;t trivial because it required a few fundamental internal
+changes in <code class="xref py py-mod docutils literal"><span class="pre">lino.ui.extjs3.ext_elems</span></code>.</p>
+<p>First usage case was the detail of an Event.
+This model has several fields like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">duration_value</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Duration value&quot;</span><span class="p">),</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># iCal:DURATION</span>
+<span class="n">duration_unit</span> <span class="o">=</span> <span class="n">DurationUnit</span><span class="o">.</span><span class="n">field</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Duration unit&quot;</span><span class="p">),</span><span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># iCal:DURATION</span>
+</pre></div>
+</div>
+<p>Now we can add a <code class="xref py py-class docutils literal"><span class="pre">lino.fields.FieldSet</span></code> below that declaration:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">duration</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">FieldSet</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Duration&quot;</span><span class="p">),</span><span class="s">&#39;duration_value duration_unit&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../../_images/0829a.jpg"><img alt="../../_images/0829a.jpg" src="../../_images/0829a.jpg" style="width: 449.2px; height: 334.0px;" /></a>
+<p>Here is the corresponding <cite>.dtl</cite> file:</p>
+<div class="highlight-python"><div class="highlight"><pre>main =
+  summary user project
+  start end duration alarm
+  status place priority access_class transparent rset
+  created:20 modified:20 user_modified
+  description GuestsByEvent
+</pre></div>
+</div>
+<p>Another example is <code class="xref py py-attr docutils literal"><span class="pre">lino.apps.dsbe.models.Person.eid</span></code>,
+a fieldset that defines labels for its children:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eid</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">FieldSet</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;eID card&quot;</span><span class="p">),</span>
+    <span class="s">&quot;card_number card_valid_from card_valid_until card_issuer card_type&quot;</span><span class="p">,</span>
+    <span class="n">card_number</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;number&quot;</span><span class="p">),</span>
+    <span class="n">card_valid_from</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;valid from&quot;</span><span class="p">),</span>
+    <span class="n">card_valid_until</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;until&quot;</span><span class="p">),</span>
+    <span class="n">card_issuer</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;issued by&quot;</span><span class="p">),</span>
+    <span class="n">card_type</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;card type&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../../_images/0829b.jpg"><img alt="../../_images/0829b.jpg" src="../../_images/0829b.jpg" style="width: 449.2px; height: 334.0px;" /></a>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0830.html" title="20110830"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0827.html" title="20110827"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0829.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0829.html">Online Link</a>
+    </div>
+  </body>
+</html>

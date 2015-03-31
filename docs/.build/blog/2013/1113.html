@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131113 (Wednesday, 13 November 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131114 (Thursday, 14 November 2013)" href="1114.html" />
+    <link rel="prev" title="20131112 (Tuesday, 12 November 2013)" href="1112.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1114.html" title="20131114 (Thursday, 14 November 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1112.html" title="20131112 (Tuesday, 12 November 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-13-november-2013">
+<h1>20131113 (Wednesday, 13 November 2013)<a class="headerlink" href="#wednesday-13-november-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="continued-to-prepare-the-next-release-of-welfare">
+<h2>Continued to prepare the next release of <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a><a class="headerlink" href="#continued-to-prepare-the-next-release-of-welfare" title="Permalink to this headline">¶</a></h2>
+<p>Continued on writing
+<code class="xref py py-func docutils literal"><span class="pre">lino_welfare.migrate.migrate_from_1_1_10()</span></code>,
+which as expected is more work than usual
+because there were extensive
+database changes in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a>.</p>
+<p>Note that when writing a migration function, I create a lot of checkins.
+You might ask why.
+It&#8217;s because I do the tests directly on the remote machine, using repeated
+sequences of:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ pull
+$ python manage.py run /var/log/lino/backups/20131113_020101/restore.py --traceback
+</pre></div>
+</div>
+<p>I prefer this because every run takes some time and causes
+the machine to slow down. Let the client&#8217;s machine do that work!
+While working on this, I could check my inbox and work on the next topic:</p>
+</div>
+<div class="section" id="paging-in-a-combobox-looses-the-context">
+<h2>Paging in a combobox looses the context<a class="headerlink" href="#paging-in-a-combobox-looses-the-context" title="Permalink to this headline">¶</a></h2>
+<p>Joe contributed both a bug report and its fix:</p>
+<ul class="simple">
+<li>Bug: Open demo with countries modlib module (I tested on
+<a class="reference external" href="http://www.lino-framework.org/tutorials/watch_tutorial/index.html#lino-tutorial-watch" title="(in Lino v1.6)"><span>Watching database changes</span></a>). Open detail of Person from Belgium. Open
+combo with City selection. You have two pages of result. Click &#8220;next&#8221;
+button and you have 4 pages of results (because cities from other
+countries are now included).</li>
+<li>His fix overrides the ComboBox&#8217;s <cite>initList</cite> to add a listener to the
+<cite>beforechange</cite> event which retains context parameters.</li>
+</ul>
+<p>Thanks, Joe!</p>
+</div>
+<div class="section" id="setting-media-root-in-djangosite-local-py">
+<h2>Setting <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-MEDIA_ROOT" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">MEDIA_ROOT</span></code></a> in <code class="xref std std-xfile docutils literal"><span class="pre">djangosite_local.py</span></code><a class="headerlink" href="#setting-media-root-in-djangosite-local-py" title="Permalink to this headline">¶</a></h2>
+<p>Until now Lino has always been setting
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-MEDIA_ROOT" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">MEDIA_ROOT</span></code></a> to a hard-coded value
+<code class="docutils literal"><span class="pre">&lt;project_dir&gt;/media</span></code>.
+You could override that manually in your <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a> file,
+but <em>not</em> in <code class="xref std std-xfile docutils literal"><span class="pre">djangosite_local.py</span></code>.</p>
+<p>Now you can: Lino installs its default value only when
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-MEDIA_ROOT" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">MEDIA_ROOT</span></code></a> is empty.</p>
+</div>
+<div class="section" id="tutorial-about-workflows">
+<h2>Tutorial about workflows<a class="headerlink" href="#tutorial-about-workflows" title="Permalink to this headline">¶</a></h2>
+<p>Joe asked whether there is any documentation
+about using Workflows.
+Here is the beginning of another tutorial:
+<a class="reference external" href="http://www.lino-framework.org/tutorials/workflows_tutorial/index.html">/tutorials/workflows_tutorial/index</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1114.html" title="20131114 (Thursday, 14 November 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1112.html" title="20131112 (Tuesday, 12 November 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1113.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1113.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110206 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110206" href="0206.html" />
+    <link rel="prev" title="20110202" href="0202.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0206.html" title="20110206"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0202.html" title="20110202"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110206<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-js-1-mb-kleiner">
+<h2><a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> 1 MB kleiner<a class="headerlink" href="#lino-js-1-mb-kleiner" title="Permalink to this headline">¶</a></h2>
+<p>Samstag Nacht. Kurz vorm Einschlafen bekam ich die Idee,
+dass der folgende Punkt doch eigentlich recht einfach machbar sein müsste:</p>
+<ol class="arabic simple">
+<li>Der JS-Code, der ein Detail-Fenster definiert, wird in der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a>
+für jeden Report zweimal generiert (detail und insert).
+Ein einziges Mal für alle Reports würde reichen.</li>
+</ol>
+<p>Also aufstehen und mal nachschauen.
+In der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> sieht es momentan so aus:</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.contacts.Persons.detail = function(caller,params) {
+  var ww = new Lino.DetailWrapper(caller,{
+      fk_name: null,
+      url_data: &quot;/api/contacts/Persons&quot;,
+      content_type: 22, name: &quot;detail&quot;
+    },params);
+  var last_name1712 = new Ext.form.TextField(...);
+  ...
+  var main_panel1905 = new Ext.Panel(...);
+  var form_panel1906 = new Lino.FormPanel(ww,{
+      ls_url: &quot;/contacts/Persons&quot;,
+      ls_bbar_actions: [ ... ],
+      has_navigator: true,
+      items: new Ext.TabPanel({ items: [ main_panel1905 ...  ], ... }),
+      listeners: { ... },
+      before_row_edit: function(record){...},
+      ls_detail_handler: Lino.contacts.Persons.detail,
+      layout: &quot;fit&quot;,
+      method: &quot;PUT&quot;,
+      ls_insert_handler: Lino.contacts.Persons.insert
+  });
+  ww.main_item = form_panel1906;
+  ww.show();
+}
+</pre></div>
+</div>
+<p>Das müsste stattdessen so aussehen:</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.contacts.Persons.FormPanel = Ext.extend(Lino.FormPanel,{
+  constructor : function(ww,config) {
+      var last_name1712 = new Ext.form.TextField(...);
+      ...
+      var main_panel1905 = new Ext.Panel(...);
+      Lino.contacts.Persons.FormPanel.superclass.constructor.call(this, ww,config);
+  }
+})
+Lino.contacts.Persons.detail = function(caller,params) {
+  var ww = new Lino.DetailWrapper(caller,{
+      fk_name: null,
+      url_data: &quot;/api/contacts/Persons&quot;,
+      content_type: 22, name: &quot;detail&quot;
+    },params);
+  ww.main_item = new Lino.contacts.Persons.FormPanel(ww,{
+      ls_url: &quot;/contacts/Persons&quot;,
+      ls_bbar_actions: [ ... ],
+      has_navigator: true,
+      items: new Ext.TabPanel({ items: [ main_panel1905 ...  ], ... }),
+      listeners: { ... },
+      before_row_edit: function(record){...},
+      ls_detail_handler: Lino.contacts.Persons.detail,
+      layout: &quot;fit&quot;,
+      method: &quot;PUT&quot;,
+      ls_insert_handler: Lino.contacts.Persons.insert
+  });
+  ww.show();
+</pre></div>
+</div>
+<p>Gedacht, getan: nach knapp anderthalb Stunden ist die <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a>
+von 2.791.466 auf 1.754.633 Bytes geschrumpft.
+Mit genau der gleichen Funktionalität.
+<strong>Also ein Megabyte unnützer Code</strong> wurde da
+generiert und bei jedem neuen Seitenaufruf verschickt!</p>
+</div>
+<div class="section" id="refresh-nach-einfugen">
+<h2>Refresh nach Einfügen<a class="headerlink" href="#refresh-nach-einfugen" title="Permalink to this headline">¶</a></h2>
+<p>Und da ich scheinbar so gut in Form bin,
+schau ich mir auch noch folgenden Bug mal an:</p>
+<ol class="arabic simple">
+<li>Wenn man in Personen-Suchlisten, Personen (und an einigen anderen Stellen)
+das Fenster &#8220;Einfügen&#8221; bestätigt, dann funktioniert das Refresh nicht.
+Eigentlich müsste er die neu erstellte Suche im Detail anzeigen.
+Stattdessen zeigt er sie nicht einmal in der Grid an.
+Da kommt ein TypeError im JS.
+(Ein einfacher Klick auf Refresh reicht dann)</li>
+</ol>
+<p>Tatsächlich, die zwei Tage Zwangspause haben gut getan,
+auch dieser Punkt war schnell erledigt.
+Das war, weil ich in Lino.ComboBox die initComponent() falsch definiert hatte.
+Da wurde die Originalversion überhaupt nicht mehr aufgerufen.
+Und später versuchte dann einen Store zu entbinden, der
+noch nicht in einen ArrayStore konvertiert worden war.</p>
+</div>
+<div class="section" id="clickable-foreignkeys">
+<h2>Clickable ForeignKeys<a class="headerlink" href="#clickable-foreignkeys" title="Permalink to this headline">¶</a></h2>
+<p>Jetzt kommt dieser Punkt dran:</p>
+<ol class="arabic simple">
+<li>Wenn man auf einen ForeignKey klickt, sollte er kein neues Browserfenster
+öffnen, sondern lediglich ein neues Fenster.</li>
+</ol>
+<p>Ratespiel: wer findet den Fehler im folgenden Code?
+Ich habe mindestens eine Viertelstunde gebraucht...</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.fk_renderer = function(fkname,handler) {
+  return function(value, metaData, record, rowIndex, colIndex, store) {
+    if (record.phantom) return &#39;&#39;;
+    if (value)
+        var s = &#39;&lt;a href=&quot;#&quot; onclick=&quot;&#39; ;
+        s += handler + &#39;(undefined,{record_id:&#39; + Ext.encode(record.data[fkname]) + &#39;})&quot;&gt;&#39;;
+        s += value + &#39;&lt;/a&gt;&#39;;
+        return s
+    return &#39;&#39;;
+  }
+}
+</pre></div>
+</div>
+<p>Jedenfalls hat Lino jetzt ein irritierendes Verhalten weniger:
+Wenn man in einer Grid auf einen ForeignKey klickt,
+um das referenzierte Objekt im Detail zu sehen,
+öffnet er jetzt nicht mehr ein neues Browserfenster, sondern ein Ext.Window.
+(Das onclick-Event dieses href ruft den detail-Handler auf dem referenzierten Element.)</p>
+<p>Idem für die klickbaren Links in den Erinnerungen im Anfangsbildschirm.</p>
+</div>
+<div class="section" id="href-javascript-statt-onclick">
+<h2><cite>href=javascript:</cite> statt <cite>onclick=</cite><a class="headerlink" href="#href-javascript-statt-onclick" title="Permalink to this headline">¶</a></h2>
+<p>Gerade sehe ich zufällig, dass ich statt</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;a href=&quot;#&quot; onclick=&quot;foo()&quot;&gt;
+</pre></div>
+</div>
+<p>auch sagen kann:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;a href=&quot;javascript:foo()&quot;&gt;
+</pre></div>
+</div>
+<p>Das mach ich, denn
+dann kriegt der Bentuzer den JS-Code in der Statuszeile angezeigt,
+wenn er mit der Maus über den Link fährt.</p>
+</div>
+<div class="section" id="saving-grid-configs">
+<h2>Saving Grid Configs<a class="headerlink" href="#saving-grid-configs" title="Permalink to this headline">¶</a></h2>
+<p>Der folgende Punkt ist jetzt wahrscheinlich behoben:</p>
+<ol class="arabic simple">
+<li>Gridkonfigurationen speichern funktioniert nicht.
+Oder &#8211;besser gesagt&#8211; wird erst aktiv nach dem nächsten Server-Restart.</li>
+</ol>
+<p>Ich logge jetzt außerdem in der <code class="xref std std-xfile docutils literal"><span class="pre">system.log</span></code>, wenn eine
+Konfiguration gespeichert wird.</p>
+</div>
+<div class="section" id="remove-obsolete-database-fields">
+<h2>Remove obsolete database fields<a class="headerlink" href="#remove-obsolete-database-fields" title="Permalink to this headline">¶</a></h2>
+<p>Hier schon mal eine Liste der Datenfelder, die mit dem kommenden Release rausfliegen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">no_shift</span>
+<span class="n">no_weekend</span>
+<span class="n">has_family</span>
+<span class="n">has_own_car</span>
+<span class="n">can_car</span>
+<span class="n">can_truck</span>
+<span class="n">can_clark</span>
+<span class="n">can_bus</span>
+<span class="n">it_knowledge</span>
+<span class="n">physical_handicap</span>
+<span class="n">mental_handicap</span>
+<span class="n">psycho_handicap</span>
+<span class="n">health_problems</span>
+<span class="n">juristic_problems</span>
+<span class="n">dependency_problems</span>
+<span class="n">social_competence</span>
+<span class="n">motivation_lack</span>
+<span class="n">fulltime_only</span>
+<span class="n">parttime_only</span>
+<span class="n">young_children</span>
+<span class="n">is_illiterate</span>
+</pre></div>
+</div>
+<p><code class="xref py py-meth docutils literal"><span class="pre">lino.repotrs.Report.validate_grid_config()</span></code> ignoriert jetzt Kolonnennamen,
+die nicht existieren, und konvertiert die .rpt-Datei automatisch.</p>
+</div>
+<div class="section" id="new-format-for-grid-configurations">
+<h2>New format for grid configurations<a class="headerlink" href="#new-format-for-grid-configurations" title="Permalink to this headline">¶</a></h2>
+<p>Abends habe ich mich dann noch an folgenden Punkt gemacht:</p>
+<ol class="arabic simple">
+<li>Grid configs</li>
+</ol>
+<blockquote>
+<div><ol class="arabic simple">
+<li>sollten in den config dirs stehen und nicht im DATA_DIR</li>
+<li>sollten vielleicht besser YAML statt .py sein.</li>
+</ol>
+</div></blockquote>
+<p>Das bisherige Format mit allen GCs in einer einzigen .rpt-Datei war nicht gut.
+Stattdessen mach ichs jetzt wie mit den .dtl-Dateien: pro GC eine Datei.
+Dateinamen werden wie .dtl-Dateien alphabetischer Reihenfolge eingelesen.
+Dieser Code ist für beide gleich und sitzt jetzt ebenfalls in <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.config</span></code>.
+GCs haben keinen Namen mehr (an manchen Stellen heißt die betreffende Variable noch &#8220;name&#8221;,
+obschon es ein integer ist), und die Standard-GC ist nicht mehr &#8216;default&#8217;
+sondern 0 (und hat als Label &#8220;Standard&#8221;, was aber erst zum Zuge kommt wenn man mehr
+als eine Ansicht hat)</p>
+</div>
+<div class="section" id="release-1-1-2">
+<h2>Release 1.1.2<a class="headerlink" href="#release-1-1-2" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/releases/2011/0205.html">/releases/2011/0205</a> ist jetzt bereit und eingecheckt, aber noch nicht in
+Eupen installiert.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0206.html" title="20110206"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0202.html" title="20110202"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0205.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0205.html">Online Link</a>
+    </div>
+  </body>
+</html>

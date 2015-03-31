@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saturday, August 30, 2014 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Sunday, August 31, 2014" href="0831.html" />
+    <link rel="prev" title="Thursday, August 28, 2014" href="0828.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0831.html" title="Sunday, August 31, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0828.html" title="Thursday, August 28, 2014"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-august-30-2014">
+<h1>Saturday, August 30, 2014<a class="headerlink" href="#saturday-august-30-2014" title="Permalink to this headline">¶</a></h1>
+<p>I am working on a frustrating problem with Javascript/ExtJS.</p>
+<div class="section" id="how-to-reproduce-it">
+<h2>How to reproduce it<a class="headerlink" href="#how-to-reproduce-it" title="Permalink to this headline">¶</a></h2>
+<p>To show the context without requiring you to install <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>, I
+extended <a class="reference external" href="http://www.lino-framework.org/api/lino.projects.min1.html#module-lino.projects.min1" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.min1</span></code></a> (a minimal demo application used
+for certain tests):</p>
+<ul>
+<li><p class="first">it now installs <a class="reference external" href="http://www.lino-framework.org/dev/ml/cal.html#module-ml.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">ml.cal</span></code></a> (a basic calendar module)</p>
+</li>
+<li><p class="first">it now defines a <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.get_admin_main_items" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.site.Site.get_admin_main_items()</span></code></a> method which
+yields <code class="xref py py-class docutils literal"><span class="pre">ml.cal.MyEvents</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_admin_main_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar</span><span class="p">):</span>
+    <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">cal</span><span class="o">.</span><span class="n">MyEvents</span>
+</pre></div>
+</div>
+<p>The <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.get_admin_main_items" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.site.Site.get_admin_main_items()</span></code></a> method is expected to yield
+a list of tables to be displayed in the body of the main page using
+&#8220;plain html&#8221;.</p>
+</li>
+</ul>
+<p>Here is how <a class="reference external" href="http://www.lino-framework.org/api/lino.projects.min1.html#module-lino.projects.min1" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.min1</span></code></a> now looks after Robin logged in:</p>
+<a class="reference internal image-reference" href="../../_images/0830a.png"><img alt="../../_images/0830a.png" src="../../_images/0830a.png" style="width: 891.9px; height: 449.1px;" /></a>
+<p>You should be able to reproduce the above by installing the latest
+development version of Lino (as explained in <a class="reference external" href="http://www.lino-framework.org/dev/install.html#lino-dev-install" title="(in Lino v1.6)"><span>Installing Lino</span></a>)
+and executing:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ cd ~/repositories/lino/lino/projects/min1
+$ python manage.py initdb_demo
+$ runserver
+</pre></div>
+</div>
+<p>Now please note the <img alt="link" src="../../_images/link.png" /> symbol after the table&#8217;s title (&#8220;My
+events&#8221;). Clicking on this symbol opens the given table in a &#8220;real&#8221;
+window with an editable ExtJS grid.</p>
+<p>The initial problem report then was:</p>
+<ul class="simple">
+<li>When I add an event in the &#8220;My events&#8221; table, then that event isn&#8217;t
+displayed in main page after closing the window.</li>
+</ul>
+<p>This was an easy pick, the problem came because Lino didn&#8217;t refresh
+the main page. I just needed to add a call to
+<cite>Lino.viewport.refresh()</cite> when the last window has been
+closed. Summary of the relevant JavaScript code:</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.close_window = function(status_update, norestore) {
+  var ww = Lino.window_history.pop();
+  ...
+  if (ww) {
+    ...
+    Lino.current_window = ww.window;
+  } else {
+      Lino.current_window = null;
+      Lino.viewport.refresh();       // new since 20140829
+  }
+  ...
+};
+</pre></div>
+</div>
+<p>That worked.  But it has a side effect:</p>
+<p>Once the main page has been refreshed that way (by closing the last
+window, not by reloading the whole page), the <img alt="link" src="../../_images/link.png" /> doesn&#8217;t work
+anymore. The window just doesn&#8217;t open, and there is no error message.</p>
+<p>If you were able to follow until here, then please try help me to
+solve this problem!</p>
+</div>
+<div class="section" id="a-first-explanation">
+<h2>A first explanation<a class="headerlink" href="#a-first-explanation" title="Permalink to this headline">¶</a></h2>
+<p>Joe suggested the following explanation:</p>
+<blockquote>
+<div><p>I think your JS problem is pretty standard. When you replace some
+HTML content, script tags included are not executed and of course
+all event bindings are discarded together with old HTML
+code. Possibilities to fix:</p>
+<ol class="arabic simple">
+<li>Make the html-replacing code execute script tags and bind the
+actions in replaced HTML code. Ext JS has built-in support. My
+first pull request was just about it:
+<a class="reference external" href="https://github.com/lsaffre/lino/pull/1/files">https://github.com/lsaffre/lino/pull/1/files</a></li>
+<li>Use &#8220;correct&#8221; way of action binding using top-level element
+catching bubbling events from child elements. See
+<a class="reference external" href="http://api.jquery.com/on/">http://api.jquery.com/on/</a> that explains it. The essence is to
+bind the event on top element that is not replaced. After the
+child elements are replaces all bindings are still there and
+events bubbles-up normally.</li>
+<li>Manually re-bind actions after reload.</li>
+</ol>
+</div></blockquote>
+<p>My answer: I don&#8217;t understand this explanation.  Because where are
+those event bindings that might get discarded?  In fact I even believe
+that the reason must be somewhere else. Two observations to explain
+why:</p>
+<p><strong>Observation 1</strong></p>
+<p>The <cite>Lino.Viewport.refresh()</cite> function sends an AJAX request and
+receives the following html fragment as response:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;div class=&quot;htmlText&quot; style=&quot;margin:5px&quot;&gt;
+&lt;p&gt;Quick links:
+[&lt;a href=&quot;javascript:Lino.contacts.Persons.detail.run(null)&quot;&gt;Detail Persons&lt;/a&gt;]...&lt;/p&gt;
+&lt;p&gt;Hi, Robin! &lt;/p&gt;
+&lt;p&gt;This is a Lino demo site. ... &lt;/p&gt;
+&lt;h2&gt;My events
+  &lt;a href=&quot;javascript:Lino.cal.MyEvents.grid.run(null)&quot;&gt;
+  &lt;img src=&quot;...link.png&quot;/&gt;
+&lt;/a&gt;&lt;/h2&gt;
+&lt;table bgcolor=&quot;#ffffff&quot; ...&gt;...&lt;/table&gt;
+&lt;/div&gt;
+</pre></div>
+</div>
+<p>Then it updates the <cite>main_area</cite> with this fragment:</p>
+<div class="highlight-python"><div class="highlight"><pre>if (result.html) {
+    var cmp = Ext.getCmp(&#39;main_area&#39;);
+    cmp.update(result.html);
+}
+</pre></div>
+</div>
+<p>I tried to specify <code class="docutils literal"><span class="pre">true</span></code> for the <a class="reference external" href="http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.Component-method-update">Component.update()</a>
+method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">cmp</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">html</span><span class="p">,</span> <span class="n">true</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Which didn&#8217;t solve the problem.</p>
+<p>AFAICS the HTML of <cite>main_area</cite> does not use script tags, just a
+<cite>javascript:</cite> anchor. And the specified code
+(<cite>Lino.cal.MyEvents.grid.run(null)</cite>) continues to be executed when I
+click on the symbol.</p>
+<p><strong>Observation 2</strong></p>
+<p>Here is the definition of <cite>Lino.WindowAction</cite> whose <cite>run()</cite> method is
+being called:</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.WindowAction = Ext.extend(Lino.WindowAction,{
+    window : null,
+    get_window : function() {
+      if (this.window == null)  {
+      // if (true)  {
+          this.windowConfig.main_item = this.main_item_fn();
+          this.window = new Lino.Window(this.windowConfig);
+      }
+      return this.window;
+    },
+    run : function(requesting_panel, status) {
+      Lino.open_window(this.get_window(), status, requesting_panel);
+    }
+});
+</pre></div>
+</div>
+<p>This code does a kind of &#8220;caching&#8221; of the <cite>Ext.Window</cite> object, and
+this caching is related to our problem because when I disable it (by
+writing <cite>if (true)</cite> instead of <cite>if (this.window == null)</cite>), then the
+problem <em>does not</em> occur.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0831.html" title="Sunday, August 31, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0828.html" title="Thursday, August 28, 2014"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0830.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0830.html">Online Link</a>
+    </div>
+  </body>
+</html>

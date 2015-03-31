@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120516 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120517" href="0517.html" />
+    <link rel="prev" title="20120515" href="0515.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0517.html" title="20120517"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0515.html" title="20120515"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120516<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-on-cloud-7">
+<h2>Lino on Cloud 7<a class="headerlink" href="#lino-on-cloud-7" title="Permalink to this headline">¶</a></h2>
+<p>Installed a <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw</span></code> site under <cite>lino.cld7.com</cite>.
+Added some english designations in <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.debts.fixtures.demo</span></code>.</p>
+<p>Under Python 2.5 the debts demo caused some
+&#8220;TypeError: Cannot convert float to Decimal.
+First convert the float to a string&#8221;
+errors</p>
+<p>Discovered another problem on Cloud 7:
+When trying to save a Detail, the user got a
+&#8220;Connection failure / AJAX communication failed&#8221; message and the
+server said:</p>
+<div class="highlight-python"><div class="highlight"><pre>201205-16 07:12:12 ERROR base : Internal Server Error: /api/users/Users/204
+Traceback (most recent call last):
+  File &quot;/home/linodev/snapshots/Django-1.4/django/core/handlers/base.py&quot;, line 89, in get_response
+    response = middleware_method(request)
+  File &quot;/home/linodev/snapshots/lino/lino/utils/auth.py&quot;, line 84, in process_request
+    % (settings.LINO.remote_user_header,request.META))
+Exception: No REMOTE_USER in {
+  &#39;REDIRECT_UNIQUE_ID&#39;: ...
+  &#39;PATH_INFO&#39;: u&#39;/api/users/Users/204&#39;}
+</pre></div>
+</div>
+<p>My current guess is that FastCGI fails to forward the REMOTE_USER in PUT calls.</p>
+<p><a class="reference external" href="http://wiki.dreamhost.com/Django_FastCGI">http://wiki.dreamhost.com/Django_FastCGI</a></p>
+</div>
+<div class="section" id="user-levels-and-user-groups">
+<h2>User Levels and User Groups<a class="headerlink" href="#user-levels-and-user-groups" title="Permalink to this headline">¶</a></h2>
+<p>Lino&#8217;s default permission system (<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.users.html#module-lino.modlib.users" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.users</span></code></a>)
+evolves away from Django&#8217;s <cite>django.contrib.auth</cite> module.
+Deserves more documentation.</p>
+<p>Replaced the general fields <cite>is_active</cite>, <cite>is_staff</cite>, <cite>is_superuser</cite> and <cite>is_expert</cite>
+by a single field <cite>level</cite> which refers to the new choice list
+<code class="xref py py-class docutils literal"><span class="pre">UserLevel</span></code>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="57%" />
+<col width="43%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Django</th>
+<th class="head">Lino</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>is_staff</td>
+<td>manager</td>
+</tr>
+<tr class="row-odd"><td>is_superuser</td>
+<td>expert</td>
+</tr>
+<tr class="row-even"><td>is_active</td>
+<td>user</td>
+</tr>
+</tbody>
+</table>
+<p>User Levels are ordered :
+A <cite>user</cite> is less than a <cite>manager</cite>, who is less than an <cite>expert</cite>.
+In <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.users.html#module-lino.modlib.users" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.users</span></code></a> you cannot define a user who is expert but <em>not</em> manager.
+An inactive user is one who has an empty <cite>level</cite> field.</p>
+<p>Lino also uses module-specific levels.</p>
+<p>The boolean field <cite>User.is_debts</cite> was used to indicate whether
+or not this user uses the <cite>debts</cite> module.
+Replaced this by a <cite>User.debts_level</cite> field which also refers to a
+<code class="xref py py-class docutils literal"><span class="pre">lino.utils.choicelists.UserLevel</span></code>.
+Same for is_newcomers (<code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.newcomers</span></code>)
+and <cite>is_spis</cite> (which is now called <cite>integ_level</cite>).
+<cite>integ</cite> is the common name used by <cite>jobs</cite>, <cite>isip</cite>, <cite>courses</cite> and <cite>pcsw</cite>.
+That&#8217;s because the conceptual notion of &#8220;integration service&#8221; reflects
+down into several modules.
+For example, not all PCSW&#8217;s will use the <cite>courses</cite> module, but those
+who use don&#8217;t want to have a separate UserLevel field for <cite>courses</cite>.</p>
+<p>Note:
+It would be theoretically more &#8220;logical&#8221; to also use
+<code class="xref py py-meth docutils literal"><span class="pre">lino.core.actors.Actor.get_permission()</span></code>
+for deciding whether a menu command should be created or not.
+Lino doesn&#8217;t currently do this because it feels more &#8220;sane&#8221; to do
+these decicions in the <cite>setup_XXX_menu</cite> functions.</p>
+<p>Der eigentliche Auslöser dieser Übung ist jedoch
+ein kleiner unscheinbarer Punkt in der todo-Liste:</p>
+<ul class="simple">
+<li>Hide the &#8220;Debts Mediation&#8221; tab (BudgetsByPartner) for Users without <cite>debts_level</cite>.</li>
+</ul>
+<p>Also dass der Reiter &#8220;Budgets&#8221;
+nur für <em>Schuldnerberater</em> sichtbar sein soll. Also solche,
+deren <cite>debts_level</cite> nicht leer ist.
+Umgekehrt werden wohl bald auch Anfragen kommen, dass die Leute von der
+Schuldnerberatung
+(die keine Integration machen und deren <cite>integ_level</cite> leer sein wird)
+diverse Dinge aus der Integration nicht sehen sollen oder wollen.
+Zum Beispiel &#8220;Verträge&#8221;.</p>
+<p>Jetzt stellt sich die Frage, wie ich das machen soll.
+Ich sehe zwei Möglichkeiten: (1) mit einem ähnlichen System
+wie <cite>disabled_fields</cite>. Bei jedem Detail eines Records gibt
+der Server zurück, welche Komponenten versteckt werden sollen.
+Das würde freilich auf die Performance gehen.
+(2) ich generiere die lino*.js <em>pro</em> Benutzer.
+Oder genauer gesagt pro Benutzerprofil (eine Notion, die noch nicht
+implementiert ist weil es erst vier Benutzer gibt,
+die aber bei größeren Systemen kommen muss).
+Selbst bei den jetzigen vier Benutzern sind eigentlich nur zwei
+verschiedene Profile: &#8220;Normale Benutzer&#8221; und &#8220;Dienstleiter&#8221;
+(plus ein Profil &#8220;Systemverwalter&#8221; für Gerd und mich).</p>
+<p>Ein Benutzerprofil ist &#8220;das, was ein Benutzer kann&#8221;,
+also die Zugriffsrechte
+Profil-Benutzer sind Leute mit einem Profil.
+Benutzer ohne Profil dagegen &#8220;erben&#8221; die
+(Gruppenzugehörigkeiten und Level)
+nur einen anderen Benutzer mit Profil.</p>
+<p>Nachteil von Lösung (2) ist, dass der Server-Start mehr Zeit nimmt
+und das System allgemein komplexer wird. Zum Beispiel muss jetzt
+der Cache neu generiert werden, wenn ein Profil-Benutzer etwas in seinen levels verändert kriegt.</p>
+<p><a class="reference external" href="http://code.google.com/p/lino/source/detail?r=4882a981422c">Checkin 4882a981422c</a>.
+Äußerlich funktioniert es bereits. Aber das eigentliche Ziel ist noch
+nicht sichtbar, denn ein &#8220;Detail&#8221; fehlt noch:
+die Generierung der lino*.js-Dateien muss ich noch bearbeiten,
+damit sie unsichtbare Elemente gar nicht erst generieren.
+Das wird noch lustig.
+Aber insgesamt bin ich sehr zufrieden über den guten Start einer
+lang geplanten Änderung.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0517.html" title="20120517"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0515.html" title="20120515"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0516.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0516.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0216.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0213.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0216.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0213.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100213 ←] [20100215 15.02.2010] [20100216 →]=</p>
+<p>Weiter mit Issue 103.
+Gestern habe ich ohne Blog drei Stunden lang nach einem saudoofen Bug gesucht: ich bekam die PropertyGrid nicht im Detail-Fenster angezeigt. Ich hatte einen JS-Fehler während des Renderns. Es lag letzten Endes gar nicht an falschen config-Optionen, sondern an einem Bug in <cite>Layout.desc2elem()</cite> : die vertrug bisher kein horizontales <cite>main</cite> (produzierte dann zwei DetailMainPanel).</p>
+<p>Eine horizontale <cite>main</cite> (also deren description nur eine Zeile enthält) funktioniert jetzt prinzipiell, aber mindestens zwei Details stimmen noch nicht: Breitenverteilung ist falsch und er hat dann scheinbar <cite>frame=False</cite>. Hier ein Screenshot:</p>
+<p>&lt;p align=&#8221;center&#8221;&gt;
+&lt;a href=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100215.jpg">http://lino.googlecode.com/hg/screenshots/20100215.jpg</a>&#8220;&gt;
+&lt;img src=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100215.jpg">http://lino.googlecode.com/hg/screenshots/20100215.jpg</a>&#8221; width=&#8221;80%&#8221;/&gt;
+&lt;/a&gt;&lt;/p&gt;</p>
+<p>Als ich das sah, habe ich verstanden, dass das für den Eigenschaften-Editor nicht der richtige Weg ist. Der muss in einem eigenen Fenster stehen, damit man ihn unabhängig positionieren kann. Außerdem kann man PropertiesByOwner von jedem Report aus aufrufen, es ist ein Standard-Button, der direkt hinter Insert und Delete kommen kann.</p>
+<p>Die Details an der horizontalen <cite>main</cite> lass ich offen, bis sich mal ein konkreter Nutzen ergibt. Issue 104. Ich kann mir vorstellen, dass eine horizontale main, die nur aus zwei oder drei Elementen besteht, zumindest Splitbars haben sollte, damit man die Breite der Panels leicht selber einstellen kann.</p>
+<p>== Echte Felder oder Eigenschaften ==</p>
+<p>Ein anderer Aspekt, der mit obigem Screenshot gut erklärt werden kann: Wenn die Properties mal funktionieren, werden wir jedesmal neu vor der Entscheidung stehen, welche Angaben als &#8220;echte&#8221; Datenfelder in der Tabelle selber stehen (d.h. in Djangosprache im Model <cite>Person</cite>) und welche als Eigenschaft sozusagen ausgelagert werden.</p>
+<p>Zum Beispiel Geburtsort, Herkunftsland sind momentan echte Felder, die vielleicht besser zu Eigenschaften gemacht werden.</p>
+<p>Ein echtes Feld ist z.B. nötig, wenn es in einem Layout stehen soll. Zum Beispiel Straße, Hausnummer und Briefkastennummer wären als Eigenschaften recht unschön, die bleiben besser im Model. Ich könnte zwar auch machen, dass PageLayout einzelne Properties als Eingabefelder anzeigt. Das wäre aber eher um flexibel zu sein, und es würde die Datenstruktur untransparenter machen.</p>
+<p>Auch die TIM-Nummer würde ich eher als echtes Feld belassen, weil die ziemlich fest mit ihrer Person verbunden sein muss. Ich werde sie wahrscheinlich auch noch als unique definieren.</p>
+<p>Performance bzw. Serverbelastung beim Zugriff sind natürlich auch nicht ganz bedeutungslos. Ein Ankreuzfeld, das bei jeder Buchung 3x abgefragt wird, sollte lieber direkt im Model stehen.</p>
+<hr class="docutils" />
+<p>Zwischendurch habe ich Issue 99 gelöst.
+Die Basisklasse ReportRequest (<cite>reports.ReportRequest</cite>) nahm <cite>Report.page_length</cite> als Standardwert für <cite>ReportRequest.limit</cite>. Dadurch war es unmöglich, alle Records zu bekommen.</p>
+<p>Weiter mit Issue 103.</p>
+<p>Eigenschaften, für die mindestens eine Auswahlmöglichkeit existiert, kriegen jetzt einen Eintrag in <cite>customEditors</cite>. Funktioniert sogar.</p>
+<p>Und jetzt den EiEditor in ein eigenes Fenster...
+Dazu brauch ich wahrscheinlich eine neue Art von MainPanel...</p>
+<p>Hah! Das ist der Moment, um endlich mal Issue 90 zu starten. Die extjs.py wird nämlich immer unübersichtlicher, sie hat 3045 Zeilen...</p>
+<p>Nebenbei hätte ich beinahe meine selbstgebastelte <cite>py2js()</cite> durch ein <cite>simplejson.encode()</cite> mit einem <cite>LinoJSONEncoder</cite> ersetzt. Das wäre theoretisch eleganter, aber das geht nicht, weil ich meine Klasse <cite>js_code</cite> definiere und auch ausgiebig nutze, um rohes Javascript generieren zu können. <cite>js_code(&#8216;foo&#8217;)</cite> wird nach JSON unverändert übergeben. Dieses Feature kann keiner der beiden JSONEncoder. Es funktioniert nur, weil ich <cite>simplejson.dumps()</cite> erst ganz am Ende von <cite>py2js()</cite> für reine Strings aufrufe.</p>
+<p>Mit Python 2.6 würde es nun funktionieren (Ich habe einen LinoJSONEncoder, der die interne Methode <cite>_iterencode_default()</cite> überschreibt). In Python 2.5 hat Django aber seine eigene Implementierung, mit der mein Hack nicht funktioniert. Deshalb ist das Ganze nun doch deaktiviert.</p>
+<p>Ha! Super! Ich habe nicht nur Issue 90 fertig bekommen, sondern auch das separate Eigenschaften-Fenster. Das wird mit einem Toggle-Button ein- und ausgeschaltet.</p>
+<p>Das Fenster zeigt freilich momentan erst die Standardwerte aller Eigenschaften an. Die Werte zu laden und zu speichern, das mach ich morgen. Es ist 17.15 Uhr, jetzt ist Feierabend. Knapp 8 Stunden Programmierung waren das heute, bei denen ich wahrscheinlich
+mehr Freude hatte als viele andere im Rosenmontagszug, der in Eupen gerade endet...</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0216.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0213.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0215.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0215.html">Online Link</a>
+    </div>
+  </body>
+</html>

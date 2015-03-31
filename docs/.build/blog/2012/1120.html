@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121120 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121121" href="1121.html" />
+    <link rel="prev" title="20121119" href="1119.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1121.html" title="20121121"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1119.html" title="20121119"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121120<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="http://welfare.lino-framework.org/de/releases/1.0.2.html">Lino-Welfare 1.0.2</a>
+ist seit heute im Versuchsbetrieb, also in der letzten Testphase
+vor dem Release.</p>
+<div class="section" id="testrunde-1-nach-dem-upgrade">
+<h2>Testrunde 1 nach dem Upgrade<a class="headerlink" href="#testrunde-1-nach-dem-upgrade" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Noch nicht behoben (hat auch Zeit):
+Wenn ich die Hauptseite mit fmt=plain aufrufe, kriege ich:</p>
+<div class="highlight-python"><div class="highlight"><pre>201211-20 05:03:43 ERROR base : Internal Server Error: /api/about/About
+Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File &quot;/var/snapshots/django/django/views/generic/base.py&quot;, line 48, in view
+    return self.dispatch(request, *args, **kwargs)
+  File &quot;/var/snapshots/django/django/views/generic/base.py&quot;, line 69, in dispatch
+    return handler(request, *args, **kwargs)
+  File &quot;/usr/local/django/cpas_eupen/using/lino/lino/ui/extjs3/views.py&quot;, line 1086, in get
+    if next_start &lt; ar.get_total_count():
+AttributeError: &#39;ActionRequest&#39; object has no attribute &#39;get_total_count&#39;
+</pre></div>
+</div>
+</li>
+<li><p class="first"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.CalendarPanel</span></code>
+offenbarte sich dem deutschsprachigen
+Benutzer als &#8220;CalendarPanel&#8221; statt &#8220;Kalender&#8221;.
+Habe das <cite>label</cite> von der
+<code class="xref py py-class docutils literal"><span class="pre">CalendarAction</span></code>
+ins
+<code class="xref py py-class docutils literal"><span class="pre">CalendarPanel</span></code> versetzt.</p>
+</li>
+<li><p class="first">Statt &#8220;Autor&#8221; eines Termins sagt Lino jetzt &#8220;Verantwortlicher&#8221;.
+Wenn Alicia nicht da ist und Caroline mit einem Klienten einen Termin
+für Alicia vormerkt, dann steht dort Alicia und nicht Caroline.
+(Dass Caroline den Termin ursprünglich erstellt hat, sieht Alicia
+in der Mitteilung per E-Mail, ansonsten hält Lino diese Information
+für belanglos...)</p>
+</li>
+</ul>
+</div>
+<div class="section" id="the-last-function-based-view">
+<h2>The last function-based view<a class="headerlink" href="#the-last-function-based-view" title="Permalink to this headline">¶</a></h2>
+<p>Lino still caused a DeprecationWarning
+in Django 1.4.2 because <code class="xref py py-meth docutils literal"><span class="pre">lino.ui.base.UI.get_patterns()</span></code>
+still added a well-meant entry for <code class="docutils literal"><span class="pre">favicon.ico</span></code>.
+No longer.</p>
+<p>Lino no longer configures any automagic
+<cite>favicon.ico</cite> or <cite>robots.txt</cite>.</p>
+<p>A basic <cite>favicon.ico</cite> and <cite>robots.txt</cite>
+configuration for Apache looks like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Alias</span> <span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">robots</span><span class="o">.</span><span class="n">txt</span>
+<span class="n">Alias</span> <span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">www</span><span class="o">/</span><span class="n">favicon</span><span class="o">.</span><span class="n">ico</span>
+</pre></div>
+</div>
+<p>Where <cite>favicon.ico</cite> may or may not be a copy of
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/media/favicon.ico">/lino/media/favicon.ico</a>,
+and the file <cite>/var/www/robots.txt</cite> may contain
+for example:</p>
+<div class="highlight-python"><div class="highlight"><pre>User-agent: *
+Disallow: /
+</pre></div>
+</div>
+</div>
+<div class="section" id="noch-bugs">
+<h2>Noch Bugs<a class="headerlink" href="#noch-bugs" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Setting a column filter on a date column caused a server traceback</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line">NameError at /api/isip/MyContracts</div>
+<div class="line">global name &#8216;datetime&#8217; is not defined</div>
+<div class="line">/usr/local/django/cpas_eupen/using/lino/lino/core/dbtables.py in add_gridfilters, line 245</div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Clicking the &#8220;Home&#8221; button (the one of Lino&#8217;s main menu)
+when at least one window was opened caused the viewport&#8217;s loadmask
+to show up forever.</p>
+<p><code class="xref py py-meth docutils literal"><span class="pre">lino.Lino.get_site_menu()</span></code> made the Home button as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">url</span> <span class="o">=</span> <span class="s">&quot;javascript:Lino.close_all_windows()&quot;</span>
+<span class="n">main</span><span class="o">.</span><span class="n">add_url_button</span><span class="p">(</span><span class="n">url</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Home&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Now it is better:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">main</span><span class="o">.</span><span class="n">add_item</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">,</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Home&quot;</span><span class="p">),</span><span class="n">javascript</span><span class="o">=</span><span class="s">&quot;Lino.close_all_windows()&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">The message &#8220;Failed to delete %(record)s : %(error)s.&#8221; never reached
+the user, they saw only &#8220;&#8216;dict&#8217; object has no attribute &#8216;has_header&#8217;&#8221;.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="lino-and-internet-explorer">
+<h2>Lino and Internet Explorer<a class="headerlink" href="#lino-and-internet-explorer" title="Permalink to this headline">¶</a></h2>
+<p>Oops, I just discovered that Lino doesn&#8217;t work in Internet Explorer.
+It says:</p>
+<div class="highlight-python"><div class="highlight"><pre>Message: Invalid procedure call or argument
+Line: 2362
+Char: 17
+Code: 0
+URI: http://127.0.0.1:8000/media/extjs/ext-all-debug.js
+</pre></div>
+</div>
+<p>To be honest I dicovered this already in February and didn&#8217;t yet
+find time to investigate it.</p>
+<p>The Sencha forum describes a similar problem (but with another reason):
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?243915">http://www.sencha.com/forum/showthread.php?243915</a></p>
+<p>My <cite>ext-all-debug.js</cite> says at line 2362:</p>
+<div class="highlight-python"><div class="highlight"><pre>style == &#39;opacity&#39; ?
+    this.setOpacity(value) :
+    this.dom.style[chkCache(style)] = value;
+</pre></div>
+</div>
+<p>I modified that code in order to localize where IE stumbles:</p>
+<div class="highlight-python"><div class="highlight"><pre>var i = chkCache(style);
+try {
+style == &#39;opacity&#39; ?
+    this.setOpacity(value) :
+    this.dom.style[i] = value;
+} catch (e) {
+    window.alert(&#39;failed to this.dom.style[&#39;+i+&#39;] = &#39;+value)
+}
+</pre></div>
+</div>
+<p>To find out that my following code in <code class="xref py py-class docutils literal"><span class="pre">HtmlBoxElement</span></code> was guilty:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_field_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="c"># hide horizontal scrollbar</span>
+    <span class="c"># for this trick thanks to Vladimir</span>
+    <span class="c"># &lt;http://forums.ext.net/showthread.php?1513-CLOSED-Autoscroll-on-ext-panel&gt;</span>
+    <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">bodyStyle</span><span class="o">=</span><span class="s">&quot;overflow-x:hidden !important;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After removing the <code class="docutils literal"><span class="pre">!important</span></code>, IE no longer stumbles.
+And we&#8217;ll see whether this &#8221;!important&#8221; was important...</p>
+</div>
+<div class="section" id="belgian-eid-cards-and-the-nationality">
+<h2>Belgian eID cards and the nationality<a class="headerlink" href="#belgian-eid-cards-and-the-nationality" title="Permalink to this headline">¶</a></h2>
+<p>Question: The &#8216;nationality&#8217; field of a Belgian eID card
+contains the nationality in full text and in the language of the card.
+Maybe even depending on the person&#8217;s gender.
+So for a Belgian it may contain &#8220;BELG&#8221;, &#8220;BELGE&#8221;, &#8220;BELGIER&#8221;, &#8220;BELGIERIN&#8221; or &#8220;BELGIAN&#8221;.
+Isn&#8217;t there also a code?
+And is there somewhere an official list of all possible nationalities?</p>
+<p>Answer: no, there isn&#8217;t.</p>
+<ul class="simple">
+<li><a class="reference external" href="https://securehomes.esat.kuleuven.be/~decockd/wiki/bin/view.cgi/EidForums/ForumEidCards0097">https://securehomes.esat.kuleuven.be/~decockd/wiki/bin/view.cgi/EidForums/ForumEidCards0097</a></li>
+<li><a class="reference external" href="https://groups.google.com/d/topic/eid-applet/99P9fR3m-j0/discussion">https://groups.google.com/d/topic/eid-applet/99P9fR3m-j0/discussion</a></li>
+<li><a class="reference external" href="http://code.google.com/p/eid-applet/issues/detail?id=42&amp;can=1&amp;q=nationality">http://code.google.com/p/eid-applet/issues/detail?id=42&amp;can=1&amp;q=nationality</a></li>
+</ul>
+<p>Yes, that&#8217;s typically Belgian... I just couldn&#8217;t believe it at first glance.</p>
+<p>I won&#8217;t try to change the Belgian administration, I think for me it&#8217;s
+okay to say &#8220;Sorry, it&#8217;s impossible to reliably extract the
+nationality from an eid card&#8221;. A PCSW can always do afterwards a
+<code class="xref py py-class docutils literal"><span class="pre">Tx25</span></code>
+request to the national register to get this and other information.</p>
+<ul class="simple">
+<li>Conclusion:
+remove the &#8216;Country.nationalities&#8217; field &amp; Co.
+We&#8217;ll need a simple dump-load cycle:
+<code class="xref py py-func docutils literal"><span class="pre">lino_welfare.modlib.pcsw.migrate.migrate_from_1_0_2()</span></code> does
+nothing except to confirm the new version.</li>
+</ul>
+</div>
+<div class="section" id="version-1-0-3">
+<h2>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Permalink to this headline">¶</a></h2>
+<p>All this is be part of
+<a class="reference external" href="http://welfare.lino-framework.org/de/releases/1.0.3.html">Lino-Welfare 1.0.3</a>,
+which went into production in Eupen today evening.</p>
+<p>Last minute changes:</p>
+<ul>
+<li><p class="first"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.dumpy.Serializer</span></code> converted the <cite>list</cite> of unsorted
+models to a <cite>set</cite> before building the list of sorted models.
+This caused the sort order to be random for models with same level of independency,
+making <cite>double dump tests</cite> more difficult:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#~ 20121120 unsorted = set(unsorted)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Setting a column filter for a <em>normal</em> date column now works...
+but Lino also allowed setting a filter on a virtual field.
+Which then caused another traceback
+&#8220;FieldError at /api/pcsw/IntegClients / Cannot resolve keyword &#8216;applies_from&#8217; into field.&#8221;
+Solved by on aditional test
+<cite>if isinstance(editor,FieldElement) and not isinstance(editor.field,fields.VirtualField)</cite>
+in <code class="xref py py-mod docutils literal"><span class="pre">lino.ui.extjs3.ext_elems</span></code>.</p>
+</li>
+</ul>
+<p>TODO:</p>
+<ul class="simple">
+<li>Idea: implement the fields Client.applies_from and applies_until as
+&#8220;summary fields&#8221;. This is a new concept: <a class="reference external" href="http://www.lino-framework.org/topics/summary_fields.html">/topics/summary_fields</a></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1121.html" title="20121121"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1119.html" title="20121119"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1120.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1120.html">Online Link</a>
+    </div>
+  </body>
+</html>

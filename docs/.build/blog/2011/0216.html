@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110216 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110217" href="0217.html" />
+    <link rel="prev" title="20110214" href="0214.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0217.html" title="20110217"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0214.html" title="20110214"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110216<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="anderungen-speichern">
+<h2>Änderungen speichern<a class="headerlink" href="#anderungen-speichern" title="Permalink to this headline">¶</a></h2>
+<p>Puh! Der Bug mit dem falschen &#8220;Änderungen speichern&#8221; ist raus.
+Merke: die <cite>value</cite> und <cite>originalValue</cite> eines leeren Feldes sind leere Strings
+und nicht, wie ich annahm, <cite>null</cite> oder <cite>undefined</cite>.
+ExtJS ist in diesem Bereich sehr komplex.
+Hier einige Notizen, die ich während der Suche gemacht habe.</p>
+<p><cite>Form.reset()</cite> ruft auf jedem Feld dessen Methode <cite>reset()</cite> auf,
+die normalerweise folgendes macht:</p>
+<div class="highlight-python"><div class="highlight"><pre>reset : function(){
+    this.setValue(this.originalValue);
+    this.clearInvalid();
+}
+</pre></div>
+</div>
+<p><a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.form.Field">Ext.form.Field</a> hat eine private Methode <cite>initValue</cite>, die
+lediglich aus <cite>afterRender</cite> gerufen wird:</p>
+<div class="highlight-python"><div class="highlight"><pre>initValue : function(){
+    if(this.value !== undefined){
+        this.setValue(this.value);
+    }else if(!Ext.isEmpty(this.el.dom.value) &amp;&amp; this.el.dom.value != this.emptyText){
+        this.setValue(this.el.dom.value);
+    }
+    this.originalValue = this.getValue();
+}
+</pre></div>
+</div>
+<p>Vor allem setzt diese Funktion <cite>this.originalValue</cite> auf <cite>this.getValue()</cite>.</p>
+<p>Aber vorher tut sie noch was Rätselhaftes:
+wenn das Feld die Konfigurationsvariable <cite>value</cite> definiert hat,
+oder wenn das DOM-Element einen Wert enthält
+(weil das Feld aus einer bestehenden HTML-Form definiert wurde (?)),
+dann wird dort auch <cite>this.setValue()</cite> gerufen.</p>
+<p>In <cite>Ext.form.Checkbox</cite> wird diese Sonderbehandlung übrigens nicht gemacht:</p>
+<div class="highlight-python"><div class="highlight"><pre>initValue : function() {
+    this.originalValue = this.getValue();
+},
+</pre></div>
+</div>
+<p>In einer <cite>Ext.form.ComboBox</cite> tut sie noch was mehr:</p>
+<div class="highlight-python"><div class="highlight"><pre>initValue : function(){
+    Ext.form.ComboBox.superclass.initValue.call(this);
+    if(this.hiddenField){
+        this.hiddenField.value =
+            Ext.value(Ext.isDefined(this.hiddenValue) ? this.hiddenValue : this.value, &#39;&#39;);
+    }
+},
+</pre></div>
+</div>
+<p>Was tut <cite>getValue</cite> eigentlich?
+Interessant:</p>
+<div class="highlight-python"><div class="highlight"><pre>getValue : function(){
+    if(!this.rendered) {
+        return this.value;
+    }
+    var v = this.el.getValue();
+    if(v === this.emptyText || v === undefined){
+        v = &#39;&#39;;
+    }
+    return v;
+},
+</pre></div>
+</div>
+<p>In einer <cite>Ext.form.ComboBox</cite> mit <cite>valueField</cite> tut sie allerdings:</p>
+<div class="highlight-python"><div class="highlight"><pre>getValue : function(){
+    if(this.valueField){
+        return Ext.isDefined(this.value) ? this.value : &#39;&#39;;
+    }else{
+        return Ext.form.ComboBox.superclass.getValue.call(this);
+    }
+}
+</pre></div>
+</div>
+<p>wobei <cite>Ext.isDefined</cite> wie folgt definiert ist:</p>
+<div class="highlight-python"><div class="highlight"><pre>isDefined : function(v){
+    return typeof v !== &#39;undefined&#39;;
+},
+</pre></div>
+</div>
+</div>
+<div class="section" id="kleinkram">
+<h2>Kleinkram<a class="headerlink" href="#kleinkram" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dpy.html#module-lino.utils.dpy" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dpy</span></code></a> schreibt jetzt die Lino-Version als Kommentar
+in die .dpy-Datei rein.</li>
+<li>Diverse Punkte aus der Todo-Liste, sie Release-Notizen.</li>
+</ol>
+<p>Release <a class="reference external" href="http://www.lino-framework.org/releases/2011/0216.html">/releases/2011/0216</a> in Eupen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0217.html" title="20110217"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0214.html" title="20110214"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0216.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0216.html">Online Link</a>
+    </div>
+  </body>
+</html>

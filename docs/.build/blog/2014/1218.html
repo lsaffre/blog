@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Thursday, December 18, 2014 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Friday, December 19, 2014" href="1219.html" />
+    <link rel="prev" title="Tuesday, December 16, 2014" href="1216.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1219.html" title="Friday, December 19, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1216.html" title="Tuesday, December 16, 2014"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-december-18-2014">
+<h1>Thursday, December 18, 2014<a class="headerlink" href="#thursday-december-18-2014" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="typeerror-detail-handler-is-undefined">
+<h2>TypeError: detail_handler is undefined<a class="headerlink" href="#typeerror-detail-handler-is-undefined" title="Permalink to this headline">¶</a></h2>
+<p>Wow, we had a subtle bug (<a class="reference external" href="http://trac.lino-framework.org/ticket/34">#34</a>), which took me several hours:
+when Alicia or Hubert created a <cite>notes.Note</cite>, then they had strange
+phenomens happening: Lino failed to close the detail window, asked
+whether they want to save altough there were no changes, together with
+a Javascript run-time error &#8220;TypeError: detail_handler is undefined&#8221;.</p>
+<p>This came because <cite>notes.Notes</cite> was (1) visible only to admin and (2)
+used as the model&#8217;s default table.</p>
+<p>Background: When creating a row, <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.CreateRow" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">CreateRow</span></code></a> (or to be more precise,
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.SubmitInsert" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">CreateRow</span></code></a> which inherits
+from it) call <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ActorRequest.goto_instance" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.goto_instance</span></code></a> in order to display
+the newly created row.  And <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ActorRequest.goto_instance" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.goto_instance</span></code></a> needs the model&#8217;s
+default table to specify the detail handler.  You might ask why it
+doesn&#8217;t simply take the detail handler defined on the table where it
+was called. Good question, but we&#8217;ll dive into this another time. I
+think it is because we want it to work transparently also in
+situations where the calling table is not known...</p>
+<ul class="simple">
+<li>First of all, the detail of a Note should be visible to everybody,
+not only to Admin. But the table of <em>all</em> notes, available via
+<span class="menuselection">Explorer ‣ Office ‣ Notes</span> should remain
+admin-only. Until now we used <cite>notes.Notes</cite> for this command.  Since
+there is no other candidate for the default table, we define a new
+table <cite>notes.AllNotes</cite> with <cite>user_level=admin</cite> and use this table
+for the Explorer menu command.  And <cite>notes.Notes</cite> remains there as
+the mother of all notes tables, but not directly used.</li>
+<li>And secondly, <em>if we would</em> have wanted an admin-only detail, that&#8217;s
+not a reason for Lino to produce such strange behaviour.
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ActorRequest.goto_instance" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.goto_instance</span></code></a> must test whether
+the <cite>detail_action</cite> has view permission before demanding to use it.
+This test is actually done in the object&#8217;s <a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.get_detail_action" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_detail_action</span></code></a> method.</li>
+<li>And thirdly, I defined a new table <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.about.models.html#lino.modlib.about.models.DetailLayouts" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">about.DetailLayouts</span></code></a> and added a section &#8220;List
+of detail layouts&#8221; to <a class="reference external" href="http://welfare.lino-framework.org/tested/general.html#welfare-tested-general" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare General (tested tour)</span></a> in to make these
+subtleties visible.</li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Updated the docs for <a class="reference external" href="http://www.lino-framework.org/api/lino.management.commands.initdb.html#management_command-initdb" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">initdb</span></code></a></p>
+</li>
+<li><p class="first">Added new application setting <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.keep_erroneous_cache_files" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">keep_erroneous_cache_files</span></code></a>. Some time ago
+I had commented out the call to <code class="docutils literal"><span class="pre">os.remove</span></code> because I had that
+rather rare situation of wanting to see the partly generated chache
+file, <strong>and I forgot to reactivate that line of code</strong> after having
+fixed the problem.</p>
+<p>Now I had this <code class="docutils literal"><span class="pre">TypeError:</span> <span class="pre">Lino.main_menu</span> <span class="pre">is</span> <span class="pre">undefined</span></code> again
+in my Javascript console, and I remember that we had this message in
+a beginner session with <a class="reference external" href="http://www.lino-framework.org/community/contributors.html#sw" title="(in Lino v1.6)"><span>Steve Woellenweber</span></a>. Steve, so here is the reason for
+that irritating behaviour.</p>
+</li>
+<li><p class="first">Added a new role <code class="xref rst rst-role docutils literal"><span class="pre">message</span></code> for marking up the message when
+writing text as the previous paragraph.  (I thought it would be easy
+to have this message then also appear in the main documentation
+index so that a future victim of this problem has more chances to
+find the solution. But after some trying I gave up for this time.)</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1219.html" title="Friday, December 19, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1216.html" title="Tuesday, December 16, 2014"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/1218.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/1218.html">Online Link</a>
+    </div>
+  </body>
+</html>

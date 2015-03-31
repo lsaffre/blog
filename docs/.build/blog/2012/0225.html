@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120225 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120227" href="0227.html" />
+    <link rel="prev" title="20120224" href="0224.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0227.html" title="20120227"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0224.html" title="20120224"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120225<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sandbox-etude-kontakte">
+<h2>Sandbox-Etüde &#8220;Kontakte&#8221;<a class="headerlink" href="#sandbox-etude-kontakte" title="Permalink to this headline">¶</a></h2>
+<p><code class="xref py py-mod docutils literal"><span class="pre">lino.sandbox.contacts</span></code>
+ist eine Etüde zu den Themen
+&#8220;Kontakte, Personen, Firmen&#8221;
+sowie
+&#8220;Länder, Provinzen, Städte, Dörfer, Straßen, Häuser&#8221;.</p>
+<p>Ein User ist hier keine Person sondern ein Contact.</p>
+<p>Die sichtbare Neuerung zum bestehenden Modul
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.html#module-lino.modlib.contacts" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts</span></code></a> wäre, dass email, phone, fax,
+gsm jetzt in einer eigenen Grid ständen.
+ContactsByPerson käme aus dem Sonstige-Reiter nach vorne.</p>
+<p>Was ich noch nicht weiß, ist,
+wieviel Arbeit die Anpassungen in watch_tim wären.
+Ein <cite>Contact</cite> hätte dann die Partnernummer aus TIM.</p>
+<p>lino.Lino.__init__ füllte project_dir auch dann nach FIXTURES_DIR,
+wenn es zugleich das source_dir war. Was die subtile Folge hatte,
+dass alle Fixtures doppelt ausgeführt wurden.
+Dieser Bug hat mich mindestens eine Stunde lang beschäftigt.</p>
+<p>Weiterführende Analyse im Ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/60">docs/tickets/60</a>.</p>
+</div>
+<div class="section" id="a-bug-in-extjs-3-3-1">
+<h2>A bug in ExtJS 3.3.1 ?<a class="headerlink" href="#a-bug-in-extjs-3-3-1" title="Permalink to this headline">¶</a></h2>
+<p>I posted the following as a bug report
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?183515">Cannot set QuickTips dismissDelay to 0</a>
+to the Sencha forum.</p>
+<p>Problem: Cannot set QuickTips dismissDelay to 0.</p>
+<p>It seems this is a bug in ExtJS 3.3.1, 3.4
+and maybe also in 4.0.
+I didn&#8217;t yet test in other versions because of other unrelated problems.</p>
+<p>Here is how I try to set dismissDelay=0 for all QuickTips:</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.QuickTips.init();
+// Apply a set of config properties to the singleton
+Ext.apply(Ext.QuickTips.getQuickTip(), {
+    dismissDelay: 0
+});
+</pre></div>
+</div>
+<p>I register all QuickTips using the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre>Lino.quicktip_renderer = function(title,body) {
+  return function(c) {
+    var t = ;
+    Ext.QuickTips.register({
+      target: c.getEl(),
+      dismissDelay: 0,
+      title: title,
+      text: body
+    });
+  }
+};
+</pre></div>
+</div>
+<p>Here is how I worked around this.
+I changed the following line in
+Ext.QuickTip.showAt of <cite>ext-all-debug.js</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>showAt : function(xy){
+    var t = this.activeTarget;
+    if(t){
+        ...
+        this.autoHide = t.autoHide;
+        // bugfix by Luc 20120226
+        if (t.dismissDelay != undefined) this.dismissDelay = t.dismissDelay;
+        //~ this.dismissDelay = t.dismissDelay || this.dismissDelay;
+        // end of bugfix by Luc 20120226
+        if(this.lastCls){
+        ...
+
+        if (t.dismissDelay != undefined) this.dismissDelay = t.dismissDelay;
+        //~ this.dismissDelay = t.dismissDelay || this.dismissDelay;
+</pre></div>
+</div>
+<p>In <cite>ext-all.js</cite> you must search for:</p>
+<div class="highlight-python"><div class="highlight"><pre>this.dismissDelay=a.dismissDelay||this.dismissDelay;
+</pre></div>
+</div>
+<p>and replace it with:</p>
+<div class="highlight-python"><div class="highlight"><pre>if(t.dismissDelay!=undefined)this.dismissDelay=t.dismissDelay;
+</pre></div>
+</div>
+<p>Note that this workaround still doesn&#8217;t
+help for setting the default (singleton) config.
+But at least it now works when specifying dismissDelay in register().</p>
+</div>
+<div class="section" id="vorlaufiger-abschluss-tooltips">
+<h2>Vorläufiger Abschluss Tooltips<a class="headerlink" href="#vorlaufiger-abschluss-tooltips" title="Permalink to this headline">¶</a></h2>
+<p>Also die CSS-Tooltips habe ich auch nach einigen weiteren
+Versuchen nicht ans Funktionieren bekommen.
+Aber die ExtJS-Quicktips bleiben jetzt angezeigt,
+bis man die Maus aus dem Feld rausbewegt  (dismissDelay ist 0).
+Auch sind die Labels punktiert unterstrichen,
+wenn ihr Feld einen Hilfetext hat.</p>
+<p>Ich möchte die Sache jetzt bis auf Weiteres ruhen lassen und
+empfehle also, die beiden Parameter
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.use_css_tooltips</span></code>
+und
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.use_quicktips</span></code>
+auf dem Standardwert stehen zu lassen.</p>
+</div>
+<div class="section" id="lino-1-4-2-ist-da">
+<h2>Lino 1.4.2 ist da<a class="headerlink" href="#lino-1-4-2-ist-da" title="Permalink to this headline">¶</a></h2>
+<p>Am Sonntagabend lass ich das nächste Release raus: <a class="reference external" href="http://www.lino-framework.org/releases/1.4.2.html">/releases/1.4.2</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0227.html" title="20120227"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0224.html" title="20120224"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0225.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0225.html">Online Link</a>
+    </div>
+  </body>
+</html>

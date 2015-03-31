@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110128 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110131" href="0131.html" />
+    <link rel="prev" title="20110127" href="0127.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0131.html" title="20110131"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0127.html" title="20110127"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110128<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="person-searches">
+<h2>Person Searches<a class="headerlink" href="#person-searches" title="Permalink to this headline">¶</a></h2>
+<p>Neues Model PersonSearch für erweiterte Personensuche.
+Insbesondere der Slave-Report
+<code class="xref py py-class docutils literal"><span class="pre">PersonsBySearch</span></code>
+war technisch noch eine Herausforderung, weil es erstmals ein
+Slave-Report ohne <cite>fk_name</cite> ist.</p>
+<p>Das <em>proof of concept</em> funktionierte nach nur einer Stunde!</p>
+<p>Der Code zum Aufbau des SQL-Querys ist in der Methode
+<code class="xref py py-meth docutils literal"><span class="pre">get_request_queryset</span></code>,
+und ist schon jetzt  recht komplex.
+Um Personen zu finden, die bestimmte Sprachkenntnisse oder Fähikeiten haben,
+habe ich ein bisschen überlegen müssen wie das Query aufzubauen ist.</p>
+<p>Ein erster Versuch funktionierte zwar, aber war noch suboptimal:</p>
+<div class="highlight-python"><div class="highlight"><pre>  required_lk = [lk for lk in search.searchedlanguageknowledge_set.all()]
+  if required_lk:
+      l = []
+      for p in qs:
+          for rlk in required_lk:
+              try:
+                  plk = p.languageknowledge_set.get(language__exact=rlk.language)
+                  l.append(p)
+              except LanguageKnowledge.DoesNotExist:
+                  pass
+      return l
+
+Also statt eines QuerySets gibt er eine einfache Liste zurück, wenn man in
+&quot;Required language knowledges&quot;
+eine (oder mehrere) Sprachen angibt.
+Ich wüsste nämlich (noch) nicht, wie ich diese Bedingung als Django-Query
+formulieren könnte...
+Das Problem wenn ich eine Liste zurück gebe ist, dass dann das Sortieren und
+die Kolonnenfilter nicht mehr funktionieren.
+</pre></div>
+</div>
+<p>Um zu sehen, wie ich&#8217;s jetzt mache, siehe
+<code class="xref py py-meth docutils literal"><span class="pre">source</span> <span class="pre">code</span></code>.
+Die Schönheit dieses Codes haben wir übrigens nicht Lino,
+sondern Python und Django zu verdanken.</p>
+</div>
+<div class="section" id="anderungen-datenmodel-fahigkeiten-und-hindernisse">
+<h2>Änderungen Datenmodel &#8220;Fähigkeiten und Hindernisse&#8221;<a class="headerlink" href="#anderungen-datenmodel-fahigkeiten-und-hindernisse" title="Permalink to this headline">¶</a></h2>
+<p>Durch das neue Suchmodul ist mir klar geworden, dass noch
+folgende Änderungen im Datenmodel angebracht sind:</p>
+<ol class="arabic">
+<li><p class="first">Das Feld &#8220;IT-Kenntnisse&#8221; kommt raus.
+Logischer ist es, wenn es stattdessen eine Fähigkeit namens
+&#8220;IT-Kenntnisse&#8221; gibt.</p>
+</li>
+<li><p class="first">Die Hindernisse kommen ebenfalls wie die
+Fähigkeiten in einer eigenen Tabelle, statt wie bisher als 16
+Ankreuzfelder.</p>
+<p>Vorteile:
+- Liste der Hindernisse wird konfigurierbar
+- Ein Reiter weniger, insgesamt übersichtlicher</p>
+<p>Nachteile:
+- man kann nicht mehr bequem am Bildschirm auswählen und anklicken,
+sondern muss (wie bei den Fähigkeiten) eine Tabelle füllen und jedes
+einzelne Hindernis aus der Auswahlliste raussuchen.
+- Evtl. Tipparbeit bei der Datenmigration</p>
+</li>
+</ol>
+<p>Diese Änderungen haben dann eine kleine Entwicklungslawine ausgelöst.
+Eine erste Lösung sah wie folgt aus
+(aber das alles habe ich am WE nochmal
+umgekrempelt, Praktiker lesen also jetzt <a class="reference external" href="http://www.lino-framework.org0131.html">hier</a> weiter.
+Für Historiker hier noch der Stand meiner Ideen von heute abend:</p>
+<ol class="arabic">
+<li><p class="first">Wenn wir schon dabei sind:</p>
+<p>Skill wird umbenannt nach OwnedSkill,
+SkillType nach Skill,</p>
+</li>
+<li><p class="first">und dann kriegen wir ein neues Konzept von &#8220;skill type&#8221;,
+die aber keine dynamisch konfigurierbare Liste sind,
+sondern im Code definiert werden:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="33%" />
+<col width="61%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>1</td>
+<td>Skills</td>
+<td>Fachkompetenzen</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Soft skills</td>
+<td>Sozialkompetenzen</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>Obstacles</td>
+<td>Hindernisse</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Die bisherigen &#8220;Fähigkeiten &amp; Hindernisse&#8221; kommen also in diese Liste
+von skill types, wobei wir die Fähigkeiten gleich unterteilen in Fach- und
+Sozialkompetenzen.</p>
+<p>Die beiden SkillOccurence-Modelle haben jetzt zwei Felder,
+um die Fähigkeit zu definieren. Der Typ (type) ist theoretisch
+nicht nötig, weil der ja auch schon im Skill steht.
+Aber das ist für später mal, das kriegt Lino momentan noch nicht auf die Reihe.</p>
+<p>Ich hätte das in drei verschiedenen Modellen machen können,
+aber weil die sich so ähnlich sind, fand ich diese (neue)
+Methode von halbdynamischen Definitionen sinnvoll.
+Es hat keinen Zweck, die Dinger dynamisch konfigurierbar zu machen,
+weil dann auch die .dtl-Dateien und das Menü angepasst werden müssen.</p>
+</li>
+<li><p class="first">TODO:</p>
+<ul class="simple">
+<li>Skill types lokal (im LinoSite) konfigurierbar machen</li>
+<li>class SkillType?</li>
+<li>Untermenü</li>
+<li>&#8220;Eigenschaften&#8221; -&gt; &#8220;Kontaktarten&#8221;</li>
+<li>Skills -&gt; Eigenschaften</li>
+<li>Auswahlmöglichkeiten konfigurierbar (statt StrengthField)</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0131.html" title="20110131"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0127.html" title="20110127"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0128.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0128.html">Online Link</a>
+    </div>
+  </body>
+</html>

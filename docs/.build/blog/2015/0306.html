@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Friday, March 6, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Monday, March 9, 2015" href="0309.html" />
+    <link rel="prev" title="Thursday, March 5, 2015" href="0305.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0309.html" title="Monday, March 9, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0305.html" title="Thursday, March 5, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-march-6-2015">
+<h1>Friday, March 6, 2015<a class="headerlink" href="#friday-march-6-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="editable-primary-key">
+<h2>Editable primary key<a class="headerlink" href="#editable-primary-key" title="Permalink to this headline">¶</a></h2>
+<p>Worked on <a class="reference external" href="http://trac.lino-framework.org/ticket/121">#121</a> : In the detail window opened from
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.reception.models.html#lino_welfare.modlib.reception.models.Clients" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">reception.Clients</span></code></a> (only from there), the
+client&#8217;s <cite>id</cite> field is editable although it is the primary key.</p>
+<p>This was because Client is an MTI child and thus has <strong>more than one
+primary key</strong> fields. I verified this using the following temporary
+test session (i.e. I ran <cite>python -m doctest docs/blog/2015/0306.rst</cite>
+repeatedly to get this running when writing this blog entry, but it is
+not part of the test suite):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="gp">... </span>   <span class="s">&#39;lino_welfare.projects.eupen.settings.doctests&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.api.doctest</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reception</span><span class="o">.</span><span class="n">Clients</span><span class="o">.</span><span class="n">get_pk_field</span><span class="p">()</span>
+<span class="go">&lt;django.db.models.fields.related.OneToOneField: person_ptr&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="p">(</span><span class="n">fld</span><span class="p">,</span> <span class="n">model</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">Client</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_fields_with_model</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">fld</span><span class="o">.</span><span class="n">primary_key</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="n">fld</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">fld</span>
+<span class="go">id &lt;django.db.models.fields.AutoField: id&gt;</span>
+<span class="go">partner_ptr &lt;django.db.models.fields.related.OneToOneField: partner_ptr&gt;</span>
+<span class="go">person_ptr &lt;django.db.models.fields.related.OneToOneField: person_ptr&gt;</span>
+</pre></div>
+</div>
+<p>Another observation is that the problem occurs only when I don&#8217;t have
+the usual <code class="docutils literal"><span class="pre">*</span></code> in <cite>column_names</cite>. Adding this was indeed a quick and
+acceptable workaround.</p>
+<p>But that was just a coincidence.  Here we see that before our change
+only <cite>person_ptr</cite> and <cite>partner_ptr</cite> were disabled, <cite>id</cite> was missing:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="p">[</span><span class="s">&#39;disabled_fields&#39;</span><span class="p">]</span>  
+<span class="go">{u&#39;person_ptr_id&#39;: True, u&#39;partner_ptr&#39;: True, &#39;modified&#39;: True, &#39;AgentsByClient&#39;: True, &#39;created&#39;: True}</span>
+</pre></div>
+</div>
+<p>The serious solution was to add <em>all</em> primary keys to the
+<cite>disabled_fields</cite>. Or, even better: to add those which are being used
+in some layout. We don&#8217;t need to disable <cite>person_ptr</cite> or <cite>partner_ptr</cite>
+if there is no widget in any of the layouts managed by this store.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="s">&quot;robin&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_user</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ar</span> <span class="o">=</span> <span class="n">reception</span><span class="o">.</span><span class="n">Clients</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">u</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">store</span> <span class="o">=</span> <span class="n">reception</span><span class="o">.</span><span class="n">Clients</span><span class="o">.</span><span class="n">get_handle</span><span class="p">()</span><span class="o">.</span><span class="n">store</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">Client</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">257</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">store</span><span class="o">.</span><span class="n">row2dict</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The new implementation is that Store has an attribute <cite>primary_keys</cite>
+with a set of all primary keys which are used in some layout.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="p">[</span><span class="s">&#39;disabled_fields&#39;</span><span class="p">]</span>
+<span class="go">{u&#39;id&#39;: True, &#39;modified&#39;: True, &#39;AgentsByClient&#39;: True, &#39;created&#39;: True}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="when-mysql-is-slow">
+<h2>When MySQL is slow<a class="headerlink" href="#when-mysql-is-slow" title="Permalink to this headline">¶</a></h2>
+<p>Started new document <a class="reference external" href="http://www.lino-framework.org/admin/mysql_tune.html">/admin/mysql_tune</a>.</p>
+</div>
+<div class="section" id="checkin-an-appointment">
+<h2>Checkin an appointment<a class="headerlink" href="#checkin-an-appointment" title="Permalink to this headline">¶</a></h2>
+<p>Un bénéficiaire a un rendez-vous planifié. Il arrive et je clique sur
+&#8220;Arriver&#8221;. Mais ensuite ce bénéficiaire n&#8217;apparait pas dans la salle
+d&#8217;attente.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0309.html" title="Monday, March 9, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0305.html" title="Thursday, March 5, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0306.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0306.html">Online Link</a>
+    </div>
+  </body>
+</html>

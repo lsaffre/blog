@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110806 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110809" href="0809.html" />
+    <link rel="prev" title="20110730" href="0730.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0809.html" title="20110809"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0730.html" title="20110730"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110806<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="upload-files-with-non-ascii-names">
+<h2>Upload files with non-ascii names<a class="headerlink" href="#upload-files-with-non-ascii-names" title="Permalink to this headline">¶</a></h2>
+<p>This week I tried to understand why in Eupen we cannot
+upload files with non-ascii characters in their name.</p>
+<p>I added a new file <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/tests/misc/diag.py">/lino/tests/misc/diag.py</a> (converted from
+the older <code class="docutils literal"><span class="pre">timtools</span> <span class="pre">diag</span></code> command).</p>
+<p>On Jana this didn&#8217;t even run because there were no locales installed:
+the value of <cite>LANG</cite> was simply <cite>&#8220;C&#8221;</cite>;
+typing the <code class="kbd docutils literal"><span class="pre">ö</span></code> key on my Estonian keyboard produced some strange
+effects, but not a letter &#8220;ö&#8221;.
+The solution was simple (now that I found it):</p>
+<div class="highlight-python"><div class="highlight"><pre>sudo dpkg-reconfigure locales
+</pre></div>
+</div>
+<p>This was probably because Jana was installed from some Proxmox&#8217;s default
+Debian template.</p>
+</div>
+<div class="section" id="new-application-concise-reference-labels">
+<h2>New application &#8220;Concise Reference Labels&#8221;<a class="headerlink" href="#new-application-concise-reference-labels" title="Permalink to this headline">¶</a></h2>
+<p>I started a new application <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.crl</span></code>, a kind of
+<a class="reference external" href="http://de.wikipedia.org/wiki/Personal_Information_Manager">personal information manager</a>
+for a customer who has several good reasons to get a free pilot project:
+he is both patient and perfectionist;
+he has some rather exclusive wishes including a few challenges;
+he has an existing application that needs to be converted...
+and he&#8217;s my father.</p>
+<p>My father has worked in several libraries,
+classification is one of his hobbies,
+and although he recently got 78 years old he doesn&#8217;t stop advocating
+a labeling system he discovered, used and developed throughout his life.
+In September 2009 he published an article
+<a class="reference external" href="http://luc.saffre-rumma.net/1343.html">De l&#8217;ordre dans les idées</a>
+about it.</p>
+<p>He didn&#8217;t yet worry to find a name for this labeling system.
+So I&#8217;ll call it <strong>Concise Reference Labels</strong>.
+It is based on the observation that printed books in a library have
+limited space for labels.
+Now imagine a classical library, where humans
+directly manipulate lots of books and
+need to find the right place for each.
+In this situation it is useful to have a
+codification system that is easy to learn and to remember
+at least for the people who use it every day.</p>
+<p>The classical approaches in the western world for this are
+<a class="reference external" href="http://en.wikipedia.org/wiki/Universal_Decimal_Classification">UDC</a>
+and <a class="reference external" href="http://en.wikipedia.org/wiki/Dewey_Decimal_Classification">DDC</a>.
+They both have one disadvantage: they don&#8217;t use the full range
+of &#8220;rememberable characters&#8221; and thus need relatively much space
+on a label.</p>
+<p>My father&#8217;s CRL approach assumes that people accept the
+need of a <em>localized classification subset</em>
+and are willing to do the work of discussing and
+following such a subset.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0809.html" title="20110809"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0730.html" title="20110730"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0806.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0806.html">Online Link</a>
+    </div>
+  </body>
+</html>

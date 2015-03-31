@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130503 (Friday, 03 May 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130504 (Saturday, 04 May 2013)" href="0504.html" />
+    <link rel="prev" title="20130502 (Thursday, 02 May 2013)" href="0502.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0504.html" title="20130504 (Saturday, 04 May 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0502.html" title="20130502 (Thursday, 02 May 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-03-may-2013">
+<h1>20130503 (Friday, 03 May 2013)<a class="headerlink" href="#friday-03-may-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="python-fixtures-and-big-databases">
+<h2>Python fixtures and big databases<a class="headerlink" href="#python-fixtures-and-big-databases" title="Permalink to this headline">¶</a></h2>
+<p>Yesterday evening I saw for the first time that the process of
+the <cite>initdb</cite> command got killed by the OS
+while loading a backup <cite>b20130502_201829.py</cite> that was 18 MB big:</p>
+<div class="highlight-python"><div class="highlight"><pre>(dev)$ python manage.py initdb b20130502_201829
+...
+We are going to flush your database (test_dsbe).
+Are you sure (y/n) ?y
+Creating tables ...
+...
+INFO Loading /var/log/lino/backups/b20130502_201829.py...
+Killed
+(dev)$
+</pre></div>
+</div>
+<p>Note that this happens before any data is actually stored in the database.
+Looks as if the mere compilation of the .py file requires so much memory
+that the OS decides to kill the process.</p>
+<p>Yes, a <a class="reference external" href="http://www.lino-framework.org/topics/dpy.html#dpy" title="(in Lino v1.6)"><span class="xref std std-ref">Python fixture</span></a>
+needs to write the whole database content into a single file
+(at least as long as we use it as a <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/serialization/">Django serializer</a>).
+And of course when you import a Python source file with
+more than 18 MB of code text, then this will use some memory
+resources of your computer.</p>
+<p>If I stop Apache and watch_tim and try the same command again,
+then it works.</p>
+<p>Then I tried to reproduce this situation:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># trying to exhaust memory during import</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100000</span><span class="p">:</span> 
+        <span class="k">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Trying to run this script will of course exhaust memory after
+some time... but in a different way:</p>
+<div class="highlight-python"><div class="highlight"><pre>153000000
+Traceback (most recent call last):
+  File &quot;0502.py&quot;, line 5, in &lt;module&gt;
+    L.append(time.time())
+MemoryError
+</pre></div>
+</div>
+<p>Then I found the <a class="reference external" href="http://bytes.com/topic/python/answers/833603-process-killed">Process &#8220;Killed&#8221;</a>
+thread asked by dieter in August 2008.
+Where Eric Wertmann wrote:</p>
+<blockquote>
+<div>This is the behavior you&#8217;ll see when your os has run out of some
+memory resource. The kernel sends a 9 signal. I&#8217;m pretty sure that
+if you exceed a soft limit your program will abort with out of memory
+error.</div></blockquote>
+<p>Conclusion:</p>
+<p>The above problem was due to the server resources being exhausted,
+and was solved by a simple restart of some long-running processes.</p>
+<p>If one day it appears that the single file is a problem when working
+with huge databases, then I&#8217;ll probably write
+two separate commands &#8220;dump&#8221; and &#8220;load&#8221; that work with
+separate text files to hold the raw data.
+But that day has still to come.</p>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The directory <code class="file docutils literal"><span class="pre">/var/log/lino/backups</span></code>
+contained 108 files, all named like <cite>b20130503_020101.py</cite>.
+Deleted 70 of them.
+(Yes, one day I want to write a cron job which does that automatically.)</li>
+<li>Upgraded on <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#lf" title="(in Lino v1.6)"><span>lino-framework.org</span></a>.</li>
+<li>fixed a bug in watch_tim</li>
+</ul>
+</div>
+<div class="section" id="installing-guest-additions-for-virtualbox">
+<h2>Installing Guest Additions for VirtualBox<a class="headerlink" href="#installing-guest-additions-for-virtualbox" title="Permalink to this headline">¶</a></h2>
+<p>A beginner discovering the world of virtual boxes...</p>
+<p>I have many files which I&#8217;d like to see from both
+operating systems (Ubuntu and Windows XP).
+What I need is <a class="reference external" href="http://www.virtuatopia.com/index.php/VirtualBox_Shared_Folders">Shared Folders</a>.</p>
+<p>To access shared folders from a virtual machine I need
+the <a class="reference external" href="http://www.virtualbox.org/manual/ch04.html">Guest Additions</a>.
+But I cannot install them because I don&#8217;t have a &#8220;Devices&#8221; menu.</p>
+<p>A problem which has been reported before me:
+<a class="reference external" href="http://askubuntu.com/questions/179799/where-is-the-devices-menu-of-a-windows-virtual-machine">Where is the Devices menu of a Windows virtual machine?</a></p>
+<p>Seems that I installed the wrong version
+(downloaded directly from Oracle, but apparently there&#8217;s a more
+free one).
+There is VirtualBox and VirtualBox, don&#8217;t mix them up!
+<a class="reference external" href="http://en.wikipedia.org/wiki/VirtualBox">Wikipedia</a> explains it all.</p>
+<p>Removed the following line from <code class="file docutils literal"><span class="pre">/etc/apt/sources.list</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre>deb http://download.virtualbox.org/virtualbox/debian oneiric contrib
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo aptitude purge virtualbox-4.2
+The following packages will be REMOVED:
+dkms{u} libsdl-ttf2.0-0{u} python-central{u} virtualbox-4.2
+0 packages upgraded, 0 newly installed, 4 to remove and 5 not upgraded.
+
+$ sudo aptitude install virtualbox-ose
+$ sudo aptitude install virtualbox-guest-additions
+</pre></div>
+</div>
+<p>Now I have:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ aptitude search virtualbox
+i A virtualbox                                                          - x86 virtualization solution - base binaries
+p   virtualbox-dbg                                                      - x86 virtualization solution - debugging symbols
+i A virtualbox-dkms                                                     - x86 virtualization solution - kernel module sources for dkms
+p   virtualbox-fuse                                                     - x86 virtualization solution - virtual filesystem
+i   virtualbox-guest-additions                                          - transitional package for virtualbox-guest-additions-iso
+i A virtualbox-guest-additions-iso                                      - guest additions iso image for VirtualBox
+p   virtualbox-guest-dkms                                               - x86 virtualization solution - guest addition module source for dkms
+p   virtualbox-guest-source                                             - x86 virtualization solution - guest addition module source
+p   virtualbox-guest-utils                                              - x86 virtualization solution - non-X11 guest utilities
+p   virtualbox-guest-x11                                                - x86 virtualization solution - X11 guest utilities
+i   virtualbox-ose                                                      - transitional package for virtualbox
+p   virtualbox-ose-dbg                                                  - transitional package for virtualbox-dbg
+p   virtualbox-ose-dkms                                                 - transitional package for virtualbox-dkms
+p   virtualbox-ose-fuse                                                 - transitional package for virtualbox-fuse
+p   virtualbox-ose-guest-dkms                                           - transitional package for virtualbox-guest-dkms
+p   virtualbox-ose-guest-source                                         - transitional package for virtualbox-guest-source
+p   virtualbox-ose-guest-utils                                          - transitional package for virtualbox-guest-utils
+p   virtualbox-ose-guest-x11                                            - transitional package for virtualbox-guest-x11
+p   virtualbox-ose-qt                                                   - transitional package for virtualbox-qt
+p   virtualbox-ose-source                                               - transitional package for virtualbox-source
+i A virtualbox-qt                                                       - x86 virtualization solution - Qt based user interface
+p   virtualbox-source                                                   - x86 virtualization solution - kernel module source
+
+
+$ vboxmanage --help
+Oracle VM VirtualBox Command Line Management Interface Version 4.1.12_Ubuntu
+(C) 2005-2013 Oracle Corporation
+All rights reserved.
+
+
+$ sudo apt-get install linux-headers-$(uname -r)
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+linux-headers-3.5.0-28-generic is already the newest version.
+0 upgraded, 0 newly installed, 0 to remove and 5 not upgraded.
+</pre></div>
+</div>
+<p>Now I get the following error message when I try to open my VM:</p>
+<blockquote>
+<div><p>Failed to open a session for the virtual machine Windows XP.</p>
+<p>The virtual machine &#8216;Windows XP&#8217; has terminated unexpectedly during startup with exit code 1.</p>
+<p>Result Code: NS_ERROR_FAILURE (0x80004005)
+Component: Machine
+Interface: IMachine {5eaa9319-62fc-4b0a-843c-0cb1940f8a91}</p>
+</div></blockquote>
+<p>Once again:</p>
+<div class="highlight-python"><div class="highlight"><pre>(py27)luc@hoppel:~$ sudo aptitude install virtualbox
+The following NEW packages will be installed:
+  dkms{a} libgsoap1{a} python-central{a} virtualbox virtualbox-dkms{a} virtualbox-qt{a}
+0 packages upgraded, 6 newly installed, 0 to remove and 5 not upgraded.
+Need to get 23.7 MB of archives. After unpacking 71.3 MB will be used.
+Do you want to continue? [Y/n/?]
+Get: 1 http://ee.archive.ubuntu.com/ubuntu/ precise-updates/main dkms all 2.2.0.3-1ubuntu3.1 [73.2 kB]
+Get: 2 http://ee.archive.ubuntu.com/ubuntu/ precise/universe libgsoap1 i386 2.8.4-2 [518 kB]
+Get: 3 http://ee.archive.ubuntu.com/ubuntu/ precise-updates/universe python-central all 0.6.17ubuntu2 [41.4 kB]
+Get: 4 http://ee.archive.ubuntu.com/ubuntu/ precise-proposed/universe virtualbox i386 4.1.12-dfsg-2ubuntu0.3 [15.8 MB]
+Get: 5 http://ee.archive.ubuntu.com/ubuntu/ precise-proposed/universe virtualbox-dkms all 4.1.12-dfsg-2ubuntu0.3 [676 kB]
+Get: 6 http://ee.archive.ubuntu.com/ubuntu/ precise-proposed/universe virtualbox-qt i386 4.1.12-dfsg-2ubuntu0.3 [6,523 kB]
+Fetched 23.7 MB in 24s (985 kB/s)
+Selecting previously unselected package dkms.
+(Reading database ... 277271 files and directories currently installed.)
+Unpacking dkms (from .../dkms_2.2.0.3-1ubuntu3.1_all.deb) ...
+Selecting previously unselected package libgsoap1.
+Unpacking libgsoap1 (from .../libgsoap1_2.8.4-2_i386.deb) ...
+Selecting previously unselected package python-central.
+Unpacking python-central (from .../python-central_0.6.17ubuntu2_all.deb) ...
+Selecting previously unselected package virtualbox.
+Unpacking virtualbox (from .../virtualbox_4.1.12-dfsg-2ubuntu0.3_i386.deb) ...
+Selecting previously unselected package virtualbox-dkms.
+Unpacking virtualbox-dkms (from .../virtualbox-dkms_4.1.12-dfsg-2ubuntu0.3_all.deb) ...
+Selecting previously unselected package virtualbox-qt.
+Unpacking virtualbox-qt (from .../virtualbox-qt_4.1.12-dfsg-2ubuntu0.3_i386.deb) ...
+Processing triggers for man-db ...
+Processing triggers for ureadahead ...
+Processing triggers for shared-mime-info ...
+Processing triggers for hicolor-icon-theme ...
+Processing triggers for bamfdaemon ...
+Rebuilding /usr/share/applications/bamf.index...
+Processing triggers for desktop-file-utils ...
+Processing triggers for gnome-menus ...
+Setting up dkms (2.2.0.3-1ubuntu3.1) ...
+Setting up libgsoap1 (2.8.4-2) ...
+Setting up python-central (0.6.17ubuntu2) ...
+Setting up virtualbox (4.1.12-dfsg-2ubuntu0.3) ...
+ * Stopping VirtualBox kernel modules                                                                                                           [ OK ]
+ * Starting VirtualBox kernel modules                                                                                                           [ OK ]
+Processing triggers for python-central ...
+Setting up virtualbox-dkms (4.1.12-dfsg-2ubuntu0.3) ...
+Loading new virtualbox-4.1.12 DKMS files...
+First Installation: checking all kernels...
+Building only for 3.5.0-28-generic
+Building initial module for 3.5.0-28-generic
+Done.
+
+vboxdrv:
+Running module version sanity check.
+Error! Module version 4.1.12_Ubuntu for vboxdrv.ko
+is not newer than what is already found in kernel 3.5.0-28-generic (4.2.12).
+You may override by specifying --force.
+
+vboxnetadp.ko:
+Running module version sanity check.
+Error! Module version 4.1.12_Ubuntu for vboxnetadp.ko
+is not newer than what is already found in kernel 3.5.0-28-generic (4.2.12).
+You may override by specifying --force.
+
+vboxnetflt.ko:
+Running module version sanity check.
+Error! Module version 4.1.12_Ubuntu for vboxnetflt.ko
+is not newer than what is already found in kernel 3.5.0-28-generic (4.2.12).
+You may override by specifying --force.
+
+vboxpci.ko:
+Running module version sanity check.
+Error! Module version 4.1.12_Ubuntu for vboxpci.ko
+is not newer than what is already found in kernel 3.5.0-28-generic (4.2.12).
+You may override by specifying --force.
+
+depmod....
+
+DKMS: install completed.
+ * Stopping VirtualBox kernel modules                                                                                                           [ OK ]
+ * Starting VirtualBox kernel modules                                                                                                           [ OK ]
+Setting up virtualbox-qt (4.1.12-dfsg-2ubuntu0.3) ...
+Processing triggers for libc-bin ...
+ldconfig deferred processing now taking place
+
+
+
+
+$ sudo apt-get purge linux-headers-$(uname -r)
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following packages will be REMOVED:
+  linux-generic-lts-quantal* linux-headers-3.5.0-28-generic* linux-headers-generic-lts-quantal*
+0 upgraded, 0 newly installed, 3 to remove and 5 not upgraded.
+After this operation, 11.3 MB disk space will be freed.
+Do you want to continue [Y/n]?
+(Reading database ... 277874 files and directories currently installed.)
+Removing linux-generic-lts-quantal ...
+Removing linux-headers-generic-lts-quantal ...
+Removing linux-headers-3.5.0-28-generic ...
+(py27)luc@hoppel:~$ sudo apt-get install linux-headers-$(uname -r)
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+The following NEW packages will be installed:
+  linux-headers-3.5.0-28-generic
+0 upgraded, 1 newly installed, 0 to remove and 5 not upgraded.
+Need to get 949 kB of archives.
+After this operation, 11.3 MB of additional disk space will be used.
+Get:1 http://ee.archive.ubuntu.com/ubuntu/ precise-updates/main linux-headers-3.5.0-28-generic i386 3.5.0-28.48~precise1 [949 kB]
+Fetched 949 kB in 1s (936 kB/s)
+Selecting previously unselected package linux-headers-3.5.0-28-generic.
+(Reading database ... 269004 files and directories currently installed.)
+Unpacking linux-headers-3.5.0-28-generic (from .../linux-headers-3.5.0-28-generic_3.5.0-28.48~precise1_i386.deb) ...
+Setting up linux-headers-3.5.0-28-generic (3.5.0-28.48~precise1) ...
+Examining /etc/kernel/header_postinst.d.
+run-parts: executing /etc/kernel/header_postinst.d/dkms 3.5.0-28-generic /boot/vmlinuz-3.5.0-28-generic
+Error! Could not locate dkms.conf file.
+File:  does not exist.
+
+$ sudo apt-get install linux-headers-$(uname -r)
+(...)
+
+
+$ sudo dpkg-reconfigure virtualbox-dkms --force
+</pre></div>
+</div>
+<p>The above gave no success.
+But here,
+<a class="reference external" href="http://forum.ubuntu-fr.org/viewtopic.php?pid=13274751">http://forum.ubuntu-fr.org/viewtopic.php?pid=13274751</a>
+another hope:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo apt-get remove --purge virtualbox*
+$ sudo apt-get clean
+$ sudo rm /lib/modules/3.5.0-28-generic/updates/dkms/vbox*
+$ sudo reboot
+$ sudo aptitude install virtualbox
+</pre></div>
+</div>
+<p>This time it worked.
+&#8220;It worked&#8221; means that I am back to where I was 2 hours ago:
+a virtual machine without guest additions and thus no shared folders.
+And no &#8220;Devices&#8221; menu.</p>
+<p>Now at least the following works without error messages:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo aptitude install virtualbox-guest-additions
+The following NEW packages will be installed:
+  virtualbox-guest-additions virtualbox-guest-additions-iso{a}
+0 packages upgraded, 2 newly installed, 0 to remove and 5 not upgraded.
+Need to get 40.7 MB of archives. After unpacking 50.9 MB will be used.
+Do you want to continue? [Y/n/?]
+Get: 1 http://ee.archive.ubuntu.com/ubuntu/ precise/multiverse virtualbox-guest-additions-iso all 4.1.12-1 [40.7 MB]
+Get: 2 http://ee.archive.ubuntu.com/ubuntu/ precise/multiverse virtualbox-guest-additions all 4.1.12-1 [5,546 B]
+Fetched 40.7 MB in 38s (1,068 kB/s)
+Selecting previously unselected package virtualbox-guest-additions-iso.
+(Reading database ... 277869 files and directories currently installed.)
+Unpacking virtualbox-guest-additions-iso (from .../virtualbox-guest-additions-iso_4.1.12-1_all.deb) ...
+Selecting previously unselected package virtualbox-guest-additions.
+Unpacking virtualbox-guest-additions (from .../virtualbox-guest-additions_4.1.12-1_all.deb) ...
+Setting up virtualbox-guest-additions-iso (4.1.12-1) ...
+Setting up virtualbox-guest-additions (4.1.12-1) ...
+</pre></div>
+</div>
+<p>Although it doesn&#8217;t seem to change anything...
+But ha! <cite>dpkg &#8211;listfiles virtualbox-guest-additions-iso</cite> shows me that
+this package just adds an <cite>.iso</cite> file in <code class="file docutils literal"><span class="pre">/usr/lib/virtualbox</span></code>.
+Mounted this as new a CD drive under &#8220;Storages&#8221; in the Settings,
+which became visible in the VM as a new CD drive,
+then ran the autorun installer on this CD from inside Windows.
+Yes, that seems to work.</p>
+<p>Now I have a <cite>\vboxsrv</cite> server visible in my network environment.</p>
+<p>But it is empty. Trying to access it with <cite>net use</cite> gives
+a system error 67:</p>
+<div class="highlight-python"><div class="highlight"><pre>C:\&gt;net use v: \\vboxsvr\vbshared
+
+System error 67 has occured
+
+The network name cannot be found
+</pre></div>
+</div>
+<p>Another problem is that the clipboard doesn&#8217;t seem to communicate.
+I tried both bidirectional and Guest to Host, but in the end I
+typed (!) myself the above text.</p>
+<p>Bref: I don&#8217;t see the share which I had already defined in
+the &#8220;Shared Folders&#8221; section of the settings of the VM.</p>
+<p>Aha, seems that I must mark my folder as &#8220;shared&#8221;.
+Nautilus, right click on that folder... now, there are two
+possibilities: choose &#8220;Sharing Options&#8221; from the context menu,
+or choose &#8220;Properties&#8221; and then the  &#8220;Share&#8221; tab.
+Seems that they both do the same.</p>
+<p>Marked them all as shared, giving read and write permission to
+everybody: nothing. Later even a <cite>chmod -R a+w vbshared2</cite>
+Restart the Guest, restart the Host: nothing.
+The <cite>\vboxsrv</cite> server is visible in my network environment,
+but it is empty:</p>
+<a class="reference internal image-reference" href="../../_images/virtualbox-explorer-vboxsrv.jpg"><img alt="../../_images/virtualbox-explorer-vboxsrv.jpg" src="../../_images/virtualbox-explorer-vboxsrv.jpg" style="width: 480.0px; height: 360.0px;" /></a>
+<p>All this is happening on Ubuntu LTS 12.04 and I just
+did an <cite>aptitude safe-upgrade</cite>.</p>
+<p>One observation: when I start the VM from a shell, then I see
+a &#8220;Permission denied&#8221; error message:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ virtualbox --startvm &quot;Windows XP&quot;
+Error opening file for reading: Permission denied
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0504.html" title="20130504 (Saturday, 04 May 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0502.html" title="20130502 (Thursday, 02 May 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0503.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0503.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>31.05.2010 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="01.-02.06.2010" href="0601.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0527.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0601.html" title="01.-02.06.2010"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0527.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>31.05.2010<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>12 Uhr: Kontextsensitive Comboboxen sind noch immer nicht fertig. Ich schreib mir jetzt mal auf, woran ich da schon seit Tagen frickle.</p>
+<p>Im folgenden rede ich von <cite>country</cite> und <cite>city</cite>, weil das mein Testbeispiel ist. Ich rede aber natürlich vom Prinzip, nicht von diesem einen Fall. <cite>country</cite> ist die &#8220;context source&#8221; und <cite>city</cite> das &#8220;context target&#8221;.</p>
+<p>Im change-Event des country-Feldes wird der Kontext von city jetzt gesetzt. Das geht. Aber das reicht nicht: z.B. ist der Kontext von city noch falsch, wenn man country vorher gar nicht bearbeitet hat, oder wenn man es auf einem anderen Record bearbeitet hat.</p>
+<p>Wenn ich setContextValue() für city im focus-Event von city aufrufe: das geht fast immer, aber nicht in der Grid. Dort ist ja nur ein country-Feld für alle Records, und das wird nur gesetzt, wenn man drauf klickt.</p>
+<p>Am logischsten scheint mir, setContextValue (außer im change-Event) auch in <cite>load_master_record()</cite> zu rufen. Hierbei ist das Problem aber, dass der Wert von country (die Id des Landes) nicht in <cite>record.data.country</cite> sondern in <cite>record.data.countryHidden</cite> sitzt, weil country eine Combobox ist.</p>
+<p>Aber ein Chooser weiß das nicht, er hat nicht zu wissen, was die Context sources für Felder sind. Deshalb ruft er den Wert mit <cite>getValue()</cite> aus dem country-Feld. Das setzt freilich voraus, dass das Source-Feld immer im Formular enthalten ist; ein bisschen einschränkend, aber damit könnten wir leben. (Falsch: alles in diesem Absatz ist Quatsch; siehe später.)</p>
+<p>Das funktioniert jetzt theoretisch für alle lokalen Comboboxen. Aber in Lino sind die meisten Comboboxen remote, d.h. deren <cite>setValue()</cite> (das von <cite>BasicForm.loadRecord()</cite> gerufen wird) ist verzögert: es macht erst noch eine weiteren AJAX-Aufruf, um den Store der Combobox zu laden. Eine Combobox braucht ja nicht nur ihren Wert, sondern auch den dazugehörigen Text (z.B. Text &#8220;Belgien&#8221; für den Wert &#8220;BE&#8221;). Deshalb kriegt das City-Feld, wenn es gleich nach BasicForm.loadRecord() das Country-Feld nach seiner value fragt, als Antwort &#8220;leer&#8221;. Puh!</p>
+<p>Zwei Fliegen mit einer Klappe hätten wir, wenn ich mein ComboBox.setValue() dahingehend ändere, dass dieser zusätzliche AJAX-Aufruf gar nicht mehr nötig ist. Den zur Value zugehörigen Text haben wir nämlich schon vom Server bekommen, der ist im Record gespeichert. Deshalb folgender neuer Code in der lino.js:</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.override(Ext.form.BasicForm,{
+    loadRecord : function(record){
+        var field, id;
+        for(id in record.data){
+            if(!Ext.isFunction(record.data[id]) &amp;&amp; (field = this.findField(id))){
+                field.setValue(record.data[id],record);
+                if(this.trackResetOnLoad){
+                    field.originalValue = field.getValue();
+                }
+            }
+        }
+        return this;
+    },
+});
+</pre></div>
+</div>
+<p>Meine <cite>loadRecord</cite> recht also im Gegensatz zur Originalversion jedem Feld nicht nur <cite>setValue()</cite> den rohen Wert, sondern als zweiten Parameter auch den ganzen Record. (Dass mein <cite>loadRecord()</cite> nur noch hashed arrays verträgt, liegt nur daran, dass dieser Fall so weit ich sehen kann von Lino nie benutzt werden wird.)
+Und in meiner <cite>Combobox.setValue()</cite> steht dann ganz einfach:</p>
+<div class="highlight-python"><div class="highlight"><pre>} else if (record != undefined) {
+  text = record.data[this.name];
+  //~ console.log(this.name,&#39;.setValue&#39;,v,&#39;got text &#39;,this.name,&#39; from record &#39;,record);
+} else {
+</pre></div>
+</div>
+<p>Und vorbei ist es mit den unnützen AJAX beim Anzeigen von Comboboxen in Detail-Fenster! Schön.</p>
+<p>Eins fehlt noch: in der Grid wird der Kontext noch nicht gesetzt. Am besten müsste ich hier aufs rowselected-Event horchen. Nein, Quatsch, das gibt es gar nicht. Das beforeedit-Event brauch ich.</p>
+<p>Das geht gut, aber... in einer Grid wird logischerweise immer nur der Editor gefüllt, der gerade bearbeitet werden soll. Und mein before_row_edit ruft ja <cite>country_field.get_value</cite> ab, wenn city_field bearbeitet wird. Da ist im Falle einer Grid nichts zu holen. Lösung? Der Chooser sollte also doch irgendwie wissen, ob die source fields Comboboxen sind, und mein before_row_edit-Event holt die Werte direkt aus dem Record. Deswegen in <cite>ext_windows.MasterWrapper.js_render()</cite> ein kleiner Test:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">f</span><span class="p">,</span><span class="n">models</span><span class="o">.</span><span class="n">Field</span><span class="p">)</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">choices</span><span class="p">):</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="n">ext_requests</span><span class="o">.</span><span class="n">CHOICES_HIDDEN_SUFFIX</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span>
+<span class="n">before_row_edit</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">.setContextValue(</span><span class="si">%r</span><span class="s">,record.data[</span><span class="si">%r</span><span class="s">]);&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                                <span class="n">e</span><span class="o">.</span><span class="n">ext_name</span><span class="p">,</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">fname</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Das ist nicht wirklich elegant, aber es funktioniert. Super!</p>
+<p><strong>Also hier die frohe Mitteilung des Tages:
+Kontextsensitive Comboboxen funktionieren wieder!</strong>
+Und zwar besser denn je: auch für ungespeicherte Records, und auch für normale Textfelder mit <cite>choices</cite>.</p>
+<p>[<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=4aebca79aedd4fd2f4d0671ef5e7d729cacc4097">http://code.google.com/p/lino/source/detail?r=4aebca79aedd4fd2f4d0671ef5e7d729cacc4097</a> Check-In].</p>
+<dl class="docutils">
+<dt>Als nächstes</dt>
+<dd># müsste jetzt die Konfigurierung der Dokumentvorlagen für Notizen machbar sein,
+# und dann will ich auch mal den fensterlosen Weg probieren. Macht es Sinn, im Browser eine Desktop-Anwendung imitieren zu wollen? Sind die Unterfenster in Lino der falsche Weg? Wenn ich z.B. in [<a class="reference external" href="http://www.insideria.com/2009/09/50-most-usable-rias.html">http://www.insideria.com/2009/09/50-most-usable-rias.html</a> 50 Most Usable RIAs] lese, dann sehe ich da keine Anwendung, die mit Fenstern arbeitet.</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0601.html" title="01.-02.06.2010"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0527.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0531.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0531.html">Online Link</a>
+    </div>
+  </body>
+</html>

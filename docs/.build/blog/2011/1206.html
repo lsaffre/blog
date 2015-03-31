@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111206 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111207" href="1207.html" />
+    <link rel="prev" title="20111205" href="1205.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1207.html" title="20111207"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1205.html" title="20111205"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111206<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="role-gerichtete-beziehungen-zwischen-kontakten">
+<h2>Role: Gerichtete Beziehungen zwischen Kontakten<a class="headerlink" href="#role-gerichtete-beziehungen-zwischen-kontakten" title="Permalink to this headline">¶</a></h2>
+<p>&#8220;Uns ist aufgefallen, dass self.contact.child.full_name anscheinend
+keine Anrede mitnimmt. Ist das gewollt oder ein kleiner Bug?&#8221;</p>
+<p>Richtig, das ist ein kleiner Bug.
+Oder eigentlich schon ein mittlerer.
+Der folgende Punkt aus der <a class="reference external" href="http://www.lino-framework.org/todo.html">/todo</a> muss noch präzisiert werden:</p>
+<blockquote>
+<div>:class:´lino.modlib.contacts.RoleType` kriegt
+zwei neue Felder parent_type und child_type (FK nach
+ContentType), sowie choosers for parent und child, die dann
+ggf. nur diese Tabelle als Auswahlliste anzeigt.</div></blockquote>
+<p><cite>self.contact</cite> ist ein Role,  also eine
+Rolle, die ein Contact (Person, Firma, oder User)
+für einen anderen Contact &#8220;erfüllt&#8221;. Role.parent ist z.B. die
+Firma BISA, Role.child ist Person Herr Meier, und Role.type ist der RoleType &#8220;Direktor&#8221;. Wahrscheinlich werde ich
+(wie wir schon mal besprochen haben) in RoleType zwei neue Felder &#8220;Parent-Model&#8221; und &#8220;Child-Model&#8221; machen, die man für
+die RoleType &#8220;Direktor&#8221; respektive auf &#8220;Firma&#8221; und &#8220;Person&#8221; setzt. Dann ändere ich die bisherigen internen ForeignKyes
+&#8220;parent&#8221; und &#8220;child&#8221; um, denn die verweisen in ihrer &#8220;rohen&#8221; Form nur auf den allgemeinen Contact,
+bei dem Lino in diesem
+Kontext nicht weiß, ob das eine Person oder eine Firma oder gar nur ein reiner Contact ist. Dann zwei neue virtuelle
+Felder &#8220;child&#8221; und &#8220;parent&#8221;, die im RoleType nachschauen, was es für eine Art sein muss und die dann das &#8220;richtige&#8221;
+Model verwenden.</p>
+<p>Problematisch ist (intern) noch, dass &#8220;parent&#8221; und &#8220;child&#8221;
+in einer Role was ganz anderes bedeuten als im
+Kontext von MTI. Der Code für die
+beiden properties wäre dann ziemlich irritierend:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_child</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">mti</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">child</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">child_type</span><span class="p">)</span>
+<span class="n">child</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_child</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">mti</span><span class="o">.</span><span class="n">get_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">parent_type</span><span class="p">)</span>
+<span class="n">parent</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_parent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Deshalb vielleicht besser umbenennen nach Master und Slave?
+Dieses Wortpaar ist freilich auch schon mit einer anderen
+Bedeutung belegt.
+Also dann vielleicht &#8220;Origin&#8221; und &#8220;Target&#8221;? Oder &#8220;a&#8221; und &#8220;b&#8221;?
+Oder &#8220;From&#8221; (Von) und &#8220;To&#8221; (Nach)?
+Zu bemerken ist, dass es sich bei Role bewusst um <em>gerichtete
+Beziehungen</em> (relations dirigées) geht.</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="45%" />
+<col width="29%" />
+<col width="26%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">role type</th>
+<th class="head">parent type</th>
+<th class="head">child type</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Direktor</td>
+<td>Company</td>
+<td>Person</td>
+</tr>
+<tr class="row-odd"><td>Sekretär</td>
+<td>Company</td>
+<td>Person</td>
+</tr>
+<tr class="row-even"><td>Filiale</td>
+<td>Company</td>
+<td>Person</td>
+</tr>
+<tr class="row-odd"><td>Vater</td>
+<td>Person</td>
+<td>Person</td>
+</tr>
+<tr class="row-even"><td>Mutter</td>
+<td>Person</td>
+<td>Person</td>
+</tr>
+<tr class="row-odd"><td>Verantwortlicher</td>
+<td>Customer</td>
+<td>User</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Wir könnten Role bei der Gelegenheit auch gleich
+noch verallgmeinern, indem a und b zwei generic
+foreign keys werden.</p>
+<p>Dann müsste &#8220;Role&#8221; umbenannt werden nach... &#8220;Link&#8221;
+(&#8220;Verknüpung&#8221; oder &#8220;Verbindung&#8221;).
+Das bisherige Modul lino.modlib.links würde dann
+umfunktioniert. Bisher hat das dort definierte Modell
+&#8220;Link&#8221; eine andere Bedeutung, nämlich ein Link zu
+einer externen Webseite. Das kann aber weg, denn es
+wird bisher nicht benutzt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.apps.dsbe.models</span> <span class="kn">import</span> <span class="n">Link</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Link</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<p>Also machen wir folgende Felder:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Link</span><span class="o">.</span><span class="n">a_id</span>
+<span class="n">Link</span><span class="o">.</span><span class="n">b_id</span>
+<span class="n">Link</span><span class="o">.</span><span class="n">type</span>
+<span class="n">LinkType</span><span class="o">.</span><span class="n">a_type</span>
+<span class="n">LinkType</span><span class="o">.</span><span class="n">b_type</span>
+</pre></div>
+</div>
+<p>Das Feld Contract.contact kann dann seinen Namen behalten, aber es ändert
+den Typ.
+Und Link benutzt nicht wie Role MTI, sondern GFK.
+Also hier die beiden properties &#8220;a&#8221; und &#8220;b&#8221; von Link:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_a</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">a_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ct</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">a_id</span><span class="p">)</span>
+<span class="n">a</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_a</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_b</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">ContentType</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">b_type</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ct</span><span class="o">.</span><span class="n">get_object_for_this_type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b_id</span><span class="p">)</span>
+<span class="n">b</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Das hat Pepp: ist elegant und klar!
+Statt &#8220;a&#8221; und &#8220;b&#8221; werde ich vielleicht doch eher &#8220;origin&#8221; und &#8220;target&#8221;
+nehmen.
+Schade nur, das &#8220;from&#8221; und &#8220;to&#8221; reservierte Wörter in Python sind und
+deshalb nicht als Namen in Frage kommen.</p>
+<p>(Aber zuerst wollen wir jetzt mal die Integration des Calendar Panels abschließen)</p>
+</div>
+<div class="section" id="continued-with-calndarpanel">
+<h2>Continued with CalndarPanel<a class="headerlink" href="#continued-with-calndarpanel" title="Permalink to this headline">¶</a></h2>
+<p>The WindowWrapper classes have been replaced by a single
+<cite>Lino.Window</cite>, and all bugs seem fixed now.</p>
+<p>Next step is to write a Wrapper around Brian Moeskau&#8217;s EditWindow
+which converts between Ext.ensible and Lino.
+Maybe I&#8217;ll need even more changes in Lino because Dirk works
+with a single Window instance for both insert and edit while
+Lino uses one Window for each case... (ouch!)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1207.html" title="20111207"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1205.html" title="20111205"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1206.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1206.html">Online Link</a>
+    </div>
+  </body>
+</html>

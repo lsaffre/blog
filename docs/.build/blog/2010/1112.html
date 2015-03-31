@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101112 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101113" href="1113.html" />
+    <link rel="prev" title="20101111" href="1111.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1113.html" title="20101113"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1111.html" title="20101111"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101112<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Eigentlich wollte ich <em>mal schnell</em> <a class="reference external" href="http://www.lino-framework.org/releases/2010/1112.html">/releases/2010/1112</a>
+auf DSBE und Tups installieren...
+aber daraus ist ein ganzer Tag geworden.</p>
+<p>Erste Überraschung:
+das lang ersehnte
+<a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/logging/">LOGGING</a>
+ist jetzt in Django drin!
+Das Dumme daran:
+ich habe einen halben Tag mit
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/15">docs/tickets/15</a>
+verbracht.
+Zuerst dachte ich, dass mein eigener Logger <cite>lino.log</cite> dran Schuld ist,
+der damit irgendwie in Konflikt gerät.
+Also habe ich Lino zuerst mal auf das Django-System konvertiert.
+Aber das war&#8217;s gar nicht, schuld war die Python-UNO-Bridge.</p>
+<p>Auch holt er die <code class="xref std std-xfile docutils literal"><span class="pre">welcome.html</span></code> jetzt aus einem config-Verzeichnis.
+Bisher musste die obligatorisch im lokalen config dir stehen.
+Das ist aber momentan gar nicht nötig, weil sie ihren Zweck auch
+ohne lokale Anpassungen erfüllt.</p>
+<p>Ich habe mal probiert, ob ich mein selbstgebasteltes System mit den config_dirs
+durch das Template-Loading-System von Django ersetzen kann.
+Aber ich glaube, daraus wird nichts. Meine config_dirs machen ja
+erstens den Unterschied zwischen beschreibbaren Verzeichnissen und
+solchen, die es nicht sind.
+Und Django ist einfach nicht dafür designt, mir eine Datei zu finden
+ohne sie dann gleich auch als Template einlesen zu wollen.
+Das ist doof.
+Im Gegensatz zu Django braucht Lino (zumindest momentan) keine Flexibilität
+über ein TEMPLATES_DIRS und TEMPLATES_LOADERS.</p>
+<p>Schön wäre freilich noch, wenn ich das doctemplates-Verzeichnis auch
+in die config_dirs rein bekäme.</p>
+<p>17.30 Uhr. Das Release ist drauf. Aber jetzt habe ich noch folgendes Problem.
+:menuselection`Kontakte &#8211;&gt; Firmen` funktioniert,
+:menuselection`Kontakte &#8211;&gt; Personen` nicht. Und in der Console kommt dann:</p>
+<div class="highlight-python"><div class="highlight"><pre>Uncaught TypeError: Cannot read property &#39;id&#39; of undefined
+Ext.grid.ColumnModel.Ext.extend.setConfig        :8080/media/extjs/ext-all.js:11
+Ext.grid.ColumnModel.Ext.extend.constructor      :8080/media/extjs/ext-all.js:11
+Ext.grid.GridPanel.Ext.extend.initComponent     :8080/media/extjs/ext-all.js:11
+Ext.grid.EditorGridPanel.Ext.extend.initComponent   :8080/media/extjs/ext-all.js:11
+Lino.GridPanel.Ext.extend.initComponent            :8080/media/lino/extjs/lino.js:1448
+Ext.Component                                     :8080/media/extjs/ext-all.js:7
+Ext.apply.extend.K        :8080/media/extjs/adapter/ext/ext-base.js:7
+Ext.apply.extend.K        :8080/media/extjs/adapter/ext/ext-base.js:7
+Ext.apply.extend.K        :8080/media/extjs/adapter/ext/ext-base.js:7
+Ext.apply.extend.K        :8080/media/extjs/adapter/ext/ext-base.js:7
+Ext.apply.extend.K        :8080/media/extjs/adapter/ext/ext-base.js:7
+Lino.GridPanel.Ext.extend.constructor             :8080/media/lino/extjs/lino.js:1178
+Lino.contacts.Persons.grid                          :8080/media/cache/js/site.js:1259
+viewport.Ext.Viewport.items.items.menu.items.handler                         :8080/:1
+h.Event.fire                                           :8080/media/extjs/ext-all.js:7
+h.Observable.fireEvent                                 :8080/media/extjs/ext-all.js:7
+Ext.menu.BaseItem.Ext.extend.onClick                  :8080/media/extjs/ext-all.js:11
+Ext.menu.Menu.Ext.extend.onClick                      :8080/media/extjs/ext-all.js:11
+K                                                      :8080/media/extjs/ext-all.js:7
+</pre></div>
+</div>
+<p>21 Uhr:
+Grund war eine lokale Grid-Konfigurationsdatei, die jetzt nicht mehr gültig war.
+Das ist noch ein Problem: GC-Dateien sollten es doch eigentlich vertragen,
+wenn mal ein paar neue Felder in den Report hinzu kommen.</p>
+<p>Nächstes Problem:</p>
+<div class="highlight-python"><div class="highlight"><pre>mod_wsgi (pid=16976): Exception occurred processing WSGI script &#39;/usr/local/django/dsbe_eupen/apache/lino.wsgi&#39;.
+Traceback (most recent call last):
+File &quot;/var/snapshots/django/django/core/handlers/wsgi.py&quot;, line 265, in __call__
+  response = self.get_response(request)
+File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 160, in get_response
+  response = self.handle_uncaught_exception(request, resolver, sys.exc_info())
+File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 109, in get_response
+  response = callback(request, *callback_args, **callback_kwargs)
+File &quot;/var/snapshots/lino/lino/ui/extjs/ext_ui.py&quot;, line 836, in api_element_view
+  target = a.get_target_url(elem)
+File &quot;/var/snapshots/lino/lino/utils/printable.py&quot;, line 337, in get_target_url
+  pm.build(elem)
+File &quot;/var/snapshots/lino/lino/utils/printable.py&quot;, line 188, in build
+  self.simple_build(elem,tpl,target)
+File &quot;/var/snapshots/lino/lino/utils/printable.py&quot;, line 211, in simple_build
+  renderer = Renderer(tpl, context, target,**settings.APPY_PARAMS)
+File &quot;/var/snapshots/appy-0.5.5/appy/pod/renderer.py&quot;, line 130, in __init__
+  self.templateZip = zipfile.ZipFile(template)
+File &quot;/usr/lib/python2.5/zipfile.py&quot;, line 339, in __init__
+  self.fp = open(file, modeDict[mode])
+UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\\xf6&#39; in position 77: ordinal not in range(128)
+</pre></div>
+</div>
+<p>Die betreffende Datei heißt &#8220;Konvention Sozialökonomie.odt&#8221;, aber wenn ich sie mir in
+der Linux-Shell anschaue, steht dort:</p>
+<div class="highlight-python"><div class="highlight"><pre>Konvention Sozial?konomie.odt
+</pre></div>
+</div>
+<p>Das ist wahrscheinlich einfach nur beim Zippen ein Missverständnis passiert
+(denn ich habe diese Dateien,
+die nicht öffentlich sind, auf Armand erstellt und getestet, und dann
+eingepackt um sie hochzuladen).
+Die einfachste Lösung ist: bis auf weiteres dürfen keine
+Dateienamen mit Umlauten verwendet werden.</p>
+<p>Dann das nächste Problem:</p>
+<div class="highlight-python"><div class="highlight"><pre>[Fri Nov 12 20:32:21 2010] PodError: An error occurred during the conversion.
+Could not connect to OpenOffice on port 8100.
+UNO (OpenOffice API) says: Connector : couldn&#39;t connect to socket (Success).
+</pre></div>
+</div>
+<p>Das heißt wahrscheinlich, dass der OOo-Server nicht läuft.
+Aber jetzt ist erst mal Wochenende.</p>
+<p><a class="reference external" href="http://code.google.com/p/lino/source/detail?r=855791b5e90d7e5c4eeeea9fbce6210165ff3f51">Check-in</a>
+und <cite>hg tag v0.8.12</cite>.</p>
+<p>Immerhin: beinahe hätte ich die erste Vorlage für Verträge
+in Eupen ans Laufen gebracht!</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1113.html" title="20101113"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1111.html" title="20101111"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1112.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1112.html">Online Link</a>
+    </div>
+  </body>
+</html>

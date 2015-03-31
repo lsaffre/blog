@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110126 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110127" href="0127.html" />
+    <link rel="prev" title="20110125" href="0125.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0127.html" title="20110127"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0125.html" title="20110125"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110126<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="watch-tim-s-behaviour-after-a-server-crash">
+<h2>watch_tim&#8217;s behaviour after a server crash<a class="headerlink" href="#watch-tim-s-behaviour-after-a-server-crash" title="Permalink to this headline">¶</a></h2>
+<p>when <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.daemoncommand.html#module-lino.utils.daemoncommand" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.daemoncommand</span></code></a> has been told to
+create a pidfile, and when that pidfile already existed
+(e.g. after a server crash, or when the previous watch_tim
+process has been terminated using <cite>kill -9</cite>),
+then the new daemon waited forever without complaining.
+and the system administrator wondered why it was not doing
+its work because there was no error message nowhere.
+Now it raises a <cite>lockfile.AlreadyLocked</cite> error.</p>
+<p>Note that <cite>start-stop-daemon</cite> doesn&#8217;t considered this situation
+as a startup error but as runtime error,
+That&#8217;s why calling <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">/etc/init.d/watch_tim</span> <span class="pre">start</span></code>,
+a second time still says:</p>
+<div class="highlight-python"><div class="highlight"><pre>Starting /usr/local/django/dsbe_eupen/watch_tim/run...
+Done.
+</pre></div>
+</div>
+<p>The error message appears only in <code class="xref std std-xfile docutils literal"><span class="pre">watch_tim/error.log</span></code>
+(specified using <cite>&#8211;stderr</cite>).
+But at least the process terminates, so that a <cite>ps aux</cite>
+doesn&#8217;t show it.</p>
+</div>
+<div class="section" id="known-values">
+<h2>known values<a class="headerlink" href="#known-values" title="Permalink to this headline">¶</a></h2>
+<p>Man kann jetzt auch schon im Report ein
+<code class="xref py py-attr docutils literal"><span class="pre">lino.reports.Report.known_values</span></code>
+definieren. Der gilt dann als Standardwert für alle Requests.
+Wird benutzt für <code class="xref py py-class docutils literal"><span class="pre">lino.projects.dsbe.models.CourseProviders</span></code>.</p>
+</div>
+<div class="section" id="candidatesbycourse">
+<h2>CandidatesByCourse<a class="headerlink" href="#candidatesbycourse" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Bei &#8220;Kurse - Teilnehmer&#8221; ist keine direkte Eingabe möglich.</p>
+<p>Hier darf man ja nicht einfach neue Records einfügen,
+sondern die &#8220;Teilnehmer&#8221; erscheinen hier automatisch,
+wenn man einer bestehenden Anfrage einen Kurs zuweist.</p>
+<p>Mein Plan ist, dass in der unteren Liste (Kandidaten)
+die Personen angezeigt werden, die eine offene Kursanfrage
+haben und inhaltlich für diesen Kurs in Frage kämen.
+Und per Mausklick müsste man sie dann aus der Kandidaten-
+in die Teilnehmerliste transferieren können und umgekehrt.</p>
+</li>
+</ol>
+<p>Dieser Slave-Report soll ja alle Course Requests anzeigen, die für einen
+bestimmten Kurs <em>in Frage kommen</em>, also
+die (1) unbefriedigt sind (deren <cite>course</cite> leer ist) und
+(2) deren Kursinhalt dem des angebotenen Kurses entspricht.</p>
+<p>Nichts einfacher als das:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_request_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">course__isnull</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">content__exact</span><span class="o">=</span><span class="n">rr</span><span class="o">.</span><span class="n">master_instance</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Jetzt kann man also Personen in einen Kurs einschreiben,
+indem man im Detail eines Kurses in der Kandidaten-Liste das Feld &#8220;Kurs gefunden&#8221;
+ausfüllt.
+Sobald man in der Kandidaten-Anfrage den &#8220;Kurs gefunden&#8221; ausgefüllt hat,
+verschwindet die Anfrage aus der Kandidatenliste, um in der Teilnehmerliste
+zu erscheinen.</p>
+<p>TODO:
+Das ist noch nicht ganz benutzerfreundlich.
+Eigentlich soll man den Kurs im Feld &#8220;Kurs gefunden&#8221;
+gar nicht auswählen müssen, denn Lino weiß ja, um welchen Kurs es geht.
+Statt des Feldes &#8220;Kurs gefunden&#8221; sollte eher auf jeder Zeile ein
+Button &#8220;Einschreiben&#8221; hinkommen. Wenn man darauf klickt,
+kommt die Anfrage (ohne weitere Bestätigung) von der unteren in die obere Liste.
+Momentan muss man auch noch selber auf den Refresh-Button in
+der Teilnehmerliste klicken, damit die Einschreibung sichtbar wird.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0127.html" title="20110127"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0125.html" title="20110125"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0126.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0126.html">Online Link</a>
+    </div>
+  </body>
+</html>

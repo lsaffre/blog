@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130607 (Friday, 07 June 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130608 (Saturday, 08 June 2013)" href="0608.html" />
+    <link rel="prev" title="20130605 (Wednesday, 05 June 2013)" href="0605.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0608.html" title="20130608 (Saturday, 08 June 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0605.html" title="20130605 (Wednesday, 05 June 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-07-june-2013">
+<h1>20130607 (Friday, 07 June 2013)<a class="headerlink" href="#friday-07-june-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="api-ui-home-99998-was-not-found-on-this-server">
+<h2>&#8220;api/ui/Home/-99998 was not found on this server&#8221;<a class="headerlink" href="#api-ui-home-99998-was-not-found-on-this-server" title="Permalink to this headline">¶</a></h2>
+<p>Trying to reproduce a problem report by Flavio:</p>
+<blockquote>
+<div><p>Following the recommendations according to Lino web site,
+I set up a deployment environment with Apache and HTTP authentication,
+first for demo application Lino Cosí.
+The application loads the Javascript files, accesses the database
+and returns back the full name of the logged-in user, but got the
+following error after the authentication:</p>
+<div class="line-block">
+<div class="line">&#8220;Not Found</div>
+<div class="line">The requested URL / api/ui/Home/-99998 was not found on this server.&#8221;</div>
+</div>
+<p>Which happens in any attempt to access the information in the database such as in /api/contacts/Persons.</p>
+</div></blockquote>
+<p>At first sight I could not reproduce this problem with the latest
+development version on a development server.
+Which version is he using?
+Going to set up a test environment for Apache HTTP authentication
+since the problem might occur only then.</p>
+<p>The problem must be somewhere in his Apache configuration
+because the error message is issued by Apache.
+Apache doesn&#8217;t even forward that request to the WSGI process.</p>
+<p>Fixed a bug which is probably unrelated:
+<code class="xref py py-meth docutils literal"><span class="pre">ExtRenderer</span></code>
+generated a line which requested a file
+&#8220;/media/extensible/extensible-all-debug.js&#8221;
+which always lead to a 404 error, but that did no harm since
+it was useless.</p>
+<p>Checkin.</p>
+<p>Oops, the above bug was even more subtile:
+the link wasn&#8217;t useless at all
+(when
+<code class="xref py py-attr docutils literal"><span class="pre">use_extensible</span></code>
+is set, which just happenes to not be the case in Lino Così),
+and the bug was that Lino
+didn&#8217;t take
+into account here
+<code class="xref py py-attr docutils literal"><span class="pre">extensible_base_url</span></code>
+setting.</p>
+</div>
+<div class="section" id="lino-faggio">
+<h2>Lino-Faggio<a class="headerlink" href="#lino-faggio" title="Permalink to this headline">¶</a></h2>
+<p>Continued with <a class="reference external" href="http://faggio.lino-framework.org/api/index.html#module-lino_faggio" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio</span></code></a>.
+We are facing a new challenge for Lino:
+how to integrate the modlib sales invoicing
+to a meeting manager application.
+And the first steps were very promising.
+But let me get it up and running before talking
+more about it...</p>
+<p>One challenge was: when selecting an enrolment in an
+invoice item, we want to
+(1) show only the enrolements of the invoice receiver
+(this was easily done using a chooser)
+(2) format the choices to be displayed in the combo box
+to not repeat the participant&#8217;s name.
+That was more difficult because it is the first use case of
+such a situation.</p>
+<p>Solution:
+Added a new customization hook
+for displaying a choice&#8217;s text:
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.get_choices_text" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_choices_text</span></code></a>
+on the <strong>actor</strong>.
+Unlike a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.get_choices_text" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_choices_text</span></code></a>
+method on a <strong>model</strong>,
+this time we want to customize only forthe calling actor.</p>
+<p>Note that I prefer this paradigm over another magic
+method <cite>FOO_choice_display</cite> on the model because:</p>
+<ul class="simple">
+<li>magic model methods aren&#8217;t a good practice</li>
+<li>The <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.get_choices_text" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_choices_text</span></code></a>
+trick works even when there is no chooser at all.</li>
+</ul>
+<p>Cool!</p>
+<p>One detail remains to be done though (because it is not new and i
+consider it secondary):
+when the invoice receiver changes, then the combobox should reload
+its store.</p>
+</div>
+<div class="section" id="overriding-modlib-models">
+<h2>Overriding modlib models<a class="headerlink" href="#overriding-modlib-models" title="Permalink to this headline">¶</a></h2>
+<p>I reached a next level of understanding how Lino should provide
+a possibility to override modlib models:
+Lino-Faggio overrides a whole modlib module by defining
+<code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.contacts</span></code>.</p>
+<p>Why is this necessary?
+Summary: The <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.school</span></code>
+requires the concrete class of <cite>contacts.Person</cite>, and because
+<a class="reference external" href="http://faggio.lino-framework.org/api/lino_faggio.models.html#module-lino_faggio.models" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.models</span></code></a> (who defines this class)
+cannot then also <em>use</em> the schools module.
+So I had to split <a class="reference external" href="http://faggio.lino-framework.org/api/lino_faggio.models.html#module-lino_faggio.models" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.models</span></code></a>: one who implements the
+concrete Person model and another who uses the school module.
+And because I didn&#8217;t want to create a new <cite>app_name</cite>,
+I tried to override the <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.html#module-lino.modlib.contacts" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts</span></code></a> module.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0608.html" title="20130608 (Saturday, 08 June 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0605.html" title="20130605 (Wednesday, 05 June 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0607.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0607.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130821 (Wednesday, 21 August 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="xhtml() doesn’t like &lt;div&gt; inside a &lt;span&gt;" href="0821/bug.html" />
+    <link rel="prev" title="20130820 (Tuesday, 20 August 2013)" href="0820.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0821/bug.html" title="xhtml() doesn’t like &lt;div&gt; inside a &lt;span&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0820.html" title="20130820 (Tuesday, 20 August 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-21-august-2013">
+<h1>20130821 (Wednesday, 21 August 2013)<a class="headerlink" href="#wednesday-21-august-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="eidreader-learning-to-read-belgian-eid-cards">
+<h2>EIDReader learning to read Belgian eID cards<a class="headerlink" href="#eidreader-learning-to-read-belgian-eid-cards" title="Permalink to this headline">¶</a></h2>
+<p>Continued from <a class="reference external" href="oops">2013-08-19</a>.</p>
+<p>Where to find the command APDUs for Belgian eID cards?
+The Belgians don&#8217;t seem to provide as good technical documentation
+as the Estonians...
+But Ha! the source code of <a class="reference external" href="https://code.google.com/p/eid-applet/">eid-applet</a>
+contains answers to most of my questions!
+For example
+<a class="reference external" href="https://code.google.com/p/eid-applet/source/browse/trunk/eid-applet-core/src/main/java/be/fedict/eid/applet/Controller.java">Controller.java</a></p>
+<p>Since <cite>eid-applet</cite> is LGPL and Lino GPL, I can AFAIK simply copy and
+paste the relevant excerpts from their code into my <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//java/lino/eid/EIDReader.java">EIDReader</a> applet
+(after adapting the copyright notice).</p>
+<p>Voilà: EIDReader can now read <em>both</em> Estonian <em>and</em> Belgian eID cards.
+(At least almost...
+it <em>does</em> already recognize that it is a Belgian cards and even reads some data.
+But I must still be doing something wrong because it shows only the
+<em>number</em> of the card (and not all the public data as I&#8217;d like it to):</p>
+<img alt="../../_images/0821.png" src="../../_images/0821.png" />
+</div>
+<div class="section" id="discovered-and-fixed-a-bug-in-html2xhtml">
+<h2>Discovered and fixed a bug in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.html2xhtml.html#module-lino.utils.html2xhtml" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">html2xhtml</span></code></a><a class="headerlink" href="#discovered-and-fixed-a-bug-in-html2xhtml" title="Permalink to this headline">¶</a></h2>
+<p>Lino is so cool!
+I had no problem to reproduce an error which
+occured now and then in a production site.
+This was the traceback produced by the above snippet:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  (...)
+  File &quot;lino/mixins/printable.py&quot;, line 314, in f
+    Renderer(ar,tpl, context, target,**settings.SITE.appy_params).run()
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/renderer.py&quot;, line 394, in run
+    self.finalize()
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/renderer.py&quot;, line 546, in finalize
+    output = self.callLibreOffice(resultName, resultType)
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/renderer.py&quot;, line 430, in callLibreOffice
+    Converter(resultName, resultType, self.ooPort).run()
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/converter.py&quot;, line 243, in run
+    self.loadDocument()
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/converter.py&quot;, line 214, in loadDocument
+    self.updateOdtDocument()
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/appy/pod/converter.py&quot;, line 167, in updateOdtDocument
+    indexes = self.doc.getDocumentIndexes()
+AttributeError: &#39;NoneType&#39; object has no attribute &#39;getDocumentIndexes&#39;
+</pre></div>
+</div>
+<p>Here is how I discovered the reason.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>While writing this blog post I tested it using:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python -m doctest docs/blog/2013/0821.rst`
+</pre></div>
+</div>
+<p class="last">It is not part of the standard test suite because it fails when there
+is no LibreOffice server running.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;lino_welfare.settings.test&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.api.shell</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="s">&#39;rolf&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ses</span><span class="o">.</span><span class="n">set_language</span><span class="p">(</span><span class="s">&#39;de&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">jobs</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;&lt;br /&gt;&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="go">{&#39;message&#39;: u&#39;Dokument Art.60\xa77-Konvention#1 (Charlotte Collard) wurde generiert.&#39;,</span>
+<span class="go"> &#39;open_url&#39;: u&#39;/media/cache/appypdf/jobs.Contract-1.pdf&#39;,</span>
+<span class="go"> &#39;refresh&#39;: True,</span>
+<span class="go"> &#39;success&#39;: True}</span>
+</pre></div>
+</div>
+<p>Until here it works. The problem comes when <cite>responsibilities</cite>
+contains certain &#8220;invalid&#8221; chunk of HTML.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;div style=&quot;color: blue !important; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: #ffffff; margin: 8px;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;ul&gt;</span><span class="se">\n</span><span class="s">&lt;li&gt;&lt;strong&gt;Unterhalt und Reinigung der B&amp;uuml;ros, Versammlungsr&amp;auml;ume, Pausenr&amp;auml;ume, Flure, Sanit&amp;auml;ren Anlagen.&lt;/strong&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s">&lt;/ul&gt;</span><span class="se">\n</span><span class="s">&lt;/div&gt;</span><span class="se">\n</span><span class="s">&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;NoneType&#39; object has no attribute &#39;getDocumentIndexes&#39;</span>
+</pre></div>
+</div>
+<p>The culprit in our case seems to be the (superfluous) <cite>&lt;div&gt;</cite>
+tag, probably inserted by TinyMCE.
+Removing the complete <cite>&lt;div&gt;</cite> tag makes it work:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;ul&gt;</span><span class="se">\n</span><span class="s">&lt;li&gt;&lt;strong&gt;Unterhalt und Reinigung der B&amp;uuml;ros, Versammlungsr&amp;auml;ume, Pausenr&amp;auml;ume, Flure, Sanit&amp;auml;ren Anlagen.&lt;/strong&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s">&lt;/ul&gt;</span><span class="se">\n</span><span class="s">&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="go">{&#39;message&#39;: u&#39;Dokument Art.60\xa77-Konvention#1 (Charlotte Collard) wurde generiert.&#39;,</span>
+<span class="go"> &#39;open_url&#39;: u&#39;/media/cache/appypdf/jobs.Contract-1.pdf&#39;,</span>
+<span class="go"> &#39;refresh&#39;: True,</span>
+<span class="go"> &#39;success&#39;: True}</span>
+</pre></div>
+</div>
+<p>Now we try to further identify the culprit.
+Restore the <cite>&lt;div&gt;</cite> tag and remove only the
+attributes &#8220;background-image: initial; background-attachment: initial;
+background-origin: initial; background-clip: initial;&#8221;
+from the <cite>&lt;div&gt;</cite> still doesn&#8217;t work (so these are not the reason):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;div style=&quot;color: blue !important; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; background-color: #ffffff; margin: 8px;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;ul&gt;</span><span class="se">\n</span><span class="s">&lt;li&gt;&lt;strong&gt;Unterhalt und Reinigung der B&amp;uuml;ros, Versammlungsr&amp;auml;ume, Pausenr&amp;auml;ume, Flure, Sanit&amp;auml;ren Anlagen.&lt;/strong&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s">&lt;/ul&gt;</span><span class="se">\n</span><span class="s">&lt;/div&gt;</span><span class="se">\n</span><span class="s">&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;NoneType&#39; object has no attribute &#39;getDocumentIndexes&#39;</span>
+</pre></div>
+</div>
+<p>The <cite>color: blue !important;</cite> part also is not the culprit:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;div style=&quot;font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: #ffffff; margin: 8px;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;ul&gt;</span><span class="se">\n</span><span class="s">&lt;li&gt;&lt;strong&gt;Unterhalt und Reinigung der B&amp;uuml;ros, Versammlungsr&amp;auml;ume, Pausenr&amp;auml;ume, Flure, Sanit&amp;auml;ren Anlagen.&lt;/strong&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s">&lt;/ul&gt;</span><span class="se">\n</span><span class="s">&lt;/div&gt;</span><span class="se">\n</span><span class="s">&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;NoneType&#39; object has no attribute &#39;getDocumentIndexes&#39;</span>
+</pre></div>
+</div>
+<p>Tilt! <em>Inverting the ordering</em> of <cite>&lt;span&gt;</cite> and <cite>&lt;div&gt;</cite> tags
+finally does make it work:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;div style=&quot;color: blue !important; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: #ffffff; margin: 8px;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;span style=&quot;font-family: Arial; font-size: x-small;&quot;&gt;</span><span class="se">\n</span><span class="s">&lt;ul&gt;</span><span class="se">\n</span><span class="s">&lt;li&gt;&lt;strong&gt;Unterhalt und Reinigung der B&amp;uuml;ros, Versammlungsr&amp;auml;ume, Pausenr&amp;auml;ume, Flure, Sanit&amp;auml;ren Anlagen.&lt;/strong&gt;&lt;/li&gt;</span><span class="se">\n</span><span class="s">&lt;/ul&gt;</span><span class="se">\n</span><span class="s">&lt;/span&gt;</span><span class="se">\n</span><span class="s">&lt;/div&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="go">{&#39;message&#39;: u&#39;Dokument Art.60\xa77-Konvention#1 (Charlotte Collard) wurde generiert.&#39;,</span>
+<span class="go"> &#39;open_url&#39;: u&#39;/media/cache/appypdf/jobs.Contract-1.pdf&#39;,</span>
+<span class="go"> &#39;refresh&#39;: True,</span>
+<span class="go"> &#39;success&#39;: True}</span>
+</pre></div>
+</div>
+<p>So this is the reason. Let&#8217;s simplify the HTML and formulate our statement:
+appy_pod has a problem with the following chunk:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&lt;p&gt;&lt;span&gt;&lt;div&gt;Some text&lt;/div&gt;&lt;/span&gt;&lt;/p&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ses</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">do_print</span><span class="p">))</span> 
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">AttributeError</span>: <span class="n">&#39;NoneType&#39; object has no attribute &#39;getDocumentIndexes&#39;</span>
+</pre></div>
+</div>
+<p>Test cases like this one should not modify the demo database because
+the test suite runner doesn&#8217;t reinisitialize the database for each case.
+So we restore the original value (which was an empty string):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">responsibilities</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Wrote another page for Gaëtan to reproduce all this without Lino
+installed:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="0821/bug.html"><cite>xhtml()</cite> doesn&#8217;t like <cite>&lt;div&gt;</cite> inside a <cite>&lt;span&gt;</cite></a></li>
+</ul>
+</div>
+<p>As explained there, I then understood that
+a <cite>&lt;div&gt;</cite> inside a <cite>&lt;span&gt;</cite> is simply invalid XHTML,
+so instead of filing a bug for Gaëtan
+I fixed it and added a test case in my own code:
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.html2xhtml.html#module-lino.utils.html2xhtml" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.html2xhtml</span></code></a>.</p>
+<p>(So what?
+I worked more than 3 hours to understand and fix a little bug:
+is that cool? No, <em>that</em>&#8216;s not cool, but <em>Lino</em> is cool:
+all this would have taken many days without the possibility
+of reproducing the original problem in a simple blog entry!)</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0821/bug.html" title="xhtml() doesn’t like &lt;div&gt; inside a &lt;span&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0820.html" title="20130820 (Tuesday, 20 August 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0821.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0821.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121005 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121006" href="1006.html" />
+    <link rel="prev" title="20121003..04" href="1003.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1006.html" title="20121006"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1003.html" title="20121003..04"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121005<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Continued recovering after the surgery.
+Action Parameter Dialog Boxes are no longer duplicated
+and have now a default window_size.</p>
+<p>En passant:</p>
+<ul class="simple">
+<li>Unified the appearence of &#8220;action buttons&#8221;. They are now always
+[between square brackets], and we might display them more button-like
+using css if we had time to play.</li>
+<li>Fixed a problem in <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.uploadable.html#module-lino.mixins.uploadable" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.uploadable</span></code></a>:
+Certain Python versions or systems don&#8217;t manage non-ascii filenames,
+so we replace any non-ascii char by &#8220;_&#8221;</li>
+</ul>
+<div class="section" id="checkin">
+<h2>Checkin<a class="headerlink" href="#checkin" title="Permalink to this headline">¶</a></h2>
+<p>Nach der Entwicklungslawine scheinen die meisten Nebenwirkungen
+jetzt beseitigt. Ich kann weiter an dem arbeiten, was die Lawine
+verursacht hatte:</p>
+<ul class="simple">
+<li>Dialogfenster von RefuseNewClient hat noch immer ein Layout-Problem</li>
+<li>Felder werden doppelt deklariert (wahrscheinlich weil sie auch
+in <cite>params_panel.fields</cite> nochmal drin stehen.</li>
+<li>Und dann müssen die Werte der Aktionsparameter noch in eine Variable
+<cite>ar.action_param_values</cite> übergeben werden.</li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Documented <a class="reference external" href="http://www.lino-framework.org/api/lino.core.layouts.html#lino.core.layouts.Panel" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.core.layouts.Panel</span></code></a>.</li>
+</ul>
+<p>Nachmittags habe ich dann bemerkt, dass die Entwicklungslawine
+noch nicht fertig war. Die StateChangeActions müssen einfach
+in ihrer ChoiceList gespeichert werden,
+nicht in der Tabelle, die sie benutzt.
+Denn wie soll man sonst ihren Namen rausfinden.</p>
+<p>Dazu musste
+ChoiceList zu einer Unterklasse von Actor werden.
+Was viel Hin- und Herschieberei erforderte.
+Unter Anderem haben ChoiceLists jetzt nicht mehr einfache
+Namen, sondern sind einem app_label zugeordnet:</p>
+<ul class="simple">
+<li>Gender &#8211;&gt; contacts.Gender</li>
+<li>HowWell &#8211;&gt; properties.HowWell</li>
+<li>HowDoYouLike &#8211;&gt; properties.HowDoYouLike</li>
+</ul>
+<p>(Zu beachten bei der Datenmigration)</p>
+<p>Aber es hat sich gelohnt:
+z.B. werden ChoiceLists jetzt nur noch ein einziges Mal
+in den <cite>lino*.js</cite> definiert,
+statt bei jeder Verwendung inline in den Code geklebt zu werden.</p>
+<p>Das Layout-Problem im ExtJS-Code ist jetzt gelöst.
+Also bei Klick auf !Refuse&#8221; kommt jetzt das Dialogfenster
+mit den Parametern und den beiden Buttons &#8220;OK&#8221; und &#8220;Cancel&#8221;</p>
+<p>Checkin.</p>
+<p>Jetzt fehlt &#8220;nur&#8221; noch, dass er bei Klick auf OK den
+korrekten AJAX-Request abschickt.</p>
+<p>En passant habe ich,
+jetzt wo meine Internetleitung 10x schneller geworden ist,
+die Demo auf meinem Server mal aktualisiert:</p>
+<blockquote>
+<div><a class="reference external" href="http://dsbe-demo.saffre-rumma.net/">http://dsbe-demo.saffre-rumma.net/</a></div></blockquote>
+<p>Ist das jetzt eine zumutbare Geschwindigkeit?</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1006.html" title="20121006"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1003.html" title="20121003..04"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1005.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1005.html">Online Link</a>
+    </div>
+  </body>
+</html>

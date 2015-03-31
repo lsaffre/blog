@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100709 extjs performance &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100712" href="0712.html" />
+    <link rel="prev" title="20100708" href="0708.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0712.html" title="20100712"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0708.html" title="20100708"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="extjs-performance">
+<h1>20100709 extjs performance<a class="headerlink" href="#extjs-performance" title="Permalink to this headline">¶</a></h1>
+<p>Einige erste Ideen um die Performance zu verbessern:</p>
+<ul class="simple">
+<li>use compressed and zipped js and css  (<a class="reference external" href="http://www.sencha.com/forum/showthread.php?26728-application-design-component-creation-and-efficiency">http://www.sencha.com/forum/showthread.php?26728-application-design-component-creation-and-efficiency</a>)</li>
+<li>Alle AJAX-Aufrufe einer Form in einem einzigen Call zusammenfassen
+(<a class="reference external" href="http://stackoverflow.com/questions/2218647/extjs-form-performance-problem">link</a>)</li>
+<li>Gibt es nicht vielleicht doch eine Alternative? Neue Seite <a class="reference external" href="http://www.lino-framework.org/about/why_extjs.html">/about/why_extjs</a></li>
+</ul>
+</div>
+<div class="section" id="extjsw-kommt-zuruck">
+<h1>extjsw kommt zurück<a class="headerlink" href="#extjsw-kommt-zuruck" title="Permalink to this headline">¶</a></h1>
+<p>Als erstes werde ich mal extjsw wieder ans Laufen kriegen, denn damit war Lino spürbar schneller.</p>
+<ul>
+<li><p class="first">eine ganze Serie von kleinen Änderungen in reports.py, actors.py waren reingekommen, als ich ungeniert an extjsu arbeitete.</p>
+</li>
+<li><p class="first"><code class="xref std std-setting docutils literal"><span class="pre">DATA_DIR</span></code> sollte jetzt nicht mehr mit einem Slash bzw. Backslash enden</p>
+</li>
+<li><dl class="first docutils">
+<dt>Wenn <cite>sys.platform == &#8216;win32&#8217;</cite> ist (d.h. wenn es der Development-Server ist (die beiden sind für mich synonym)), wird  <code class="xref std std-setting docutils literal"><span class="pre">DATA_DIR</span></code> in der settings.py von dsbe-demo jetzt nicht mehr auf <code class="docutils literal"><span class="pre">'C:\\Temp\\dsbe\\'</span></code> gesetzt, sondern auf</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">join(PROJECT_DIR,&quot;data&quot;)</span></code>. Und dieses Verzeichnis habe ich dann in meiner <code class="xref std std-xfile docutils literal"><span class="pre">.hgignore</span></code>.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+<div class="section" id="wohin-jetzt">
+<h1>Wohin jetzt?<a class="headerlink" href="#wohin-jetzt" title="Permalink to this headline">¶</a></h1>
+<p>Also es sieht aus als ob der Browser eben doch auf jeder neuen Seite alle JS-Dateien im Header neu parst. Auch wenn sie im Cache sind und er sie nicht neu angefragt hat.</p>
+<p>Ist eigentlich verständlich. Damit die ganze ExtJS nicht auf jeder Seite neu geladen würde, müsste sie ein Browser-Plugin sein.</p>
+<p>Also es war Utopie zu glauben, dass ich das traditionelle Browserverhalten &#8220;1 URL -&gt; 1 Seite&#8221; beibehalten kann. RIA bedeutet eben unter anderem dynamisches HTML.</p>
+<p>Eine relativ teure Erkenntnis: den &#8220;Seitensprung&#8221; über extjsu habe ich am <a class="reference internal" href="0619.html"><em>19.06.</em></a> begonnen und in diesen drei Wochen etwa 40 Stunden daran gearbeitet. Ich bereue das trotzdem kaum, denn das sind wichtige Entscheidungen und es besteht weiterhin kein trifftiger Grund, solche Entscheidungen übers Knie zu brechen.</p>
+<p>Ich sehe nun auch den nächsten Schritt: Ich muss meine Frage vom 01.06. (<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/3">docs/tickets/3</a>) fertig formulieren und falls nötig ins ExtJS-Forum posten.</p>
+<p>Weil wir seit heute morgen weder Telefon noch Internet haben, kann ich nicht posten, deshalb habe ich selber gesucht... und gefunden!
+Das war ein einfacher Fall von RTFM. Hier die Auszüge aus der ExtJS-Doku, die die Antwort enthielten:</p>
+<dl class="docutils">
+<dt>Ext.Component.add() :</dt>
+<dd><ul class="first last simple">
+<li>If the Container is already rendered when add is called, you may need to call doLayout to refresh the view which causes any unrendered child Components to be rendered.</li>
+<li>Warning: Containers directly managed by the BorderLayout layout manager may not be removed or added. See the Notes for BorderLayout for more details.</li>
+</ul>
+</dd>
+<dt>Ext.layout.BorderLayout:</dt>
+<dd>The regions of a BorderLayout are fixed at render time and thereafter, its child Components may not be removed or added. To add/remove Components within a BorderLayout, have them wrapped by an additional Container which is directly managed by the BorderLayout.</dd>
+</dl>
+<p>Also die Antwort auf <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/3">docs/tickets/3</a> steht in <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//extjs-showcases/20100711.html">/extjs-showcases/20100711.html</a>.</p>
+<p>Sonntag 23.15 Uhr: extjsw mit USE_WINDOWS=False hat funktioniert, mit zufriedenstellender Performance, und ich bin glücklich.</p>
+<p>Checkin (aber push geht nicht, weil unser Internetanschluss erst morgen repariert wird...)</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>Momentan ist die Liste noch leer, weil ich api_list_view und api_elem_view in ext_ui.py noch fertig anpassen muss (im AJAX-GET der Grid fehlt <cite>fmt=json</cite>).</li>
+<li>Print-Button funktionierte nicht.</li>
+<li>Einen Close-Button, der ins vorige Fenster zurückspringt.</li>
+<li>Permalinks</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0712.html" title="20100712"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0708.html" title="20100708"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0709.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0709.html">Online Link</a>
+    </div>
+  </body>
+</html>

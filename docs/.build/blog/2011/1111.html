@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111111 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111112" href="1112.html" />
+    <link rel="prev" title="20111110" href="1110.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1112.html" title="20111112"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1110.html" title="20111110"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111111<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="browser-specific-ui-language">
+<h2>browser-specific UI language<a class="headerlink" href="#browser-specific-ui-language" title="Permalink to this headline">¶</a></h2>
+<p>Started support for user-specific language selection.
+The basic trick is to add
+Django&#8217;s <cite>LocaleMiddleware</cite> to
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-MIDDLEWARE_CLASSES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">MIDDLEWARE_CLASSES</span></code></a>
+as described in
+<a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/i18n/translation/#how-django-discovers-language-preference">How Django discovers language preference</a>.
+This makes Django ask the user&#8217;s browser&#8217;s language
+preferences and set <cite>request.LANGUAGE_CODE</cite>.</p>
+<p>Until now I thought that was enough...
+but it turns out that there are a few places
+where I need to adapt Lino...</p>
+<p>First and most evident was that the server must generate not only
+one file <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> at startup, but one for each language.
+That wasn&#8217;t too difficult.</p>
+<p>Next problem is that <code class="xref py py-class docutils literal"><span class="pre">Choice</span> <span class="pre">Lists</span></code> trigger
+translation when filling their <cite>choices</cite> list.</p>
+<p>That&#8217;s subtile! Check-in 20111111 before touching this problem.</p>
+<p>After more than 2 hours of my evening I found the solution,
+which is only one line in
+<code class="xref py py-meth docutils literal"><span class="pre">lino.utils.choicelists.ChoiceList.display_text()</span></code>:
+Before:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">display_text</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">bc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">unicode</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.utils.functional</span> <span class="kn">import</span> <span class="n">lazy</span>
+
+<span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">display_text</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">bc</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">lazy</span><span class="p">(</span><span class="nb">unicode</span><span class="p">,</span><span class="nb">unicode</span><span class="p">)(</span><span class="n">bc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>That is, this method
+now returns a <cite>Promise</cite> of a call to <cite>unicode()</cite>
+and not already the result of a call to <cite>unicode()</cite>.</p>
+<p>And another line of code had to change,
+the <cite>__unicode__()</cite> method
+of <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.properties.PropertyOccurence</span></code> must
+explicitly call unicode on that <cite>Promise</cite>.</p>
+<p>As a side-effect, some unit tests needed to change
+because we use now <cite>LocaleMiddleware</cite>: we cannot any longer use
+<code class="xref py py-func docutils literal"><span class="pre">lino.utils.babel.set_language()</span></code> to select the response
+language, instead we must pass a <cite>HTTP_ACCEPT_LANGUAGE</cite> keyword to
+Django&#8217;s <cite>TestCase.client.get()</cite> function.
+The unit tests would break again if for some reason
+we&#8217;d remove <cite>LocaleMiddleware</cite> again.</p>
+<p>Check-in 20111111b.</p>
+<p>Another problem was that many labels were converted to unicode in ext_elems
+when creating the UI widgets.
+Solved in check-in 20111111c.</p>
+<p>And a last problem (for today) was that in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.models.html#module-lino.modlib.countries.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.models</span></code></a>
+I used ugettext and not ugettext_lazy for marking translatable strings.</p>
+<p>Check-in 20111111d.</p>
+</div>
+<div class="section" id="other-changes">
+<h2>Other changes<a class="headerlink" href="#other-changes" title="Permalink to this headline">¶</a></h2>
+<p>While researching for the above solution I did a few internal optimizations:</p>
+<ul class="simple">
+<li>The <cite>few_countries</cite> fixture now adds multilingual country names</li>
+<li>New function <code class="xref py py-func docutils literal"><span class="pre">lino.utils.codetime()</span></code> used by <code class="xref py py-meth docutils literal"><span class="pre">lino.ui.extjs3.ext_ui.ExtUI.build_lino_js()</span></code>
+to avoid recreating the <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> files on each
+server restart.
+Seems to work, but there may be unexpected surprises...</li>
+</ul>
+</div>
+<div class="section" id="closing-the-top-level-window">
+<h2>Closing the top-level window<a class="headerlink" href="#closing-the-top-level-window" title="Permalink to this headline">¶</a></h2>
+<p>Wenn man das &#8220;oberste&#8221; Fenster schließt,
+sieht man jetzt nicht mehr wie gewohnt die Erinnerungen,
+sondern nur eine weiße Fläche. Man muss explizit auf
+&#8220;Startseite&#8221; klicken, um die Erinnerungen anzuzeigen.
+Besser wäre, wenn das oberste Fenster gar nicht erst
+einen Close-Button hätte.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1112.html" title="20111112"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1110.html" title="20111110"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1111.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1111.html">Online Link</a>
+    </div>
+  </body>
+</html>

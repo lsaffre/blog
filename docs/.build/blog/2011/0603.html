@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110603 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110604" href="0604.html" />
+    <link rel="prev" title="20110601-02" href="0601.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0604.html" title="20110604"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0601.html" title="20110601-02"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110603<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="und-doch-noch-weiter-am-wysiwyg-editor">
+<h2>Und doch noch weiter am WYSIWYG-Editor<a class="headerlink" href="#und-doch-noch-weiter-am-wysiwyg-editor" title="Permalink to this headline">¶</a></h2>
+<p>Mir ist über Nacht aufgefallen, was noch fehlt:
+die Benutzer, die bisher gewohnt sind, unformatierte
+Notizen zu erfassen, werden sich daran stören dass
+sie nun jedesmal einen Button mehr klicken müssen
+um den Text einzugeben.
+Andererseits wollen wir ja eine Lösung für den Fall,
+dass eine Notiz mal länger wird und ausführlich formatiert
+werden soll.
+Lösung ist, dass Lino <em>zwei</em> Editoren anbietet:
+einen TinyMCE mit nur einer Toolbar im Formular selber,
+und per Klick öffnet sich der Editor im eigenen Fenster.
+Also statt eines <cite>Lino.HtmlBoxPanel</cite> mach ich eine neue
+Klasse <cite>Lino.RichTextPanel</cite>.</p>
+</div>
+<div class="section" id="ein-layout-bug-weniger">
+<h2>Ein Layout-Bug weniger<a class="headerlink" href="#ein-layout-bug-weniger" title="Permalink to this headline">¶</a></h2>
+<p>Beim Arbeiten am TextFieldPanel fiel mir ein Bug auf:
+wenn das fieldLabel eines Feldes wegen mangelnder
+Breite des Fensters auf zwei Zeilen verteilt wird,
+dann kann das zu falscher Dimensionierung der
+davon abhängigen vflex-Elemente führen.</p>
+<a class="reference internal image-reference" href="../../_images/0603a.jpg"><img alt="../../_images/0603a.jpg" src="../../_images/0603a.jpg" style="width: 353.6px; height: 367.6px;" /></a>
+<a class="reference internal image-reference" href="../../_images/0603b.jpg"><img alt="../../_images/0603b.jpg" src="../../_images/0603b.jpg" style="width: 353.6px; height: 367.6px;" /></a>
+<p>Im Beispiel links passen die Texte
+&#8220;Frist (Einheit)&#8221; und &#8220;Frist (Wert)&#8221; nicht auf eine Zeile.
+Rechts das Gleiche, nachdem ich in der <code class="xref std std-xfile docutils literal"><span class="pre">lino.css</span></code> folgendes eingefügt habe:</p>
+<div class="highlight-python"><div class="highlight"><pre>.x-form-item-label{
+    white-space: nowrap;
+}
+</pre></div>
+</div>
+<p>Zusatzfrage:
+Warum macht Lino das Feld &#8220;Erinnerungstext&#8221; nicht einfach ein wenig
+breiter?
+Richtig, das wäre ja im obigen Fall eine evidente Umgehung des Problems.</p>
+<p>Das kam daher, dass die relative Breite dieser Felder in der
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/apps/dsbe/config/notes.Note.dtl">notes.Note.dtl</a>
+wie folgt deklariert war:</p>
+<div class="highlight-python"><div class="highlight"><pre>left =
+    date:10 type:25 event_type:25 user:10 language:8
+    subject:60 reminder_date:10
+    reminder_text:50 delay_type:10 delay_value:10 reminder_done:10
+    person company
+</pre></div>
+</div>
+<p>Das ändern wir nach:</p>
+<div class="highlight-python"><div class="highlight"><pre>reminder_text:30 delay_type:15 delay_value:12 reminder_done:10
+</pre></div>
+</div>
+<p>Resultat:</p>
+<a class="reference internal image-reference" href="../../_images/0603c.jpg"><img alt="../../_images/0603c.jpg" src="../../_images/0603c.jpg" style="width: 353.2px; height: 367.6px;" /></a>
+<p>Trotzdem ist das <cite>white-space: nowrap;</cite> in der <code class="xref std std-xfile docutils literal"><span class="pre">lino.css</span></code>
+eine gute Sache, denn auch bei optimaler Proportionierung kann es
+ja immer mal passieren, dass der Benutzer sein Browserfenster
+unerträglich eng macht:</p>
+<a class="reference internal image-reference" href="../../_images/0603d.jpg"><img alt="../../_images/0603d.jpg" src="../../_images/0603d.jpg" style="width: 235.2px; height: 367.6px;" /></a>
+<p>In so einem Extremfall sind doch überlappende Feldbezeichner
+immer noch besser as komplett falsch positionierte Elemente, oder?</p>
+</div>
+<div class="section" id="endspurt-vor-release-1-1-12">
+<h2>Endspurt vor Release 1.1.12<a class="headerlink" href="#endspurt-vor-release-1-1-12" title="Permalink to this headline">¶</a></h2>
+<p>Ich habe mal den Dump eines Kunden runtergeladen und versuche den
+bei mir zu importieren. Dabei stelle ich fest, dass das Problem mit den Babelfeldern,
+das ich am <a class="reference external" href="http://www.lino-framework.org0527.html">0527</a> gesehen habe (und das inzwischen behoben ist),
+auch im py-Serializer Folgen hatte: alle leeren Babelfleder haben
+dort <cite>None</cite> statt <cite>u&#8217;&#8216;</cite> stehen.</p>
+<p>Deshalb muss ich das Dump manuell korrigieren:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_countries_language</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span><span class="n">name</span><span class="p">,</span><span class="n">iso2</span><span class="p">,</span><span class="n">name_fr</span><span class="p">,</span><span class="n">name_en</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">name_fr</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">name_fr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">name_en</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">name_en</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">Language</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span><span class="n">iso2</span><span class="o">=</span><span class="n">iso2</span><span class="p">,</span><span class="n">name_fr</span><span class="o">=</span><span class="n">name_fr</span><span class="p">,</span><span class="n">name_en</span><span class="o">=</span><span class="n">name_en</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(Das Gleiche für alle betroffenen Tabellen:
+Language, Country, ContractType, AidType, ExamPolicy...)</p>
+<p>Diverse Optimierungen in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dpy.html#module-lino.utils.dpy" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dpy</span></code></a>:</p>
+<ul class="simple">
+<li>im obigen Fall musste ich immer bis ganz zum Schluss
+warten bevor er eine Fehlermeldung auswarf.  Das war natürlich ärgerlich.
+Deshalb schaut er jetzt in
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dpy.html#lino.utils.dpy.FakeDeserializedObject.try_save" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.utils.dpy.FakeDeserializedObject.try_save()</span></code></a> etwas genauer hin,
+bevor ein ein misslungenes <cite>save()</cite> wiederholt.</li>
+<li>Die Deklarationen <cite>resolve_model</cite> und <cite>create_%s</cite> im dpy-Dump ist jetzt
+alphabetisch sortiert. Was nützlich ist, wenn man zwei Dumps miteinander
+vergleichen will. Das war bisher (für Dumps von verschiedenen Versionen)
+manchmal fast unmöglich, weil die Reihenfolge sich sehr ändern konnte.</li>
+<li>Wenn ich die importieren Daten wiederum exportiere,
+generiert er jetzt im Dump auch ein Objekt <cite>sites.Site</cite>.
+Beim erneuten Einlesen kriege ich dann
+&#8220;Exception: Failed to save independent Site #1 (example.com). Abandoned.&#8221;
+Ich schätze mal, dass das daran liegt, dass <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-initdb" title="(in Lino v1.6)"><span class="xref std std-term">initdb</span></a>
+jetzt nicht mehr <cite>reset</cite> sondern <cite>syncdb</cite> und <cite>flush</cite> macht.
+Deshalb ist <cite>django.contrib.sites</cite> jetzt auch aus den <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a> raus.</li>
+</ul>
+<p>Kleinkram:</p>
+<ul class="simple">
+<li>Die Felder <cite>type</cite> und <cite>event_type</cite> (in <code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.Note</span></code>
+sowie <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.models.html#lino.modlib.notes.models.Note" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.notes.models.Note</span></code></a>) werden jetzt disabled_fields,
+wenn das Dokument ausgedruckt ist.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.Contracts</span></code> ist jetzt nach
+Vertragsnummer sortiert (statt bisher zufällig).</li>
+<li>Erfreulich: 5 TinyMCE-Editoren in einer Seite gehen nicht
+merklich auf die Performance.
+Also die Memofelder in <code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.Contract</span></code>
+dürfen <code class="docutils literal"><span class="pre">format='html'</span></code> kriegen.</li>
+<li>Aufzählungen werden noch immer nicht gedruckt. Testfall Vertrag Nr 4.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0604.html" title="20110604"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0601.html" title="20110601-02"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0603.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0603.html">Online Link</a>
+    </div>
+  </body>
+</html>

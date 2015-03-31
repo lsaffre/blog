@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130710 (Wednesday, 10 July 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130711 (Thursday, 11 July 2013)" href="0711.html" />
+    <link rel="prev" title="20130709 (Tuesday, 09 July 2013)" href="0709.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0711.html" title="20130711 (Thursday, 11 July 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0709.html" title="20130709 (Tuesday, 09 July 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-10-july-2013">
+<h1>20130710 (Wednesday, 10 July 2013)<a class="headerlink" href="#wednesday-10-july-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="inheriting-config-directory-of-another-app">
+<h2>Inheriting <cite>config</cite> directory of another app<a class="headerlink" href="#inheriting-config-directory-of-another-app" title="Permalink to this headline">¶</a></h2>
+<p>Added a new module <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.auto.sales.html#module-lino.modlib.auto.sales" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.auto.sales</span></code></a>
+which extends <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.sales.html#module-lino.modlib.sales" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.sales</span></code></a> and
+is a next example of what I&#8217;d call &#8220;app inheritance&#8221;.</p>
+<p>The base <cite>sales</cite> app is for writing sales invoices,
+the &#8220;auto&#8221; sales app is for having Lino automatically
+generate sales invoices.</p>
+<p>It works basically like <code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.contacts</span></code>
+(which extends <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.html#module-lino.modlib.contacts" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts</span></code></a>, see <a class="reference external" href="oops">2013-06-07</a>).</p>
+<p>This time there was a new challenge: how can I say that I want
+to &#8220;inherit&#8221; the document template for Invoices?
+The answer is inspired by a technique to extend the Pythonpath:
+simply add a file
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/modlib/auto/sales/config.pth">config.pth</a>
+(the name must end with <code class="file docutils literal"><span class="pre">.pth</span></code>) to the app&#8217;s directory
+(i.e. the directory which contains the <code class="file docutils literal"><span class="pre">models.py</span></code> file).
+This file should contain one line for each additional
+<cite>config</cite> dir to add.</p>
+</div>
+<div class="section" id="lino-faggio-continued">
+<h2>Lino-Faggio continued<a class="headerlink" href="#lino-faggio-continued" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><cite>lino.modlib.cal.Event</cite> and <cite>lino.modlib.cal.Room</cite> are now
+overridable.</li>
+<li><a class="reference external" href="http://faggio.lino-framework.org/api/index.html#module-lino_faggio" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio</span></code></a> uses this to make Events invoiceable</li>
+<li>cal.Room is no longer a ContactRelated by default because many
+applications don&#8217;t need this. <a class="reference external" href="http://faggio.lino-framework.org/api/index.html#module-lino_faggio" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio</span></code></a>
+overrides it to make it ContactRelated.</li>
+<li><a class="reference external" href="http://faggio.lino-framework.org/api/index.html#module-lino_faggio" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio</span></code></a> now also adds new fields
+<cite>Event.organizer</cite>
+<cite>cal.Room.tariff</cite></li>
+<li>New app <code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.cal</span></code> extends <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="inheriting-config-directory-of-another-app-continued">
+<h2>Inheriting <cite>config</cite> directory of another app (continued)<a class="headerlink" href="#inheriting-config-directory-of-another-app-continued" title="Permalink to this headline">¶</a></h2>
+<p>After having checked in the above changes, I understood that we don&#8217;t
+want an additional file <cite>config.pth</cite>:</p>
+<ul class="simple">
+<li>that&#8217;s one file more</li>
+<li>it doesn&#8217;t work for making
+<code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.cal</span></code> inherit the config of <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a>
+(because the former cannot easily know the path of the latter).</li>
+</ul>
+<p>The new approach is to use magic module-level
+variable <cite>PARENT_APP</cite> which holds as a string
+the full Python name of the parent app.
+I also want this to happen in the <cite>models</cite> module
+and not in the app&#8217;s <cite>__init__.py</cite> file.
+A side effect is that I cannot any longer
+import mod:<cite>lino.utils.config</cite> at the global level of a models module
+because importing it will fill the config dirs, i.e. will try to import
+every installed <cite>models</cite> module.</p>
+<p>Added new function <code class="xref py py-func docutils literal"><span class="pre">lino.dd.extends_app()</span></code>.
+To have <code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.cal</span></code> extend <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a>,
+we now need only one line of code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dd</span><span class="o">.</span><span class="n">extends_app</span><span class="p">(</span><span class="s">&#39;lino.modlib.sales&#39;</span><span class="p">,</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Lino-Faggio continued<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Renamed <cite>lino.modlib.school</cite> to <cite>lino.modlib.courses</cite>.</li>
+<li>New module <code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.courses</span></code> extends <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.courses.html#module-lino.modlib.courses" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.courses</span></code></a>.</li>
+<li>Repaired test suites</li>
+</ul>
+</div>
+<div class="section" id="is-it-a-demo-site-or-not">
+<h2>Is it a demo site or not?<a class="headerlink" href="#is-it-a-demo-site-or-not" title="Permalink to this headline">¶</a></h2>
+<p>There are meanwhile at least three
+different versions of
+<code class="file docutils literal"><span class="pre">admin_main.html</span></code>
+templates, partly with overlapping content,
+and already there are some subtle bugs.</p>
+<p>The <code class="file docutils literal"><span class="pre">admin_main.html</span></code>
+has sections that are important on a public demo site,
+but certainly not on a production site.
+For example the list of possible user names and their password:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;p&gt;
+{{_(&quot;This demo site has %d users, they all have \&quot;1234\&quot; as password:&quot;) %
+site.modules.users.UsersOverview.request().get_total_count()}}
+&lt;/p&gt;
+{{as_ul(&#39;users.UsersOverview&#39;)}}
+</pre></div>
+</div>
+<p>Or (on another place of the template):</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;p&gt;
+{{_(&quot;Your feedback is welcome to &lt;em&gt;lino-users@googlegroups.com&lt;/em&gt; or directly to the person who invited you.&quot;)}}
+&lt;/p&gt;
+</pre></div>
+</div>
+<p>Solution:</p>
+<ul class="simple">
+<li>New Site attribute <code class="xref py py-attr docutils literal"><span class="pre">is_demo_site</span></code></li>
+<li>Added usage of Jinja&#8217;s <a class="reference external" href="http://jinja.pocoo.org/docs/templates/#template-inheritance">template inheritance</a>.</li>
+</ul>
+<p>Checkin and upgrade on <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#lf" title="(in Lino v1.6)"><span>lino-framework.org</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0711.html" title="20130711 (Thursday, 11 July 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0709.html" title="20130709 (Tuesday, 09 July 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0710.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0710.html">Online Link</a>
+    </div>
+  </body>
+</html>

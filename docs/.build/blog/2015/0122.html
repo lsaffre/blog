@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Thursday, January 22, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Friday, January 23, 2015" href="0123.html" />
+    <link rel="prev" title="Wednesday, January 21, 2015" href="0121.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0123.html" title="Friday, January 23, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0121.html" title="Wednesday, January 21, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-january-22-2015">
+<h1>Thursday, January 22, 2015<a class="headerlink" href="#thursday-january-22-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="you-are-busy-with-61">
+<h2>You are busy with ... (<a class="reference external" href="http://trac.lino-framework.org/ticket/61">#61</a>)<a class="headerlink" href="#you-are-busy-with-61" title="Permalink to this headline">¶</a></h2>
+<p>Wow, Lino has two new features.</p>
+<p>After meditating about how <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> should inform users that
+they &#8220;are busy with&#8221; a client.  Yesterday I wrote that they want to be
+able to close such a meeting with a single click from their main page
+(plus another click on a confirmation naming all these guests).  And
+they want it even if there&#8217;s more than one guest.</p>
+<p>This is a new kind of welcome message. We don&#8217;t want to see a table of
+&#8220;all my active meetings&#8221; because that table would never show more than
+one row.  So makes no sense here to bind the message handler (the
+callable which builds the message) to an existing <a class="reference external" href="http://www.lino-framework.org/api/lino.core.dbtables.html#lino.core.dbtables.Table" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Table</span></code></a>.</p>
+<p>Until now, welcome messages were defined by writing a method
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.get_welcome_messages" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_welcome_messages</span></code></a> on some table.  This
+method is still useful if your message is of style &#8220;you have x rows in
+foos&#8221; and clicking on it would open that table.</p>
+<p>But now you can alternatively use the new method
+<code class="xref py py-mod docutils literal"><span class="pre">dd.add_welcome_handler</span></code> to define welcome messages
+which are not bound to any <a class="reference external" href="http://www.lino-framework.org/api/lino.core.dbtables.html#lino.core.dbtables.Table" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Table</span></code></a>.</p>
+<p>Our first use case is
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.cal.models.html#lino_welfare.modlib.cal.models.you_are_busy_messages" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-func docutils literal"><span class="pre">lino_welfare.modlib.cal.models.you_are_busy_messages()</span></code></a> which
+does exactly what we want for <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>.</p>
+<p>There was another problem: The normal way to include into my welcome
+message, a button which invokes that action is something like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ar</span><span class="o">.</span><span class="n">instance_action_button</span><span class="p">(</span><span class="n">evt</span><span class="o">.</span><span class="n">close_meeting</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But the <cite>CloseMeeting</cite> action is a workflow action (declared using
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.workflows.html#lino.core.workflows.State.add_transition" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.workflows.State.add_transition()</span></code></a>), and thus it is
+not explicitly declared on the model using the usual method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">close_meeting</span> <span class="o">=</span> <span class="n">CloseMeeting</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>So here is yet another (very subtle) feature: named workflow actions
+are now automatically declared on the model as a class attribute. So
+that I can now write above code.</p>
+</div>
+<div class="section" id="restore-the-welfare-test-suite">
+<h2>Restore the <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> test suite<a class="headerlink" href="#restore-the-welfare-test-suite" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s time to have a look at the <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> test suite which had
+been neglected for some time after recent changes.</p>
+<p>The shortcut fields are now defined in
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.base</span></code> by overriding
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.setup_choicelists" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">setup_choicelists</span></code></a>. That was necessary and is
+elegant, but it caused a subtle problem:
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.chatelet.html#module-lino_welfare.projects.chatelet" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.chatelet</span></code></a> wants these shortcut fields,
+too, but defines their own list of user profiles and cannot call
+<cite>super()</cite> for these because it has no <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.debts.html#module-lino_welfare.modlib.debts" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.debts</span></code></a>
+(and anyway it is not elegant to let the UserProfiles get filled just
+to reset them again afterwards). That&#8217;s why User profiles for
+<a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> are no longer be defined in <a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.setup_choicelists" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">setup_choicelists</span></code></a> but in the new Site method
+<code class="xref py py-meth docutils literal"><span class="pre">setup_user_profiles()</span></code>.</p>
+<p>The test suite revealed one bug for which I am glad that I didn&#8217;t do a
+quick release this morning: Contract evaluation events got a duplicate
+Guest entry for their client.</p>
+<p>I also continued on <a class="reference external" href="http://trac.lino-framework.org/ticket/60">#60</a> (&#8220;Termine machen für Neuzugänge&#8221;,
+i.e. the <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.reception.models.html#lino_welfare.modlib.reception.models.AgentsByClient" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">AgentsByClient</span></code></a> table), for
+which there is already a test case in <a class="reference external" href="http://welfare.lino-framework.org/tested/reception.html#welfare-tested-reception" title="(in Lino Welfare Reference Manual v1.1)"><span>Reception</span></a>.</p>
+<p>This ticket took so long because there was still a missing feature in
+the actions API.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0123.html" title="Friday, January 23, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0121.html" title="Wednesday, January 21, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0122.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0122.html">Online Link</a>
+    </div>
+  </body>
+</html>

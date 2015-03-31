@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110714 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110715" href="0715.html" />
+    <link rel="prev" title="20110713" href="0713.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0715.html" title="20110715"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0713.html" title="20110713"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110714<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="insert-window-has-wrong-title">
+<h2>Insert Window has wrong title<a class="headerlink" href="#insert-window-has-wrong-title" title="Permalink to this headline">¶</a></h2>
+<p>Ein Bug, der mit den subtilen Änderungen für die Listings gekommen ist:
+das Insert-Fenster zeigt nicht mehr &#8220;Einfügen nach &lt;Listentitel&gt;&#8221;, sondern
+nur noch &#8220;&lt;Listentitel&gt;&#8221;.</p>
+<p>Kleine Ursache mit großer Wirkung: ich habe gemerkt, dass ich meine Konzept
+von &#8220;format&#8221; und &#8220;action&#8221; noch überdenken muss. Da funktionierte einiges
+bisher lediglich zufällig.</p>
+<p>Ich habe bei der Gelegenheit auch nochmal einen Blick auf
+<a class="reference external" href="https://bitbucket.org/jespern/django-piston/wiki/Home">django-piston</a>
+geworfen. Darauf umzustellen wäre sicherlich sinnvoll,
+aber auch einiges an Arbeit.</p>
+<p>Okay, also wir haben zwei große Kategorien von URI-Handler
+api_list_view und api_element_view.
+Momentan ist es ziemlich undurchsichtig, in welchem Datenformat
+Lino auf Anfragen antwortet.</p>
+<p>The methods POST, PUT and DELETE always return JSON
+(an object with properties <cite>message</cite>, <cite>result</cite>, <cite>alert</cite>,...)</p>
+<p>But for GET requests it is currently quite subtle:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="3%" />
+<col width="7%" />
+<col width="90%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">view</th>
+<th class="head">fmt</th>
+<th class="head">response</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>list</td>
+<td>grid*</td>
+<td>HTML (with <cite>onReady</cite> that will open the GridWindow)</td>
+</tr>
+<tr class="row-odd"><td>list</td>
+<td>json</td>
+<td>JSON (an object returning the data rows and some meta info like the title)</td>
+</tr>
+<tr class="row-even"><td>list</td>
+<td>insert</td>
+<td>HTML (with <cite>onReady</cite> that will open the InsertWindow with a <cite>data_record</cite>)</td>
+</tr>
+<tr class="row-odd"><td>list</td>
+<td>listing</td>
+<td>HTML (with <cite>onReady</cite> that will open the InsertWindow in Listing mode)</td>
+</tr>
+<tr class="row-even"><td>elem</td>
+<td>detail*</td>
+<td>HTML (with <cite>onReady</cite> that will open the DetailWindow with a <cite>data_record</cite>)</td>
+</tr>
+<tr class="row-odd"><td>elem</td>
+<td>json</td>
+<td>JSON (an object returning the detailed data row and some meta info like the title, navigator info,...))</td>
+</tr>
+<tr class="row-even"><td>elem</td>
+<td>insert</td>
+<td>JSON (an object returning the detailed data row and meta info like the title))</td>
+</tr>
+</tbody>
+</table>
+<p>An internal but important change: there&#8217;s a new URI parameter <cite>an</cite>
+(action name, e.g. <cite>detail</cite>, <cite>grid</cite>, <cite>insert</cite>), and <cite>fmt</cite> is
+used to explicitely specify the expected data format (<cite>html</cite>, <cite>json</cite>, <cite>csv</cite>).</p>
+</div>
+<div class="section" id="virtual-fields-on-abstract-models-don-t-work">
+<h2>Virtual fields on abstract models don&#8217;t work<a class="headerlink" href="#virtual-fields-on-abstract-models-don-t-work" title="Permalink to this headline">¶</a></h2>
+<p>There are currently still two types of virtual fields in Lino:
+- (old) defined as model methods with an attribute <cite>return_type</cite>
+- (new) defined as a &#8220;real&#8221; <code class="xref py py-class docutils literal"><span class="pre">lino.fields.VirtualField</span></code></p>
+<p>The old type uses the magic attribut <cite>_return_type_for_method</cite>.
+As I discovered today, this trick fails when it is used on an
+abstract model that has more than one subclasses.
+Listing is was such a case (<cite>preview</cite>).
+It worked as long as there was only one subclass of Listing
+(<code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.ContractsSituation</span></code>),
+but now that there is a second one (<code class="xref py py-class docutils literal"><span class="pre">lino.models.DataControlListing</span></code>),
+it uses the same field instance for both classes, leading to a clash
+&#8220;&lt;lino.fields.DisplayField instance at 0x02008670&gt;
+has already an attribute &#8216;_return_type_for_method&#8217;&#8221;</p>
+<p>Solution was to use a real VirtualField instead of a
+model method with an attribute <cite>return_type</cite>.</p>
+<p>Old method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">footer</span><span class="p">()</span>
+<span class="n">preview</span><span class="o">.</span><span class="n">return_type</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">HtmlBox</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Preview&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>New method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_preview</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">footer</span><span class="p">()</span>
+<span class="n">preview</span> <span class="o">=</span> <span class="n">fields</span><span class="o">.</span><span class="n">VirtualField</span><span class="p">(</span><span class="n">fields</span><span class="o">.</span><span class="n">HtmlBox</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Preview&quot;</span><span class="p">)),</span><span class="n">get_preview</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This is the second use case of <code class="xref py py-class docutils literal"><span class="pre">lino.fields.VirtualField</span></code>
+(the first being <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.mti.html#lino.utils.mti.EnableChild" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.mti.EnableChild</span></code></a>), so
+after this change I discovered and fixed a few bugs.</p>
+<p>Checkin 20110714</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0715.html" title="20110715"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0713.html" title="20110713"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0714.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0714.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130817 (Saturday, 17 August 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130818 (Sunday, 18 August 2013)" href="0818.html" />
+    <link rel="prev" title="20130816 (Friday, 16 August 2013)" href="0816.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0818.html" title="20130818 (Sunday, 18 August 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0816.html" title="20130816 (Friday, 16 August 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-17-august-2013">
+<h1>20130817 (Saturday, 17 August 2013)<a class="headerlink" href="#saturday-17-august-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="foreignkey-to-cal-event-was-not-clickable-for-everybody">
+<h2>ForeignKey to <cite>cal.Event</cite> was not clickable for everybody<a class="headerlink" href="#foreignkey-to-cal-event-was-not-clickable-for-everybody" title="Permalink to this headline">¶</a></h2>
+<p>Fixed the following problem:</p>
+<ul class="simple">
+<li>In Lino-Welfare, when Caroline has some event listed in
+<span class="xref std std-ref">welfare.cal.MyEvents</span>, then she cannot click in the <cite>when_text</cite>
+column to see the detail of an event.</li>
+</ul>
+<p>Did some code cleanup before deciding how to actually solve this:</p>
+<ul class="simple">
+<li>Removed <cite>lino.core.dbutils.get_model_report</cite>.
+Existing code should call <code class="xref py py-meth docutils literal"><span class="pre">lino.core.model.get_default_table()</span></code>.</li>
+<li>Replaced existing occurences of <cite>Model._lino_default_table</cite>
+by <cite>Model.get_default_table()</cite>.</li>
+<li><cite>lino.ui.views.choices_for_field</cite> no longer looks for a magic class attribute
+<cite>_lino_choices_table</cite>.</li>
+</ul>
+<p>The solution was then to write a new table <cite>OneEvent</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">OneEvent</span><span class="p">(</span><span class="n">Events</span><span class="p">):</span>
+    <span class="n">show_detail_navigator</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">use_as_default_table</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">required</span><span class="p">(</span><span class="n">user_groups</span><span class="o">=</span><span class="s">&#39;office&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>and to override <a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#lino.core.model.Model.get_default_table" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.model.Model.get_default_table()</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@classmethod</span>
+<span class="k">def</span> <span class="nf">get_default_table</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">OneEvent</span>
+</pre></div>
+</div>
+<p>Discovered and fixed another internal bug: calling <code class="xref py py-func docutils literal"><span class="pre">unicode()</span></code>
+on a <cite>cal.Calendar</cite> returned something like &#8220;Row #1&#8221;
+because Calendar is now a <cite>Sequenced</cite>.
+Changed the order of base classes from</p>
+<div class="highlight-python"><div class="highlight"><pre>class Calendar(BabelNamed,Sequenced,PrintableType,MailableType):
+</pre></div>
+</div>
+<p>to</p>
+<div class="highlight-python"><div class="highlight"><pre>class Calendar(Sequenced,PrintableType,MailableType,BabelNamed):
+</pre></div>
+</div>
+</div>
+<div class="section" id="test-suite-cleanup">
+<h2>Test suite cleanup<a class="headerlink" href="#test-suite-cleanup" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.presto</span></code> was broken:</p>
+<div class="highlight-python"><div class="highlight"><pre>~/hgwork/lino/lino/projects/presto$ python manage.py validate
+...
+Exception: sales.InvoicingsByInvoiceable : no master for master_key u&#39;invoiceable&#39;
+in &lt;class &#39;lino.modlib.sales.models.InvoiceItem&#39;&gt;
+</pre></div>
+</div>
+<p>This was because Presto still uses the obsolote way of manually specifying
+<cite>override_modlib_models</cite>.
+If you do that, then you must not forget any model.
+Added <cite>[&#8216;sales.Invoice&#8217;,  &#8216;sales.InvoiceItem&#8217;]</cite> (required by
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.auto.sales.html#module-lino.modlib.auto.sales" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.auto.sales</span></code></a> ) to the list.
+TODO: convert Presto to using overridden apps.</p>
+</li>
+<li><p class="first">Fixed a failing test in <a class="reference external" href="http://www.lino-framework.org/api/lino.projects.events.html#module-lino.projects.events" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.events</span></code></a>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="customized-when-text-of-welfare-cal-event">
+<h2>Customized <cite>when_text</cite> of <span class="xref std std-ref">welfare.cal.Event</span><a class="headerlink" href="#customized-when-text-of-welfare-cal-event" title="Permalink to this headline">¶</a></h2>
+<p>Solved the following change request:</p>
+<ol class="arabic simple">
+<li>In <span class="xref std std-ref">welfare.reception.AppontmentsByClient</span> (Kolonne <cite>when_text</cite>):
+Text &#8220;2013 Aug 12 (Mo.)&#8221; ersetzen durch etwas Passenders
+(z.B. &#8220;heute&#8221;, &#8220;gestern&#8221;, &#8220;in 3 Tagen&#8221;).</li>
+</ol>
+<p>By overriding the virtual field <cite>when_text</cite> in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.cal.models.html#lino_welfare.modlib.cal.models.Event" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.cal.models.Event</span></code></a>.</p>
+<p>Also added <code class="xref py py-mod docutils literal"><span class="pre">django.contrib.humanize</span></code>
+to <code class="xref py py-meth docutils literal"><span class="pre">lino_welfare.Site.get_installed_apps()</span></code>
+in order to have translations available for this module.</p>
+</div>
+<div class="section" id="to-inherit-or-not">
+<h2>To inherit or not?<a class="headerlink" href="#to-inherit-or-not" title="Permalink to this headline">¶</a></h2>
+<p>Solved the following user request for <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>:</p>
+<ul class="simple">
+<li>In <span class="xref std std-ref">Empfang &#8211;&gt; Klienten</span>:
+fehlt ein <cite>insert_layout</cite>.</li>
+</ul>
+<p><cite>reception.Clients</cite> and <cite>pcsw.Clients</cite>
+are on the same database model,
+and the spontaneous approach is to have <cite>reception.Clients</cite>
+inherit from <cite>pcsw.Clients</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Clients</span><span class="p">(</span><span class="n">pcsw</span><span class="o">.</span><span class="n">Clients</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>OTOH  there are more things we <em>don&#8217;t</em>
+want to inherit than things we <em>want</em>.
+E.g. we don&#8217;t want the <cite>detail_layout</cite>, <cite>parameters</cite>, <cite>column_names</cite>,
+requirements,...
+So another possibility is to create a new Table from scratch, using
+the same model:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Clients</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">Table</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="s">&#39;pcsw.Clients&#39;</span>
+</pre></div>
+</div>
+<p>The current solution is (again) the spontaneous one) because one
+thing we <em>do</em> want to inherit is the <cite>insert_layout</cite>,
+and manually inheriting a layout from a different datasource is not
+straightforward. We would have to write:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">insert_layout</span> <span class="o">=</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">Clients</span><span class="o">.</span><span class="n">insert_layout</span><span class="o">.</span><span class="n">main</span> <span class="c"># manually inherited</span>
+</pre></div>
+</div>
+<p>So I decided to inherit the whole table and then override those
+things we don&#8217;t want to have here.
+Afterwards I understood that &#8220;removing&#8221; the parameter panel from the
+parent table is not really easy and decided to leave it there.</p>
+</div>
+<div class="section" id="moved-lino-utils-auth-to-lino-core-auth">
+<h2>Moved <code class="docutils literal"><span class="pre">lino.utils.auth</span></code> to <code class="docutils literal"><span class="pre">lino.core.auth</span></code><a class="headerlink" href="#moved-lino-utils-auth-to-lino-core-auth" title="Permalink to this headline">¶</a></h2>
+<p>Because the <a class="reference external" href="http://www.lino-framework.org/api/lino.core.auth.html#module-lino.core.auth" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.auth</span></code></a> module is definitively part
+of <a class="reference external" href="http://www.lino-framework.org/api/lino.core.html#module-lino.core" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core</span></code></a>.</p>
+</div>
+<div class="section" id="waitingguests-and-mywaitingguests">
+<h2>WaitingGuests and MyWaitingGuests<a class="headerlink" href="#waitingguests-and-mywaitingguests" title="Permalink to this headline">¶</a></h2>
+<p>Another user request:</p>
+<ul class="simple">
+<li>Wartende Besucher: par défaut nur die meinen anzeigen</li>
+</ul>
+<p>Added new method <code class="xref py py-meth docutils literal"><span class="pre">lino.ui.Site.get_admin_main_items()</span></code>
+and generalized <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-admin_main.html" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">admin_main.html</span></code></a>.
+<code class="xref py py-meth docutils literal"><span class="pre">lino_welfare.settings.Site.get_admin_main_items()</span></code>
+now yields both WaitingGuests and MyWaitingGuests.
+The trick is that every normal user sees only one of
+them: Theresia (the reception clerk in our demo) sees
+all waiting guests while the agents (integ, debts,
+newcomers) see only their guests
+(Both of them can click on the title to show it in a window and
+select other parameters).
+That&#8217;s nice.</p>
+<p>Less nice is that I have to either be very hackerish or to
+duplicate some code in order to get the welfare-specific
+behaviour of allowing only Clients as Guests.
+See the source code of <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.reception.models.html#module-lino_welfare.modlib.reception.models" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.reception.models</span></code></a>.
+TODO: find a beautiful solution...</p>
+<p>And a last user request for this table was relatively easy:</p>
+<ul class="simple">
+<li>Wartende Besucher: &#8220;Empfangen&#8221; vor &#8220;Auschecken&#8221;</li>
+</ul>
+<p>This needed just a series of manual
+<code class="xref py py-mod docutils literal"><span class="pre">lino.core.actions.Action.sort_index</span></code> values for
+these three actions.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0818.html" title="20130818 (Sunday, 18 August 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0816.html" title="20130816 (Friday, 16 August 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0817.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0817.html">Online Link</a>
+    </div>
+  </body>
+</html>

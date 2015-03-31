@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130413 (Saturday, 13 April 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130415 (Monday, 15 April 2013)" href="0415.html" />
+    <link rel="prev" title="20130412 (Friday, 12 April 2013)" href="0412.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0415.html" title="20130415 (Monday, 15 April 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0412.html" title="20130412 (Friday, 12 April 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-13-april-2013">
+<h1>20130413 (Saturday, 13 April 2013)<a class="headerlink" href="#saturday-13-april-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="hosting-multiple-lino-applications">
+<h2>Hosting multiple Lino applications<a class="headerlink" href="#hosting-multiple-lino-applications" title="Permalink to this headline">¶</a></h2>
+<p>I read (again) Daniel&#8217;s and Audrey&#8217;s chapter about <cite>settings.py</cite> files.
+They recommend to use only &#8220;canned&#8221; (version-controlled) settings.
+And to use environment variables for private settings like
+SECRET_KEY.</p>
+<p>One objection against this approach is that
+even the <a class="reference external" href="https://docs.djangoproject.com/en/dev/howto/deployment/wsgi/">Django documentation</a>
+itself says:</p>
+<blockquote>
+<div><p>Since environment variables are process-wide, this doesn’t work when
+you run multiple Django sites in the same process.
+This happens with mod_wsgi.</p>
+<p>To avoid this problem, use mod_wsgi’s daemon mode with each site in
+its own daemon process,
+or override the value from the environment by enforcing
+<cite>os.environ[&#8220;DJANGO_SETTINGS_MODULE&#8221;] = &#8220;mysite.settings&#8221;</cite> in your <cite>wsgi.py</cite>.</p>
+</div></blockquote>
+<p>Q: Does this mean that I can avoid using mod_wsgi&#8217;s daemon mode if I
+do <em>not</em> use system variables in the Apache configuaration?</p>
+<p>A: Maybe. But the question isn&#8217;t important since even the
+<a class="reference external" href="http://code.google.com/p/modwsgi/">mod_wsgi docs</a> recommend to use daemon mode:</p>
+<blockquote>
+<div>(...) unless you are adept at configuring Apache, always use daemon mode when available.
+Overall, for large Python web applications you wouldn&#8217;t normally expect to see any
+significant difference between daemon mode and embedded mode, as the bottlenecks
+are going to be in the Python web application or any database access.</div></blockquote>
+<p>I still tend to prefer a &#8220;one directory per project&#8221; approach.
+This  implies that each project directory contains a local
+<cite>settings.py</cite> file which is usually very small and <em>not</em> version
+controlled.
+The main reason for this is that
+when doing manual maintenance work in a shell via management commands
+I prefer to have <em>the current working directory</em> and not an <em>environment variable</em>
+determine which project I&#8217;m working on.</p>
+<p>The trick is to have a local <cite>configure</cite> function called
+by both the <cite>manage.py</cite> and <cite>wsgi.py</cite> files.
+These files can then always be <cite>wsgi.py</cite> the same,
+just copies of a site-wide template.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0415.html" title="20130415 (Monday, 15 April 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0412.html" title="20130412 (Friday, 12 April 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0413.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0413.html">Online Link</a>
+    </div>
+  </body>
+</html>

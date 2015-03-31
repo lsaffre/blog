@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Wednesday, March 4, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Thursday, March 5, 2015" href="0305.html" />
+    <link rel="prev" title="Tuesday, March 3, 2015" href="0303.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0305.html" title="Thursday, March 5, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0303.html" title="Tuesday, March 3, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-march-4-2015">
+<h1>Wednesday, March 4, 2015<a class="headerlink" href="#wednesday-march-4-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="please-specify-a-doctor-type">
+<h2>Please specify a doctor type<a class="headerlink" href="#please-specify-a-doctor-type" title="Permalink to this headline">¶</a></h2>
+<p>When inserting a <code class="xref py py-class docutils literal"><span class="pre">aids.RefundConfirmation</span></code>: Lino now says
+<code class="docutils literal"><span class="pre">Please</span> <span class="pre">specify</span> <span class="pre">a</span> <span class="pre">doctor</span> <span class="pre">type</span></code> (&#8220;Bitte geben Sie die Art des
+Arztes an&#8221;) if user leaves both doctor and doctor_type blank (instead
+of raising an <cite>IntegrityError</cite> <code class="docutils literal"><span class="pre">(1048,</span> <span class="pre">&quot;Column</span>
+<span class="pre">'doctor_type_id'</span> <span class="pre">cannot</span> <span class="pre">be</span> <span class="pre">null&quot;)</span></code>).</p>
+</div>
+<div class="section" id="role-object-has-no-attribute-language">
+<h2>&#8216;Role&#8217; object has no attribute &#8216;language&#8217;<a class="headerlink" href="#role-object-has-no-attribute-language" title="Permalink to this headline">¶</a></h2>
+<p>If the recipient of an aid confirmation is a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.models.html#lino.modlib.contacts.models.Role" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.contacts.models.Role</span></code></a>, Lino no longer raises an
+AttributeError &#8220;&#8216;Role&#8217; object has no attribute &#8216;language&#8217;&#8221;</p>
+</div>
+<div class="section" id="combinations-of-two">
+<h2>Combinations of two<a class="headerlink" href="#combinations-of-two" title="Permalink to this headline">¶</a></h2>
+<p>I started to work on <a class="reference external" href="http://trac.lino-framework.org/ticket/118">#118</a>. The first part is a general
+problem: how to find duplicate persons in a database.  This is done by
+<cite>lino.modlib.dedupe</cite>, but until now it was just a proof of concept
+which needed to be optimized. That&#8217;s done now. See
+<a class="reference external" href="http://welfare.lino-framework.org/tested/dupable_clients.html#welfare-tested-dupe-clients" title="(in Lino Welfare Reference Manual v1.1)"><span>Avoiding duplicate clients</span></a>.</p>
+<p>Side effects:</p>
+<ul class="simple">
+<li>not only persons but all partners</li>
+<li>uses a new database field phonetic_name</li>
+<li>Use a model mixin and override full_clean.</li>
+</ul>
+<p>This is an example case where Django&#8217;s signals would cause a lot of
+trouble and hacking while overriding a model mixin and full_clean is
+elegant.</p>
+<p>The optimized algorithem uses <em>combinations</em>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">([</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="go">[&#39;ab&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">([</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="go">[&#39;ab&#39;, &#39;ac&#39;, &#39;bc&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">([</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">],</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="go">[&#39;ab&#39;, &#39;ac&#39;, &#39;ad&#39;, &#39;bc&#39;, &#39;bd&#39;, &#39;cd&#39;]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="lino-and-django-1-7">
+<h2>Lino and Django 1.7<a class="headerlink" href="#lino-and-django-1-7" title="Permalink to this headline">¶</a></h2>
+<p>Mahmoud correctly <a class="reference external" href="http://iamdevops.com/blog/2015/0303.html">discovered</a> Daniel&#8217;s blog entry about
+<a class="reference external" href="http://daniel.hepper.net/blog/2014/04/fixing-1_6-w001-when-upgrading-from-django-1-5-to-1-7/">how to get rid of the warning &#8220;1_6.W001&#8221;</a>.
+Added a <code class="xref std std-setting docutils literal"><span class="pre">TEST_RUNNER</span></code> setting to
+<a class="reference external" href="http://www.lino-framework.org/api/lino.projects.std.settings.html#module-lino.projects.std.settings" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.projects.std.settings</span></code></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0305.html" title="Thursday, March 5, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0303.html" title="Tuesday, March 3, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0304.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0304.html">Online Link</a>
+    </div>
+  </body>
+</html>

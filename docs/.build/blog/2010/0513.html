@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0514.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0511.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0514.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0511.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100511 ←] [20100513 13.05.2010] [20100514 →] =</p>
+<p>Vorgestern begann ich zu ahnen, dass der Eigenschaften-Editor möglicherweise eine Sackgasse ist, weil er keine hierarchischen Eigenschaften hinbekommt. Die Eigenschaften müssten für den DSBE schon strukturiert sein und in einem Baum dargestellt werden. Aber das Ext.grid.PropertyGrid kann keine Gruppen machen. Es gibt zwar ein Ext.ux.TreeGrid, aber das wiederrum kann keine dynamischen Datentypen (in Funktion der Zeile) machen.</p>
+<p>Die vermeintliche Sackgasse entpuppte sich im Laufe des Tages als Sprungschanze: Wir brauchen gar keinen Ei-Editor. Neue Tabellen für Sprachkenntnisse und Studien waren in nullkommanichts fertig. Ein Tool zur Datenbank-Migration nach Änderung eines Modells muss sowieso früher oder später herbei. Super.</p>
+<p>Allerdings werden wir nun mit recht vielen DetailLayouts für Personen arbeiten. Heute habe ich deshalb an folgenden Punkten gearbeitet:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Alle Detail-Layouts eines Models kommen in einem TabPanel in ein einziges Detail-Fenster.</li>
+<li>Neuer Window-Wrapper &#8220;MasterDetail&#8221;, der ähnlich wie der bestehende InsertWrapper einen einzigen Record anzeigt. Eigentlich braucht so ein Fenster noch nichtmal einen Store. Der InsertWrapper missbraucht ihn momentan auch nur, um einen leeren Record (mit den selbstverständlichen Werten) zu erhalten. Was demnächst mich mehr funktioniert, denn Grids mit einem Insert-Button sollten eigentlich gar keine extra-Zeile anzeigen, das ist nur irritierend.</li>
+</ul>
+</div></blockquote>
+<p>Das Detail-Fenster ist nun kein Slave des GridMasters mehr, sondern pro Zeile wird ein neues Fenster geöffnet.</p>
+<p>Der FF-spezifische Layout-Bug von [<a class="reference external" href="http://code.google.com/p/lino/wiki/20100504">http://code.google.com/p/lino/wiki/20100504</a> voriger Woche] war wieder aufgetaucht. Und genauso plötzlich verschwand er wieder, nachdem ich dem TabPanel die unsinnige Angabe <cite>width:300</cite> entfernt habe.</p>
+<p>Die Performance macht mir Sorgen. Momentan haben wir ein Detail-Fenster mit zwei Reitern, und der Client braucht schon recht lange fürs Layout. Bis auf weiteres hoffe ich (auch wegen des Layout-Bugs), dass ich versehentlich irgendwas Unnützes in meiner Komponentenstruktur habe, vielleicht eine ungünstige Kombination von Layout-Managern, die sich gegenseitig asuf die Füße treten...</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0514.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0511.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0513.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0513.html">Online Link</a>
+    </div>
+  </body>
+</html>

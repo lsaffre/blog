@@ -1,0 +1,143 @@
+Migrating Tups to Mops
+======================
+
+The following is my condensed version of
+the article `Physical to container <http://wiki.openvz.org/Physical_to_container>`_
+from OpenVZ Wiki.
+
+See also my blog entries: 
+:doc:`2011/0520`
+:doc:`2011/0521`
+
+Context
+-------
+
+`tups` is an old machine that has been serving a few websites
+for over five years. It has 40 GB of hard disk space, 256 KB of RAM.
+The OS is currently a Debian Lenny. 
+
+Now I bought a new machine (500 GB hard disk space and 1 GB of RAM), 
+installed Proxmox on it and want to migrate `tups` to a 
+container on this machine.
+
+Note: the terms "Virtual Machine" and "Container" are equivalent.
+
+In our LAN, `tups` is running on `192.168.1.101`, 
+the new Proxmox server on `192.168.1.160`.
+
+The ProxMox web interface is accessible at `https://192.168.1.160`.
+Using :menuselection:`VM Manager --> Virtual Machines --> List --> Create`
+I created a "dummy" container with ID 101.
+
+Manually creating a VM using a dummy
+------------------------------------
+
+We have a dummy VM with ID 101 and want to create a 
+second VM with ID 103 
+that will contain `mops`, the successor for `tups`.
+
+::
+
+  cd /var/lib/vz
+  mkdir root/103 private/103
+  
+  cd /etc/vz/conf
+  cp 101.conf 103.conf
+  nano 103.conf
+
+The web interface would now show the new container,
+but of course we cannot yet start it since it is empty.
+
+Copying the data
+----------------
+
+We are going to execute the following twice: 
+a first time when tups is still running,
+and a second time "for real" (when tups is stopped).
+
+I log into the Proxmox server using ``ssh root@192.168.1.160``.
+
+I start a first `rsync` which takes about 5 hours at the first run 
+(and much less at subsequent runs)::
+
+  # cd /var/lib/vz/private/103
+  # rsync -arvpz --numeric-ids --exclude=/dev --exclude=/proc --exclude=/tmp -e ssh root@192.168.1.101:/ ./
+  ...
+  sent 7440467 bytes  received 27367553246 bytes  1456310.35 bytes/sec
+  total size is 32426725913  speedup is 1.18
+  rsync error: some files could not be transferred (code 23) at main.c(1524) [generator=3.0.3]
+  
+The errors are normal since I didn't stop the services for that first run.
+
+If I'd now try to start `mops` at the web interface, I'd get quite somme error 
+messages at the init log. The raw copy of `tups` is not able to live in a VM 
+environment, it needs a few manual adjustments.
+The following instructions are copied and adapted from the 
+Proxmox documentation.
+
+- A container does not have real ttys, so you have to disable getty 
+  in /etc/inittab (i.e. /var/lib/vz/private/103/etc/inittab)::
+
+    cd /var/lib/vz/private/103
+    sed -i -e 's/^[0-9].*getty.*tty/#&/g' etc/inittab
+    
+- The `/etc/mtab` of `mops` must be replaced by a sympolic link to `/proc/mounts`::
+    
+    ln -sf /proc/mounts etc/mtab
+    
+- Since you do not have any real disk partitions in a container, 
+  /etc/fstab (or most part of it) is no longer needed. 
+  Empty it (excluding the lines for /dev/pts, /proc, /sys and such)::
+
+    mv etc/fstab etc/fstab.old
+    egrep '/dev/pts|/dev/shm|/proc|/sys' etc/fstab.old > etc/fstab
+    
+- Remove udev's persistent net rules::
+
+    rm etc/udev/rules.d/70-persistent-net.rules    
+    rm etc/udev/rules.d/75-persistent-net-generator.rules
+    
+- Copy complete `/dev` directory from the previously 
+  created dummy host::
+
+    mv dev dev.old
+    cp -R ../101/dev .
+    
+
+Now it's time to start the container, either using ``vzctl start 103`` 
+at the command line, or clicking the start button in the web interface.
+Apache runs.
+
+
+The definitive copy
+-------------------
+
+Stop most services (but not `ssh`) on `tups`::
+
+    # /etc/init.d/exim4 stop
+    # /etc/init.d/mailman stop
+    # /etc/init.d/apache2 stop
+    
+    # /etc/init.d/postfix stop
+    # /etc/init.d/postgresql stop
+    # /etc/init.d/mysql stop
+    # /etc/init.d/samba stop
+
+The second `rsync` on `proxmox` takes much less time. 
+It undoes of course all my adjustments::
+
+  rsync -arvpz --numeric-ids --exclude=/dev/ --exclude=/proc --exclude=/tmp -e ssh root@192.168.1.101:/ /var/lib/vz/private/104/
+
+Redo all adjustments, then start `mops` in the Web interface.
+check the init log.
+Try to log in to `mops` using ssh:::
+
+  ssh root@192.168.1.103
+  
+Disable services that are no longer needed on a VM:
+for SERVICE in `checkfs.sh checkroot.sh console-screen.sh hwclock.sh hwclockfirst.sh lm-sensorsudev udev-mtab keymap.sh`
+do ::
+
+  update-rc.d  -f SERVICE remove  
+  
+  

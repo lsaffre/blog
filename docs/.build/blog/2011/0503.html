@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110503 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110504" href="0504.html" />
+    <link rel="prev" title="20110502" href="0502.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0504.html" title="20110504"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0502.html" title="20110502"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110503<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="umstieg-extjs-3-nach-4">
+<h2>Umstieg ExtJS 3 nach 4<a class="headerlink" href="#umstieg-extjs-3-nach-4" title="Permalink to this headline">¶</a></h2>
+<p>Die Anpassungen zum neuen <cite>Ext.data.Model</cite> haben gestern einigermaßen geklappt.
+Jedenfalls wird das GET jetzt korrekt rausgeschickt und auch beantwortet.
+Ich mach mal ein
+<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=d055c0e969152c664009804bf0f1947c29a067bd">Check-in</a>,
+eher zwecks Archivierung.</p>
+<p>Die nächsten Probleme sind:</p>
+<ul class="simple">
+<li>Die Daten der Grid werden trotzdem nicht angezeigt.
+Da scheint beim Verarbeiten was nicht zu klappen.</li>
+<li>Das Fenster hat den Close-Button doppelt.</li>
+<li>Das Fenster und ist nicht korrekt positioniert.</li>
+<li>Die Tool-Buttons haben keinen qtip bzw. tooltip.</li>
+</ul>
+<a class="reference internal image-reference" href="../../_images/0503a.jpg"><img alt="../../_images/0503a.jpg" src="../../_images/0503a.jpg" style="width: 368.5px; height: 284.0px;" /></a>
+<a class="reference internal image-reference" href="../../_images/0503b.jpg"><img alt="../../_images/0503b.jpg" src="../../_images/0503b.jpg" style="width: 504.0px; height: 262.5px;" /></a>
+<p>Ja, da steh ich dumm da.
+Keine Fehlermeldungen, aber auch kein korrektes Resultat.
+Eine Stunde lang probiere ich es mit dem Compatibility pack,
+aber das kriege ich nicht ans Laufen.</p>
+<p>Entsprechend dem Tipp von Brian Moeskau
+in seinem <a class="reference external" href="http://vimeo.com/23046756">Screencast</a>
+beginne ich nun, meine Klassen auf das neue System (<cite>Ext.define</cite>)
+umzustellen.</p>
+</div>
+<div class="section" id="lino-ui-extjs3">
+<h2><code class="xref py py-mod docutils literal"><span class="pre">lino.ui.extjs3</span></code><a class="headerlink" href="#lino-ui-extjs3" title="Permalink to this headline">¶</a></h2>
+<p>Ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/41">docs/tickets/41</a> muss mal kurz warten:
+ein kleines Release in Eupen ist nötig.
+Als erstes sollen die Erinnerungen im Hauptbildschirm chronologisch andersrum
+sortiert sein, die neuesten zuerst.
+Das ist einfach ein <code class="xref py py-func docutils literal"><span class="pre">reverse()</span></code> in <code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.reminder.reminders_summary</span></code>.</p>
+<p>Oho, <code class="xref py py-mod docutils literal"><span class="pre">lino.ui.extjs3</span></code> funktioniert nicht mehr.
+Ach so, das war nur ein <code class="docutils literal"><span class="pre">import</span></code>-Statement.
+In einem hole ich auch die beiden kleinen Bugs (sh. <a class="reference external" href="http://www.lino-framework.org0502.html">0502</a> ) raus.
+Die Variable <cite>USER_INTERFACES</cite> in der <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a> kann raus.
+Und <code class="xref std std-setting docutils literal"><span class="pre">USE_GRIDFILTERS</span></code> stelle ich wieder auf <cite>True</cite>.</p>
+<p>Trotzdem habe ich jetzt noch
+&#8220;Uncaught TypeError: Object #&lt;Object&gt; has no method &#8216;reg&#8217;&#8221;.
+Als wäre die Version 4 doch noch irgendwo aktiv.
+Rätselhaft.
+Darüber geh ich jetzt erstmal schlafen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0504.html" title="20110504"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0502.html" title="20110502"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0503.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0503.html">Online Link</a>
+    </div>
+  </body>
+</html>

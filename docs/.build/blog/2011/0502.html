@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110502 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110503" href="0503.html" />
+    <link rel="prev" title="20110429" href="0429.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0503.html" title="20110503"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0429.html" title="20110429"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110502<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Am Samstag habe ich begonnen, Lino nach ExtJS 4 zu migrieren
+(<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/41">docs/tickets/41</a>). Ist gar nicht so einfach.
+Und eigentlich gehört das auch nicht zu den momentan dringenden Dingen.
+Sencha kümmert sich scheinbar nur noch recht wenig um die alte
+Version.
+Was ich im Grunde verstehen kann.
+Aber sogar die API ist nicht mehr da, und das ist lästig.
+Aha, immerhin kann man alte Versionen noch runterladen:
+<a class="reference external" href="http://www.sencha.com/learn/Ext_Version_Archives">http://www.sencha.com/learn/Ext_Version_Archives</a>
+Und zumindest versprechen sie &#8221;
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?131668-Where-is-ExtJS-3&amp;p=596422&amp;viewfull=1#post596422">Please stand by regarding details on Ext JS 3.3.3. We will have a solution for you very soon.</a></p>
+<p>Ich werde heute aber noch etwas weiter am Umstieg arbeiten, denn:</p>
+<ul class="simple">
+<li>Lebensnotwendig ist das Ticket <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/39">docs/tickets/39</a> nicht.</li>
+<li>Meine Arbeit von Samstag müsste ich irgendwann quasi neu beginnen,
+wenn ich das jetzt nicht durchziehe.
+Mindestens 2 kleine Bugs habe ich im Lauf der Arbeiten gefunden,
+die ich dann im alten extjs3 nachträglich beheben müsste:<ul>
+<li>&#8220;StatusBar&#8221; in ext_ui</li>
+<li>&#8220;contacts.Persons&#8221; in ext_windows</li>
+</ul>
+</li>
+</ul>
+<p>Andererseits könnte es effizienter sein, die Sache warten zu lassen,
+bis es bessere Dokumentation zur Migrierung gibt. Aber vielleicht
+habe ich die auch bloß nicht gefunden, also mal <a class="reference external" href="http://www.sencha.com/forum/showthread.php?132029-Migrating-from-3-to-4-Legacy-file-Documentation&amp;p=597146">nachfragen</a></p>
+<p>Also das neue <cite>Ext.data.Model</cite>.
+Store no longer has a <cite>fields</cite> config option (though it doesn&#8217;t complain...)
+the new philosophy is to define a Model class.</p>
+<p>Also wenn ich bisher folgendes hatte (ich nehme lino.SiteConfigs als Beispiel,
+weil der ein Detail und nicht zu viele Felder hat):</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.namespace(&#39;Lino.lino.SiteConfigs&#39;)
+Lino.lino.SiteConfigs.FormPanel = Ext.extend(Lino.FormPanel,{
+  constructor : function(ww,config) {
+  var site_company38 = new Lino.TwinCombo({ ... });
+  ...
+  var main_panel54 = new Ext.Panel({ &quot;border&quot;: false, &quot;autoHeight&quot;: true, &quot;layout&quot;: &quot;form&quot;, &quot;autoScroll&quot;: true, &quot;items&quot;: [ main_1_panel42, next_partner_id_ct_panel44, job_office_ct_panel46, main_4_panel53 ], &quot;frame&quot;: true, &quot;bodyBorder&quot;: false, &quot;labelAlign&quot;: &quot;top&quot; });
+  config.items = main_panel54;
+  config.before_row_edit = function(record){  };
+  Lino.lino.SiteConfigs.FormPanel.superclass.constructor.call(this, ww,config);
+  }
+});
+
+Lino.lino.SiteConfigs.detail = function(caller,params) {
+  var ww = new Lino.DetailWrapper(caller,{ &quot;fk_name&quot;: null,
+    &quot;url_data&quot;: &quot;/api/lino/SiteConfigs&quot;, &quot;content_type&quot;: 4, &quot;name&quot;: &quot;detail&quot; },params);
+  var form_panel55 = new Lino.lino.SiteConfigs.FormPanel(ww,{ &quot;ls_url&quot;: &quot;/lino/SiteConfigs&quot;, &quot;ls_bbar_actions&quot;: [ { &quot;text&quot;: &quot;Speichern&quot;, &quot;handler&quot;: function() {ww.save()} }, { &quot;text&quot;: &quot;Einf\u00fcgen&quot;, &quot;must_save&quot;: true, &quot;panel_btn_handler&quot;: function(panel){Lino.show_insert(panel)} }, { &quot;text&quot;: &quot;L\u00f6schen&quot;, &quot;panel_btn_handler&quot;: Lino.delete_selected } ], &quot;ls_detail_handler&quot;: Lino.lino.SiteConfigs.detail, &quot;has_navigator&quot;: false, &quot;layout&quot;: &quot;fit&quot;, &quot;method&quot;: &quot;PUT&quot;, &quot;ls_insert_handler&quot;: Lino.lino.SiteConfigs.insert });
+  ww.main_item = form_panel55;
+  ww.show();
+}
+
+Lino.lino.SiteConfigs.insert = function(caller,params) {
+  var ww = new Lino.InsertWrapper(caller,{ &quot;record_id&quot;: -99999, &quot;fk_name&quot;: null,
+    &quot;url_data&quot;: &quot;/api/lino/SiteConfigs&quot;, &quot;content_type&quot;: 4, &quot;name&quot;: &quot;insert&quot; },params);
+  var form_panel56 = new Lino.lino.SiteConfigs.FormPanel(ww,{
+    &quot;ls_url&quot;: &quot;/lino/SiteConfigs&quot;, &quot;layout&quot;: &quot;fit&quot;,
+    &quot;ls_detail_handler&quot;: Lino.lino.SiteConfigs.detail,
+    &quot;ls_bbar_actions&quot;: [ { &quot;text&quot;: &quot;Speichern&quot;, &quot;handler&quot;: function() {ww.save()} } ],
+    &quot;method&quot;: &quot;POST&quot;,
+    &quot;ls_insert_handler&quot;: Lino.lino.SiteConfigs.insert });
+  ww.main_item = form_panel56;
+  ww.show();
+}
+
+Lino.lino.SiteConfigs.grid = function(caller,params) {
+  var ww = new Lino.GridMasterWrapper(caller,{ &quot;content_type&quot;: 4 },params);
+  var id29 = { &quot;xtype&quot;: &quot;numberfield&quot; };
+  var main_grid37 = new Lino.GridPanel(ww,{
+      &quot;ls_url&quot;: &quot;/lino/SiteConfigs&quot;,
+      &quot;ls_bbar_actions&quot;: [ ... ],
+      ...
+      &quot;ls_store_fields&quot;: [ { &quot;type&quot;: &quot;int&quot;, &quot;name&quot;: &quot;id&quot; }, ...,&#39;job_officeHidden&#39; ],
+      &quot;ls_detail_handler&quot;: Lino.lino.SiteConfigs.detail,
+        &quot;ls_columns&quot;: [
+        { &quot;colIndex&quot;: 0, &quot;sortable&quot;: true, &quot;header&quot;: &quot;ID&quot;, ... },
+        ...
+        { &quot;colIndex&quot;: 7, &quot;header&quot;: &quot;Lokales Arbeitsamt&quot;, ... }
+      ],
+      &quot;ls_insert_handler&quot;: Lino.lino.SiteConfigs.insert });
+  ww.main_item = main_grid37;
+  ww.show();
+}
+</pre></div>
+</div>
+<p>Dann muss ich jetzt vorher noch für jede Grid etwas im folgenden Stil
+generieren:</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.define(&#39;Lino.lino.SiteConfigs.GridModel&#39;,{
+    extend: &#39;Ext.data.Model&#39;,
+    fields: [(the `fields` config of old Store) ...],
+    &quot;idProperty&quot;: &quot;id&quot;,
+    &quot;proxy&quot;: {
+        &quot;totalProperty&quot;: &quot;count&quot;,
+        &quot;format&quot;: &quot;json&quot;,
+        &quot;url&quot;: &quot;/api/lino/SiteConfigs&quot;,
+        &quot;type&quot;: &quot;rest&quot;,
+        &quot;reader&quot;: &quot;array&quot;,
+        &quot;root&quot;: &quot;rows&quot;
+    }
+})
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0503.html" title="20110503"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0429.html" title="20110429"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0502.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0502.html">Online Link</a>
+    </div>
+  </body>
+</html>

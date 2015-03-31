@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0304.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0302.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0304.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0302.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100302 ←] [20100303 03.03.2010] [20100304 →] =</p>
+<p>Issue 100 ist so weit fertig. Ich bin sehr zufrieden. Was noch fehlt, ist dass Comboboxen im Detail-Fenster nach einer Änderung des Contexts ihren Store nicht neu laden. Dadurch wird manchmal nicht der Name sondern die Nummer der Stadt angezeigt. Aber ich mach daraus ein neues Issue 105 und lass das mal warten, denn es ist vielleicht nicht sehr störend und hängt auch mit Issue 106 zusammen (das ich jetzt erst eintippe).</p>
+<p>Heute will ich mir Issue 84 vornehmen.
+Wahrscheinlich kommt in einem auch <cite>Slave-Fenster als Toggle-Buttons</cite> dran.</p>
+<p>Bisher habe ich in <cite>window_configs.pck</cite> pro Fenster ja lediglich ein array von 5 Werten (width, height, x,y,maximsied) eingepickelt. Jetzt mach ich neue pickelbare Klassen WindowConfig, GridWindowConfig, LayoutWindowConfig, PropsWindowConfig, deren Methode configure_window() das UI dann aufruft. Dann muss jeder WindowWrapper eine JS-Funktion <cite>get_window_config()</cite> kriegen, die von <cite>Lino.save_window_config()</cite> gerufen wird.</p>
+<p>Ich würde ja gerne im JS eine eigene Basisklasse <cite>Lino.WindowWrapper</cite> definieren, damit der Server den allgemeinen Code nicht für jede Reaktion neu generieren muss... aber das lass ich momentan mal, weil das vielleicht nicht einfach ist: Issue 107.</p>
+<p>demo.dpy (in lino.modlib.contacts.fixtures) erzeugt jetzt ein bisschen komplettere Demo-Firmen in DE, NL und FR. Jetzt kann man Issue 105 leichter beobachten.</p>
+<p>Die <cite>get_window_config()</cite> war nicht schwer, aber nun erst fällt mir auf, wie sehr Isssue 84 und Issue 108 miteinander verknotet sind. Ein PropertiesWindow wird schon im JS seines Masters instanziert, und der toggleButton ruft abwechselnd <cite>show()</cite> und <cite>hide()</cite>. Details und slaved Gridwindows dagegen machen bisher einen eigenen AJAX call. Das ist nicht richtig. Und nur ein Master-Fenster sollte einen Tools-Button &#8220;save config&#8221; haben und dann die Konfiguration all seiner Kinder abfragen.</p>
+<p>16.40 Uhr, ich muss Feierabend machen. Habe heute &#8220;nur&#8221; im Code rumgespielt und den großen Plupp vorbereitet. Klasse Reaction heißt jetzt WindowWrapper und steht in ext_ui statt ext_elems. Vor allem habe ich jsgen.Variable.js_before_body() und js_after_body() rausgeholt. Diese Änderung ist wahrscheinlich schuld, dass momentan slave windows mit generic master nicht aktualisiert werden. Heute kein Checkin.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0304.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0302.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0303.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0303.html">Online Link</a>
+    </div>
+  </body>
+</html>

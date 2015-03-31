@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20140702 (Wednesday, 02 July 2014) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Thursday, July 3, 2014" href="0703.html" />
+    <link rel="prev" title="20140701 (Tuesday, 01 July 2014)" href="0701.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0703.html" title="Thursday, July 3, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0701.html" title="20140701 (Tuesday, 01 July 2014)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-02-july-2014">
+<h1>20140702 (Wednesday, 02 July 2014)<a class="headerlink" href="#wednesday-02-july-2014" title="Permalink to this headline">¶</a></h1>
+<p>After some hours of sleep I looked back at what I learned and did
+yesterday.</p>
+<p>First of all, I optimized the <code class="file docutils literal"><span class="pre">pavement.py</span></code> file once more: the
+self-signed version is in <cite>example</cite> and the signed version in
+<cite>example/signed</cite>. No longer in two siblings called <cite>example/mykey</cite> and
+<cite>example/codegears</cite>.  After years of fiddling with the <cite>Makefile</cite>,
+this was a mere joy since we are now in Python.</p>
+<div class="section" id="fabric-versus-paver">
+<h2>fabric versus paver<a class="headerlink" href="#fabric-versus-paver" title="Permalink to this headline">¶</a></h2>
+<p>Then I asked: why did I not use <a class="reference external" href="http://www.fabfile.org/">fabric</a> instead of <a class="reference external" href="http://paver.github.io/paver/">paver</a>?</p>
+<p>Answer: because I wanted to try something new. Because I did not feel
+fully satisfied with <a class="reference external" href="http://www.fabfile.org/">fabric</a>...</p>
+<p>But let&#8217;s verify that feeling. I simply copied the content of
+<cite>pavement.py</cite> into the <cite>fabfile.py</cite>, made some minor changes, and the
+result is amazing: it gets yet more elegant because unipath has a
+<cite>needs_update</cite> and a <cite>copy</cite> method. Yes, I liked paver&#8217;s <cite>path</cite> trick to override <cite>__divide__</cite>
+operator, but the <cite>child</cite> method in <a class="reference external" href="https://github.com/mikeorr/Unipath">unipath</a> is more explicit and
+secure.</p>
+<p>My resolution: <a class="reference external" href="http://www.fabfile.org/">fabric</a> is clearly better than <a class="reference external" href="http://paver.github.io/paver/">paver</a>.  <a class="reference external" href="http://www.fabfile.org/">fabric</a> can
+easily do what <a class="reference external" href="http://paver.github.io/paver/">paver</a> did, has better documentation and is more
+mature.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git rm pavement.py
+$ pip uninstall paver
+</pre></div>
+</div>
+<p>BTW my feeling came mainly from the fact that I don&#8217;t really like the
+output of <strong class="command">fab -l</strong>...</p>
+</div>
+<div class="section" id="a-pitfall-in-unipath">
+<h2>A pitfall in unipath<a class="headerlink" href="#a-pitfall-in-unipath" title="Permalink to this headline">¶</a></h2>
+<p>I fell into a pitfall with unipath. The first one after more than a
+year, and -after thinking at it- an unevitable one.  Here is an
+excerpt from some of my code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">jarfile</span> <span class="o">=</span> <span class="n">outdir</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">libfile</span> <span class="o">=</span> <span class="n">LIBDIR</span><span class="o">.</span><span class="n">child</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">libfile</span><span class="o">.</span><span class="n">needs_update</span><span class="p">([</span><span class="n">jarfile</span><span class="p">]):</span>
+    <span class="n">libfile</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">jarfile</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In a first attempt I had written:</p>
+<div class="highlight-python"><div class="highlight"><pre>if libfile.needs_update(jarfile):
+</pre></div>
+</div>
+<p>which gave me a strange traceback:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  ...
+  File &quot;/home/luc/hgwork/eid/fabfile.py&quot;, line 40, in sign_jars
+    if libfile.needs_update(jarfile):
+  File &quot;/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/unipath/path.py&quot;, line 298, in needs_update
+    if p.isdir():
+AttributeError: &#39;str&#39; object has no attribute &#39;isdir&#39;
+</pre></div>
+</div>
+<p>Yes, the <a class="reference external" href="https://github.com/mikeorr/Unipath#high-level-operations">documentation</a> clearly
+says that the argument to <cite>needs_update</cite> must be an iterable, and that
+Path objects behave like strings... and to avoid that pitfall, unipath
+would have to test on each whether it is a directory or not... so my
+suggestion is to just update the documentation to warn about this
+pitfall.</p>
+</div>
+<div class="section" id="automatic-refresh-every-10-seconds">
+<h2>Automatic refresh every 10 seconds<a class="headerlink" href="#automatic-refresh-every-10-seconds" title="Permalink to this headline">¶</a></h2>
+<p>Added a button &#8220;autorefresh&#8221; which causes the home screen to start
+refreshing every 10 seconds.  Opening any window stops the
+autorefresh.</p>
+<p>This is a quick workaround, not yet very user-friedly:</p>
+<ul class="simple">
+<li>no feedback indicating that it is activated.</li>
+<li>no protection against repeated clicks. every click starts a queue of
+autorefreshes.</li>
+</ul>
+</div>
+<div class="section" id="typeerror-expected-string-or-buffer">
+<h2>TypeError: expected string or buffer<a class="headerlink" href="#typeerror-expected-string-or-buffer" title="Permalink to this headline">¶</a></h2>
+<p>Lino made an <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#ise" title="(in Lino v1.6)"><span>Internal Server Error</span></a> when reading a Belgian eID card which had the
+following address data:</p>
+<div class="highlight-python"><div class="highlight"><pre>streetAndNumber: null
+zip: null
+municipality: null
+</pre></div>
+</div>
+<p>This caused me some work:</p>
+<ul class="simple">
+<li>Added a new test case for which reproduces the problem.</li>
+<li>Discovered that these test cases were not being tested anymore.  Now
+they are, but I am not yet fully satisfied with how this is being
+done.  They are in <a class="reference external" href="https://github.com/lsaffre/lino-welfare/tree/master/lino_welfare/projects/docs/tests">lino_welfare/projects/docs/tests</a>
+(not in <a class="reference external" href="https://github.com/lsaffre/lino-welfare/tree/master/tests">/tests</a>,
+because they are written for the Django test runner. But the general
+test suite now invokes a <code class="xref std std-cmd docutils literal"><span class="pre">django-admin</span> <span class="pre">test</span></code> in this
+directory).</li>
+<li>These test cases need to specify <cite>no_local=True</cite> because they need
+e.g. <cite>use_java</cite>.</li>
+<li>Added the case of an incomplete birth date to the docstring of
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.ssin.html#module-lino.utils.ssin" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.ssin</span></code></a>.</li>
+<li>The bug itself (in <code class="xref py py-class docutils literal"><span class="pre">ml.beid.BaseBeIdReadCardAction</span></code>) was of
+course easy to fix.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0703.html" title="Thursday, July 3, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0701.html" title="20140701 (Tuesday, 01 July 2014)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0702.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0702.html">Online Link</a>
+    </div>
+  </body>
+</html>

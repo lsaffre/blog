@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130128 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130129" href="0129.html" />
+    <link rel="prev" title="20130125" href="0125.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0129.html" title="20130129"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0125.html" title="20130125"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20130128<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="number-fields-in-grids-continued">
+<h2>Number fields in grids (continued)<a class="headerlink" href="#number-fields-in-grids-continued" title="Permalink to this headline">¶</a></h2>
+<p>Solved several subtil problems with
+&#8220;number&#8221; fields in a grid:
+quantities, percentages, prices,...</p>
+<ul class="simple">
+<li>Ext.grid.NumberColumn
+renders null values as &#8220;0,00&#8221; .
+That&#8217;s why we have Lino.NullNumberColumn
+who renders them as spaces.</li>
+<li>Quantity fields accept values like &#8220;2:30&#8221; or &#8220;2/3&#8221;
+and therefore are stored as CharField, not DecimalField.
+But they are right aligned like number fields.</li>
+</ul>
+</div>
+<div class="section" id="what-s-allowed-on-a-registered-invoice">
+<h2>What&#8217;s allowed on a registered invoice?<a class="headerlink" href="#what-s-allowed-on-a-registered-invoice" title="Permalink to this headline">¶</a></h2>
+<p>Registrered sales invoice didn&#8217;t disable their fields and their items.</p>
+<p>Here is the new code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Registrable</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_registrable_fields</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">site</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="s">&#39;date&#39;</span>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">site_setup</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="n">site</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Registrable</span><span class="p">,</span><span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">site_setup</span><span class="p">(</span><span class="n">site</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registrable_fields</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_registrable_fields</span><span class="p">(</span><span class="n">site</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">disabled_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ar</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">editable</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registrable_fields</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Registrable</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">disabled_fields</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generators-or-lists">
+<h2>Generators or lists?<a class="headerlink" href="#generators-or-lists" title="Permalink to this headline">¶</a></h2>
+<p>For the above API I wondered whether a generator function is more efficient
+than to return a list.
+Until now I&#8217;ve been believing this intuitively,
+but here is a test suite which proves it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">time</span>
+
+<span class="k">def</span> <span class="nf">testit</span><span class="p">(</span><span class="n">VALUES</span><span class="p">,</span><span class="n">CALLS</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">get_numbers_gen</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">VALUES</span><span class="p">):</span> <span class="k">yield</span> <span class="n">i</span>
+
+    <span class="k">def</span> <span class="nf">get_numbers_list</span><span class="p">():</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">VALUES</span><span class="p">):</span> <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">l</span>
+
+    <span class="k">def</span> <span class="nf">runit</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">CALLS</span><span class="p">):</span>
+            <span class="nb">set</span><span class="p">(</span><span class="n">f</span><span class="p">())</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">now</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">VALUES</span><span class="p">,</span><span class="n">CALLS</span><span class="p">,</span><span class="n">runit</span><span class="p">(</span><span class="n">get_numbers_gen</span><span class="p">)</span><span class="o">/</span><span class="n">runit</span><span class="p">(</span><span class="n">get_numbers_list</span><span class="p">)]</span>
+
+<span class="k">def</span> <span class="nf">suite</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">yield</span> <span class="n">testit</span><span class="p">(</span><span class="mi">100000</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">suite</span><span class="p">():</span>
+    <span class="k">print</span> <span class="n">row</span>
+</pre></div>
+</div>
+<p>The results are clear on my machine:
+the generator version takes less time than the list version, leading to a ratio &lt; 1:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python tt.py
+[1, 10000, 0.9835269406046683]
+[10000, 1, 1.0]
+[1000, 1000, 0.8884890661076352]
+[10, 10000, 0.9849482286261549]
+[10000, 100, 0.9123783513935135]
+[100000, 10, 0.8948787720221897]
+
+$ python tt.py
+[1, 10000, 0.9990160538337997]
+[10000, 1, 1.0150001049041748]
+[1000, 1000, 0.9090909090909091]
+[10, 10000, 0.9712429171108448]
+[10000, 100, 0.9137090679526116]
+[100000, 10, 0.8955525776438877]
+</pre></div>
+</div>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>views.py used Http403 instead of PermissionDenied</li>
+<li>ChangeStateAction  was broken.
+Trying to run any ChangeStateAction caused an error message &#8220;global name &#8216;dd&#8217; is not defined&#8221;.
+Fixed.</li>
+<li>hidden_elements</li>
+</ul>
+</div>
+<div class="section" id="comment-dire-bcss-en-allemand">
+<h2>Comment dire BCSS en allemand?<a class="headerlink" href="#comment-dire-bcss-en-allemand" title="Permalink to this headline">¶</a></h2>
+<p>Die Abkürzung &#8220;KBSS&#8221; ist offenbar falsch:
+die &#8220;offizielle&#8221; Übersetzung für BCSS
+lautet &#8220;Zentrale Datenbank der sozialen Sicherheit (ZDSS)&#8221;.
+Zuständig für sowas ist die Zentrale Dienststelle für Deutsche Übersetzungen
+(ZDDÜ) in Malmedy, <a class="reference external" href="http://www.scta.be">http://www.scta.be</a></p>
+</div>
+<div class="section" id="zwei-dsbe-spezifische-bugs">
+<h2>Zwei DSBE-spezifische Bugs<a class="headerlink" href="#zwei-dsbe-spezifische-bugs" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">watch_tim setzte das Feld &#8220;Dienst&#8221; der primären Begleitung nicht.</p>
+</li>
+<li><p class="first">Coaching.full_clean()</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">coaching_type</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0129.html" title="20130129"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0125.html" title="20130125"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0128.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0128.html">Online Link</a>
+    </div>
+  </body>
+</html>

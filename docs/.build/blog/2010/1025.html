@@ -1,0 +1,359 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101025 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101026" href="1026.html" />
+    <link rel="prev" title="20101024" href="1024.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1026.html" title="20101026"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1024.html" title="20101024"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101025<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="typed-links">
+<h2>Typed links<a class="headerlink" href="#typed-links" title="Permalink to this headline">¶</a></h2>
+<p>Neues Modell <code class="xref py py-class docutils literal"><span class="pre">links.LinkType</span></code>.
+Beispiele in der der initial_data-Fixture für DSBE
+(<code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.dsbe.fixtures.initial_data</span></code>).</p>
+</div>
+<div class="section" id="select-related">
+<h2>select related<a class="headerlink" href="#select-related" title="Permalink to this headline">¶</a></h2>
+<p>Wird der Server schneller, wenn ich <a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/models/querysets/#select-related">select_related()</a>
+benutze?</p>
+<p>Klinischer Test: in <code class="xref py py-meth docutils literal"><span class="pre">lino.reports.Report.get_queryset()</span></code>
+mach ich einfach:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rr</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queryset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_related</span><span class="p">()</span>
+        <span class="c"># self.queryset = self.model.objects.all()</span>
+</pre></div>
+</div>
+<p>Beide Varianten funktionieren, aber ich merke keinen Performance-Unterschied.</p>
+<p>Nachdem ich
+<a class="reference external" href="http://djangosnippets.org/snippets/1672/">http://djangosnippets.org/snippets/1672/</a>
+und
+<a class="reference external" href="http://djangosnippets.org/snippets/161/">http://djangosnippets.org/snippets/161/</a>
+gefunden habe, schreibe ich mir das neue Modul
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.sqllog.html#module-lino.utils.sqllog" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.sqllog</span></code></a>.</p>
+<p>In der <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a> kommt dann:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">MIDDLEWARE_CLASSES</span> <span class="o">+=</span> <span class="p">(</span>
+  <span class="s">&#39;lino.utils.sqllog.SQLLogToConsoleMiddleware&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Wenn ich dann <a class="reference external" href="http://127.0.0.1:8000/api/contacts/Persons?fmt=grid">http://127.0.0.1:8000/api/contacts/Persons?fmt=grid</a>
+aufrufe, flimmert die Konsole vor Meldungen, das ist mir zuviel.</p>
+<p>Deshalb meine eigene Kreation <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.sqllog.html#lino.utils.sqllog.ShortSQLLogToConsoleMiddleware" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.sqllog.ShortSQLLogToConsoleMiddleware</span></code></a>.</p>
+<p>Das ist jetzt schon aufschlussreicher. Hier ein Resultat mit select_related:</p>
+<div class="highlight-python"><div class="highlight"><pre>Validating models...
+0 errors found
+
+Django version 1.3 pre-alpha SVN-14140, using settings &#39;dsbe.settings&#39;
+Development server is running at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+Analyzing Reports...
+Loading t:\hgwork\lino\lino\config\lino.SiteConfig.dtl...
+Loading t:\hgwork\lino\lino\modlib\countries\config\countries.Country.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Person.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Person.2.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Person.3.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Person.4.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Person.5.dtl...
+Loading t:\hgwork\lino\lino\modlib\dsbe\config\contacts.Company.dtl...
+Loading t:\hgwork\lino\lino\modlib\notes\config\notes.NoteType.dtl...
+Loading T:\hgwork\lino\lino\demos\dsbe\config\notes.Note.dtl...
+Loading t:\hgwork\lino\lino\modlib\links\config\links.Link.dtl...
+Discovering choosers...
+Reading T:\hgwork\lino\lino\demos\dsbe\lino_settings.py ...
+This is Lino version 0.8.9.
+Using Django 1.3 pre-alpha SVN-14140, Python 2.5.2, ReportLab Toolkit 2.4, PyYaml 3.08, python-dateutil 1.4.1, xhtml2pdf 3.0.32
+Lino Site &#39;DSBE/Lino demo&#39; is ready.
+Starting user interface lino.ui.extjs
+Generating T:\hgwork\lino\lino\demos\dsbe\media\cache\js\site.js ...
+29 queries in 0.016 seconds
+[25/Oct/2010 02:34:23] &quot;GET /api/contacts/Persons?fmt=grid HTTP/1.1&quot; 200 4636
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/resources/css/ext-all.css HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/css/GridFilters.css HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/css/RangeMenu.css HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/lino/extjs/lino.css HTTP/1.1&quot; 304 0
+2 queries in 0.016 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/adapter/ext/ext-base.js HTTP/1.1&quot; 304 0
+2 queries in 0.016 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/ext-all-debug.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/menu/RangeMenu.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/menu/ListMenu.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/GridFilters.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/filter/Filter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:23] &quot;GET /media/extjs/examples/ux/gridfilters/filter/StringFilter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/extjs/examples/ux/gridfilters/filter/DateFilter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/extjs/examples/ux/gridfilters/filter/ListFilter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/extjs/examples/ux/gridfilters/filter/NumericFilter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/extjs/examples/ux/gridfilters/filter/BooleanFilter.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/lino/extjs/lino.js HTTP/1.1&quot; 304 0
+2 queries in 0.0 seconds
+[25/Oct/2010 02:34:24] &quot;GET /media/cache/js/site.js HTTP/1.1&quot; 200 565544
+2 queries in 0.0 seconds
+159 queries in 0.094 seconds
+[25/Oct/2010 02:34:25] &quot;GET /api/contacts/Persons?_dc=1287970465295&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+159 queries in 0.467 seconds
+[25/Oct/2010 02:34:27] &quot;GET /api/contacts/Persons?_dc=1287970465556&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+</pre></div>
+</div>
+<p>Das Gleiche ohne select_related:</p>
+<div class="highlight-python"><div class="highlight"><pre>159 queries in 0.125 seconds
+[25/Oct/2010 02:38:18] &quot;GET /api/contacts/Persons?_dc=1287970698273&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+159 queries in 0.047 seconds
+[25/Oct/2010 02:38:19] &quot;GET /api/contacts/Persons?_dc=1287970698541&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+</pre></div>
+</div>
+<p>Nochmal wieder mit select_related:</p>
+<div class="highlight-python"><div class="highlight"><pre>159 queries in 0.125 seconds
+[25/Oct/2010 03:02:48] &quot;GET /api/contacts/Persons?_dc=1287972168153&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+159 queries in 0.092 seconds
+[25/Oct/2010 03:02:49] &quot;GET /api/contacts/Persons?_dc=1287972168406&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+</pre></div>
+</div>
+<p>Und nochmal ohne:</p>
+<div class="highlight-python"><div class="highlight"><pre>159 queries in 0.111 seconds
+[25/Oct/2010 03:05:50] &quot;GET /api/contacts/Persons?_dc=1287972349716&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+159 queries in 0.375 seconds
+[25/Oct/2010 03:05:51] &quot;GET /api/contacts/Persons?_dc=1287972349949&amp;limit=22&amp;start=0&amp;fmt=json HTTP/1.1&quot; 200 22222
+</pre></div>
+</div>
+<p>Die Klasse <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.sqllog.html#lino.utils.sqllog.SQLLogMiddleware" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.sqllog.SQLLogMiddleware</span></code></a> habe ich auch abändert.
+Meine Version hängt ihr Resultat nicht an die Response dran
+(das kann man in meiner ExtJS-Bildschirmaufbau nicht sehen),
+sondern schreibt sie in eine Datei <code class="file docutils literal"><span class="pre">sqllog.html</span></code>.</p>
+<p>Erste Schlussfolgerungen:</p>
+<ul class="simple">
+<li>Also select_related erzeugt die Gleiche Anzahl Queries, aber 10 mal langsamer.
+Da hat also was nicht geklappt mit dem select_related...
+Andererseits spielen bei den Zeiten scheinbar noch andere Faktoren mit,
+weil die so variabel sind.</li>
+<li>159 Queries, um die Liste von 22 ersten Records aus <code class="xref py py-class docutils literal"><span class="pre">contacts.Persons</span></code>
+zu liefern ist ganz schön viel. Da gibt es hoffentlich was zu optimieren.
+Ein Lob für Django, dass ich das bisher kaum bemerkt habe.</li>
+<li>Mich wundert, dass die Anzahl 159 genau gleich bleibt.</li>
+<li>Dass die Grid 2 AJAX-Calls <cite>GET /api/contacts/Persons</cite> macht, wusste ich ja,
+das ist wegen des <code class="xref js js-func docutils literal"><span class="pre">Lino.GridBox.calculatePageSize()</span></code>.
+Aber dass die beiden Queries so unterschiedliche Zeiten haben, wundert mich.</li>
+<li>All die Requests nach <cite>/media</cite> erzeugen ebenfalls 2 SQL-Queries.
+Der erste ist wahrscheinlich nach django_session und der zweite nach auth_user.
+Das scheint mir unnötig.
+Ist aber eigentlich egal, weil auf einem Produktionsserver das /media-Verzeichnis
+gar nicht von Django ausgeliefert wird.</li>
+</ul>
+<p>Erste Ideen, um die Performance zu verbessern:</p>
+<ul class="simple">
+<li>Die Slave-Reports LinksByOwner und LanguageKnowledgesByPerson sind natürlich
+Ursache für jeweils 2 zusätzliche Queries pro Zeile
+(einmal <cite>SELECT count(*)</cite> und dann <cite>SELECT *</cite>).
+Dabei wird diese Info erst im Detail benutzt
+(wo sie sowieso vorher nochmal abgefragt wird).
+Die könnten also raus.</li>
+</ul>
+</div>
+<div class="section" id="a-grid-store-is-not-a-detail-store">
+<h2>A Grid Store is not a Detail Store<a class="headerlink" href="#a-grid-store-is-not-a-detail-store" title="Permalink to this headline">¶</a></h2>
+<p>Da brauch ich gar nicht nach weiteren Ideen zu suchen,
+unnütze Summaries von Slave Reports gehören natürlich nicht in die Grid,
+das ist ein klarer Fall von falschem Design aus historischen Gründen.</p>
+<p>Ich brauche nicht einen einzigen Store pro Report, sondern zwei: einen
+für Listenansichten und einen anderen für Detail-Ansichten
+(Detail und Insert). Der eine benutzt obj2list, der andere obj2dict.
+N.B. im Listen-Store können trotzdem auch Report-Summaries auftreten,
+wenn die als Kolonne einer Grid angefragt wurden.</p>
+<p>Zu bemerken ist auch, dass der ext_store.Store gar kein jsgen.Component
+mehr zu sein braucht. In der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> instanziere ich ja
+inzwischen selber einen <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.data.ArrayStore">Ext.data.ArrayStore</a>.
+Und die DetailWrapper brauchen gar keinen <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.data.Store">Ext.data.Store</a>,
+sondern nur dessen Felddefinitionen. Ein Store ist eine Sammlung
+von Feldern, der deren manchmal komplexen Werte in Atome verteilt.</p>
+<p>Anstatt den Store zu verdoppeln, mach ich ihm zwei Listen von
+StoreFields <cite>detail_fields</cite> und <cite>list_fields</cite>.
+Denn die meisten Datenfelder sind ja in beiden Stores vertreten,
+und es ist ein bisschen schade, dafür jedesmal zwei Store-Felder
+zu instanzieren. Das ist mir auch ein bisschen
+<a class="reference external" href="http://docs.python.org/library/stdtypes.html#set-types-set-frozenset">Mengenarithmetik</a>
+beim Initialisieren des Stores wert, die ja nur einmal beim
+Hochfahren des Serverprozesses läuft.</p>
+<p>12 Uhr. Na bitte: eine Grid erzeugt jetzt nur noch
+46 statt vorher 159 SQL-Queries.</p>
+<p>Für jede Zeile macht er jetzt doch noch zwei überflüssige SELECTS:
+einen für die Bezeichnung des Landes und einen für die Bezeichnung der Stadt.
+Das sind eigentlich die Kolonnen, für die select_related nützlich wäre.
+Aber für die bewirkt select_related nichts, weil das nullable Foreign Keys sind.
+Idee: ich muss pro Report individuell konfigurierbar machen, wie er select_related()
+aufruft.</p>
+<p>12.20 Uhr. Und nochmal na bitte: Anzahl der Queries nochmal von 46 auf 4
+runtergeschraubt, indem ich in <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.contacts.models.Contacts</span></code>
+die Methode <cite>get_queryset</cite> überschreibe:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Contacts</span><span class="p">(</span><span class="n">reports</span><span class="o">.</span><span class="n">Report</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_queryset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">select_related</span><span class="p">(</span><span class="s">&#39;country&#39;</span><span class="p">,</span><span class="s">&#39;city&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="kleine-probleme-en-passant">
+<h2>Kleine Probleme en passant<a class="headerlink" href="#kleine-probleme-en-passant" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Quicksearch im Detail funktionierte wieder nicht.</li>
+<li>Grid eines Slave-Reports im eigenen Fenster
+(z.B. <a class="reference external" href="http://127.0.0.1:8000/api/links/LinksByOwner?fmt=grid&amp;mt=12&amp;mk=16">http://127.0.0.1:8000/api/links/LinksByOwner?fmt=grid&amp;mt=12&amp;mk=16</a>)<ul>
+<li>Hier funktionierte das Speichern noch nicht, da wurden mt und mk zwar
+übergeben, aber in ExtUI.api_elem_view nicht richtig ausgewertet.
+Beim PUT eines Elements brauchen die
+base_params (also z.B. mt und mk) eigentlich nicht übergeben zu werden.</li>
+<li>Bei Insert in so einem Report waren die Master-Felder nicht ausgefüllt.</li>
+</ul>
+</li>
+<li>Wenn man einen Record in der Detail-Ansicht hatte und dann löschte,
+dann blient das Fenster stehen. Stattdessen schließt sich jetzt das
+Detail-Fenster, und die eventuell darunterliegende Grid wird aktualisiert.</li>
+</ul>
+</div>
+<div class="section" id="first-steps-with-drag-drop">
+<h2>First steps with Drag &amp; Drop<a class="headerlink" href="#first-steps-with-drag-drop" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Nach einigen ersten Versuchen habe ich gleich ein Problem, das ich
+im ExtJS-Forum posten möchte: <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//extjs-showcases/20101025.html">/extjs-showcases/20101025.html</a>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1026.html" title="20101026"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1024.html" title="20101024"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1025.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1025.html">Online Link</a>
+    </div>
+  </body>
+</html>

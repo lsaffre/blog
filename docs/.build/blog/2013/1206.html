@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131206 (Friday, 06 December 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131207 (Saturday, 07 December 2013)" href="1207.html" />
+    <link rel="prev" title="20131205 (Thursday, 05 December 2013)" href="1205.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1207.html" title="20131207 (Saturday, 07 December 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1205.html" title="20131205 (Thursday, 05 December 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-06-december-2013">
+<h1>20131206 (Friday, 06 December 2013)<a class="headerlink" href="#friday-06-december-2013" title="Permalink to this headline">¶</a></h1>
+<p>The public demos for <a class="reference external" href="http://www.lino-framework.org/examples/polly/index.html#polly" title="(in Lino v1.6)"><span>Lino Polly</span></a> and
+<a class="reference external" href="http://logos.lino-framework.org/index.html#logos" title="(in Lino-Logos Reference Manual v0.0)"><span>Lino Logos</span></a> were broken due to a server
+configuration problem.
+And I didn&#8217;t notice it because they were not listed in <a class="reference external" href="http://www.lino-framework.org/demos.html#demos" title="(in Lino v1.6)"><span>Demo sites</span></a>.</p>
+<p>The conversion of existing renderers to plugins
+will be an occasion to tidy up some historic ambiguities.</p>
+<ul>
+<li><p class="first">The Kernel.
+The object stored in <cite>settings.SITE.ui</cite> : is (like SITE itself)
+a &#8220;de facto singleton&#8221;. But it remains
+an independent class/object instance
+(and is not merged into the Site)
+because it gets created and imported only when the modules are
+populated. Might rename it to <cite>kernel</cite>.</p>
+<p>Until now the activities and methods of the kernel were
+scattered across  <cite>ui.base</cite>, <cite>ui.ui</cite> and <cite>core.kernel</cite>.
+Now they are all in <a class="reference external" href="http://www.lino-framework.org/api/lino.core.kernel.html#module-lino.core.kernel" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.kernel</span></code></a>.</p>
+</li>
+</ul>
+<p>This was easy and has no impact on user code.
+All tests pass. Commit.
+It helped me to understand the following:</p>
+<ul>
+<li><p class="first">My first idea was to convert the three &#8220;renderers&#8221;
+(TextRenderer, PlainRenderer and ExtRenderer) to plugins:</p>
+<div class="highlight-python"><div class="highlight"><pre>SITE.ui.plain_renderer -&gt; SITE.plugins.plain_ui
+SITE.ui.ext_renderer -&gt; SITE.plugins.extjs_ui
+SITE.ui.text_renderer -&gt; SITE.plugins.text_ui
+</pre></div>
+</div>
+</li>
+<li><p class="first">But they cannot become subclasses of <cite>ad.App</cite> because they get
+instantiated only during Kernel startup (i.e. when the Django models
+are already populated).</p>
+</li>
+<li><p class="first">I&#8217;d call them &#8220;runtime extensions&#8221; or &#8220;kernel plugins&#8221;,
+or &#8220;features&#8221;.</p>
+</li>
+<li><p class="first">Note that &#8220;renderer&#8221; is the wrong name.
+These three things are what I would call &#8220;user interfaces&#8221;.
+A user interface being &#8220;a system of methods and ways to interact
+with the user&#8221;.
+But before renaming them I should rename all current
+occurences of &#8220;ui&#8221; to &#8220;kernel&#8221;.</p>
+</li>
+<li><p class="first">Not yet sure what to do with <cite>SITE.default_renderer</cite></p>
+</li>
+</ul>
+<p>As a result, I&#8217;ll leave these ideas open for the moment and
+first convert the <cite>use_extensible</cite> setting into a plugin.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1207.html" title="20131207 (Saturday, 07 December 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1205.html" title="20131205 (Thursday, 05 December 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1206.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1206.html">Online Link</a>
+    </div>
+  </body>
+</html>

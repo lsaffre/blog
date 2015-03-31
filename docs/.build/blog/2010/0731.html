@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100731 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100803" href="0803.html" />
+    <link rel="prev" title="20100729" href="0729.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0803.html" title="20100803"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0729.html" title="20100729"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20100731<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="uhr">
+<h2>17.10 Uhr<a class="headerlink" href="#uhr" title="Permalink to this headline">¶</a></h2>
+<p>Diese Nacht hatte ich zwei Stunden gesurft und nach Ideen gesucht, was ich falsch mache beim Bildschirmaufbau.
+Ohne Erfolg.
+Es geht um folgenden Punkt aus der <a class="reference external" href="http://www.lino-framework.org/todo.html">/todo</a>:</p>
+<ul class="simple">
+<li>Das &#8220;Öffnen&#8221; eines neuen &#8220;Fensters&#8221; ist langsamer als im UI mit echten Fenstern (<a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.Window">Ext.Window</a>).
+Weil jetzt der Inhalt des alten Fensters zunächst aus dem Viewport entfernt wird.
+Einfach ein neues Ext.Window zu öffnen und über den vorigen Browserinhalt zu knallen ging offenbar schneller.</li>
+</ul>
+<p>Heute morgen habe ich unsere beiden Schornsteine gefegt und wollte nach dem Mittagessen eigentlich den Rasen mähen gehen.
+Aber da kam mir eine Idee für <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.WindowWrapper.show" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.WindowWrapper.show()</span></code></a> und <code class="xref js js-func docutils literal"><span class="pre">Lino.WindowWrapper.close()</span></code>.
+Bisher waren diese beiden Funktionen wie folgt:</p>
+<div class="highlight-python"><div class="highlight"><pre>show : function() {
+    var main = Ext.getCmp(&#39;main_area&#39;);
+    var old = main.items.first();
+    Lino.hidden_windows.push(old);
+    Ext.apply(this.window,{autoSize: true,id:&#39;current_window&#39;});
+    main.items.replace(this.window);
+    main.doLayout();
+},
+close : function() {
+    var main = Ext.getCmp(&#39;main_area&#39;);
+    var current = main.items.first();
+    var w = Lino.hidden_windows.pop();
+    if (w) {
+      main.items.replace(w);
+    } else {
+      main.removeAll();
+    }
+    current.destroy();
+}
+</pre></div>
+</div>
+<p>Zu bemerken ist, dass das <cite>this.window</cite> eines WindowWrapper ja kein <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.Window">Ext.Window</a> mehr ist, sondern ein <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.Panel">Ext.Panel</a>.
+Jetzt zu meiner Idee.
+Anstatt das so kompliziert zu machen, mache ich einfach:</p>
+<div class="highlight-python"><div class="highlight"><pre>show : function() {
+    Ext.apply(this.window,{renderTo: &#39;main_area&#39;, constrain:true, maximized:true });
+    this.window.show();
+},
+close : function() {
+    this.window.close();
+}
+</pre></div>
+</div>
+<p>Und außerdem ist das <cite>this.window</cite> jetzt wieder ein Ext.Window.
+Voilà. Ich bin nicht sicher, ob die Fenster jetzt tatsächlich <em>schneller</em> gerendert werden, aber durch irgendeinen Zaubertrick,
+den <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.Window">Ext.Window</a> offensichtlich benutzt, sieht man jetzt nicht mehr mit bloßem Auge, wie der Fensterinhalt
+stückweise aufgebaut wird.
+Eine gut investierte halbe Stunde!
+Check-In 1096 und dann aber Rasenmähen.</p>
+</div>
+<div class="section" id="id2">
+<h2>21.20 Uhr<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>Okay, das Detail-Fenster kommt jetzt auf einen Schlag... aber leider erst nach ca. 4 Sekunden. Während dieser 4 Sekunden geschieht <em>nichts</em>. Kein AJAX-Call (der kommt erst, wenn das Fenster angezeigt ist), und keinerlei Feedback, dass er überhaupt was tut. Jetzt wäre es also wichtig, dass der Benutzer wenigstens sehen kann, das er warten soll. Und sei es nur der Maus-Cursor.</p>
+<p>Ich habe mal an diversen Stellen mit <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.Element.setStyle({cursor:'wait'})">Ext.Element.setStyle({cursor:&#8217;wait&#8217;})</a> gespielt (mögliche Mauscursor-Formen siehe <a class="reference external" href="http://de.selfhtml.org/css/eigenschaften/anzeigefenster.htm#cursor">selfhtml.org</a>), das funktionierte auch, aber der Maus-Cursor soll (wahrscheinlich) lediglich auf dem Button zum Mauscursor werden. Das habe ich noch nicht hingekriegt. Eine irritierende Beobachtung ist: wenn ich in den Button-Handler <em>vor</em> den Aufruf der <cite>Lino.contacts.Persons.detail()</cite> ein <code class="docutils literal"><span class="pre">console.log(arguments);</span></code> einfüge, dann erscheint auch diese Meldung erst nach 5 Sekunden. Was tut der während der 5 Sekunden?! Aber okay, jetzt ist Schlafenszeit.</p>
+</div>
+<div class="section" id="id3">
+<h2>03.00 Uhr<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>Wenn man auf den Button klickt, passiert ja genau genommen schon <em>ein bisschen</em> : für ca. eine Sekunde ändert er seine Farbe. Irritierend ist eigentlich nur, dass er schon nach einer Sekunde wieder normal wird (und nicht erst wenn der Handler zu Ende ist).</p>
+<p><code class="xref js js-func docutils literal"><span class="pre">Lino.build_buttons()</span></code> arbeitet jetzt ein bisschen anders, damit der Button als zweiter
+Parameter an den Handler übergeben wird.</p>
+<p>Experimentierfreundlicherer Code in <cite>lino.ui.extjsw.ext_ui.ExtUI.a2btn</cite>.</p>
+<p>Nach Lektüre von <code class="xref std std-xfile docutils literal"><span class="pre">ext-all-debug.js</span></code> habe ich in der <code class="xref std std-xfile docutils literal"><span class="pre">lino.css</span></code> mal folgendes probiert (und verstehe nicht, weshalb das keinerlei Effekt hat):</p>
+<div class="highlight-python"><div class="highlight"><pre>.x-btn-text {
+        color: red; font-style:italic;
+}
+
+.x-btn-menu-active {
+        cursor: &#39;wait&#39;;
+        color:&#39;red&#39;;
+}
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0803.html" title="20100803"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0729.html" title="20100729"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0731.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0731.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0312.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0310.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0312.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0310.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100310 ←] [20100311 11.03.2010] [20100312 →] =</p>
+<p>Kontextbewusste Auswahllisten (<cite>setContextValues()</cite>) funktionieren wieder: für city zeigt er wieder nur die Städte des betreffenden Landes an.</p>
+<p>Filtern der Auswahlliste einer Combobox funktioniert auch wieder.</p>
+<p>Punkt 6 von gestern abend ist jetzt dadurch behoben, dass Projects nun ein Page-Layout hat (was sowieso nötig war). Comboboxen in automatisch generierten PageLayout funktionieren weiterhin nicht, aber das stört momentan niemanden. Issue 116 (ComboBoxes in Details with generic PageLayout don&#8217;t work).</p>
+<p>Problem ist noch, dass er die dsbe-spezifischen Felder (person, company und why_stopped) nicht anzeigt im Detail der Projekte, obschon ich das in dsbe.models überschreibe. Er wählt da scheinbar den Standard-Report.</p>
+<p>Punkt 7 von gestern lag daran, dass ich für die Slave-Fenster natürlich <cite>closeAction=&#8217;hide&#8217;</cite> setzen muss. Behoben.</p>
+<p>So, und jetzt endlich noch mal was Sichtbares: Personen und Firmen haben nun einen neuen Button &#8220;PDF&#8221;. Und der funktioniert sogar! Freilich ist das dabei rauskommende Dokument nicht besonders erbaulich, weil ich die Vorlage momentan nur mal dahingeworfen habe. Das soll jedenfalls mal ein &#8220;Aktenblatt&#8221; o.ä. werden.</p>
+<p>Der PDF-Button auf den Stammdaten einer Person oder Firma druckt immer ein &#8220;Aktenblatt&#8221;. Die Funktionalität, dass man wie in TIM nach F7 noch eine Auswahlliste mit verschiedenen Templates bekommt, die kommt in Lino wahrscheinlich weg. Wenn man ein bestimmtes Dokument (z.B. einen Kontoauszug) drucken will, erstellt man stattdessen eine entsprechende Notiz, und die Art der Notiz entscheidet dann, welches PDF-Template genommen wird. Also in Note muss ich noch eine Methode <cite>html_templates</cite> schreiben.</p>
+<p>Dafür habe ich aus <cite>lino.modlib.documents.AbstractDocument</cite> eine Mixin-Klasse <cite>Printable</cite> rausgespalten, die man auf jedes bestehende Model anwenden kann.
+Ich musste auch die PrintAction und PdfAction noch konvertieren, die hatten noch keine <cite>run_in_dlg()</cite>. Auch ignorierte <cite>Lino.do_dialog</cite> noch den <cite>DialogResonse.redirect</cite>.</p>
+<p>Den bisherige Button &#8220;Print&#8221; habe ich bis auf weiteres rausgeholt. Der öffnete ja lediglich ein eher irritierendes Fenster, das eine Art schnelle HTML-Ansicht anzeigte.</p>
+<p>Jetzt noch in lino.modlib.notes.models ein <cite>from lino.modlib.documents.utils import Printable</cite>, und in der Modelldeklaration von <cite>Note</cite> das <cite>Printable</cite> hinzufügen, ein erstes Template machen, und Plupp kann man auch Notizen ausdrucken. Schön!</p>
+<p>Check-In
+[<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=e9e088394b0b43ca48d9429a30d6c3e885a7a4aa">http://code.google.com/p/lino/source/detail?r=e9e088394b0b43ca48d9429a30d6c3e885a7a4aa</a> lino] und
+[<a class="reference external" href="http://code.google.com/p/lino-dsbe/source/detail?r=7fa3fb17debe30596e8724ab0e885bab01af99e9">http://code.google.com/p/lino-dsbe/source/detail?r=7fa3fb17debe30596e8724ab0e885bab01af99e9</a> lino-dsbe]
+wegen Feierabend.</p>
+<p>Aktualisierte Liste der offenen Punkte für morgen:</p>
+<blockquote>
+<div># Formatierter Text kommt im PDF als HTML-Code raus. Da muss ich im Template noch das richtige Wörtchen finden um ihm zu sagen, dass <cite>{{instance.text}}</cite> HTML enthält (<cite>mark_safe</cite> oder so).
+# Problem, dass er die dsbe-spezifischen Felder (person, company und why_stopped) nicht anzeigt im Detail der Projekte, obschon ich das in dsbe.models überschreibe. Er wählt da scheinbar den Standard-Report.
+# Kolonne &#8216;text&#8217; muss entweder aus der Grid von MyNotes raus, oder in der Höhe beschränkt werden.
+# Langsam wird es Zeit, das Passfoto einer Person am Bildschirm zu zeigen.
+# <cite>Note.html_templates</cite> implementieren und in NoteType ein Feld &#8220;template&#8221;.
+# Issue 115: Insert im Detail-Fenster funktioniert nur unsichtbar: er steht anschließend nicht auf dem neu erstellten Record. In der Grid nebenan dagegen sieht man den neuen Record (wenn die Grid auf der richtigen Seite steht und den neuen (noch leeren) Record nicht wegen Quickfilter rausfiltert).
+# Issue 114: Änderung der Fenstergröße und sonstigen Fensterkonfiguration wird erst nach dem nächsten Restart des Servers berücksichtigt.</div></blockquote>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0312.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0310.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0311.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0311.html">Online Link</a>
+    </div>
+  </body>
+</html>

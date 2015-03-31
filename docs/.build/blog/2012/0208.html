@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120208 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120209" href="0209.html" />
+    <link rel="prev" title="20120207" href="0207.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0209.html" title="20120209"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0207.html" title="20120207"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120208<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Hier die Lösung für das Problem von <a class="reference external" href="http://www.lino-framework.org0207.html">gestern</a>.
+Für beide Vertragsarten gilt jetzt:</p>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal"><span class="pre">Vertreten</span> <span class="pre">durch</span></code>
+ist kein aktives Feld mehr.</li>
+<li>Wenn
+<code class="xref py py-attr docutils literal"><span class="pre">Vertreten</span> <span class="pre">durch</span></code>
+nicht leer ist und man die
+<code class="xref py py-attr docutils literal"><span class="pre">Organisation</span></code>
+ändert, dann wird der bestehende Wert in
+<code class="xref py py-attr docutils literal"><span class="pre">Vertreten</span> <span class="pre">durch</span></code>
+überschrieben.</li>
+</ul>
+<div class="section" id="pro-speichern-ein-ajax-call-weniger">
+<h2>Pro Speichern ein AJAX-Call weniger<a class="headerlink" href="#pro-speichern-ein-ajax-call-weniger" title="Permalink to this headline">¶</a></h2>
+<p><cite>FormPanel.save()</cite> kriegt jetzt als Antwort vom Server auf sein POST bzw. PUT
+den kompletten aktualisierten Record zurück,
+statt wie bisher lediglich dessen ID, mit dem er dann ein weiteres GET machte.
+Also pro Speichern ein AJAX-Call weniger!
+Was insbesondere bei aktiven Feldern angenehm auffallen dürfte.</p>
+<p>Beim Testen dieses Features fand ich einen weiteren Bug:
+Die drei [Upload]-Buttons für Arbeitserlaubnis, Führerschein etc.
+funktionieren momentan nicht korrekt. Wenn man die benutzt, ist
+anschließend der Upload nicht der betreffenden Person zugewiesen.
+Erklärung:
+<code class="xref py py-func docutils literal"><span class="pre">lino.extjs3.ext_ui.HtmlRenderer.quick_upload_buttons()</span></code> setzte
+base_params  nach params statt nach status.</p>
+</div>
+<div class="section" id="probleme-mit-komplexer-json-response">
+<h2>Probleme mit komplexer JSON-Response<a class="headerlink" href="#probleme-mit-komplexer-json-response" title="Permalink to this headline">¶</a></h2>
+<p>Oops, weil er jetzt den kompletten Record zurückgibt,
+kriegt der Browser in komplexeren Fällen scheinbar ein Problem mit dem
+Dekodieren des JSON. Hier die Antwort auf das POST nach
+Erstellen eines neuen Uploads:</p>
+<div class="highlight-python"><div class="highlight"><pre>{ &quot;message&quot;: &quot;Upload \&quot;Aufenthaltserlaubnis wir2012b_4.jpg\&quot; wurde erstellt.&quot;,
+  &quot;success&quot;: true,
+  &quot;data_record&quot;: {
+    &quot;navinfo&quot;: { &quot;last&quot;: 3, &quot;recno&quot;: 1, &quot;prev&quot;: null, &quot;message&quot;: &quot;Record  1 von 1&quot;, &quot;first&quot;: 3, &quot;next&quot;: null },
+    &quot;disable_delete&quot;: null,
+    &quot;title&quot;: &quot;Uploads von COLLARD Charlotte (122) \u00bb Aufenthaltserlaubnis wir2012b_4.jpg&quot;,
+    &quot;data&quot;: {
+      &quot;valid_until&quot;: null, &quot;description&quot;: &quot;&quot;,
+      &quot;created&quot;: &quot;2012-02-08T10:06:27&quot;, &quot;userHidden&quot;: 103,
+      &quot;modified&quot;: &quot;2012-02-08T10:06:27&quot;, &quot;typeHidden&quot;: 2,
+      &quot;disable_editing&quot;: false, &quot;user&quot;: &quot;root&quot;,
+      &quot;file&quot;: &quot;uploads/2012/02/wir2012b_4.jpg&quot;,
+      &quot;owner&quot;: &quot;&lt;a href=&quot;\&amp;quot;javascript:Lino.dsbe.AllPersons.detail(null,{&quot; &amp;quot;record_id&amp;quot;:=&quot;&quot; 122=&quot;&quot; })\&quot;=&quot;&quot;&gt;COLLARD Charlotte (122)&lt;/a&gt;&quot;,
+      &quot;disabled_fields&quot;: { &quot;id&quot;: true },
+      &quot;type&quot;: &quot;Aufenthaltserlaubnis&quot;, &quot;id&quot;: 3 }, &quot;disabled_actions&quot;: {  }, &quot;id&quot;: 3 } }
+</pre></div>
+</div>
+<p>Das obige habe ich abgefangen, indem ich in der <cite>ext-all-debug.js</cite> eine Zeile eingefügt habe:</p>
+<div class="highlight-python"><div class="highlight"><pre>doDecode = function(json){
+    console.log(&quot;20120208 doDecode()&quot;,json);
+    return eval(&quot;(&quot; + json + &quot;)&quot;);
+},
+</pre></div>
+</div>
+<p>Im Feld <cite>owner</cite> stehen zwei <code class="docutils literal"><span class="pre">=&quot;&quot;</span></code>, die ich mir nicht erklären kann (und der Browser offenbar auch nicht).
+Wenn ich anschließend den erstellen Record abfrage (<a class="reference external" href="http://127.0.0.1:8000/api/uploads/Uploads/3">http://127.0.0.1:8000/api/uploads/Uploads/3</a>),
+kommt eine korrekte Antwort:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&quot;navinfo&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&quot;last&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s">&quot;recno&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s">&quot;prev&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s">&quot;message&quot;</span><span class="p">:</span> <span class="s">&quot;Record  3 von 4&quot;</span><span class="p">,</span> <span class="s">&quot;first&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&quot;next&quot;</span><span class="p">:</span> <span class="mi">4</span> <span class="p">},</span>
+<span class="s">&quot;disable_delete&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+<span class="s">&quot;title&quot;</span><span class="p">:</span> <span class="s">&quot;Uploads </span><span class="se">\u00bb</span><span class="s"> Aufenthaltserlaubnis wir2012b_4.jpg&quot;</span><span class="p">,</span>
+<span class="s">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s">&quot;valid_until&quot;</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span> <span class="s">&quot;description&quot;</span><span class="p">:</span> <span class="s">&quot;&quot;</span><span class="p">,</span>
+  <span class="s">&quot;created&quot;</span><span class="p">:</span> <span class="s">&quot;2012-02-08T10:06:27&quot;</span><span class="p">,</span> <span class="s">&quot;userHidden&quot;</span><span class="p">:</span> <span class="mi">103</span><span class="p">,</span>
+  <span class="s">&quot;modified&quot;</span><span class="p">:</span> <span class="s">&quot;2012-02-08T10:06:27&quot;</span><span class="p">,</span> <span class="s">&quot;typeHidden&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="s">&quot;disable_editing&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="s">&quot;user&quot;</span><span class="p">:</span> <span class="s">&quot;root&quot;</span><span class="p">,</span>
+  <span class="s">&quot;file&quot;</span><span class="p">:</span> <span class="s">&quot;uploads/2012/02/wir2012b_4.jpg&quot;</span><span class="p">,</span>
+  <span class="s">&quot;owner&quot;</span><span class="p">:</span> <span class="s">&quot;&lt;a href=</span><span class="se">\&quot;</span><span class="s">javascript:Lino.dsbe.AllPersons.detail(null,{ &amp;quot;record_id&amp;quot;: 122 })</span><span class="se">\&quot;</span><span class="s">&gt;COLLARD Charlotte (122)&lt;/a&gt;&quot;</span><span class="p">,</span>
+  <span class="s">&quot;disabled_fields&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="n">true</span> <span class="p">},</span>
+  <span class="s">&quot;type&quot;</span><span class="p">:</span> <span class="s">&quot;Aufenthaltserlaubnis&quot;</span><span class="p">,</span> <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span> <span class="p">},</span> <span class="s">&quot;disabled_actions&quot;</span><span class="p">:</span> <span class="p">{</span>  <span class="p">},</span> <span class="s">&quot;id&quot;</span><span class="p">:</span> <span class="mi">3</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Ist es vielleicht ein Bug in meiner <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.jsgen.html#lino.utils.jsgen.py2js" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">lino.utils.jsgen.py2js()</span></code></a>?
+Das Feld <cite>owner</cite> ist ein DisplayField und soll folgendes HTML-Fragment enthalten:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;a href=&quot;javascript:Lino.dsbe.AllPersons.detail(null,{&amp;quot;record_id&amp;quot;: 122 }&quot;&gt;COLLARD Charlotte (122)&lt;/a&gt;
+</pre></div>
+</div>
+<p>Hier ein vereinfachtes Beispiel, das in jedem Browser funktioniert:</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;html&gt;
+&lt;body&gt;
+&lt;a href=&quot;javascript:alert({&amp;quot;record_id&amp;quot;: 122 })&quot;&gt;Test&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div>
+</div>
+<p>Added test examples in docstring of <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.jsgen.html#module-lino.utils.jsgen" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.jsgen</span></code></a>.</p>
+<p>Wenn ich folgende Meldung einbaue:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">json_response</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">py2js</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;20120208 json_response(</span><span class="si">%r</span><span class="s">)</span><span class="se">\n</span><span class="s">--&gt; </span><span class="si">%s</span><span class="s">&quot;</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">s</span><span class="p">)</span>
+    <span class="c">#~ return HttpResponse(s, content_type=&#39;text/html&#39;)</span>
+    <span class="k">return</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">content_type</span><span class="o">=</span><span class="s">&#39;application/json&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Dann kriege ich:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO 20120208 json_response({&#39;message&#39;: u&#39;Upload &quot;F\xfchrerschein wir2012b_8.jpg&quot; wurde erstellt.&#39;, &#39;success&#39;: True, &#39;data_record&#39;: {&#39;navinfo&#39;: {&#39;last&#39;: 9, &#39;recno&#39;: 3, &#39;prev&#39;: 8, &#39;message&#39;: u&#39;Record  3 von 3&#39;, &#39;first&#39;: 7, &#39;next&#39;: None}, &#39;disable_delete&#39;: None, &#39;title&#39;: u&#39;Uploads von ARENS Annette (118) \xbb F\xfchrerschein wir2012b_8.jpg&#39;, &#39;data&#39;: {&#39;valid_until&#39;: None, &#39;description&#39;: &#39;&#39;, &#39;created&#39;: datetime.datetime(2012, 2, 8, 20, 43, 48, 46000), &#39;userHidden&#39;: 103, &#39;modified&#39;: datetime.datetime(2012, 2, 8, 20, 43, 48, 46000), &#39;typeHidden&#39;: 5, &#39;disable_editing&#39;: False, &#39;user&#39;: u&#39;root&#39;, &#39;file&#39;: u&#39;uploads/2012/02/wir2012b_8.jpg&#39;, &#39;owner&#39;: u&#39;&lt;a href=&quot;javascript:Lino.dsbe.AllPersons.detail(null,{ &amp;quot;record_id&amp;quot;: 118 })&quot;&gt;ARENS Annette (118)&lt;/a&gt;&#39;, &#39;disabled_fields&#39;: {&#39;id&#39;: True}, &#39;type&#39;: u&#39;F\xfchrerschein&#39;, &#39;id&#39;: 9}, &#39;disabled_actions&#39;: {}, &#39;id&#39;: 9}})
+--&gt; { &quot;message&quot;: &quot;Upload \&quot;F\u00fchrerschein wir2012b_8.jpg\&quot; wurde erstellt.&quot;, &quot;success&quot;: true, &quot;data_record&quot;: { &quot;navinfo&quot;: { &quot;last&quot;: 9, &quot;recno&quot;: 3, &quot;prev&quot;: 8, &quot;message&quot;: &quot;Record  3 von 3&quot;, &quot;first&quot;: 7, &quot;next&quot;: null }, &quot;disable_delete&quot;: null, &quot;title&quot;: &quot;Uploads von ARENS Annette (118) \u00bb F\u00fchrerschein wir2012b_8.jpg&quot;, &quot;data&quot;: { &quot;valid_until&quot;: null, &quot;description&quot;: &quot;&quot;, &quot;created&quot;: &quot;2012-02-08T20:43:48&quot;, &quot;userHidden&quot;: 103, &quot;modified&quot;: &quot;2012-02-08T20:43:48&quot;, &quot;typeHidden&quot;: 5, &quot;disable_editing&quot;: false, &quot;user&quot;: &quot;root&quot;, &quot;file&quot;: &quot;uploads/2012/02/wir2012b_8.jpg&quot;, &quot;owner&quot;: &quot;&lt;a href=\&quot;javascript:Lino.dsbe.AllPersons.detail(null,{ &amp;quot;record_id&amp;quot;: 118 })\&quot;&gt;ARENS Annette (118)&lt;/a&gt;&quot;, &quot;disabled_fields&quot;: { &quot;id&quot;: true }, &quot;type&quot;: &quot;F\u00fchrerschein&quot;, &quot;id&quot;: 9 }, &quot;disabled_actions&quot;: {  }, &quot;id&quot;: 9 } }
+</pre></div>
+</div>
+<p>Also der Fehler scheint nicht in py2js zu sein, sondern eher ein Nebeneffekt beim decoding.</p>
+<p>Das Ganze könnte damit zusammen hängen,
+dass es sich um die Antwort auf einen file upload handelt.
+Hm, das wäre ein Grund, mal den awesome uploader auszupacken...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0209.html" title="20120209"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0207.html" title="20120207"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0208.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0208.html">Online Link</a>
+    </div>
+  </body>
+</html>

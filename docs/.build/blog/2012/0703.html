@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120703 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120704" href="0704.html" />
+    <link rel="prev" title="20120702" href="0702.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0704.html" title="20120704"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0702.html" title="20120702"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120703<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Zu den gestern entdeckten offenen Problemen:</p>
+<ul class="simple">
+<li>Wenn man über &#8220;Meine Tx25-Anfragen&#8221; eine neue Anfrage erstellt,
+füllt Lino die NR-Nr. nicht ein, nachdem man den Klienten ausgewählt hat.</li>
+</ul>
+<p>&#8211;&gt; Das ist nicht nur nicht einfach, sondern auch nicht sinnvoll.
+Der komplette KBSS-Baum aus dem &#8220;Mein Menü&#8221; kommt raus, fertig.</p>
+<ul class="simple">
+<li>Kann Fenster mit ungültigen Angaben nicht schließen,
+weil <cite>auto_save</cite> fälschlicherweise auch beim close button
+zuschlägt und den Record dann jedesmal zu speichern versucht
+(was jedesmal fehlschlägt).</li>
+</ul>
+<p>&#8211;&gt; New attribute <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.Action.auto_save" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">lino.core.actions.Action.auto_save</span></code></a>.</p>
+<div class="section" id="customization-functions">
+<h2>Customization functions<a class="headerlink" href="#customization-functions" title="Permalink to this headline">¶</a></h2>
+<p>Another little problem occured which is worth some principal thoughts.</p>
+<p>In <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw</span></code>,
+since <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.models.html#lino.modlib.notes.models.Note" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">models.Note</span></code></a>
+has become a <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.html#lino.mixins.ProjectRelated" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">ProjectRelated</span></code></a>,
+the internal name of the ForeignKey to the Person has changed
+from <cite>person</cite> to <cite>project</cite>.
+And the field <cite>company</cite> became an application-specific field,
+injected in <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw.models</span></code>.
+We wanted it like this because it makes the <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.html#module-lino.modlib.notes" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.notes</span></code></a> module
+available for usage in other applications.</p>
+<p>But then we discovered that the appy template for printing a CV no longer works.
+Of course: it contains references to the <cite>person</cite> field.
+Solution is easy: make an application-specific property <cite>person</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_person</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span>
+<span class="n">Note</span><span class="o">.</span><span class="n">person</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_person</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This code sits in <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw.models</span></code>,
+more precisely in the
+<code class="xref py py-func docutils literal"><span class="pre">customize_notes</span></code>
+function of that module.</p>
+<p>Formulated the new concept of <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-customization-functions" title="(in Lino v1.6)"><span class="xref std std-term">customization functions</span></a>,
+and <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw.models</span></code> defines six of them:</p>
+<ul class="simple">
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_siteconfig</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_notes</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_contacts</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_sqlite</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_user_groups</span></code></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">customize_user_profiles</span></code></li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<p>Some free changes (not asked by any user):</p>
+<ul class="simple">
+<li>The
+<code class="xref py py-class docutils literal"><span class="pre">CreatePostings</span></code>,
+<code class="xref py py-class docutils literal"><span class="pre">CreateMail</span></code>
+and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.outbox.models.html#lino.modlib.outbox.models.SendMail" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">SendMail</span></code></a>,
+actions were (wrongly)
+callable from an insert window.</li>
+<li>Wow!
+<code class="xref py py-func docutils literal"><span class="pre">lino.apps.pcsw.models.site_setup()</span></code> now
+adds an <cite>insert_template</cite> for <cite>notes.Note</cite>.
+Creating a Note is now much more intuitive.</li>
+<li>Creating an E-Mail on a Note whose NoteType
+specifies &#8220;Mail as attachment&#8221; is now disabled as long
+as the Note hasn&#8217;t been printed.</li>
+<li><cite>outbox.Mail</cite> objects are now readonly after they have
+been sent.</li>
+<li>The <cite>outbox.Mail.user</cite> field is now labelled &#8220;Sender&#8221; instead of &#8220;User&#8221;.</li>
+</ul>
+<p>Fixed a bug reported by Gerd:</p>
+<ul class="simple">
+<li>&#8220;Wenn ich eine Notiz eines Kollegen per E-Mail verschicke,
+steht als Sender der Kollege.&#8221;</li>
+</ul>
+<p>This was because <code class="xref py py-class docutils literal"><span class="pre">UserAuthored</span></code>
+had the following method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">update_owned_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">):</span>
+    <span class="n">other</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">user</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">UserAuthored</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">update_owned_instance</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Removed that method because we cannot generally say that this is
+a wanted behaviour. Don&#8217;t even remember where it is useful.
+(If it was, then these cases will pop up as bug reports... sorry).</p>
+<p>Solved another bug reported by Gerd:</p>
+<ul class="simple">
+<li>&#8220;Empfängerart wird erst sichtbar, wenn man auch einen Empfänger eingegeben hat.&#8221;</li>
+</ul>
+<p>This is not truly fixed, but I moved the Recipient.type column to the right so
+that the user first selects the Partner. IMHO that&#8217;s enough.</p>
+<ul class="simple">
+<li>Übersetzung Label für &#8220;Create&#8221;: &#8220;Erstellen&#8221;</li>
+</ul>
+</div>
+<div class="section" id="insertlayout-cannot-inherit-from-a-detaillayout">
+<h2>InsertLayout cannot inherit from a DetailLayout<a class="headerlink" href="#insertlayout-cannot-inherit-from-a-detaillayout" title="Permalink to this headline">¶</a></h2>
+<p>Also added a separate <cite>insert_template</cite> for <cite>cal.Events</cite>.
+But there I understood a subtle design problem:
+having InsertLayout and DetailLayout two different classes made
+it impossible to define an insert_layout that inherits from a
+detail_layout.
+The detail_layout of cal.Events defines two panels <cite>start</cite> and <cite>end</cite>,
+and we were not able to reuse them for the insert_layout.
+Internal changes to make this possible:
+reduced InsertLayout and DetailLayout to a single class
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.layouts.html#lino.core.layouts.FormLayout" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">FormLayout</span></code></a>.</p>
+</div>
+<div class="section" id="id2">
+<h2>Miscellaneous<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Oops, the <a class="reference external" href="http://www.lino-framework.org/tutorials/lets.html">/tutorials/lets</a> was really very obsolete.
+Now it works again.</li>
+<li>Started a
+<a class="reference external" href="http://sites.saffre-rumma.net/lino_pcsw_fr/">French User Guide</a>
+for <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw</span></code>:</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0704.html" title="20120704"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0702.html" title="20120702"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0703.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0703.html">Online Link</a>
+    </div>
+  </body>
+</html>

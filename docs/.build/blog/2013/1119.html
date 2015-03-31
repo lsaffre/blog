@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131119 (Tuesday, 19 November 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131120 (Wednesday, 20 November 2013)" href="1120.html" />
+    <link rel="prev" title="20131118 (Monday, 18 November 2013)" href="1118.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1120.html" title="20131120 (Wednesday, 20 November 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1118.html" title="20131118 (Monday, 18 November 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-19-november-2013">
+<h1>20131119 (Tuesday, 19 November 2013)<a class="headerlink" href="#tuesday-19-november-2013" title="Permalink to this headline">¶</a></h1>
+<p>Today I continued to Work on <a class="reference external" href="http://www.lino-framework.org/eidreader/index.html#eidreader" title="(in Lino v1.6)"><span>The EIDReader applet</span></a>,
+looking for the explanation for yesterday&#8217;s last problem:</p>
+<blockquote>
+<div><p>But trying to read my Belgian card gives a new error:</p>
+<div class="highlight-python"><div class="highlight"><pre>java.lang.SecurityException: trusted loader attempted to
+load sandboxed resource from
+file:/t:/applets/eid-applet-service.jar
+</pre></div>
+</div>
+<p>I added <cite>Trusted-Library: true</cite> to my <cite>Manifest.txt</cite> and
+re-signed.  Now there&#8217;s neither an error message nor a result, nor
+any output to the Java console!  The applet just exits and that&#8217;s
+all.  This happens as soon as it calls <cite>TlvParser.parse()</cite> (which
+has been imported from
+<cite>be.fedict.eid.applet.service.impl.tlv.TlvParser</cite>.</p>
+</div></blockquote>
+<p>I am married with Python,
+and before diving into documents like
+<a class="reference external" href="http://docs.oracle.com/javase/7/docs/technotes/guides/jweb/mixed_code.html">Mixing Privileged Code and Sandbox Code
+Ensuring Application and Applet Security</a>
+I always  need first to put on my mental diving dress ;-)
+No, I was kidding: I won&#8217;t say that programming a Java applet
+is <em>frustrating</em>, it&#8217;s just... <em>different</em>.</p>
+<p>If any experienced Java programmer has mercy with me, please have a look
+at <a class="reference external" href="https://github.com/lsaffre/eidreader">my code</a>,
+maybe you need just a few moments to see what I am doing wrong.
+I have it working on an IcedTea client, but Sun Java keeps
+to nag me with problems that are difficult to reproduce.</p>
+<p>Today I tried with different constellations of
+<cite>Trusted-Only: true</cite> and
+<cite>Trusted-Library: true</cite>.
+Also with <code class="docutils literal"><span class="pre">*</span></code> instead of <code class="docutils literal"><span class="pre">T=0</span></code> after reading
+<a class="reference external" href="http://h30499.www3.hp.com/t5/General/Communicating-with-Smart-card-on-Linux-machine-Fedora-8/td-p/4329253#.UoudtN84JPI">this</a>.</p>
+<p>And I am completely lost because I even don&#8217;t manage to clearly document
+the problems I saw today.</p>
+<p>For example here is a mysterious console output:</p>
+<div class="highlight-python"><div class="highlight"><pre>Java Plug-in 10.45.2.18
+Using JRE version 1.7.0_45-b18 Java HotSpot(TM) Client VM
+User home directory = C:\Documents and Settings\Luc Saffre
+----------------------------------------------------
+c:   clear console window
+f:   finalize objects on finalization queue
+g:   garbage collect
+h:   display this help message
+l:   dump classloader list
+m:   print memory usage
+o:   trigger logging
+q:   hide console
+r:   reload policy configuration
+s:   dump system and deployment properties
+t:   dump thread list
+v:   dump thread stack
+x:   clear classloader cache
+0-5: set trace level to &lt;n&gt;
+----------------------------------------------------
+javax.smartcardio.CardException: connect() failed
+        at sun.security.smartcardio.TerminalImpl.connect(Unknown Source)
+        at src.eidreader.EIDReader$2.run(EIDReader.java:452)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at src.eidreader.EIDReader.readCard(EIDReader.java:438)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+        at java.lang.reflect.Method.invoke(Unknown Source)
+        at sun.plugin.javascript.Trampoline.invoke(Unknown Source)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+        at java.lang.reflect.Method.invoke(Unknown Source)
+        at sun.plugin.javascript.JSClassLoader.invoke(Unknown Source)
+        at sun.plugin2.liveconnect.JavaClass$MethodInfo.invoke(Unknown Source)
+        at sun.plugin2.liveconnect.JavaClass$MemberBundle.invoke(Unknown Source)
+        at sun.plugin2.liveconnect.JavaClass.invoke0(Unknown Source)
+        at sun.plugin2.liveconnect.JavaClass.invoke(Unknown Source)
+        at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$DefaultInvocationDelegate.invoke(Unknown Source)
+        at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$3.run(Unknown Source)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo.doObjectOp(Unknown Source)
+        at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$LiveConnectWorker.run(Unknown Source)
+        at java.lang.Thread.run(Unknown Source)
+Caused by: sun.security.smartcardio.PCSCException: SCARD_E_PROTO_MISMATCH
+        at sun.security.smartcardio.PCSC.SCardConnect(Native Method)
+        at sun.security.smartcardio.CardImpl.&lt;init&gt;(Unknown Source)
+        ... 24 more
+</pre></div>
+</div>
+<p>Some screenshots:</p>
+<a class="reference internal image-reference" href="../../_images/1119a.png"><img alt="../../_images/1119a.png" src="../../_images/1119a.png" style="width: 491.2px; height: 276.8px;" /></a>
+<a class="reference internal image-reference" href="../../_images/1119b.png"><img alt="../../_images/1119b.png" src="../../_images/1119b.png" style="width: 475.2px; height: 132.0px;" /></a>
+<a class="reference internal image-reference" href="../../_images/1119c.png"><img alt="../../_images/1119c.png" src="../../_images/1119c.png" style="width: 516.0px; height: 206.4px;" /></a>
+<p>And here another console log:</p>
+<div class="highlight-python"><div class="highlight"><pre>It&#39;s a Belgian card
+BelgianReader() constructor started
+identityData has been read
+com.sun.deploy.security.BlockedException: Your security settings have blocked a local application from running
+    at com.sun.deploy.security.SandboxSecurity.showBlockedDialog(Unknown Source)
+    at com.sun.deploy.security.SandboxSecurity.checkRunLocal(Unknown Source)
+    at com.sun.deploy.security.SandboxSecurity.checkUnsignedSandboxSecurity(Unknown Source)
+    at com.sun.deploy.security.SandboxSecurity.isPermissionGranted(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.isTrustedByTrustDecider(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.getPermissions(Unknown Source)
+    at sun.plugin2.applet.Applet2ClassLoader.getPermissions(Unknown Source)
+    at java.security.SecureClassLoader.getProtectionDomain(Unknown Source)
+    at java.security.SecureClassLoader.defineClass(Unknown Source)
+    at java.net.URLClassLoader.defineClass(Unknown Source)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.defineClassHelper(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.access$100(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader$2.run(Unknown Source)
+    at java.security.AccessController.doPrivileged(Native Method)
+    at sun.plugin2.applet.Plugin2ClassLoader.findClassHelper(Unknown Source)
+    at sun.plugin2.applet.Applet2ClassLoader.findClass(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.loadClass0(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+    at sun.plugin2.applet.Plugin2ClassLoader.loadClass(Unknown Source)
+    at java.lang.ClassLoader.loadClass(Unknown Source)
+    at src.eidreader.BelgianReader.&lt;init&gt;(EIDReader.java:234)
+    at src.eidreader.EIDReader$2.run(EIDReader.java:461)
+    at java.security.AccessController.doPrivileged(Native Method)
+    at src.eidreader.EIDReader.readCard(EIDReader.java:438)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at sun.plugin.javascript.Trampoline.invoke(Unknown Source)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at sun.plugin.javascript.JSClassLoader.invoke(Unknown Source)
+    at sun.plugin2.liveconnect.JavaClass$MethodInfo.invoke(Unknown Source)
+    at sun.plugin2.liveconnect.JavaClass$MemberBundle.invoke(Unknown Source)
+    at sun.plugin2.liveconnect.JavaClass.invoke0(Unknown Source)
+    at sun.plugin2.liveconnect.JavaClass.invoke(Unknown Source)
+    at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$DefaultInvocationDelegate.invoke(Unknown Source)
+    at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$3.run(Unknown Source)
+    at java.security.AccessController.doPrivileged(Native Method)
+    at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo.doObjectOp(Unknown Source)
+    at sun.plugin2.main.client.LiveConnectSupport$PerAppletInfo$LiveConnectWorker.run(Unknown Source)
+    at java.lang.Thread.run(Unknown Source)
+</pre></div>
+</div>
+<div class="section" id="which-ide-to-use">
+<h2>Which IDE to use?<a class="headerlink" href="#which-ide-to-use" title="Permalink to this headline">¶</a></h2>
+<p>On such days I use to be more open for diversion.
+For example questions like the above seem more urgent than usual...</p>
+<p>JetBrains announced in September
+<a class="reference external" href="http://blog.jetbrains.com/pycharm/2013/09/jetbrains-delights-the-python-community-with-a-free-edition-of-its-famous-ide-pycharm-3-0/">a free edition of their PyCharm IDE</a>.
+I even
+downloaded a version when i read about that, but then never opened the
+.tar.gz file because there are always so many other things to do.</p>
+<p>Joe showed me (once again) that my minimalistic approach
+of using Geany as &#8220;IDE&#8221; leaves me without certain powerful tools,
+so I am going to invest some time in a successor for Geany.</p>
+<p>So now I finally started to play with it.
+Looks truly both immense and easy to get started.</p>
+<p>But while working on <a class="reference external" href="http://www.lino-framework.org/eidreader/index.html#eidreader" title="(in Lino v1.6)"><span>The EIDReader applet</span></a> I noticed that <cite>.java</cite> files are
+not highlighted.  And then I found a question <a class="reference external" href="http://stackoverflow.com/questions/19967224/how-do-i-get-yaml-syntax-highlighting-in-pycharm">How do I get YAML
+syntax highlighting in PyCharm?</a>
+on Stackoverflow, and the answer is &#8220;YAML available in Pro edition
+ONLY&#8221;.</p>
+<p>I guess that the same is true for my <cite>.java</cite> files.  Which means that
+we cannot consider the community version as free software. And there
+is no fork of PyCharms which adds a free version of these functions.
+And I am not going to start such a fork.  An IDE is for a software
+developer like a bus for a bus driver.  It takes me much time to get
+used to a new IDE.  And I&#8217;m not going to invest my time for free into
+a proprietary product as long as I didn&#8217;t even seriously investigate
+the free ones. So I am afraid that this was all I am going to say
+about PyCharms.</p>
+<p>This blog entry I wrote it already with Emacs. I guess it is at least
+six years ago that I switched from Emacs to Scite, mainly because at
+that time I was working much in parallel on TIM and Lino, and I never
+managed to have Emacs display DOS box characters correctly.
+Now it works. Just for fun, here is a screenshot from TIM:</p>
+<div class="highlight-python"><div class="highlight"><pre>╔══════════════ General accounts balances ═════════════╗
+║ Period from-to*1311                                  ║
+║ Currency *EUR                                        ║
+║ X show initial balances                              ║
+║ Pages from-to                                        ║
+║ Parameter set*LISTE                                  ║
+║ X generate PDF instead of printing                   ║
+╚══════════════════════════════════════════════════════╝
+</pre></div>
+</div>
+<p>It&#8217;s also funny to see how much my fingers still recognize their old
+friend. <code class="kbd docutils literal"><span class="pre">M-q</span></code> to reformat a paragraph while writing this blog entry,
+<code class="kbd docutils literal"><span class="pre">C-x</span> <span class="pre">C-s</span></code> to save the current buffer, ...</p>
+<p>In my <code class="file docutils literal"><span class="pre">.bashrc</span></code> I needed to say:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">EDITOR</span><span class="o">=</span><span class="s">&quot;emacsclient -n&quot;</span>
+</pre></div>
+</div>
+<p>Thanks to the authors of the
+<a class="reference external" href="http://www.gnu.org/software/emacs/tour/">Emacs Tour</a>
+who helped me to quickly re-start Emacs.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1120.html" title="20131120 (Wednesday, 20 November 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1118.html" title="20131118 (Monday, 18 November 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1119.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1119.html">Online Link</a>
+    </div>
+  </body>
+</html>

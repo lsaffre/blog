@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tuesday, February 17, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Wednesday, February 18, 2015" href="0218.html" />
+    <link rel="prev" title="Monday, February 16, 2015" href="0216.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0218.html" title="Wednesday, February 18, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0216.html" title="Monday, February 16, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-february-17-2015">
+<h1>Tuesday, February 17, 2015<a class="headerlink" href="#tuesday-february-17-2015" title="Permalink to this headline">¶</a></h1>
+<p>Cool: It is now possible to answer free text via the summary view of
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.polls.models.html#lino.modlib.polls.models.AnswersByResponse" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">polls.AnswersByResponse</span></code></a> (asked by Mathieu
+<a class="reference external" href="http://www.lino-framework.org0213.html">0213</a>).  This change was quite a challenge.  It took me two days
+and caused some subtle new features to Lino:</p>
+<ul class="simple">
+<li>Fields specified as <code class="xref py py-attr docutils literal"><span class="pre">hidden_elements</span></code> of an actor used to simply
+have no effect in any <a class="reference external" href="http://www.lino-framework.org/api/lino.core.layouts.html#lino.core.layouts.FormLayout" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">FormLayout</span></code></a>. Now they have: they are included as
+hidden fields, so they can hold data, and submitting the form will
+transmit their data.  The actual change is in
+<code class="xref py py-meth docutils literal"><span class="pre">LayoutHandle.create_element</span></code>.</li>
+<li>It is now possible to define a slave table with a <cite>master</cite> which is
+not a subclass of <cite>django.db.models.Model</cite>. This feature is not used
+however. I thought that I would need it, then realized that the
+master for AnswersByResponse is a normal database model
+&#8216;polls.Response&#8217;.</li>
+<li>Another series of <a class="reference internal" href="#changes-in-the-action-api">Changes in the action API</a> (see below).</li>
+</ul>
+<div class="section" id="changes-in-the-action-api">
+<h2>Changes in the action API<a class="headerlink" href="#changes-in-the-action-api" title="Permalink to this headline">¶</a></h2>
+<p>It is now possible to replace:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">btn</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">insert_button</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sar</span> <span class="o">=</span> <span class="n">insert_action</span><span class="o">.</span><span class="n">request_from</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">btn</span> <span class="o">=</span> <span class="n">sar</span><span class="o">.</span><span class="n">ar2button</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The summary view of <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.polls.models.html#lino.modlib.polls.models.AnswersByResponse" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">polls.AnswersByResponse</span></code></a> shows why it is
+important that <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.BaseRequest.ar2button" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar2button</span></code></a> does not check
+permissions.</p>
+<p>This change includes the new method
+<code class="xref py py-meth docutils literal"><span class="pre">lino.core.actions.Action.get_status()</span></code>.  (TODO: Formalize the
+&#8220;status&#8221; using a class object <code class="xref py py-class docutils literal"><span class="pre">ValidWindowStates</span></code>, similar to
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ValidActionResponses" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">ValidActionResponses</span></code></a>).</p>
+</div>
+<div class="section" id="listes-de-rendez-vous">
+<h2>Listes de rendez-vous<a class="headerlink" href="#listes-de-rendez-vous" title="Permalink to this headline">¶</a></h2>
+<p>Minor changes:</p>
+<ul class="simple">
+<li>Changed the label of <cite>MyEvents</cite> from &#8220;My events&#8221; to &#8220;My appointments&#8221;</li>
+<li>Dans les deux tables (MyEvents et EventsByDay) ajouté la colonne
+«Type d&#8217;événement» de manière à ce qu’on voit si c’est un entretien
+en interne ou en externe.</li>
+</ul>
+<p>à discuter:</p>
+<ul class="simple">
+<li>Dans «Rendez-vous aujourd&#8217;hui», supprimer la colonne «Attribué à»</li>
+</ul>
+</div>
+<div class="section" id="fields-newcomer-consultations-and-newcomer-appointments-go-away">
+<h2>Fields <cite>newcomer_consultations</cite> and <cite>newcomer_appointments</cite> go away<a class="headerlink" href="#fields-newcomer-consultations-and-newcomer-appointments-go-away" title="Permalink to this headline">¶</a></h2>
+<p>The fields <cite>newcomer_consultations</cite> and <cite>newcomer_appointments</cite> are
+not necessary, we can use <cite>newcomer_quota</cite> instead.</p>
+<p>We don&#8217;t need to differentiate between consultations and
+appointments. Every user with nonzero <cite>newcomer_quota</cite> (and nonempty
+<cite>calendar</cite>) will be listed:</p>
+<blockquote>
+<div>Mon coup suivant sera d&#8217;enlever ces deux cases à cocher car j&#8217;ai
+compris qu&#8217;elles sont inutiles. C&#8217;est le champ &#8220;Quota nouvelles
+demandes&#8221; (dans l&#8217;onglet &#8220;Intervention&#8221; d&#8217;un utilisateur) qui
+décidera si les filles à l&#8217;accueil peuvent faire un rendez-vous
+avec un nouveau bénéficiaire pour cet agent. La table &#8220;Créer un
+rendez-vous avec&#8221; dans l&#8217;onglet &#8220;Personne&#8221; contiendra (1) dans le
+cas d&#8217;un bénéficiaire accompagné la liste de ses intervenants
+et (2) dans le cas d&#8217;un bénéficiaire nouveau la liste des agents
+qui ont un &#8220;Quota nouvelles demandes&#8221; &gt; 0.</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0218.html" title="Wednesday, February 18, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0216.html" title="Monday, February 16, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0217.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0217.html">Online Link</a>
+    </div>
+  </body>
+</html>

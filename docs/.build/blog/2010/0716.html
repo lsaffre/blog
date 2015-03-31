@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100716 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="Famous Software Award" href="0717.html" />
+    <link rel="prev" title="20100715" href="0715.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0717.html" title="Famous Software Award"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0715.html" title="20100715"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20100716<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Passfotos werden endlich wieder angezeigt. In Einem sind nun auch die Comboboxen wieder kontextsensitiv. Der Konfigurationsparameter <cite>before_row_edit</cite> funktioniert jetzt (sieht aus als ob Funktionen in Javascript anders gehandhabt werden als normale Werte, jedenfalls musste ich von der Funktion ein <cite>createDelegate()</cite> machen). <cite>Lino.load_picture</cite> ist jetzt eine Methode von <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.WindowWrapper" title="(in Lino v1.6)"><code class="xref js js-class docutils literal"><span class="pre">Lino.WindowWrapper()</span></code></a>. Bei data_record wird <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.WindowWrapper.load_master_record" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.WindowWrapper.load_master_record()</span></code></a> ja gerufen, bevor der Component gerendert ist. Das verträgt er jetzt auc, er macht dann ein on(&#8216;render&#8217;).</p>
+<p>Außerdem sind die Passfotos jetzt erstmals anklickbar (das war subtil... die BoxComponent kriegt nicht nur das onlick-Event definiert, sondern auch cursor:pointer).</p>
+<p>Detail-Fenster hatte keine Buttons (ls_bbar_actions ist ja nicht für den WindowWrapper, sondern für GridPanel und FormPanel).</p>
+<p>Lino.grid_afteredit funktioniert wieder. Ist jetzt auch eine Methode <cite>on_afteredit</cite> von <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.GridPanel" title="(in Lino v1.6)"><code class="xref js js-class docutils literal"><span class="pre">Lino.GridPanel()</span></code></a>. Für ComboBoxen ist noch die unschöne Zeile <code class="docutils literal"><span class="pre">p[e.field+'Hidden']</span> <span class="pre">=</span> <span class="pre">e.value;</span></code> nötig.</p>
+<p><a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.id_renderer" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.id_renderer()</span></code></a> testet nun <code class="docutils literal"><span class="pre">record.phantom</span></code> statt <code class="docutils literal"><span class="pre">record.id</span> <span class="pre">==</span> <span class="pre">-99999</span></code> (wie schon im extjsu gefunden) und (neu) wird nur für AutoField als renderer verwendet. Denn sonst sah man im Phantom-Record von Country den eingegebenen isocode erst wenn der Record abgespeichert worden war.</p>
+<p>Wenn <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DEBUG" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></code></a> <code class="docutils literal"><span class="pre">False</span></code> ist, dann included er jetzt die ext-all.js statt der ext-all-debug.js.
+Allerdings fängt Django bei <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DEBUG" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></code></a> <code class="docutils literal"><span class="pre">False</span></code> die Http505-Exceptions ab und will sie formatieren, was ihm nicht gelingt weil ich dafür noch gar keine Templates installiert habe. Deshalb vier neue Dateien in <code class="file docutils literal"><span class="pre">dsbe/templates</span></code>, die ich einfach aus django.admin kopiert und ein wenig angepasst habe. Zum Beispiel habe ich mehrere <code class="docutils literal"><span class="pre">{%</span> <span class="pre">load</span> <span class="pre">adminmedia</span> <span class="pre">%}</span></code> entfernt, weil die natürlich nicht funktionieren wenn <cite>django.contrib.admin</cite> nicht in <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a> ist.</p>
+<p>Die Performance ist deutlich besser als mit extjsu, aber man kann noch nicht damit prahlen. Wo sind die größten Bottlenecks? Auf dem Server oder auf dem Client? Ich habe begonnen, FireBugs <cite>console.profile()</cite> bzw. <cite>console.time()</cite> zu nutzen. Bin noch nicht sicher, wo ich das einbauen muss, damit es sinnvoll ist. Hier ist eine Doku der console-API: <a class="reference external" href="http://getfirebug.com/wiki/index.php/Console_API">http://getfirebug.com/wiki/index.php/Console_API</a></p>
+<p>In der Grid kann man jetzt auch wieder ein neues Land erstellen, und man kann Notizarten konfigurieren (die Sache mit den neuen Choosern). Die Lösungen dazu waren in der ext_store.py, die ich integral aus extjsu übernehmen konnte.</p>
+<p>Runterladen als CSV (<a class="reference external" href="http://127.0.0.1:8000/api/contacts/Persons?fmt=csv">http://127.0.0.1:8000/api/contacts/Persons?fmt=csv</a>) funktionierte nicht. Behoben.</p>
+<p>13.05 Uhr : Check-in <a class="reference external" href="http://code.google.com/p/lino/source/detail?r=bbf5692fa56984676834cb1a569160c065caafc4">Lino</a>
+und <a class="reference external" href="http://code.google.com/p/lino-dsbe/source/detail?r=d82faa050502388b08a2e566f89990dbd13c2793">DSBE</a> mit oben beschriebenen Änderungen.</p>
+<p>14.26 Uhr : Close-Buttons funktionieren. Wenn ein neues Fenster geöffnet wird, wird das vorherige Fenster nicht gelöscht, sondern bleibt in einer Historik (Lino.hidden_windows) erhalten. Beim Schließen eines Fensters zeigt er das vorherige Fenster an. er macht das, indem er die main_area holt (die immer ein Ext.Container ist) und dann mit Ext.Container.replace() das window ersetzt. Neue Klasse <code class="xref js js-class docutils literal"><span class="pre">Lino.IndexWrapper()</span></code> war nötig, damit auch die leere Hauptseite restauriert werden kann. Diese hat ja keine Tool-Buttons und kann deshalb nicht geschlossen werden. Die Fensterhistorik wird übrigens nicht gelöscht, wenn man einen Befehl des HM startet. Habe nicht probiert, wie das wäre, aber das momentane Verhalten scheint mir okay. Zwei Details in der <a class="reference external" href="http://www.lino-framework.org/todo.html">/todo</a> für später mal.</p>
+<p>16 Uhr : Die Grid-Elemente im Detail-Fenster funktionieren wieder. <cite>Lino.load_slavegrid</cite> ersetzt durch <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.GridPanel.load_slavegrid" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.GridPanel.load_slavegrid()</span></code></a>. (Die Namensgebung und Verteilung dieser Methoden könnte bei Gelegenheit verbessert werden.)</p>
+<p>Jetzt möchte ich mal endlich probieren, ob ich prev/next-Buttons bzw. pgup/pgdn-Tasten im Detail-Fenster hinbekomme. django hat ja die Methoden <a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.get_next_by_FOO">Model.get_next_by_FOO</a> und <a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/models/instances/#django.db.models.Model.get_previous_by_FOO">Model.get_previous_by_FOO</a>, aber ich fürchte, dass die hier nichts nützen.</p>
+<p>Ich muss zunächst im URI-API einbauen, dass er auch bei einzelnen Elementen einen ReportActionRequest macht (also insbesondere order_by und quick_search auswertet). Ich habe dann also einen Report und ein Element. Wie findet man die Position (den index) eines Elements in einem QuerySet? Ha, hier ist die Frage auf Stackoverflow beantwortet: <a class="reference external" href="http://stackoverflow.com/questions/1042596/get-the-index-of-an-element-in-a-queryset">http://stackoverflow.com/questions/1042596/get-the-index-of-an-element-in-a-queryset</a></p>
+<p>In lino.ui.extjsw.ext_ui.elem2rec() implementiere ich das wie folgt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="nb">next</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">g</span> <span class="o">=</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ar</span><span class="o">.</span><span class="n">queryset</span><span class="p">)</span> <span class="c"># a generator</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="n">elem</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">queryset</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">i</span><span class="p">,</span><span class="nb">next</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">break</span>
+<span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Alternativ würde auch folgendes funktionieren:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">prev</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="nb">next</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">g</span> <span class="o">=</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ar</span><span class="o">.</span><span class="n">queryset</span><span class="p">)</span> <span class="c"># a generator</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">g</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="n">elem</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">prev</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">queryset</span><span class="p">[</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">i</span><span class="p">,</span><span class="nb">next</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+<p>Ich glaube (ohne sicher zu sein), dass die erste Methode effizienter ist, weil die <code class="docutils literal"><span class="pre">try</span> <span class="pre">...</span> <span class="pre">except</span></code> nur einmal aufgebaut wird und auch ein <code class="docutils literal"><span class="pre">for</span> <span class="pre">...</span> <span class="pre">in</span></code> generell teurer als ein <code class="docutils literal"><span class="pre">while</span> <span class="pre">True</span></code> ist.</p>
+<p>Dieser Teil funktioniert.
+Jetzt muss ich natürlich noch die Buttons einbauen.
+Und dann muss ich noch dafür sorgen, dass die gewünschten query-Parameter korrekt an die Detail-Abfrage weitergeleitet werden. Er darf z.B. nicht einfach die offset und limit von der Grid übernehmen, weil man sonst nicht über die erste Seite der Grid hinaus blättern könnte. Ich mach mir freilich auch noch Sorgen, wie lange elem2rec() dauert, wenn ich den siebzehntausendsten Record einer Liste von 20000 anfrage...</p>
+<p>Für die Buttons wäre ja ein echter Ext.PagingToolbar am schönsten. Leider verlangt der einen Store. Vielleicht gar nicht &#8220;leider&#8221;? Meine tolle prev/next-Suche in elem2rec() wäre dann zwar unnütz, aber wenn ich einen Store mit pageLen=1 machte? Dann würde ein Detail-Fenster gar nicht mehr api_elem_view sondern api_list_view benutzen. Und ich brauche mir keine Sorgen wegen möglicher Performanceproblem zu machen. Aber dann kann ich statt des pk ja gleich den index im URI-API einführen. Und ist das nicht ein bisschen Overkill, einen eigenen Store anzulegen nur zum Navigieren?</p>
+<p>Neue kurzfristige To-Do-Liste:</p>
+<ul class="simple">
+<li>Übersetzungen</li>
+<li>Warum gibt es zweimal Luc Saffre?</li>
+<li>Geburtsort einer Person FK zu City?</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0717.html" title="Famous Software Award"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0715.html" title="20100715"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0716.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0716.html">Online Link</a>
+    </div>
+  </body>
+</html>

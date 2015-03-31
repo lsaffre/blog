@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0206.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0203.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0206.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0203.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100204 Arbeitsbericht] =</p>
+<p>Also weiter am Aussehen der Detail-Fenster (siehe [20100203 gestern]). SlaveGrids sollen anklickbar sein und nicht mehr die Textfelder verdrängen.</p>
+<p>&lt;a href=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100204.jpg">http://lino.googlecode.com/hg/screenshots/20100204.jpg</a>&#8220;&gt;
+&lt;img src=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100204.jpg">http://lino.googlecode.com/hg/screenshots/20100204.jpg</a>&#8221; width=&#8221;70%&#8221;/&gt;
+&lt;/a&gt;</p>
+<p>Zwischendurch fällt mir ein, dass ich dieser Tage einen konzeptuellen
+Fehler in den ContextAwareChoices bemerkt habe: Issue 100. Die Methode
+<cite>city_choices()</cite> muss auch funktionieren, wenn es noch gar keine
+Instanz gibt. Zum Beispiel so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">city_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;country&#39;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="s">&#39;country&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">city_set</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">&#39;name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wenn ich eine neue Person im Detail-Fenster eingebe und ein Land ausgewählt habe, dann hat es momentan keinen Sinn, den Server nach den möglichen Städten für das Feld <cite>city</cite> einer Person zu fragen, die in der Datenbank noch gar nicht existiert. Aber so macht Lino das momentan.</p>
+<p>Puh, die Layout-Manager von ExtJS sind komplex! Für so ein doofes Detail muss ich so lange suchen! Zwischendurch habe ich die Konfigurationsoption <cite>collapsible</cite> ausprobiert. Damit ein Panel einklappbar ist, muss man dessen Namen in <cite>Layout.collapsible_elements</cite> eintragen. Das funktioniert auch und ist süß, aber selbst wenn ich das panel mit den SlaveGrids einklappe, wird der dadurch eingesparte Raum nicht benutzt, sondern bleibt leer. Hier noch mal ein Screenshot:</p>
+<p>&lt;a href=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100204-2.jpg">http://lino.googlecode.com/hg/screenshots/20100204-2.jpg</a>&#8220;&gt;
+&lt;img src=&#8221;<a class="reference external" href="http://lino.googlecode.com/hg/screenshots/20100204-2.jpg">http://lino.googlecode.com/hg/screenshots/20100204-2.jpg</a>&#8221; width=&#8221;70%&#8221;/&gt;
+&lt;/a&gt;</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0206.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0203.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0204.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0204.html">Online Link</a>
+    </div>
+  </body>
+</html>

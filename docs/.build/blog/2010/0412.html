@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>12.04.2010 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="13.04.2010" href="0413.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0408.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0413.html" title="13.04.2010"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0408.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>12.04.2010<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Erster Punkt: <em>Text der Buttons im GridMaster</em> ist jetzt wieder <cite>Report.button_label</cite> statt <cite>Report.label</cite>.</p>
+<p>Nächster Punkt: <em>Detail-Buttons waren doppelt</em>, weil er die Details
+nun automatisch zuweist, aber das Detail aus modlib nicht
+überschreibt. Hier der Code aus
+<cite>lino.layouts.DetailLayout.do_setup()</cite>, der das verwaltet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">do_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">ModelLayout</span><span class="o">.</span><span class="n">do_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datalink</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">new_details</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datalink</span><span class="p">,</span><span class="s">&#39;_lino_layouts&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">l</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datalink</span><span class="p">,</span><span class="s">&#39;_lino_layouts&#39;</span><span class="p">,</span><span class="n">l</span><span class="p">)</span>
+        <span class="n">lino</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;Register DetailLayout </span><span class="si">%s</span><span class="s"> as </span><span class="si">%r</span><span class="s"> for model </span><span class="si">%s</span><span class="s">&#39;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_actor_name</span><span class="p">,</span><span class="n">model_label</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datalink</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">dtl</span> <span class="ow">in</span> <span class="n">l</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_actor_name</span> <span class="o">!=</span> <span class="n">dtl</span><span class="o">.</span><span class="n">_actor_name</span><span class="p">:</span>
+            <span class="c">#~ if not isinstance(self,dtl.__class__):</span>
+                <span class="n">new_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dtl</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lino</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;not isinstance(</span><span class="si">%r</span><span class="s">,</span><span class="si">%r</span><span class="s">)&#39;</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">dtl</span><span class="o">.</span><span class="n">__class__</span><span class="p">)</span>
+        <span class="n">new_details</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">datalink</span><span class="p">,</span><span class="s">&#39;_lino_layouts&#39;</span><span class="p">,</span><span class="n">new_details</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ich habe nicht verstanden, weshalb der Test auf isinstance nicht funktionierte. Hier ein Auszug aus der <cite>lino.log</cite> mit Test auf <cite>isinstance</cite> statt <cite>_actor_name</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>201004-12 10:52:52 DEBUG layouts : Register DetailLayout dsbe.ProjectDetail as #1 for model projects.Project
+201004-12 10:52:52 DEBUG layouts : not isinstance(&lt;dsbe.models.ProjectDetail object at 0x018A75F0&gt;,&lt;class &#39;lino.modlib.projects.models.ProjectDetail&#39;&gt;)
+</pre></div>
+</div>
+<p>Aber sowieso ist der Test auf <cite>_actor_name</cite> logischer, weil es keinen
+Sinn macht, zwei Details mit gleichem Namen zu registrieren (selbst
+wenn das zweite nicht als Unterklasse des ersten definiert ist). Wenn
+eine Anwendung ein Detail aus der modlib überschreibt, dann sollte sie
+das trotzdem als Unterklasse tun, damit die Reihenfolge stimmt.</p>
+<p>Nächster Punkt: <em>Properties-Button funktioniert noch nicht</em>. Er
+schickt zwar einen Ajax-Request ab, bekommt aber folgende Antwort:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="n">redirect</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span> <span class="n">confirm_msg</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span> <span class="n">success</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+  <span class="n">notify_msg</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span> <span class="n">refresh_menu</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+  <span class="n">close_caller</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="n">show_window</span><span class="p">:</span> <span class="n">null</span><span class="p">,</span>
+  <span class="n">refresh_caller</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span> <span class="n">alert_msg</span><span class="p">:</span> <span class="s">&quot;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Das kommt, weil <cite>PropertiesAction.run_action()`noch gar nicht implementiert war.
+Na und vor allem ist `Lino.PropertiesWrapper`in der `lino.js</cite> noch gar nicht implementiert. Beim Implementieren fallen mir noch weitere Dinge auf, die nicht wie bisher bleiben konnten:</p>
+<p>Das Fenster eines WindowWrappers wird jetzt an einer einzigen Stelle in <cite>Lino.WindowWrapper.setup</cite> instanziert.</p>
+<blockquote>
+<div>Actions werden jetzt nicht mehr vom Anwendungscode instanziert, sondern in <cite>Report.default_action</cite> und <cite>Report.actions</cite> gibt man lediglich die Klassen an. Instanziert werden die Dinger jetzt von Lino, und zwar mit dem ActorHandle als Parameter (den sie dann in <cite>self.ah</cite> speichern).</div></blockquote>
+<p>21.30 Uhr: Uff, das PropertiesWindow öffnet sich wieder, ich kann beruhigt schlafen gehen: das Fundament ist nun nach der Amputation der Dialoge erstmals wieder tragfähig.</p>
+<p>[<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=f2bd4d8672da51d257937e3d3a307173e3ae6d58">http://code.google.com/p/lino/source/detail?r=f2bd4d8672da51d257937e3d3a307173e3ae6d58</a> Check-In].</p>
+<p>Morgen gibt es dann viel Kleinkram: Fenstertitel und -verknüpfungen funktionieren noch nicht. Und kann auch sein, dass intern noch Änderungen kommen, denn momentan ist der Code stellenweise nicht gerade klar...</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0413.html" title="13.04.2010"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0408.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0412.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0412.html">Online Link</a>
+    </div>
+  </body>
+</html>

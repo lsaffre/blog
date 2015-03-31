@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111228 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111229" href="1229.html" />
+    <link rel="prev" title="20111227" href="1227.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1229.html" title="20111229"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1227.html" title="20111227"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111228<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Bugfix: Comboboxes always showed &#8220;Page 1 of 1&#8221;, even if there were more
+than one pageful of choices.</li>
+<li>There was also a little bug which struck only on my development server:
+If <cite>BuildMethod.use_webdav</cite> was True, but <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.use_davlink</span></code> not,
+then he still used <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.webdav_url</span></code> in some places.</li>
+</ul>
+<div class="section" id="action-confirmations">
+<h2>Action confirmations<a class="headerlink" href="#action-confirmations" title="Permalink to this headline">¶</a></h2>
+<p>The &#8220;Clear cache&#8221; button on a <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.CachedPrintable" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.mixins.printable.CachedPrintable</span></code></a>
+was a gotcha which potentially had a user delete a WebDAV-edited document.
+Lino needs to protect the user from accidentally deleting their changes.
+The idea is that Lino asks an additional confirmation
+&#8220;Are you sure you want to discard all changes in the generated file?&#8221;
+when the user clicks on &#8220;Clear cache&#8221; and the document has been edited
+after Lino generated it.</p>
+<p>A first change was relatively easy:</p>
+<ul class="simple">
+<li>In <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.CachedPrintable" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.mixins.printable.CachedPrintable</span></code></a>:
+BooleanField <cite>must_build</cite> has been replaced by a DateTimeField <cite>build_time</cite>.</li>
+</ul>
+<p>A second required change was in fact a long-waiting new feature
+&#8220;action confirmations&#8221;.
+For application code it is easy:
+the <code class="docutils literal"><span class="pre">rr.confirm()</span></code> call in the example below will raise an exception
+if the user answers &#8220;No&#8221; to the question.
+Here is how this looks in
+<a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.ClearCacheAction" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.mixins.printable.ClearCacheAction</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rr</span><span class="p">,</span><span class="n">elem</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">get_cache_mtime</span><span class="p">()</span> <span class="o">!=</span> <span class="n">elem</span><span class="o">.</span><span class="n">build_time</span><span class="p">:</span>
+        <span class="n">rr</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">_</span><span class="p">(</span><span class="s">&quot;This will discard all changes in the generated file.&quot;</span><span class="p">),</span>
+            <span class="n">_</span><span class="p">(</span><span class="s">&quot;Are you sure?&quot;</span><span class="p">))</span>
+
+    <span class="n">elem</span><span class="o">.</span><span class="n">build_time</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">elem</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">rr</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">success_response</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s"> printable cache has been cleared.&quot;</span> <span class="o">%</span> <span class="n">elem</span><span class="p">,</span><span class="n">refresh</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The challenge was how to implement this without using cookies and sessions!
+<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=04126d584bb61e75e22f42e2bda7511a3bf5e986">Checkin</a></p>
+<p>TODO:</p>
+<ul class="simple">
+<li>write migration handler which sets the new <cite>build_time</cite> fields
+on existing data.</li>
+<li>no confirmation needed it mtime is None
+(which happens for example when the file doesn&#8217;t exist)</li>
+<li>Test wether the &#8216;contract_type&#8217; and &#8216;provider&#8217; fields of a jobs.Job
+are disabled when some (printed) contract exists.</li>
+<li>Test for possible bugs.</li>
+<li>Convert the &#8220;Delete&#8221; method to use the new feature.
+It would be good to have applications decide individually whether
+and how to confirm before deleting a record.</li>
+</ul>
+</div>
+<div class="section" id="inserting-images-using-appy-pod">
+<h2>Inserting images using appy pod<a class="headerlink" href="#inserting-images-using-appy-pod" title="Permalink to this headline">¶</a></h2>
+<p>The following problem appeared today:</p>
+<div class="highlight-python"><div class="highlight"><pre>Error while evaluating the expression &quot;document(at=self.person.get_image_path(),anchor=&quot;as-char&quot;)&quot; defined in the &quot;from&quot; part of a statement.
+File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;
+File &quot;l:\snapshots\appy-0.6.7\appy\pod\renderer.py&quot;, line 293, in importDocument
+res = imp.run()
+File &quot;l:\snapshots\appy-0.6.7\appy\pod\doc_importers.py&quot;, line 224, in run
+width, height = getSize(self.importPath, self.format)
+File &quot;l:\snapshots\appy-0.6.7\appy\pod\doc_importers.py&quot;, line 190, in getSize
+return float(x)/pxToCm, float(y)/pxToCm
+&lt;type &#39;exceptions.TypeError&#39;&gt;: float() argument must be a string or a number
+</pre></div>
+</div>
+<p>It was solved by getting the version 0.8.0 from <a class="reference external" href="https://launchpad.net/appy">https://launchpad.net/appy</a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1229.html" title="20111229"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1227.html" title="20111227"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1228.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1228.html">Online Link</a>
+    </div>
+  </body>
+</html>

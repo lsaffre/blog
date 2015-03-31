@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121001 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121003..04" href="1003.html" />
+    <link rel="prev" title="20120929" href="0929.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1003.html" title="20121003..04"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0929.html" title="20120929"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121001<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="defining-workflows">
+<h2>Defining Workflows<a class="headerlink" href="#defining-workflows" title="Permalink to this headline">¶</a></h2>
+<p>In einem Workflow können jetzt verschiedene Aktionen zu einem gleichen Zustand führen.
+Z.B. auf einer Begleitung im Status &#8220;Vorgeschlagen&#8221; führt ein Klick auf &#8220;[akzeptieren]&#8221; zum Status &#8220;Aktiv&#8221;,
+auf einer Begleitung im Status &#8220;Standby&#8221; führt ein Klick auf &#8220;[reaktivieren]&#8221; zum gleichen Status &#8220;Aktiv&#8221;.</p>
+<p>Überhaupt ist die Beschreibung jetzt intuitiver.
+Der Lebenzyklus einer Begleitung sieht im Code jetzt so aus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CoachingStates</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">Workflow</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">add</span> <span class="o">=</span> <span class="n">CoachingStates</span><span class="o">.</span><span class="n">add_item</span>
+<span class="n">add</span><span class="p">(</span><span class="s">&#39;10&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Suggested&quot;</span><span class="p">),</span><span class="s">&#39;suggested&#39;</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="s">&#39;20&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Refused&quot;</span><span class="p">),</span><span class="s">&#39;refused&#39;</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="s">&#39;30&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Active&quot;</span><span class="p">),</span><span class="s">&#39;active&#39;</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="s">&#39;40&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Standby&quot;</span><span class="p">),</span><span class="s">&#39;standby&#39;</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="s">&#39;50&#39;</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Ended&quot;</span><span class="p">),</span><span class="s">&#39;ended&#39;</span><span class="p">)</span>
+
+<span class="n">CoachingStates</span><span class="o">.</span><span class="n">refused</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">states</span><span class="o">=</span><span class="s">&#39;suggested standby&#39;</span><span class="p">,</span><span class="n">owner</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">CoachingStates</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Accept&quot;</span><span class="p">),</span><span class="n">states</span><span class="o">=</span><span class="s">&#39;suggested&#39;</span><span class="p">,</span><span class="n">owner</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">CoachingStates</span><span class="o">.</span><span class="n">active</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Reactivate&quot;</span><span class="p">),</span>
+    <span class="n">states</span><span class="o">=</span><span class="s">&#39;standby&#39;</span><span class="p">,</span><span class="n">owner</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Client has become active again after having been standby.&quot;</span><span class="p">))</span>
+<span class="n">CoachingStates</span><span class="o">.</span><span class="n">standby</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">states</span><span class="o">=</span><span class="s">&#39;active&#39;</span><span class="p">,</span><span class="n">owner</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">CoachingStates</span><span class="o">.</span><span class="n">ended</span><span class="o">.</span><span class="n">add_workflow</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;End coaching&quot;</span><span class="p">),</span>
+    <span class="n">states</span><span class="o">=</span><span class="s">&#39;active standby&#39;</span><span class="p">,</span><span class="n">owner</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">help_text</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;User no longer coaches this client.&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Ein Bild sagt mehr als tausend Worte:</p>
+<div class="highlight-python"><div class="highlight"><pre>.. graphviz::
+   :caption: Lifecycle of a coaching
+
+   digraph foo {
+      suggested -&gt; refused [label=&quot;[ablehnen]&quot;];
+      standby -&gt; refused;
+      suggested -&gt; active [label=&quot;[akzeptieren]&quot;];
+      standby -&gt; active [label=&quot;[reaktivieren]&quot;];
+      active -&gt; standby;
+      standby -&gt; ended [label=&quot;[beenden]&quot;];
+      active -&gt; ended [label=&quot;[beenden]&quot;];
+
+      active [label=&quot;Aktiv&quot;];
+      suggested [label=&quot;Vorgeschlagen&quot;];
+      refused [label=&quot;Abgelehnt&quot;];
+      standby [label=&quot;Standby&quot;];
+      ended [label=&quot;Beendet&quot;];
+   }
+</pre></div>
+</div>
+<p>TODO:</p>
+<ul class="simple">
+<li>Ja, solche Grafiken könnte Lino automatisch generieren...</li>
+<li>Kann man Doppelpfeil zwischen Aktiv und Standby was schöner hinkriegen?
+<a class="reference external" href="http://www.graphviz.org/Documentation/dotguide.pdf">http://www.graphviz.org/Documentation/dotguide.pdf</a></li>
+</ul>
+</div>
+<div class="section" id="der-willkommensgrusz">
+<h2>Der Willkommensgruß<a class="headerlink" href="#der-willkommensgrusz" title="Permalink to this headline">¶</a></h2>
+<p>Ich habe heute Morgen noch eine geniale Idee gehabt: Statt dass Caroline
+dem Hubert eine E-Mail schickt, wenn er einen Neuen zugewiesen bekommen
+hat, sieht Hubert das direkt in seinem Willkommensbildschirm. Das
+Welcome-Panel. Ein Willkommensgruß mit einer Übersicht dessen, was der
+Benutzer jetzt dringend mal anschauen müsste. Der Willkommensgruß ersett
+wahrscheinlich bald die beiden Panels &#8220;Ausblick&#8221; und &#8220;Rückblick&#8221;. Zeigt
+nicht nur Termine und Aufgaben, sondern auch z.B. die zu bestätigenden
+Einladungen und eben (das war der Auslöser) unsere neue Liste der &#8220;zu
+bestätigenden Begleitungsvorschlägen&#8221;.</p>
+</div>
+<div class="section" id="endspurt">
+<h2>Endspurt<a class="headerlink" href="#endspurt" title="Permalink to this headline">¶</a></h2>
+<p>Viele Kleinigkeiten sind noch zu regeln. Aber langsam kommt Land in Sicht...</p>
+<p>Ich habe auch eine neue Regel ausgedacht: dass Klienten nur dann im Status
+&#8220;Begleitet&#8221; sein können, wenn sie eine gültige NISS haben.
+Also besagte Klienten werden bei der Datenübernahme (wenn sie nicht in TIM schon unter Inaktive standen)
+Es gibt auch einen neuen Status &#8220;Ungültig&#8221; : für Klienten ohne NISS, die bisher weder inaktiv noch neu waren.
+So was ist jetzt nicht mehr erlaubt.</p>
+<p>Ein subtiler Bug war folgender: Wenn ich als root eingeloggt war und als Mélanie arbeitete,
+hatte ich in meinem Welcome-Panel</p>
+<p>&#8220;You have 2 entries in Suggested coachings&#8221;
+Und wenn ich drauf klickte, hatte ich korrekterweise die MySuggestedCoachings von Mélanie,
+aber die <cite>workflow_buttons</cite> waren leer.</p>
+<p>Erklärung: das Fenster wurde mit folgender url aufgerufen:</p>
+<div class="highlight-python"><div class="highlight"><pre>javascript:Lino.pcsw.MySuggestedCoachings.default_action.run({ &quot;base_params&quot;: { &quot;mt&quot;: 7, &quot;mk&quot;: 5 } })
+</pre></div>
+</div>
+<p>Also das <code class="xref py py-data docutils literal"><span class="pre">su</span></code>
+war verloren gegangen. Eigentlich musste die url sein:</p>
+<div class="highlight-python"><div class="highlight"><pre>javascript:Lino.pcsw.MySuggestedCoachings.default_action.run({ &quot;base_params&quot;: { &quot;su&quot;: 5 } })
+</pre></div>
+</div>
+<p>Der Fehler war hier:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@dd.virtualfield</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">HtmlBox</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&#39;Welcome&#39;</span><span class="p">)))</span>
+<span class="k">def</span> <span class="nf">welcome</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span><span class="bp">self</span><span class="p">,</span><span class="n">ar</span><span class="p">):</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">get_user</span><span class="p">()</span>
+    <span class="n">story</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">story</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xghtml</span><span class="o">.</span><span class="n">E</span><span class="o">.</span><span class="n">p</span><span class="p">(</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;Hi, &quot;</span><span class="p">),</span><span class="n">u</span><span class="o">.</span><span class="n">first_name</span><span class="p">,</span><span class="s">&#39;! &#39;</span><span class="p">))</span>
+    <span class="o">...</span>
+    <span class="k">for</span> <span class="n">T</span> <span class="ow">in</span> <span class="p">(</span><span class="n">MySuggestedCoachings</span><span class="p">,</span><span class="n">cal</span><span class="o">.</span><span class="n">MyTasksToDo</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">u</span><span class="p">)</span> <span class="c">#          &lt;&lt;&lt; (1) BAD</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">subst_user</span><span class="o">=</span><span class="n">u</span><span class="p">)</span> <span class="c">#    &lt;&lt;&lt; (2) GOOD</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="c">#                &lt;&lt;&lt; (3) BETTER</span>
+        <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">get_total_count</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="o">...</span>
+</pre></div>
+</div>
+<p>Yes, it is recommended to use
+<code class="xref py py-meth docutils literal"><span class="pre">spawn</span></code>
+here instead of building a new <code class="xref py py-class docutils literal"><span class="pre">ActionRequest</span></code>
+from scratch.</p>
+</div>
+<div class="section" id="baustellenbesichtigung">
+<h2>Baustellenbesichtigung<a class="headerlink" href="#baustellenbesichtigung" title="Permalink to this headline">¶</a></h2>
+<p>Folgende Änderungen sind Resultat einer Baustellenbesichtigung mit Gerd.</p>
+<ul>
+<li><p class="first">Die mit <code class="xref py py-meth docutils literal"><span class="pre">assign_coach</span></code>
+erstellten Begleitungen haben eine leere Begleitungsart.</p>
+<p>&#8211;&gt; Neues Feld einen FK zu CoachingType in User einfügen.
+Also jeder Benutzer kriegt seinen CoachingType zugewiesen.</p>
+</li>
+<li><p class="first">Was mach ich mit den vorgeschlagenen Begleitungen,
+deren Benutzer gar nicht in Lino arbeiten?
+Erstens müssen die ebenfalls per Mail benachrichtigt werden
+und zweitens sollte deren Coaching direkt im Status &#8220;Aktiv&#8221; stehen.</p>
+<p>Antwort: neue Regel: wenn user.profile leer ist, wird Coaching.state
+sogleich auf <cite>active</cite> gesetzt.
+Außerdem kriegt der Begleiter jetzt auch immer eine Mail.</p>
+</li>
+<li><p class="first">Irgendwie konfigurierbar machen,
+wer bei assign_coach (außer evtl. dem Agenten selber) eine
+Benachrichtigung per Mail geschickt kriegen soll.
+Konkret handelt es sich um Theresia und evtl. Isabelle.
+Nennen wir sie die Coaching-Supervisoren.
+Die müssen nichts anderes tun als dann in TIM das Attribut N ausschalten
+und PAR-&gt;IdUsr auffüllen.</p>
+<p>&#8211;&gt; Ankreuzfeld &#8220;Coaching-Supervisor&#8221;</p>
+</li>
+<li><p class="first">Es sollte zwei Versionen von assign_coach geben: die erste schickt ihre
+Mail im Hintergrund ohne vorherigen Dialog, die andere zeigt die
+generierte outbox.Mail vor dem Abschicken an.</p>
+<p>&#8211;&gt; Eigentlich ist das auch ein Fall für die kommenden
+(aber noch nicht fertigen) action dialogs.
+Provisorischer Workaround: abhängig vom UserLevel: normale User kriegen
+die erstellte Mail nicht zu sehen.</p>
+</li>
+</ul>
+<p>TODO:</p>
+<ul>
+<li><p class="first">Klient 23363 ist seit 01.09.2012 begleitet,
+coach1 ist Elmar, coach2 ist Mélanie.
+Sollen beide Coachings am 01.09.2012 beginnen?</p>
+</li>
+<li><p class="first">watch_tim ist noch nicht fertig. Krankenkasse und Apotheke. get_object()</p>
+</li>
+<li><p class="first">Coachings sollte nur der Systemverwalter löschen können.</p>
+</li>
+<li><p class="first">virtuelle Tabelle HistoryByClient : notes.Notes, outbox.Mails, cal.Events, postings.Postings</p>
+</li>
+<li><p class="first">MySettings : Speichern funktioniert nicht:</p>
+<div class="highlight-python"><div class="highlight"><pre>Http404
+users.MySettings has no url action u&#39;&#39;
+
+TRACEBACK:
+  File &quot;l:\snapshots\django\django\core\handlers\base.py&quot;, line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+
+  File &quot;l:\snapshots\django\django\views\generic\base.py&quot;, line 58, in view
+    return self.dispatch(request, *args, **kwargs)
+
+  File &quot;l:\snapshots\django\django\views\generic\base.py&quot;, line 79, in dispatch
+    return handler(request, *args, **kwargs)
+
+  File &quot;t:\hgwork\lino\lino\ui\extjs3\views.py&quot;, line 786, in put
+    ar = action_request(app_label,actor,request,data)
+
+  File &quot;t:\hgwork\lino\lino\ui\extjs3\views.py&quot;, line 92, in action_request
+    raise http.Http404(&quot;%s has no url action %r&quot; % (rpt,action_name))
+</pre></div>
+</div>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1003.html" title="20121003..04"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0929.html" title="20120929"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1001.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1001.html">Online Link</a>
+    </div>
+  </body>
+</html>

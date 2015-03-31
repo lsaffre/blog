@@ -1,0 +1,314 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20090510 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2009" href="index.html" />
+    <link rel="next" title="20090601" href="0613.html" />
+    <link rel="prev" title="20090415 non-serializing fixtures" href="0415.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0613.html" title="20090601"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0415.html" title="20090415 non-serializing fixtures"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2009</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20090510<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>(Many undocumented changes during the last weeks.)</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">Instantiator</span></code> now supports many-to-many fields.
+Content of a many-to-many field can now be specified as a string
+containing a space-separated list of primary keys.
+Or, if you want to use another field than the primary key for specifying related objects, m2m_field:lookup_field syntax.
+Examples for both usages are in <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/src/lino/django/songs/fixtures/demo.dpy">src/lino/django/songs/fixtures/demo.dpy</a>.</li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h1>20090511<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><code class="xref py py-mod docutils literal"><span class="pre">mysites.demo.makedemo</span></code> now finds the list of installed apps automatically.
+So I no longer need to change <code class="xref std std-xfile docutils literal"><span class="pre">makedemo.py</span></code> after changing
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a>.</li>
+<li>Worked on website pages
+<a class="reference external" href="http://www.lino-framework.org/django/index.html">/django/index</a> and
+<a class="reference external" href="http://www.lino-framework.org/about/index.html">/about/index</a>.</li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">Row.field_as_readonly()</span></code> now supports when a value is a <code class="xref py py-class docutils literal"><span class="pre">Manager</span></code> (which is the case when you specify a ManyToManyField).</li>
+<li>Classes :class`Singer` and :class`Author` are now subclasses of :class`Person`.</li>
+<li>Started <a class="reference internal" href="#common-models">Common models</a></li>
+<li>updated my copy of Django from 10618 to 10736</li>
+</ul>
+</div>
+<div class="section" id="common-models">
+<h1>Common models<a class="headerlink" href="#common-models" title="Permalink to this headline">¶</a></h1>
+<p><code class="xref py py-class docutils literal"><span class="pre">Language</span></code> and :class`Country` are a first example of
+models being used by several applications. They are now defined in
+<code class="xref py py-mod docutils literal"><span class="pre">lino.django.utils</span></code>.</p>
+<p>The order of applications in <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a> becomes
+important: <code class="xref py py-func docutils literal"><span class="pre">lino_setup()</span></code> is called in that order.</p>
+<dl class="docutils">
+<dt>This way of doing has unresolved issues:</dt>
+<dd><ul class="first last simple">
+<li>cannot make a common class become abstract</li>
+<li>cannot remove a menu item or change order of menu items</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="id3">
+<h1>20090513<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Added Collection and Places to songs.models.
+Added sample data in songs/fixtures/demo.dpy.</li>
+<li>Instantiator now supports a lookup_field for ForeignKey.</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h1>20090514<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">Worked on <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/modlib/igen/fixtures/demo.dpy">/lino/modlib/igen/fixtures/demo.dpy</a>.</p>
+</li>
+<li><p class="first">Added <code class="xref py py-class docutils literal"><span class="pre">igen.models.Contract</span></code>.</p>
+</li>
+<li><p class="first">I noticed that Django&#8217;s DateField does no validation and no conversion from string to date.
+<code class="xref py py-class docutils literal"><span class="pre">lino.utils.instantiator.DateConverter</span></code>
+How to parse a datetime.date from a string?
+The standard Python module has now support at all, even not to
+parse a simple iso-formatted date. <a class="reference external" href="http://www.python.org/dev/peps/pep-0321/">PEP 321</a> was exactly what I&#8217;d need now, but it has been withdrawn... I also read
+<a class="reference external" href="http://mail.python.org/pipermail/python-dev/2004-April/044181.html">http://mail.python.org/pipermail/python-dev/2004-April/044181.html</a>
+and
+<a class="reference external" href="http://mail.python.org/pipermail/python-list/2003-November/236842.html">http://mail.python.org/pipermail/python-list/2003-November/236842.html</a></p>
+<p>Conclusion: I started by writing a parse_date() myself, then I understood that I also need other things from python-dateutil, so I threw it away and added dateutils to <code class="xref py py-meth docutils literal"><span class="pre">lino.django.utils.sites.LinoSite.tanks_to()</span></code>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h1>20090519<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>preparing for field-specific default width in Layouts</li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">Row.field_as_readonly()</span></code> now sets <code class="docutils literal"><span class="pre">style=&quot;width:100%&quot;</span></code> when  <code class="xref py py-attr docutils literal"><span class="pre">Element.width`is</span> <span class="pre">`None</span></code>.</li>
+<li>removed <cite>null=True</cite> from string fields after reading
+<a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/models/fields/#null">http://docs.djangoproject.com/en/dev/ref/models/fields/#null</a></li>
+<li>New <code class="xref py py-class docutils literal"><span class="pre">GRID_CELL</span></code> to render more than one field in a single
+grid cell.</li>
+<li>Started <code class="xref py py-class docutils literal"><span class="pre">igen.models.MakeInvoicesDialog</span></code>.
+A Dialog is an enhanced django.forms.Form that can be installed as a menu action.
+In Module <code class="xref py py-mod docutils literal"><span class="pre">render</span></code>:
+started to split new class ElementServer out of Row
+because Dialog will need only the ElementServer part of Row.</li>
+</ul>
+</div>
+<div class="section" id="id6">
+<h1>20090520<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Good news:
+<a class="reference external" href="http://www.active.ee">Active Systems</a> is probably going to participate in the development of igen.
+We started an issues tracker on their server at
+<a class="reference external" href="http://code.active.ee:3000/projects/lino/issues">http://code.active.ee:3000/projects/lino/issues</a>
+We also wrote some Wiki pages:
+<a class="reference external" href="https://code.active.ee/wiki/doku.php?id=igen:igen">https://code.active.ee/wiki/doku.php?id=igen:igen</a></li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h1>20090521<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">Merged <code class="xref py py-class docutils literal"><span class="pre">Contract</span></code> into <code class="xref py py-class docutils literal"><span class="pre">Order</span></code>. A contract is just a cyclic Order.</p>
+</li>
+<li><p class="first">Worked on <code class="xref py py-meth docutils literal"><span class="pre">Order.make_invoice()</span></code>.
+make_invoice() will have to know when the next billing will occur.
+And whether a service must be paid for before or afterwards the period.
+For the moment we simplify by saying that the billing happens once per month.</p>
+</li>
+<li><p class="first">The old question again: which documentation system to use?
+<a class="reference external" href="http://www.stack.nl/~dimitri/doxygen/">Doxygen</a>
+and
+<a class="reference external" href="http://github.com/michaeljones/breathe/tree/master">breathe</a>?
+After playing around I continue to believe that documentation
+must be maintained outside of the source code.</p>
+</li>
+<li><p class="first">Pro-rata : the covered period in a generated invoice may be longer or shorter than
+normal in certain cases.</p>
+<p>For example assume that invoices are sent only once a month, for
+example on the first working day of each month.
+What should we do if a monthly service order starts at the 28th of a
+month? Or at the 5th of the month?
+<code class="xref py py-class docutils literal"><span class="pre">Order</span></code> should get a new field, called maybe &#8220;Pro-rata&#8221;.
+Definition of &#8220;Pro-rata&#8221;: see <a class="reference external" href="http://en.wikipedia.org/wiki/Pro-rata">http://en.wikipedia.org/wiki/Pro-rata</a>.
+For the moment we simplify by saying that the covered period never
+adapts automatically to the billing cycle.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h1>20090522<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>The new class attributes <code class="xref py py-attr docutils literal"><span class="pre">reports.Report.filter</span></code> and
+<code class="xref py py-attr docutils literal"><span class="pre">reports.Report.exclude</span></code> refer to the corresponding Django methods to limit a queryset.</li>
+<li>Issue <a class="reference external" href="http://code.active.ee:3000/issues/show/342">edit a report&#8217;s grid view fails</a></li>
+<li>Report extensively uses sime class attribut overriding in subclasses. That&#8217;s what I want, but it has one disadvantage: typo&#8217;s are not detected. <code class="xref py py-meth docutils literal"><span class="pre">Report.__init__()</span></code> now tries to detect them. This can be switched off by setting <code class="xref py py-attr docutils literal"><span class="pre">Report.typo_check</span></code> to False.</li>
+<li>New module <code class="xref py py-mod docutils literal"><span class="pre">lino.django.utils.perms</span></code> with some shortcuts <code class="xref py py-func docutils literal"><span class="pre">perms.is_staff()</span></code>, <code class="xref py py-func docutils literal"><span class="pre">perms.is_authenticated()</span></code> and <code class="xref py py-func docutils literal"><span class="pre">perms.never()</span></code>.
+Trying this on <cite>Invoices.can_view = is_staff</cite>,
+<cite>Orders.can_view = is_authenticated</cite> and
+<cite>InvoicesToSend.can_add = never</cite>.</li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h1>20090523<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p class="first">Why did I try to write my own permissions system? because I don&#8217;t like the system suggested by <code class="xref py py-mod docutils literal"><span class="pre">django.contrib.auth</span></code>.
+&#8220;but it&#8217;s not currently possible to say &#8220;Mary may change news stories, but only the ones she created herself&#8221; or &#8220;Mary may only change news stories that have a certain status, publication date or ID.&#8221; The latter functionality is something Django developers are currently discussing.&#8221;
+(<a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/auth/#permissions">http://docs.djangoproject.com/en/dev/topics/auth/#permissions</a>)</p>
+<p>Some trace of the discussion is here:
+<a class="reference external" href="http://code.djangoproject.com/ticket/3011">http://code.djangoproject.com/ticket/3011</a></p>
+<p>My conclusion: don&#8217;t insist for the moment on permissions and user management. Make my perms module minimal but usable and use it temporarily until Django has a good solution.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h1>20090524<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>continued on <code class="xref py py-mod docutils literal"><span class="pre">lino.django.utils.perms</span></code>. Now it works.
+(Updated <a class="reference external" href="http://code.active.ee:3000/issues/show/338">http://code.active.ee:3000/issues/show/338</a>)</li>
+<li>fixed a bug in <a class="reference external" href="http://127.0.0.1:8000/voc/tree">http://127.0.0.1:8000/voc/tree</a></li>
+<li>Committed revision 681.</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h1>20090525<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>worked on ticket <a class="reference external" href="http://code.active.ee:3000/issues/show/337">http://code.active.ee:3000/issues/show/337</a>
+- added DocItem.discount
+- added an example in demo</li>
+<li>new DecimalConverter in Instantiator. DecimalFields were stored as strings in the database. And Django didn&#8217;t complain (maybe simply because I use the sqlite backend which allows such things).</li>
+<li>Committed revision 683.</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h1>20090526<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>bug in demo.dpy</li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">DocItem.before_save()</span></code> now always sets <code class="xref py py-attr docutils literal"><span class="pre">DocItem.total</span></code> (except when unitPrice or qty is None).
+<code class="xref py py-meth docutils literal"><span class="pre">DocItem.total_incl()</span></code> no longer necessary.</li>
+<li>Committed revision 684.</li>
+<li>PaymentPerm.months and PaymentTerm.days.
+It&#8217;s not yet clear how igen should decide which type of invoice to generate (normal or proforma).</li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0613.html" title="20090601"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0415.html" title="20090415 non-serializing fixtures"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2009</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2009/0526.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2009/0526.html">Online Link</a>
+    </div>
+  </body>
+</html>

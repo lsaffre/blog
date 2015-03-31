@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111212 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111213" href="1213.html" />
+    <link rel="prev" title="20111210" href="1210.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1213.html" title="20111213"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1210.html" title="20111210"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111212<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="worked-on-calendarpanel">
+<h2>Worked on CalendarPanel<a class="headerlink" href="#worked-on-calendarpanel" title="Permalink to this headline">¶</a></h2>
+<p>Configured the different views so that they use the following config:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Lino</span><span class="o">.</span><span class="n">CalendarCfg</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">dateParamFormat</span><span class="p">:</span> <span class="s">&#39;$settings.LINO.date_format_extjs&#39;</span><span class="p">,</span>
+    <span class="n">dateParamStart</span><span class="p">:</span><span class="s">&#39;sd&#39;</span><span class="p">,</span>
+    <span class="n">dateParamEnd</span><span class="p">:</span><span class="s">&#39;ed&#39;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>Added a method <code class="xref py py-meth docutils literal"><span class="pre">lino.reports.Report.parse_req()</span></code> which does Report-specific
+parsing of URL parameters. Used by <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.PanelEvents</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">parse_req</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">request</span><span class="p">,</span><span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="nb">filter</span> <span class="o">=</span> <span class="n">kw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;filter&#39;</span><span class="p">,{})</span>
+    <span class="n">endDate</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">REQUEST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;ed&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">endDate</span><span class="p">:</span>
+        <span class="nb">filter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">start_date__lte</span><span class="o">=</span><span class="n">parsedate</span><span class="p">(</span><span class="n">endDate</span><span class="p">))</span>
+    <span class="n">startDate</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">REQUEST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;sd&#39;</span><span class="p">,</span><span class="bp">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">startDate</span><span class="p">:</span>
+        <span class="nb">filter</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">start_date__gte</span><span class="o">=</span><span class="n">parsedate</span><span class="p">(</span><span class="n">startDate</span><span class="p">))</span>
+    <span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">filter</span><span class="o">=</span><span class="nb">filter</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">kw</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="worked-on-watch-tim">
+<h2>Worked on <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a><a class="headerlink" href="#worked-on-watch-tim" title="Permalink to this headline">¶</a></h2>
+<p>Die momentanen Regeln beim Übernehmen der diversen Flags aus TIM sind:</p>
+<ul class="simple">
+<li>is_new : True wenn Attribut N in TIM gesetzt ist</li>
+<li>is_deprecated : True wenn Attribut A in TIM gesetzt ist</li>
+<li>is_active : False wenn Partnerart I oder Attribut W (ansonsten True)</li>
+<li>is_cpas : True wenn Partnerart S</li>
+<li>is_senior : True wenn Partnerart A</li>
+</ul>
+<p>E-Mail-Adressen aus TIM werden jetzt überprüft und wenn sie ungültig sind nicht übernommen. Dann ist also nur das Feld email leer, aber alle anderen Angaben sind wenigstens da.</p>
+<p>WARNING B-4720 : get() returned more than one City &#8211; it returned 2! Lookup parameters were {&#8216;country&#8217;: &lt;Country: Belgien&gt;, &#8216;zip_code__exact&#8217;: u&#8216;4720&#8217;}</p>
+<dl class="docutils">
+<dt>In der Tat gibt es die PLZ 4720 zweimal (einmal &#8220;Kelmis&#8221; und einmal &#8220;La Calamine&#8221;, was für Lino eigentlich kein Problem ist (in Deutschland kommt so was oft vor), aber für die Synchronisierung aus TIM stört das. In den live Daten geändert: City#737 umbenannt von &#8220;Kelmis&#8221; nach &#8220;Kelmis (La Calamine)&#8221;. Partner 200045 (den einzigen Bewohner von &#8220;Kelmis&#8221; nach &#8220;Kelmis (La Calamine)&#8221; geändert und dann &#8220;Kelmis&#8221; löschen.</dt>
+<dd>Aber Upps: &#8220;Kann Kelmis nicht löschen weil 1 Ausbildung darauf verweisen.&#8221;
+Und wie finde ich diese Ausbildung, bitteschön?
+Ha: es fehlt ein Report <cite>jobs.Studies</cite>. Und in einem auch
+jobs.StudiesByCity und jobs.StudiesBycountry.</dd>
+</dl>
+<p>Some subtle changes in how to configure authentication.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1213.html" title="20111213"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1210.html" title="20111210"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1212.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1212.html">Online Link</a>
+    </div>
+  </body>
+</html>

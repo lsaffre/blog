@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saturday, January 31, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Sunday, February 1, 2015" href="0201.html" />
+    <link rel="prev" title="Friday, January 30, 2015" href="0130.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0201.html" title="Sunday, February 1, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0130.html" title="Friday, January 30, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-january-31-2015">
+<h1>Saturday, January 31, 2015<a class="headerlink" href="#saturday-january-31-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="demo-data-for-the-immersion-trainings-module">
+<h2>Demo data for the Immersion trainings module<a class="headerlink" href="#demo-data-for-the-immersion-trainings-module" title="Permalink to this headline">¶</a></h2>
+<p>While a first version of the new <code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.trainings</span></code>
+plugin was easy, the <code class="xref py py-mod docutils literal"><span class="pre">demo</span> <span class="pre">fixture</span></code> took more time.</p>
+<p>The challenge of demo fixtures is that we want to generate fictive
+data which (1) looks realistic and (2) is testable.</p>
+<p>I started by defining a arbitrarily selected list of clients:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">selected_clients</span> <span class="o">=</span> <span class="p">(</span><span class="mi">131</span><span class="p">,</span> <span class="mi">129</span><span class="p">,</span> <span class="mi">141</span><span class="p">,</span> <span class="mi">146</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And generating a training contract for each of them</p>
+<p>Which caused an error message
+<code class="docutils literal"><span class="pre">Contract</span> <span class="pre">overlaps</span> <span class="pre">with</span> <span class="pre">ISIP</span> <span class="pre">contract</span> <span class="pre">#5</span></code>
+during <a class="reference external" href="http://www.lino-framework.org/api/lino.management.commands.initdb_demo.html#management_command-initdb_demo" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">initdb_demo</span></code></a>.</p>
+<p>First of all: Lino was better than Mathieu and me together!  The
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.isip.mixins.html#lino_welfare.modlib.isip.mixins.ContractBase.full_clean" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-meth docutils literal"><span class="pre">ContractBase.full_clean</span></code></a> method
+&#8220;decided&#8221; that trainings must not overlap with other contracts. We
+hadn&#8217;t even thought about this. I guess that Lino is right.</p>
+<p>But the error message does not (and should not) include the offending
+contract because it is intended to be displayed when the user is
+modifying a contract. In this situation it would be irritating to
+&#8220;remind&#8221; the user on which contract the problem happens.</p>
+<p>While thinking about how to find demo clients who are available for
+demo trainings, I added two new choices to <code class="xref py py-class docutils literal"><span class="pre">ClientEvents</span></code>. Users can now ask to
+show only the &#8220;available&#8221; clients, i.e. those who have no running
+contract at all during the given period.</p>
+<p>But then I did not even use this new feature because I had the
+following idea for a little optimization in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dpy.html#module-lino.utils.dpy" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dpy</span></code></a>: I
+extended
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dpy.html#lino.utils.dpy.FakeDeserializedObject.try_save" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">FakeDeserializedObject.try_save</span></code></a>
+to include the guilty object into the error message when the error is
+a simple ValidationError.  We will see whether this causes problems
+somewhere in the future.</p>
+<p>I also changed the the <cite>__unicode__</cite> method of
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.isip.mixins.html#lino_welfare.modlib.isip.mixins.ContractBase" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.isip.mixins.ContractBase</span></code></a> to support
+unsaved contracts.</p>
+<p>This change allowed me to use a simple iterative approach: I simply
+replacing the problematic selected clients with other random client
+numbers and running <a class="reference external" href="http://www.lino-framework.org/api/lino.management.commands.initdb_demo.html#management_command-initdb_demo" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">initdb_demo</span></code></a> again, until I had a series
+of 4 clients which did not conflict.</p>
+<p>Note that for such cases we have an <code class="xref std std-xfile docutils literal"><span class="pre">initdb_tmp</span></code> file in most
+demo projects.</p>
+<p>And when my series finally worked in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.chatelet.html#module-lino_welfare.projects.chatelet" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.chatelet</span></code></a>, it still failed in
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.std.html#module-lino_welfare.projects.std" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.std</span></code></a> because these demo projects had
+different demo dates.  (In <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.eupen.html#module-lino_welfare.projects.eupen" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.eupen</span></code></a> it is
+not necessary since thy don&#8217;t yet use it).  This caused some
+reorganization:</p>
+<ul class="simple">
+<li>Renamed <code class="docutils literal"><span class="pre">lino_welfare.projects.docs</span></code> to <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.std.html#module-lino_welfare.projects.std" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.std</span></code></a></li>
+<li>All three demo projects of <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> now have the same
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.site.html#lino.core.site.Site.the_demo_date" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">the_demo_date</span></code></a>.</li>
+</ul>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first"><a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.std.settings.html#module-lino_welfare.projects.std.settings" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.std.settings</span></code></a> no longer defines the name
+<cite>SETUP_INFO</cite> in its global namespace.</p>
+</li>
+<li><p class="first">One page of the Lino documentation tree, <a class="reference external" href="http://www.lino-framework.org/eidreader/applets.html">/eidreader/applets</a>
+page caused the build to fail on Mahmoud&#8217;s machine. He had to clone
+the <a class="reference external" href="https://github.com/lsaffre/eidreader">eidreader</a> project just
+for building Lino&#8217;s docs, which is a bit surprising ;-)</p>
+<p>TODO: move <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.beid.html#module-lino.modlib.beid" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.beid</span></code></a> into the <cite>eidreader</cite> project and
+document all these things there.</p>
+</li>
+<li><p class="first"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.uploads.fixtures.demo2.py</span></code> failed on
+<a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#lf" title="(in Lino v1.6)"><span>lino-framework.org</span></a> due to an assertion:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">assert</span> <span class="n">newcomer</span><span class="o">.</span><span class="n">client_state</span> <span class="o">==</span> <span class="n">ClientStates</span><span class="o">.</span><span class="n">newcomer</span>
+</pre></div>
+</div>
+<p>Yes, okay, <cite>Client.objects.get(id=121)</cite> is not always a <cite>newcomer</cite>
+because that depends on database language and sorting order.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="adieu-good-old-enablechild-field">
+<h2>Adieu, good old EnableChild field!<a class="headerlink" href="#adieu-good-old-enablechild-field" title="Permalink to this headline">¶</a></h2>
+<p>Yesterday <a class="reference external" href="http://www.lino-framework.org/community/contributors.html#gx" title="(in Lino v1.6)"><span>Gerd Xhonneux</span></a> confirmed that the
+<a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.polymorphic.html#lino.mixins.polymorphic.Polymorphic.mti_navigator" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">lino.mixins.polymorphic.Polymorphic.mti_navigator</span></code></a> is a full
+success.  Now I removed all usages of
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.mti.html#lino.utils.mti.EnableChild" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.mti.EnableChild</span></code></a> from my projects (besides Lino,
+these were <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> and <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a>). The biggest work was to
+adapt <a class="reference external" href="http://www.lino-framework.org/tutorials/mti/index.html">/tutorials/mti/index</a> and <a class="reference external" href="http://www.lino-framework.org/tutorials/letsmti/index.html">/tutorials/letsmti/index</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0201.html" title="Sunday, February 1, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0130.html" title="Friday, January 30, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0131.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0131.html">Online Link</a>
+    </div>
+  </body>
+</html>

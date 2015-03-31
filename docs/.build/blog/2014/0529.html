@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Thursday, May 29, 2014 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Friday, May 30, 2014" href="0530.html" />
+    <link rel="prev" title="Wednesday, May 28, 2014" href="0528.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0530.html" title="Friday, May 30, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0528.html" title="Wednesday, May 28, 2014"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-may-29-2014">
+<h1>Thursday, May 29, 2014<a class="headerlink" href="#thursday-may-29-2014" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="detail-window-doesn-t-open-after-insert-in-slave-table">
+<h2>Detail window doesn&#8217;t open after insert in slave table<a class="headerlink" href="#detail-window-doesn-t-open-after-insert-in-slave-table" title="Permalink to this headline">¶</a></h2>
+<p>After yesterdays production upgrade, Gerd reported the following
+problem report (original formulation by an end-user):</p>
+<blockquote>
+<div>Wenn man eine Notiz eingibt, kann man nur noch erstellen. Und nicht
+mehr erstellen und bearbeiten.  Praktisch müssen wir es also erstellen
+und dann wieder öffnen bevor wir was im Inhalt eintragen können.
+Lästig...</div></blockquote>
+<p>This was a genuine bug. It is again our well-known situation after a
+<code class="xref py py-class docutils literal"><span class="pre">dd.SubmitInsert</span></code> action.  This action calls
+<code class="xref py py-meth docutils literal"><span class="pre">ar.goto_instance</span></code> (to display
+the new record) and <code class="xref py py-meth docutils literal"><span class="pre">ar.close_window</span></code> (to close the <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-insert-window" title="(in Lino v1.6)"><span class="xref std std-term">insert window</span></a>).</p>
+<p><a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.handle_action_result" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.handle_action_result()</span></code></a> uses a variable <cite>panel</cite> for &#8220;the
+current panel&#8221;.  Ater closing a window, <cite>panel</cite> points to the main
+item of the previous window.  We got already that far, but here we had
+the case of an insert window that has been invoked by double-clicking
+on the phantom row of a slave table in a detail window. This wasn&#8217;t
+yet handled correctly. In that case we want <cite>panel</cite> to become the
+<em>slave table grid panel</em> who opened the <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-insert-window" title="(in Lino v1.6)"><span class="xref std std-term">insert window</span></a>, and not
+the main panel of the master&#8217;s <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-detail-window" title="(in Lino v1.6)"><span class="xref std std-term">detail window</span></a>.  That&#8217;s why
+<code class="xref js js-func docutils literal"><span class="pre">Lino.close_window()</span></code> now returns the <cite>requesting_panel</cite> of the
+window which was closed.</p>
+</div>
+<div class="section" id="more-about-tagging">
+<h2>More about tagging<a class="headerlink" href="#more-about-tagging" title="Permalink to this headline">¶</a></h2>
+<p>This is a first bug in Lino 1.6.13, and I am tempted to change the
+<code class="docutils literal"><span class="pre">v1.6.13</span></code> tag because:</p>
+<ul class="simple">
+<li>it has not yet been officially released on PyPI</li>
+<li>I can update Gerd&#8217;s production site without a need for data migration.</li>
+</ul>
+<p>One can say that Gerd&#8217;s production site serves as guinea pig, and that
+my first <code class="docutils literal"><span class="pre">v1.6.13</span></code> tag should rather have been <code class="docutils literal"><span class="pre">v1.6.13rc1</span></code>.</p>
+<p>Simply overwriting the existing tag doesn&#8217;t work:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git tag -a v1.6.13 -m &quot;after first bugfix&quot;
+fatal: tag &#39;v1.6.13&#39; already exists
+</pre></div>
+</div>
+<p>So I try by deleting it first:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git tag -d v1.6.13
+Deleted tag &#39;v1.6.13&#39; (was ce2ebd3)
+$ git tag -a v1.6.13 -m &quot;after first bugfix&quot;
+</pre></div>
+</div>
+<p>But oops, when I try to push my changed vision of what <code class="docutils literal"><span class="pre">v1.6.13</span></code>
+should mean, I get:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git push origin v1.6.13
+To git@github.com:lsaffre/lino.git
+ ! [rejected]        v1.6.13 -&gt; v1.6.13 (already exists)
+error: failed to push some refs to &#39;git@github.com:lsaffre/lino.git&#39;
+hint: Updates were rejected because the tag already exists in the remote.
+</pre></div>
+</div>
+<p>It seems that we must accept the fact that <code class="docutils literal"><span class="pre">v1.6.13</span></code> will always be
+a buggy version because we cannot change an annotated tag once it has
+been published.</p>
+<p>So I undo my attempt:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ git tag -d v1.6.13
+Deleted tag &#39;v1.6.13&#39; (was bebb5c5)
+
+$ git pull origin v1.6.13
+From github.com:lsaffre/lino
+ * tag               v1.6.13    -&gt; FETCH_HEAD
+Already up-to-date.
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-the-gpl-for-documentation">
+<h2>Using the GPL for documentation<a class="headerlink" href="#using-the-gpl-for-documentation" title="Permalink to this headline">¶</a></h2>
+<p>I read on <a class="reference external" href="http://www.gnu.org/licenses/licenses.en.html">http://www.gnu.org/licenses/licenses.en.html</a>:</p>
+<blockquote>
+<div>Documentation for free software should be free documentation, so that
+people can redistribute it and improve it along with the software it
+describes. To make it free documentation, you need to release it
+under a free documentation license. We normally use the GNU Free
+Documentation License (GNU FDL), but occasionally we use other free
+documentation licenses.</div></blockquote>
+<p>And then asked on &lt;<a class="reference external" href="mailto:fsfe-de&#37;&#52;&#48;fsfeurope&#46;org">fsfe-de<span>&#64;</span>fsfeurope<span>&#46;</span>org</a>&gt;:</p>
+<blockquote>
+<div>Heißt das, dass meine Verfahrensweise nicht ganz korrekt ist? Ist meine
+Dokumentation nicht automatisch auch frei, wenn sie unter der GPL steht?
+Was kann ich tun, damit es korrekt ist?</div></blockquote>
+<p>Answer is: don&#8217;t worry. The GPL is okay for documentation, and the
+<a class="reference external" href="http://en.wikipedia.org/wiki/GNU_Free_Documentation_License">FDL</a>
+has numerous problems.</p>
+</div>
+<div class="section" id="online-demos-updated">
+<h2>Online demos updated<a class="headerlink" href="#online-demos-updated" title="Permalink to this headline">¶</a></h2>
+<p>I made a pull and an initdb on the <a class="reference external" href="http://www.lino-framework.org/demos.html#demos" title="(in Lino v1.6)"><span>Demo sites</span></a>.</p>
+<p>For example the <a class="reference external" href="http://cosi.lino-framework.org/index.html#cosi" title="(in Lino Cosi Reference Manual v0.0)"><span>Lino Così</span></a> demo (at <a class="reference external" href="http://demo4.lino-framework.org/">http://demo4.lino-framework.org/</a>)
+now shows the cool new <code class="xref py py-mod docutils literal"><span class="pre">lino.moxlib.export_excel</span></code> module
+contributed by Joe: just open some table and click on the Excel icon
+in the button toolbar.</p>
+<p>Ta-daa, I finally worked on
+<code class="xref py py-class docutils literal"><span class="pre">lino.utils.ajax.AjaxExceptionResponse</span></code> which had the problem of
+working only when <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DEBUG" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></code></a> was true. Yes, on a production
+server it is not wise to publish the traceback, but our nice HTML
+formatted &#8220;Congratulations, you found a problem&#8221; page was not the
+right answer to an AJAX call.</p>
+<p>This helped me to fix a bug which I introduced myself into Joe&#8217;s code.</p>
+</div>
+<div class="section" id="how-to-reach-the-host-machine-from-a-virtual-client">
+<h2>How to reach the host machine from a virtual client<a class="headerlink" href="#how-to-reach-the-host-machine-from-a-virtual-client" title="Permalink to this headline">¶</a></h2>
+<p>Worked on <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/106">docs/tickets/106</a>.</p>
+<p>Trying to reproduce it myself.  In my case the problematic client is
+under Windows in a VirtualBox.</p>
+<p>I had the problem that I didnt figure out myself how to have that
+virtual machine connect to the development server running on my host.
+Pointing the browser in that virtual machine to <a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a>
+did not get there.</p>
+<p>Thanks here to <a class="reference external" href="http://superuser.com/users/55611/naftuli-tzvi-kay">Naftuli Tzvi Kay</a> who asked
+exactly my question in Juli 2011 and then answered it himself the next
+day:</p>
+<blockquote>
+<div><p>Q: I&#8217;d essentially like to access my host computer from the guest in
+VirtualBox. Is there an IP address given for my host which I can
+use from the guest? Are there extra steps required to set this up?
+I&#8217;d like to access my host&#8217;s Apache, FTP, and SSH services.</p>
+<p>A: In the default setup, you should be able to reach your host
+through your default gateway, in my case 10.0.2.2. You can easily
+determine this IP address in Windows via ipconfig. (...)</p>
+<p>(Source: <a class="reference external" href="http://superuser.com/questions/310697/connect-to-the-host-machine-from-a-virtualbox-guest-os">Connect to the host machine from a VirtualBox guest OS?</a>)</p>
+</div></blockquote>
+<p>Aha. The <a class="reference external" href="http://en.wikipedia.org/wiki/Default_gateway">default gateway</a> on my virtual client
+machine is:</p>
+<div class="highlight-python"><div class="highlight"><pre>C:\Documents and Settings\Luc Saffre&gt;ipconfig
+
+Windows IP Configuration
+
+Ethernet adapter Local Area Connection 3:
+
+        Connection-specific DNS Suffix  . : lan
+        IP Address. . . . . . . . . . . . : 192.168.1.65
+        Subnet Mask . . . . . . . . . . . : 255.255.0.0
+        Default Gateway . . . . . . . . . : 192.168.0.2
+</pre></div>
+</div>
+<p>So on my virtual browser, instead of pointing it to
+<a class="reference external" href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> I must point it to:</p>
+<blockquote>
+<div><a class="reference external" href="http://192.168.0.2:8000">http://192.168.0.2:8000</a></div></blockquote>
+<p>Finally! One long lasting problem solved.</p>
+<p>Now the next problem is: I still can&#8217;t reproduce it! Both <a class="reference external" href="http://www.lino-framework.org/davlink/index.html#davlink" title="(in Lino v1.6)"><span>DavLink</span></a>
+and <a class="reference external" href="http://www.lino-framework.org/eidreader/index.html#eidreader" title="(in Lino v1.6)"><span>The EIDReader applet</span></a> work perfectly under Windows XP using Oracle Java:</p>
+<div class="highlight-python"><div class="highlight"><pre>Java Plug-in 10.60.2.19
+Using JRE version 1.7.0_60-b19 Java HotSpot(TM) Client VM
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0530.html" title="Friday, May 30, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0528.html" title="Wednesday, May 28, 2014"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0529.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0529.html">Online Link</a>
+    </div>
+  </body>
+</html>

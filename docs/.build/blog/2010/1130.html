@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101130 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101201" href="1201.html" />
+    <link rel="prev" title="20101129" href="1129.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1201.html" title="20101201"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1129.html" title="20101129"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101130<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unicodedecodeerror">
+<h2>UnicodeDecodeError<a class="headerlink" href="#unicodedecodeerror" title="Permalink to this headline">¶</a></h2>
+<p>Dann hier noch ein UnicodeDecodeError, der nicht auf dem Developtment Server passiert:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/core/handlers/wsgi.py&quot;, line 265, in __call__
+    response = self.get_response(request)
+  File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 160, in get_response
+    response = self.handle_uncaught_exception(request, resolver, sys.exc_info())
+  File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 109, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File &quot;/var/snapshots/lino/lino/ui/extjs/ext_ui.py&quot;, line 900, in api_element_view
+    error=e))
+  File &quot;/var/snapshots/django/django/utils/translation/__init__.py&quot;, line 62, in ugettext
+    return _trans.ugettext(message)
+  File &quot;/var/snapshots/django/django/utils/translation/trans_real.py&quot;, line 283, in ugettext
+    return do_translate(message, &#39;ugettext&#39;)
+  File &quot;/var/snapshots/django/django/utils/translation/trans_real.py&quot;, line 269, in do_translate
+    result = getattr(t, translation_function)(eol_message)
+  File &quot;/usr/lib/python2.5/gettext.py&quot;, line 404, in ugettext
+    return unicode(message)
+UnicodeDecodeError: &#39;ascii&#39; codec can&#39;t decode byte 0xe9 in position 96: ordinal not in range(128)
+</pre></div>
+</div>
+<p>Der Fehler tritt auf in Zeile 900:</p>
+<div class="highlight-python"><div class="highlight"><pre>   try:
+       return a.run(self,elem)
+   except Exception,e:
+       msg = _(&quot;Action %(action)s failed for %(record)s: %(error)s&quot; % dict(
+           action=a,
+           record=obj2str(elem),
+           error=e))
+       logger.info(msg)
+       logger.exception(e)
+       return error_response(e,msg)
+
+
+  File &quot;/usr/lib/python2.5/zipfile.py&quot;, line 339, in __init__
+    self.fp = open(file, modeDict[mode])
+IOError: [Errno 2] Aucun fichier ou r\xe9pertoire de ce type: u&#39;/usr/local/lino.../fr/contracts/Konvention.odt&#39;
+</pre></div>
+</div>
+<p>Hier ein kleines Skript, das den Fehler reproduziert:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">locale</span>
+
+<span class="k">for</span> <span class="n">locale_setting</span> <span class="ow">in</span> <span class="s">&#39;fr_BE&#39;</span><span class="p">,</span><span class="s">&#39;de_BE&#39;</span><span class="p">:</span>
+    <span class="n">locale</span><span class="o">.</span><span class="n">setlocale</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">LC_ALL</span><span class="p">,</span><span class="n">locale_setting</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">open</span><span class="p">(</span><span class="s">&#39;nonexisting_file&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span><span class="n">e</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">e</span>
+</pre></div>
+</div>
+<p>Wenn ich das ausführe, kommt folgendes:</p>
+<div class="highlight-python"><div class="highlight"><pre>lsaffre@lino:~$ python tmp.py
+[Errno 2] Aucun fichier ou r▒pertoire de ce type: &#39;nonexisting_file&#39;
+[Errno 2] Datei oder Verzeichnis nicht gefunden: &#39;nonexisting_file&#39;
+</pre></div>
+</div>
+<p>Da steht wohlbemerkt nicht &#8220;répertoire&#8221;, sondern &#8220;r▒pertoire&#8221;.
+Bis auf weiteres nehme ich an, dass das ein Bug in Python sein könnte.
+Das kommt nach <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/17">docs/tickets/17</a>.</p>
+<p>Der Auslöser der Fehlermeldung war ein Bug in Lino
+(er suchte nach dem Template im fr-Verzeichnis obwohl es dort kein Template gibt),
+der ist jetzt behoben und folglich kann
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/17">docs/tickets/17</a> zur Zeit warten.</p>
+</div>
+<div class="section" id="localized-templates-in-appy-pod">
+<h2>Localized templates in <cite>appy.pod</cite><a class="headerlink" href="#localized-templates-in-appy-pod" title="Permalink to this headline">¶</a></h2>
+<p>Lino now sets Python&#8217;s <cite>locale.setlocale</cite> to the document&#8217;s language
+while rendering an appy.pod template.
+So now I can render a <cite>datetime.date</cite> object using the following expression:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">date_decided</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%A, </span><span class="si">%d</span><span class="s">. %B %Y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In a German document this will render a String of type
+&#8220;Sonntag, 28. November 2010&#8221;, in French it
+gives &#8220;dimanche, 28. novembre 2010&#8221;.</p>
+<p>Unfortunately that&#8217;s only almost correct;
+in French there must be no dot after the day&#8217;s number.</p>
+<p>I tried the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">datefmt</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">nl_langinfo</span><span class="p">(</span><span class="n">locale</span><span class="o">.</span><span class="n">D_FMT</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>But <cite>nl_langinfo</cite> is not available on all systems.</p>
+<p>So now I have my own little localization database extension
+in <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#module-lino.mixins.printable" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.printable</span></code></a>...</p>
+</div>
+<div class="section" id="fuzzy-side-effects-on-date-fields">
+<h2>Fuzzy side effects on date fields<a class="headerlink" href="#fuzzy-side-effects-on-date-fields" title="Permalink to this headline">¶</a></h2>
+<p>Worked on the following bug report:</p>
+<ul>
+<li><p class="first">Ich hatte <cite>applies_from</cite> in einem Vertrag
+mit Hilfe des Kalenders auf 3. Januar 2010 gesetzt und gespeichert:</p>
+<blockquote>
+<div><p>201011-27 06:57:28 INFO dblogger : Contract #1 (Vertrag Nr. 1) modified by lsaffre : applies_from : None &#8211;&gt; 2011-03-01</p>
+</div></blockquote>
+<p>Danach das Feld duration von 0 auf leer gesetzt:</p>
+<div class="highlight-python"><div class="highlight"><pre>201011-27 06:58:42 INFO dblogger : Contract #1 (Vertrag Nr. 1) modified by lsaffre :
+duration : 0 --&gt; None
+applies_from : 2011-03-01 --&gt; 2011-01-03
+</pre></div>
+</div>
+</li>
+</ul>
+<dl class="docutils">
+<dt>It&#8217;s because a detail form submits the value as <code class="docutils literal"><span class="pre">'03.01.2010'</span></code></dt>
+<dd>while the grid submits <code class="docutils literal"><span class="pre">'2010-01-03T00:00:00'</span></code>.</dd>
+</dl>
+<p>In der Grid sind DatenFelder als Ext.grid.DateColumn definiert. Auszug aus dem ExtJS-Code:</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.grid.DateColumn = Ext.extend(Ext.grid.Column, {
+
+    format : &#39;m/d/Y&#39;,
+    constructor: function(cfg){
+        Ext.grid.DateColumn.superclass.constructor.call(this, cfg);
+        this.renderer = Ext.util.Format.dateRenderer(this.format);
+    }
+});
+</pre></div>
+</div>
+<p>Konfigurationsparameter der Kolonne:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="n">xtype</span><span class="p">:</span> <span class="s">&quot;datecolumn&quot;</span><span class="p">,</span> <span class="n">format</span><span class="p">:</span> <span class="s">&quot;d.m.Y&quot;</span><span class="p">,</span> <span class="n">editable</span><span class="p">:</span> <span class="n">true</span><span class="p">,</span>
+  <span class="nb">filter</span><span class="p">:</span> <span class="p">{</span> <span class="nb">type</span><span class="p">:</span> <span class="s">&quot;date&quot;</span> <span class="p">},</span>
+  <span class="n">editor</span><span class="p">:</span> <span class="n">last_login38</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Und der Editor (<cite>last_login38</cite>) ist mit <cite>xtype=&#8217;datefield&#8217;</cite> definiert:</p>
+<div class="highlight-python"><div class="highlight"><pre>last_login38 : { xtype: &quot;datefield&quot;, format: &quot;d.m.Y&quot;,... }
+</pre></div>
+</div>
+<p>Aber das alles wird in <cite>Ext.form.BasicForm.submit</cite> gar nicht benutzt, der AJAX-Request schickt
+einfach die Strings, die in den DateField-Elementen stehen ab.</p>
+<p>Eigentlich ist es das ja auch was ich will: Datenfelder sollen gefälligst im von mir gewählten
+Format submittet werden, und nicht mit browserspezifischen Strings.</p>
+<p>Also eigentlich ist es meine <cite>Lino.GridPanel.on_afteredit</cite>, das ich ändern muss!
+Und dann brauche ich den fuzzy dateparser gar nicht mehr.</p>
+<p>Statt meine <cite>Lino.GridPanel.on_afteredit</cite> zu ändern (das ist nämlich gar nicht so einfach)
+könnte ich auch mal schauen, ob der ux.grid.RowEditor nicht sowieso viel besser wäre:
+<a class="reference external" href="http://edspencer.net/2009/09/using-the-extjs-row-editor.html">http://edspencer.net/2009/09/using-the-extjs-row-editor.html</a></p>
+<p>Ja, das ging leichter als ich gedacht hatte...
+nur: auch der RowEditor verwendet nicht das im DateField Format, um Datumsfelder abzuschicken.</p>
+<p>Den RowEditor muss ich mir merken falls das irgendweann mal interessant wird,
+aber bis auf weiteres bleibe ich wenn möglich lieber noch bei der &#8220;primitiven&#8221; Methode,
+jede Zelle einzeln zu submitten.</p>
+<p>Der Tipp
+<a class="reference external" href="http://www.facebook.com/note.php?note_id=127838923898744">Using date fields in the Ext.grid.GridPanel and
+Ext.grid.EditorGridPanel</a>
+von Eugen Hartmann hat mir geholfen zu verstehen, wo das fehlende Puzzlestück war:
+Auch die Felder eines Stores haben auch ein Attribut <cite>dateFormat</cite>!
+Das wird von ExtJS nur beim Laden des Stores benutzt.
+Danke für den Artikel, Eugen.
+Aber dass du am Ende in deinem afteredit-Handling das Datum einfach als formatierten
+String im Record speicherst, das ist imho nicht richtig.
+Ich konvertiere die Daten erst beim Abschicken:</p>
+<div class="highlight-python"><div class="highlight"><pre>var p = {};
+for(k in e.record.getChanges()) {
+    var v = e.record.get(k);
+    var f = e.record.fields.get(k);
+    if (f.type.type == &#39;date&#39;) {
+        p[k] = Ext.util.Format.date(v, f.dateFormat);
+    }else{
+        p[k] = v;
+    }
+}
+</pre></div>
+</div>
+<p>17.40 Uhr, der Bug ist endlich behoben. Den fuzzy dateparser benutze ich momentan gar nicht.
+Allerdings darf man reports.Report.date_format momentan nicht verändern,
+das muss vorläufig auf <code class="docutils literal"><span class="pre">'d.m.Y'</span></code> stehen bleiben, denn ich habe noch keinen Konvertierer,
+der dieses Format (in der ExtJS-Syntax) ins Format von strftime konvertiert.</p>
+<p>17.55 Uhr: oder besser gesagt: wenn man das Datumsformat ändern will, muss man es an drei stellen
+ändern, die jetzt immerhin alle untereinander im Modul <a class="reference external" href="http://www.lino-framework.org/api/index.html#module-lino" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino</span></code></a> zentralisiert sind.</p>
+<p>Check-in und nochmal ein update der Version 0.8.13 in Eupen.</p>
+<p>Noch Änderungen:</p>
+<ul class="simple">
+<li><code class="xref py py-func docutils literal"><span class="pre">lino.modlib.contacts.utils.name2kw()</span></code> erkannte diverse  Namenspräfixe noch nicht (&#8216;van der&#8217;, &#8216;vom&#8217;, &#8216;von&#8217;</li>
+<li>Neues Feld <cite>CompanyType.contract_type</cite>. Das wird erstmals
+dynamisch in eine bestehende Klasse eingepflanzt.
+Die Technik kannte ich noch nicht. Funktioniert!
+Cool!</li>
+<li>Feld Company.type war noch nicht sichtbar.</li>
+<li>Aber Contract.type wird jetzt noch nicht automatisch ausgefüllt,
+weil Django sich weigert, den Vertrag ohne ausgefüllte Vertragsart anzunehmen.
+(wenn CompanyType.contract_type ausgefüllt ist).</li>
+<li>bug fized: &#8220;IntegrityError: contacts_company.street may not be NULL&#8221;</li>
+<li>Contract.type wurde noch nicht automatisch ausgefüllt
+(wenn CompanyType.contract_type ausgefüllt ist),
+weil man mit Django ein non-nullable field nicht auf None setzen darf.</li>
+<li>Die &#8220;Konsole&#8221; zum Anzeigen von Meldungen nimmt jetzt weniger unnützen Platz
+(ist jetzt immer collapsed und die Meldungen werden im Title angezeigt).</li>
+</ul>
+<p>01.12.10 4 Uhr : Check-in und nochmal ein update der Version 0.8.13 in Eupen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1201.html" title="20101201"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1129.html" title="20101129"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1130.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1130.html">Online Link</a>
+    </div>
+  </body>
+</html>

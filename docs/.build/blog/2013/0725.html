@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130725 (Thursday, 25 July 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130726 (Friday, 26 July 2013)" href="0726.html" />
+    <link rel="prev" title="20130724 (Wednesday, 24 July 2013)" href="0724.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0726.html" title="20130726 (Friday, 26 July 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0724.html" title="20130724 (Wednesday, 24 July 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-25-july-2013">
+<h1>20130725 (Thursday, 25 July 2013)<a class="headerlink" href="#thursday-25-july-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fixed-one-javascript-bug">
+<h2>Fixed one Javascript bug<a class="headerlink" href="#fixed-one-javascript-bug" title="Permalink to this headline">¶</a></h2>
+<p>One of yesterday&#8217;s two &#8220;technical challenges&#8221; seems solved:
+executing the &#8220;Read eID card&#8221; action on a client
+using the javascript link of the new &#8220;Actions&#8221;
+field now works.</p>
+<p>Since all this is very complex and not automatically tested,
+it might cause surprises at the Javascript level somewhere
+in the future.
+So I marked this change with &#8220;AFTER_20130725&#8221; in <cite>linoweb.js</cite>
+and <cite>extjs/__init__.py</cite></p>
+<p>The second challenge is even more sophisticated and not yet solved:</p>
+<ul class="simple">
+<li>A reception clerk sees the <span class="xref std std-ref">welfare.reception.ExpectedGuests</span> table
+rendered as HTML in their <cite>admin_main.html</cite>, very nice,
+but the &#8220;Checkout&#8221; actions don&#8217;t work from there.</li>
+</ul>
+<p>Buttons for actions with parameters aren&#8217;t yet possible
+when rendering to plain HTML.
+But Lino now at least says
+&#8220;Sorry, this action don&#8217;t work when called directly from the Home page&#8221;.</p>
+</div>
+<div class="section" id="lino-mixins-beid">
+<h2><code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.beid</span></code><a class="headerlink" href="#lino-mixins-beid" title="Permalink to this headline">¶</a></h2>
+<p>Created <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.beid.BeIdCardHolder</span></code>.
+Transferred translations from <cite>lino_welfare</cite> to <cite>lino</cite>.</p>
+</div>
+<div class="section" id="lino-faggio">
+<h2><a class="reference external" href="http://faggio.lino-framework.org/api/index.html#module-lino_faggio" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio</span></code></a><a class="headerlink" href="#lino-faggio" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Moved <cite>admin_main.html</cite> to the correct location</li>
+<li>Replaced <cite>InvoiceablePartners</cite> by a new approach
+<span class="xref std std-ref">faggio.sales.InvoicesToIssue</span>
+based on a virtual table.</li>
+<li>Moved the definition of virtual fields <cite>workflow_buttons</cite>
+and <cite>action_buttons</cite> from <a class="reference external" href="http://www.lino-framework.org/api/lino.core.model.html#module-lino.core.model" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.model</span></code></a> to <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#module-lino.core.actors" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.actors</span></code></a>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0726.html" title="20130726 (Friday, 26 July 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0724.html" title="20130724 (Wednesday, 24 July 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0725.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0725.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100604 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100606" href="0606.html" />
+    <link rel="prev" title="01.-02.06.2010" href="0601.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0606.html" title="20100606"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0601.html" title="01.-02.06.2010"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20100604<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>(In den letzten Tagen habe ich nicht viel Zeit für Lino gehabt, weil meine Frau doch gerne mal langsam ihren Notebook benutzen möchte und ich einige Probleme damit habe: [LinuxOnCompaqPresarioCQ61])</p>
+<div class="section" id="notizvorlagen-konfigurieren">
+<h2>Notizvorlagen konfigurieren<a class="headerlink" href="#notizvorlagen-konfigurieren" title="Permalink to this headline">¶</a></h2>
+<p>Aber jetzt funktioniert es erstmals, dass man eine Notiz &#8220;ausdrucken&#8221; kann, oder genauer gesagt dass Lino ein ODT-Template auf die Notiz anwendet und das Resultat an den Client ausliefert. Jetzt müssen freilich ein paar erste sinnvolle Dokumentvorlagen gemacht werden.</p>
+<p>Dokumentation dazu : <a class="reference external" href="http://www.lino-framework.org/admin/ConfigureNotesTemplates.html">/admin/ConfigureNotesTemplates</a></p>
+</div>
+<div class="section" id="kleinkram">
+<h2>Kleinkram<a class="headerlink" href="#kleinkram" title="Permalink to this headline">¶</a></h2>
+<p>Der &#8220;Links&#8221;-Button hing noch rum, der ist jetzt raus. <cite>lino.modlib.properties</cite> und <cite>lino.modlib.links</cite> werden momentan nicht gebraucht und vielleicht auch in Zukunft nie.</p>
+</div>
+<div class="section" id="unkomplette-geburtsdaten">
+<h2>Unkomplette Geburtsdaten<a class="headerlink" href="#unkomplette-geburtsdaten" title="Permalink to this headline">¶</a></h2>
+<p>Überlegungen zum Problem</p>
+<p>Rahul Singla hat ein Plugin geschrieben, das mir allgemein nützlich scheint, um die manuelle Eingabe von Daten und Zeiten zu erleichtern:
+<a class="reference external" href="http://www.rahulsingla.com/blog/2010/05/extjs-date-time-field-plugins-for-efficient-data-entry">ExtJs - Date-Time field plugins for efficient data entry</a>.
+Zum Speichern von unkompletten Daten nützt es allerdings nichts.</p>
+<p>Um unkomplette Geburtsdaten in den Griff zu kriegen, sehe ich zwei prinzipielle Möglichkeiten: (1) in der Datenbank drei Integer-Felder statt eines Feldes vom Typ DATE, und dann einen eigenes Widget programmieren. Oder (2) für unbekannte Teile des Datums eine 1 speichern, und in einem weiteren Feld festhalten, welche Teile des Datums unbekannt sind. Dieses weitere Feld kann ein einfacher SmallInteger sein, dessen Werte folgendermaßen zu interpretieren sind:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>1</td>
+<td>Jahr unbekannt</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>Monat unbekannt</td>
+</tr>
+<tr class="row-odd"><td>4</td>
+<td>Tag unbekannt</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>Also ein Wert 5 hieße, dass nur der Monat bekannt, und Jahr und Tag unbekannt sind.Für dieses Feld müssten wir freilich auch einen eigenen Editor bauen mit drei Ankreuzfeldern.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0606.html" title="20100606"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0601.html" title="01.-02.06.2010"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0604.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0604.html">Online Link</a>
+    </div>
+  </body>
+</html>

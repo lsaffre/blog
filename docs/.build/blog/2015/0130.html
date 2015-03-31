@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Friday, January 30, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Saturday, January 31, 2015" href="0131.html" />
+    <link rel="prev" title="Thursday, January 29, 2015" href="0129.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0131.html" title="Saturday, January 31, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0129.html" title="Thursday, January 29, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-january-30-2015">
+<h1>Friday, January 30, 2015<a class="headerlink" href="#friday-january-30-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submitting-an-actionformpanel-no-longer-forwards-param-values">
+<h2>Submitting an ActionFormPanel no longer forwards <cite>param_values</cite><a class="headerlink" href="#submitting-an-actionformpanel-no-longer-forwards-param-values" title="Permalink to this headline">¶</a></h2>
+<p>Uff! Ticket <a class="reference external" href="http://trac.lino-framework.org/ticket/49">#49</a> is fixed. <a class="reference external" href="http://www.lino-framework.org/community/contributors.html#gx" title="(in Lino v1.6)"><span>Gerd Xhonneux</span></a> and Melanie discovered
+yesterday how to reproduce it. The trick was to open the detail panel
+<em>via the table view</em>, not (as I usually do) by clicking on some client
+in the welcome page.</p>
+<p>As expected, this was subtle and required several hours of debugging
+and a change in <a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#xfile-linoweb.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linoweb.js</span></code></a>. I also wrote a new test case
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.docs.tests.test_households</span></code> which helped
+me to understand the problem.</p>
+<p>Explanation: <cite>Lino.call_ajax_action</cite> also asked the requesting panel
+to add its base params to the parameters of the AJAX call:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">Ext</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">panel</span><span class="o">.</span><span class="n">get_base_params</span><span class="p">());</span>
+</pre></div>
+</div>
+<p>In our case (user clicks on one of the <cite>create_household</cite> links in the
+summary panel of
+<code class="xref py py-class docutils literal"><span class="pre">MembersByPerson</span></code>)
+the requesting panel is the detail window of the client.  Which (when
+opened via the table view) included the parameter values (<a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_PARAM_VALUES" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">pv</span></code></a>) of that view.  But at
+least in our case we do <em>not</em> want to add these when sending the <cite>OK</cite>
+of the <cite>ActionFormPanel</cite>.  I am not yet sure whether this is generally
+what we want because the current case is furthermore special: the
+<cite>create_household</cite> action is called from <cite>pcsw.Clients</cite> but defined on
+the <cite>contacts.Person</cite> model.</p>
+<p>Commit and push.</p>
+<p>And here is already a destructive side-effect of above solution.  The
+following comes when I tried to assign a newcomer to a coach:</p>
+<div class="highlight-python"><div class="highlight"><pre>AttributeError &#39;NoneType&#39; object has no attribute &#39;__dict__&#39;
+
+TRACEBACK:
+  ...
+  File &quot;welfare/lino_welfare/modlib/newcomers/models.py&quot;, line 453, in run_from_ui
+    watcher = ChangeWatcher(client)
+  File &quot;lino/lino/core/utils.py&quot;, line 694, in __init__
+    self.original_state = dict(watched.__dict__)
+</pre></div>
+</div>
+<p>Okay the parameter values (<a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_PARAM_VALUES" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">pv</span></code></a>) must <em>maybe</em> never go
+to the AJAX call, but the <a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_MASTER_TYPE" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">mt</span></code></a> and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_MASTER_PK" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">mk</span></code></a>
+are always needed. For
+example the
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.newcomers.models.html#lino_welfare.modlib.newcomers.models.AssignCoach" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">AssignCoach</span></code></a>
+action in <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.newcomers.models.html#lino_welfare.modlib.newcomers.models.AvailableCoachesByClient" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-class docutils literal"><span class="pre">AvailableCoachesByClient</span></code></a> needs
+the <cite>master_instance</cite>.</p>
+<p>Commit and push. Upgrade in <a class="reference external" href="http://www.lino-framework.org/community/users.html#weleup" title="(in Lino v1.6)"><span>ÖSHZ Eupen</span></a>.</p>
+</div>
+<div class="section" id="remember-the-active-tab-when-saving">
+<h2>Remember the active tab when saving<a class="headerlink" href="#remember-the-active-tab-when-saving" title="Permalink to this headline">¶</a></h2>
+<p>And then another Javascript problem solved: <a class="reference external" href="http://trac.lino-framework.org/ticket/68">#68</a>. The problem was:</p>
+<ul class="simple">
+<li>When I save a detail form for the first time, Lino switches back to
+the first tab even if I was in another tab when clicking the Save
+button.</li>
+</ul>
+<p>Note that Lino did <em>not</em> forget to add the <a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_TAB" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">tab</span></code></a> url parameter to the AJAX
+call. But the response did not return it back.  Added new keyword
+argument <cite>active_tab</cite> to <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.BaseRequest.set_response" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.set_response</span></code></a>, changed
+<a class="reference external" href="http://www.lino-framework.org/ref/javascript.html#Lino.handle_action_result" title="(in Lino v1.6)"><code class="xref js js-func docutils literal"><span class="pre">Lino.handle_action_result()</span></code></a> (in <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-linolib.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linolib.js</span></code></a>) to
+handle this keyword, and changed <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.BaseRequest.parse_req" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ar.parse_req</span></code></a> to detect the <a class="reference external" href="http://www.lino-framework.org/api/lino.core.constants.html#lino.core.constants.URL_PARAM_TAB" title="(in Lino v1.6)"><code class="xref py py-data docutils literal"><span class="pre">tab</span></code></a> url parameter on incoming calls.</p>
+<p>Commit and push.</p>
+</div>
+<div class="section" id="immersion-trainings">
+<h2>Immersion trainings<a class="headerlink" href="#immersion-trainings" title="Permalink to this headline">¶</a></h2>
+<p>I started to work on <a class="reference external" href="http://trac.lino-framework.org/ticket/72">#72</a>. It was almost done in less than 2
+hours: a new module <code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.trainings</span></code>.</p>
+<p>But the <code class="xref py py-mod docutils literal"><span class="pre">demo</span> <span class="pre">fixture</span></code> took some more
+time. See <a class="reference external" href="http://www.lino-framework.org0131.html">tomorrow</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0131.html" title="Saturday, January 31, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0129.html" title="Thursday, January 29, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0130.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0130.html">Online Link</a>
+    </div>
+  </body>
+</html>

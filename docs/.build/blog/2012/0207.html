@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120207 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120208" href="0208.html" />
+    <link rel="prev" title="20120206" href="0206.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0208.html" title="20120208"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0206.html" title="20120206"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120207<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="ein-paar-subtile-bugs">
+<h2>Ein paar subtile Bugs<a class="headerlink" href="#ein-paar-subtile-bugs" title="Permalink to this headline">¶</a></h2>
+<p>Die folgenden Bugs sind nun in der Development-Version behoben:</p>
+<ul class="simple">
+<li>In Grids mit mehr als einer Bildschirmseite voll Daten konnte man nicht blättern.</li>
+<li>Quicklink [Detail Personen] erlaubte das Bearbeiten importierter Felder.</li>
+<li>Kursanfragen: im Detail wurde das neue Feld &#8220;Dringend&#8221; noch nicht angezeigt.</li>
+<li>[Layout Editor] funktionierte nicht</li>
+</ul>
+<p>Details und Bemerkungen</p>
+<p>In der <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw.settings</span></code> machte ich:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setup_quicklinks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ui</span><span class="p">,</span><span class="n">user</span><span class="p">,</span><span class="n">tb</span><span class="p">):</span>
+    <span class="n">tb</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">Persons</span><span class="p">,</span><span class="s">&#39;detail&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Stattdessen musste es sein:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">setup_quicklinks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ui</span><span class="p">,</span><span class="n">user</span><span class="p">,</span><span class="n">tb</span><span class="p">):</span>
+    <span class="n">tb</span><span class="o">.</span><span class="n">add_action</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">pcsw</span><span class="o">.</span><span class="n">Persons</span><span class="p">,</span><span class="s">&#39;detail&#39;</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>Der Effekt war, dass man importierte Felder bearbeiten konnte.
+Das ist eine Mausefalle, die nicht gekommen wäre, wenn das <cite>app_label</cite>
+von <code class="xref py py-class docutils literal"><span class="pre">lino.apps.pcsw.models.Persons</span></code> weiterhin <cite>contacts</cite> wäre.
+Soll ich wieder forcieren, dass dass <cite>app_label</cite> vererbt wird?
+Aber ich glaube es gibt andere Fälle, wo diese Möglichkeit wichtig ist...</p>
+<p>Der [Layout Editor] funktionmierte nicht, weil er dann folgendes machte:</p>
+<div class="highlight-python"><div class="highlight"><pre>AttributeError
+type object &#39;XyzTable&#39; has no attribute &#39;can_config&#39;
+
+TRACEBACK:
+  File &quot;l:\snapshots\django\django\core\handlers\base.py&quot;, line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+
+  File &quot;t:\hgwork\lino\lino\ui\extjs3\ext_ui.py&quot;, line 1313, in detail_config_view
+    if not rpt.can_config.passes(request.user):
+</pre></div>
+</div>
+<p>Ja klar, in <cite>detail_config_view</cite> machte er noch das alte System
+von vor <cite>get_permission</cite>.
+Ich habs jetzt einfach deaktiviert (war ja sowieso für alle Benutzer offen),
+aber bei Gelegenheit will ich eine neue Aktion <cite>ConfigureLayout</cite> machen
+und die <cite>detail_config_view</cite> in die <cite>api_list_view</cite> aufnehmen.</p>
+</div>
+<div class="section" id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>New Window <code class="xref py py-class docutils literal"><span class="pre">lino.models.About</span></code>, a first use-case of the new
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.window_size" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">window_size</span></code></a>
+attribute for <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.core.actors.Actor</span></code></a>.</p>
+<p><code class="xref py py-meth docutils literal"><span class="pre">lino.core.actions.ActorRequest.confirm()</span></code> required a first argument <cite>step</cite>.
+This wasn&#8217;t necessary since it can itself count the number of confirms.</p>
+<p><code class="xref py py-func docutils literal"><span class="pre">lino.ui.extjs3.ext_ui.action_response()</span></code> and
+<code class="xref py py-attr docutils literal"><span class="pre">lino.ui.extjs3.ext_ui.ACTION_RESPONSES</span></code>.</p>
+</div>
+<div class="section" id="anderungen-kalender">
+<h2>Änderungen Kalender<a class="headerlink" href="#anderungen-kalender" title="Permalink to this headline">¶</a></h2>
+<p>Erstens habe ich einen Bug behoben (man konnte vom Kalender aus
+keine Termine erstellen),
+zweitens das Feld &#8220;Dauer&#8221; rausgeworfen und
+drittens ein neues Ankreuzfeld &#8220;ganztags&#8221;.</p>
+<p>Der Bug kam, weil <cite>summary</cite> und <cite>all_day</cite> virtuelle Felder waren.
+Zwei neue Klassen
+<code class="xref py py-class docutils literal"><span class="pre">ExtSummaryField</span></code>
+und
+<code class="xref py py-class docutils literal"><span class="pre">ExtAllDayField</span></code>,
+um sie editierbar zu machen.</p>
+<p><cite>all_day</cite> ist ein Checkbox-Feld,
+das in den meisten Kalender-Clients benutzt wird,
+um dynamisch die beiden Zeit-Felder zu deaktivieren.
+Diese Info braucht man nicht in der Datenbank zu speichern.</p>
+</div>
+<div class="section" id="aktive-felder">
+<h2>Aktive Felder<a class="headerlink" href="#aktive-felder" title="Permalink to this headline">¶</a></h2>
+<p>Die Namen der aktiven Felder eines Detail-Fensters werden jetzt schon
+beim Generieren der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-lino.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">lino.js</span></code></a> aufgelöst.
+Also Schutz vor Tippfehlerbugs und Aufbau ein bisschen effizienter.</p>
+<p>FormPanel hat jetzt auch eine <cite>loadMask</cite>, die beim Speichern
+aktiviert wird. Also das folgende Problem ist gelöst:</p>
+<ul class="simple">
+<li>Eingabe Art-60-7-Konventionen : hier sind ja einige &#8220;aktive Felder&#8221;,
+d.h. wenn man eine Stelle eingegeben hat und das Feld verlässt,
+wird das Formular ohne zu fragen abgespeichert.
+Das muss auch so sein, weil dadurch einige andere Felder eventuell
+verändert werden.
+Problem ist, dass die Anfrage an den Server oft eine Sekunde dauert,
+in der ein Schnelltipper womöglich schon beginnt, im nächsten Feld etwas einzugeben.
+Also Lino sollte das Formular während dieser Zeit mit
+einer loadMask (&#8220;Bitte warten&#8221;) deaktivieren.</li>
+</ul>
+<p>Es gibt aber noch zwei Bugs mit den
+<code class="xref py py-attr docutils literal"><span class="pre">active_fields</span></code>:
+erstens reagieren Checkboxen scheinbar nicht aufs change-Event
+und zweitens stimmt da was nicht:
+wenn man in einem VSE, dessen <cite>Vertreten durch</cite> leer ist,
+die <cite>Organisation</cite> ändert und dann das Feld mit [TAB] verlässt,
+dann speichert er ein erstes Mal, und wenn man dann zum nächsten
+VSE springt, speichert er ein zweites Mal.
+Sehr subtil.
+Das kommt daher, dass der Eingabefokus dann
+während des Speicherns in einem Feld ist, das durch das Speichern
+verändert wird, und das ebenfalls aktiv ist.</p>
+<p>Also der Cursor befindet sich in einem aktiven Feld,
+dann kommt der AJAX-Call rein und verändert unter anderem
+just dieses Feld.
+Logisch, dass er dann beim Weiterspringen denkt, er hätte sein Feld
+verändert.
+Also wenn man mehr als ein aktives Feld definiert, sollten
+die sich beim Speichern nicht auch noch gegenseitig aktualisieren.
+Lösung im Fall von Verträgen:siehe <a class="reference external" href="http://www.lino-framework.org0208.html">morgen</a>.</p>
+<p>Übrigens könnte FormPanel.save()
+vom PUT bzw. POST den aktualisierten Record
+zurückbekommen statt ein weiteres GET zu machen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0208.html" title="20120208"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0206.html" title="20120206"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0207.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0207.html">Online Link</a>
+    </div>
+  </body>
+</html>

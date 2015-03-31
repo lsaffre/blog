@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110530 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110531" href="0531.html" />
+    <link rel="prev" title="20110528" href="0528.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0531.html" title="20110531"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0528.html" title="20110528"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110530<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Some files in <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//bash">/bash</a> had CRLF EOL markers. Fixed.</li>
+<li><cite>lino.modlib.countries.models.Countries</cite> now is sorted
+by <cite>name</cite> and <cite>isocode`</cite> instead of <cite>isocode</cite>.</li>
+<li>The texts &#8220;Rückblick&#8221; (past reminders) and &#8220;Ausblick&#8221; (upcoming reminders)
+in <code class="xref py py-func docutils literal"><span class="pre">lino.mixins.reminders.reminders_summary()</span></code> are now translatable.</li>
+<li>Grids now have <cite>stripeRows:true</cite> as default. Looks nice.</li>
+</ul>
+</div>
+<div class="section" id="using-a-stable-django-version">
+<h2>Using a stable Django version<a class="headerlink" href="#using-a-stable-django-version" title="Permalink to this headline">¶</a></h2>
+<p>Tiens, in Django revision 16283 läuft die Testsuite nicht:</p>
+<div class="highlight-python"><div class="highlight"><pre>luc@mops:/var/snapshots/django_src/tests$ python runtests.py --settings=dsbe_demo.settings
+Traceback (most recent call last):
+  File &quot;runtests.py&quot;, line 326, in &lt;module&gt;
+    failures = django_tests(int(options.verbosity), options.interactive, options.failfast, args)
+  File &quot;runtests.py&quot;, line 165, in django_tests
+    state = setup(verbosity, test_labels)
+  File &quot;runtests.py&quot;, line 150, in setup
+    mod = load_app(module_label)
+  File &quot;/var/snapshots/django_src/django/db/models/loading.py&quot;, line 87, in load_app
+    app_module = import_module(app_name)
+  File &quot;/var/snapshots/django_src/django/utils/importlib.py&quot;, line 35, in import_module
+    __import__(name)
+  File &quot;/usr/lib/python2.6/dist-packages/uno.py&quot;, line 258, in _uno_import
+    return _g_delegatee( name, *optargs, **kwargs )
+ImportError: No module named csrf
+</pre></div>
+</div>
+<p>Erstmal ein <code class="docutils literal"><span class="pre">svn</span> <span class="pre">update</span></code>: updated to revision 16292. Dann funktionieren sie.</p>
+<p>Da fällt mir ein, dass ich testen wollte,
+ob Lino mit einer stabilen Django-Version funktioniert.
+Lenny kommt mit Version 1.2.3.
+Mal probieren. In der <cite>/usr/local/lib/python2.6/dist-packages/local.pth</cite> hole ich
+die Zeile  <code class="docutils literal"><span class="pre">/var/snapshots/django_src</span></code> raus und dann:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo aptitude install python-django
+The following NEW packages will be installed:
+  python-django
+0 packages upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 4179 kB of archives. After unpacking 20.3 MB will be used.
+...
+Fetched 4179 kB in 35s (118 kB/s)
+Selecting previously deselected package python-django.
+(Reading database ... 125307 files and directories currently installed.)
+Unpacking python-django (from .../python-django_1.2.3-3+squeeze1_all.deb) ...
+Processing triggers for man-db ...
+Setting up python-django (1.2.3-3+squeeze1) ...
+Processing triggers for python-support ...
+</pre></div>
+</div>
+<p>Aber die Version 1.2.3 von Django scheint zu alt zu sein.
+Damit funktioniert schon ein <code class="docutils literal"><span class="pre">python</span> <span class="pre">manage.py</span> <span class="pre">validate</span></code> nicht:</p>
+<div class="highlight-python"><div class="highlight"><pre>...
+  File &quot;/usr/lib/pymodules/python2.6/django/db/models/loading.py&quot;, line 64, in _populate
+    self.load_app(app_name)
+  File &quot;/usr/lib/pymodules/python2.6/django/db/models/loading.py&quot;, line 78, in load_app
+    models = import_module(&#39;.models&#39;, app_name)
+  File &quot;/usr/lib/pymodules/python2.6/django/utils/importlib.py&quot;, line 35, in import_module
+    __import__(name)
+  File &quot;/usr/lib/python2.6/dist-packages/uno.py&quot;, line 258, in _uno_import
+    return _g_delegatee( name, *optargs, **kwargs )
+  File &quot;/var/snapshots/lino/lino/apps/dsbe/models.py&quot;, line 56, in &lt;module&gt;
+    from lino.utils import mti
+  File &quot;/usr/lib/python2.6/dist-packages/uno.py&quot;, line 296, in _uno_import
+    raise ImportError( &quot;type &quot;+ name + &quot;.&quot; +x + &quot; is unknown&quot; )
+ImportError: type lino.utils.mti is unknown
+</pre></div>
+</div>
+<p>also wieder raus damit.
+Alternativ käme dann noch die <a class="reference external" href="http://www.djangoproject.com/download">zuletzt releaste Version 1.3</a>
+in Frage. Probieren wir es damit:</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /var/snapshots
+wget http://media.djangoproject.com/releases/1.3/Django-1.3.tar.gz
+tar xzvf Django-1.3.tar.gz
+mv django django-svn
+mv Django-1.3 django
+</pre></div>
+</div>
+<p>Cool, das funktioniert! Abgesehen von ein paar Details):</p>
+<ul>
+<li><p class="first">die Tests für <cite>django.contrib.contenttypes</cite> hängen noch immer von <cite>django.contrib.auth</cite> ab</p>
+</li>
+<li><p class="first">und auch ein Test in der Lino-Suite funktioniert offenbar nur, wenn man <cite>de</cite> als
+Hauptsprache hat:</p>
+<div class="highlight-python"><div class="highlight"><pre>FAIL: test_them_all (lino.apps.dsbe.tests.dsbe_demo_tests.DemoTest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;/var/snapshots/lino/lino/utils/test.py&quot;, line 87, in test_them_all
+    v(self)
+  File &quot;/var/snapshots/lino/lino/apps/dsbe/tests/dsbe_demo_tests.py&quot;, line 71, in test02
+    self.assertEqual(row[0],&quot;Gehorsam&quot;)
+AssertionError: u&#39;Ob\xe9issant&#39; != &#39;Gehorsam&#39;
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Weil das nicht dramatisch ist, und weil es gut ist,
+wenn Lino-Bentuzer in Zukunft mit einer stabilen Django-Version arbeiten,
+ändere ich die <a class="reference external" href="http://www.lino-framework.org/admin/install.html">/admin/install</a> ab.</p>
+<p>N.B.: das <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> von Djangos Installationsanleitung
+mache (und empfehle) ich lieber nicht, weil ich nicht weiß, was das bringt.
+Und weil ich nicht weiß, ob und wie man ein dermaßen installiertes Paket dann wieder
+deaktiviert.</p>
+</div>
+<div class="section" id="weiter-mit-tinymce">
+<h2>Weiter mit TinyMCE<a class="headerlink" href="#weiter-mit-tinymce" title="Permalink to this headline">¶</a></h2>
+<p>Zur Zeit arbeite ich an folgender Einbindung: im Detail-Fenster wird nicht der
+Editor angezeigt, sondern nur eine HtmlBox, die den formatierten Text anzeigt.
+Die HtmlBox hat einen Button &#8220;Bearbeiten&#8221; und erst wenn man den klickt, öffnet
+sich ein (modales) Fenster mit dem Editor.
+Sogar der Save-Button funktioniert. Alles ist aber noch wackelig
+programmiert, und bevor man es Otto Normalverbraucher zumuten kann,
+sind noch einige Probleme zu beheben:</p>
+<ul class="simple">
+<li>Der Benutzer sieht keine Bestätigung, wenn er gespeichert hat.</li>
+<li>Die Scrollbars der HtmlBox sind nicht ganz richtig dimensioniert:
+auch bei einem leeren Text werden sie angezeigt.
+Die horizontale Scrollbar ist da, obschon sie gar nicht nötig wäre.</li>
+<li>Nach dem Schließen des Editor-Fensters muss die HtmlBox aktualisiert
+werden.</li>
+<li>Wenn man das Fenster ohne zu Speichern schließt, sollte er vorher fragen,
+ob man nicht doch lieber speichern will.</li>
+<li>Speichern kann man mit Ctrl-S, das ist schön.
+Aber man sollte das Fenster auch schließen können,
+ohne die Maus zu belästigen...</li>
+<li>Wenn die Notiz ausgedruckt wurde, ist die HtmlBox disabled
+(weil body in disabled_fields mit dabei ist, was bei inline editing
+auch nötig ist). Aber das <cite>disabled</cite> einer HtmlBox sollte die Anzeige nicht
+grau werden lassen, auch die Scrollbars nicht deaktivieren, sondern
+lediglich den Button &#8220;Bearbeiten&#8221;</li>
+<li>Muss der Benutzer dynamisch umschalten können zwischen den beiden Modi
+(inline / windowed)?</li>
+</ul>
+<p>Ich checke das jetzt ein, denn für heute ist Feierabend.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0531.html" title="20110531"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0528.html" title="20110528"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0530.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0530.html">Online Link</a>
+    </div>
+  </body>
+</html>

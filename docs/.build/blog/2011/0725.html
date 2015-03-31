@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110725 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110726" href="0726.html" />
+    <link rel="prev" title="20110723" href="0723.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0726.html" title="20110726"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0723.html" title="20110723"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110725<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-layout-problem-vertrage-gelost">
+<h2>(a) Layout-Problem Verträge gelöst<a class="headerlink" href="#a-layout-problem-vertrage-gelost" title="Permalink to this headline">¶</a></h2>
+<p>Zwei Stunden Fehlerjagd für folgendes Problem:</p>
+<ol class="arabic simple">
+<li>Ein Layout-Bug im Detail der Verträge: die Reiter &#8220;Art.60-7&#8221; und &#8220;VSE&#8221;
+werden seit Version 1.2.0 nicht gleich beim ersten Mal korrekt aufgebaut.
+Workaround bis auf weiteres:
+man muss mehrmals die drei Reiter &#8220;durchklicken&#8221;, bis
+die Felder korrekt angezeigt werden. Das Problem ist <em>nicht</em> durch die
+aktiven Felder gekommen.
+Ist sehr ähnlich wie <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/1">docs/tickets/1</a>.</li>
+</ol>
+<p>Es hatte überhaupt nichts mit Ticket #1 zu tun, sondern in meiner
+Lino.RichTextPanel war noch ein Bug: <cite>refresh()</cite> erzeugte einen TypeError
+wenn sie auf einer noch nicht gerenderten Komponente aufgerufen wurde.
+Jetzt macht sie deshalb <code class="docutils literal"><span class="pre">if</span> <span class="pre">(this.editor.ed)</span></code>. Das war alles!
+Wenn ich als erstes in die Console geschaut hätte statt ins Ticket #1,
+hätte ich eine bis 3 Stunden Zeit gespart...</p>
+<p>Checkin 20110725a</p>
+</div>
+<div class="section" id="b-self-company-in-dokumentvorlagen-fur-vertrage">
+<h2>(b) <code class="docutils literal"><span class="pre">self.company</span></code> in Dokumentvorlagen für Verträge<a class="headerlink" href="#b-self-company-in-dokumentvorlagen-fur-vertrage" title="Permalink to this headline">¶</a></h2>
+<p>Der Drittpartner eines Vertrags (<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.jobs.models.Contract</span></code>
+ist ja jetzt nicht mehr <cite>company</cite>, sondern <cite>provider</cite>.
+In den Dokumentvorlagen steht aber überall <code class="docutils literal"><span class="pre">self.company</span></code>.
+Erste schnelle Lösung:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_company</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">provider</span>
+<span class="n">company</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">get_company</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Wenn ich einen Trick fände, in Django den Datentyp eines aus einer Basisklasse
+geerbten Feldes zu verändern, dann könnte ich Contract wieder zu
+einem PartnerDocument machen. Ungefähr so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PartnerDocument</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
+  <span class="n">company</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;contacts.Company&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+  <span class="n">person</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;contacts.Person&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+  <span class="o">...</span>
+
+<span class="k">class</span> <span class="nc">Contract</span><span class="p">(</span><span class="n">PartnerDocument</span><span class="p">,</span><span class="o">...</span><span class="p">):</span>
+  <span class="nd">@classmethod</span>
+  <span class="k">def</span> <span class="nf">setup_model</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+    <span class="n">cls</span><span class="o">.</span><span class="n">company</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s">&#39;jobs.JobProvider&#39;</span><span class="p">,</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Aber so eine Methode <cite>setup_model</cite> (die irgendwo in
+<cite>django.db.models.base.ModelBase</cite> aufgerufen werden müsste)
+gibt es nicht, und die wäre auch nicht einfach zu implementieren.</p>
+<p>Checkin 20110725b und Installation beim Kunden,
+also das kommt noch mit in die <a class="reference external" href="http://www.lino-framework.org/releases/2011/0723.html">/releases/2011/0723</a>.</p>
+</div>
+<div class="section" id="c-bug-im-detail-status-einer-person">
+<h2>(c) Bug im Detail &#8220;Status&#8221; einer Person<a class="headerlink" href="#c-bug-im-detail-status-einer-person" title="Permalink to this headline">¶</a></h2>
+<p>Checkin 20110725c und Installation beim Kunden,
+also auch das kommt noch mit in die <a class="reference external" href="http://www.lino-framework.org/releases/2011/0723.html">/releases/2011/0723</a>.</p>
+</div>
+<div class="section" id="d-unicodeencodeerror-at-api-uploads-uploadsbyowner">
+<h2>(d) UnicodeEncodeError at /api/uploads/UploadsByOwner<a class="headerlink" href="#d-unicodeencodeerror-at-api-uploads-uploadsbyowner" title="Permalink to this headline">¶</a></h2>
+<p>Wenn man versucht, eine Datei mit Sonderzeichen im Namen hochzuladen,
+dann passiert auf dem Debian-Server des Kunden ein UnicodeEncodeError:</p>
+<div class="highlight-python"><div class="highlight"><pre>ERROR base : Internal Server Error: /api/uploads/UploadsByOwner
+Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/core/handlers/base.py&quot;, line 111, in get_response
+    response = callback(request, *callback_args, **callback_kwargs)
+  File &quot;/var/snapshots/lino/lino/ui/extjs3/ext_ui.py&quot;, line 980, in api_list_view
+    rh.report.handle_uploaded_files(request,instance)
+  File &quot;/var/snapshots/lino/lino/reports.py&quot;, line 714, in f
+    return m(obj,request)
+  File &quot;/var/snapshots/lino/lino/mixins/uploadable.py&quot;, line 81, in handle_uploaded_files
+    ff.save(uf.name,uf,save=False)
+  File &quot;/var/snapshots/django/django/db/models/fields/files.py&quot;, line 90, in save
+    self.name = self.storage.save(name, content)
+  File &quot;/var/snapshots/django/django/core/files/storage.py&quot;, line 48, in save
+    name = self.get_available_name(name)
+  File &quot;/var/snapshots/django/django/core/files/storage.py&quot;, line 74, in get_available_name
+    while self.exists(name):
+  File &quot;/var/snapshots/django/django/core/files/storage.py&quot;, line 233, in exists
+    return os.path.exists(self.path(name))
+  File &quot;/usr/lib/python2.6/genericpath.py&quot;, line 18, in exists
+    st = os.stat(path)
+UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\xfc&#39; in position 51: ordinal not in range(128)
+</pre></div>
+</div>
+<p>Ich versuche den Fall im Laboratorium zu reproduzieren:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">django.utils._os</span> <span class="kn">import</span> <span class="n">safe_join</span>
+
+<span class="n">fn</span> <span class="o">=</span> <span class="s">u&quot;Liste F</span><span class="se">\xfc</span><span class="s">hrerschein.pdf&quot;</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="n">safe_join</span><span class="p">(</span><span class="s">&#39;foo&#39;</span><span class="p">,</span><span class="n">fn</span><span class="p">)</span>
+<span class="n">fn</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+<span class="k">print</span> <span class="nb">repr</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Aber das funktioniert tadellos:</p>
+<div class="highlight-python"><div class="highlight"><pre>lsaffre@lino:~$ python 20110725.py
+u&#39;/home/lsaffre/foo/Liste F\xfchrerschein.pdf&#39;
+True
+</pre></div>
+</div>
+<p>Hm...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0726.html" title="20110726"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0723.html" title="20110723"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0725.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0725.html">Online Link</a>
+    </div>
+  </body>
+</html>

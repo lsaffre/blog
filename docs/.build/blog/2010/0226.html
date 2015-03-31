@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>26.02.2010 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0227.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0225.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0227.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0225.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>26.02.2010<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Speichern der Fenstergröße des Ei-Editors. Jetzt haben auch Eigenschaften-Fenster einen Button um die Größe zu speichern. Das Problem hier war, dass die Ei-Editor-Fenster noch keinen Permalink-Namen hatten. War über 4 Stunden Arbeit, was u.A. daran liegt, dass mein System zum Generieren von JS sehr komplex und noch nicht stabil ist. Zum Beispiel werden Generatorfunktionen jetzt wieder während <cite>py2js()</cite> ausgeführt und nicht vom aufrufenden Code. Denn sonst kann man eine gleiche Struktur nur einmal generieren lassen. Das hatte interessanterweise bisher nie gestört. Aber seit heute ist auch <cite>PagingToolbar</cite> eine <cite>jsgen.Variable</cite>, und dort störte es.</p>
+<p>Also in Revision
+[<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=528936fc2d6e47186b63ee52ca1687be81a44f31">http://code.google.com/p/lino/source/detail?r=528936fc2d6e47186b63ee52ca1687be81a44f31</a> 528936fc2d] können auch Ei-Fenster ihre Größe speichern.</p>
+<dl class="docutils">
+<dt>Todo:</dt>
+<dd><ul class="first last simple">
+<li>Ei-Fenster zeigt noch immer nur die gesetzten Eigenschaften an (statt alle)</li>
+<li>alle SlaveWindows mit Toggle-Button wie PropertiesWindow</li>
+</ul>
+</dd>
+</dl>
+<hr class="docutils" />
+<p>Ein paar Kleinigkeiten in der demo.dpy von lino-dsbe. Neue Eigenschaft &#8216;Betriebsform&#8217;. Feld <cite>civil_state</cite> ist jetzt nicht mehr in Person, sondern als Eigenschaft. Kleine Funktion <cite>fill_choices(p,model)</cite>, um fiktive Demo-Eigenschaften bequem zu generieren.</p>
+<p>Bug in LoginDialog behoben. (Mir schwant es immer klarer, dass ich <cite>ReportRequest</cite> umbenennen sollte nach <cite>ReportDialog(Dialog)</cite>...)</p>
+<p>Auch nach 1 Stunde Suche zeigt der Ei-Fenster noch immer nicht alle Eigenschaften an. Obschon Lino sie ihm alle liefert, zeigt er immer nur diese 5 an. Rätselhaft...</p>
+<p>== Release auf Tups ==</p>
+<p>Aber jetzt scheint mir der richtige Zeitpunkt, noch mal ein Release auf [<a class="reference external" href="http://dsbe.saffre-rumma.ee">http://dsbe.saffre-rumma.ee</a>] zu machen. Dummerweise schlägt nun Issue 79 wieder zu.
+Updated Django to revision 12600. Ändert nichts.</p>
+<p>Also ich gehe nach <cite>/var/snapshots/dsbe/src/dsbe/demo</cite> und starte dort:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python fill.py demo
+Using default logging config
+Traceback (most recent call last):
+  File &quot;fill.py&quot;, line 23, in &lt;module&gt;
+    from lino import lino_site
+  File &quot;/var/snapshots/lino/src/lino/lino_site.py&quot;, line 19, in &lt;module&gt;
+    from django.conf import settings
+ImportError: No module named conf
+$
+</pre></div>
+</div>
+<p>Und dieser Fehler kommt auf allen UNIX-Rechnern, aber nicht unter Windows.
+Seltsam ist, dass folgendes wohl funktioniert:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ export DJANGO_SETTINGS_MODULE=dsbe.demo.settings
+$ python -c &#39;from django.conf import settings; print settings.DEBUG&#39;
+Using default logging config
+True
+$
+</pre></div>
+</div>
+<p>Oder noch härter:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python
+Python 2.5.2 (r252:60911, Jan  4 2009, 17:40:26)
+[GCC 4.3.2] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; from django.conf import settings
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>Nach langem Suchen... Ha! Die Erklärung ist, dass es früher mal ein Modul <cite>lino.django</cite> gab, und Mercurial hat dessen Verzeichnis (<cite>/var/snapshots/lino/src/lino/django</cite>) mitsamt den darin enthaltenen <cite>*.pyc</cite>-Dateien stehenlassen (weil ich ihm ja gesagt hat, er soll die ignorieren). Und wenn ich in <cite>lino.lino_site</cite> das <cite>from django.conf import settings</cite> mache, importiert er das dortige Modul <cite>lino.django</cite>. Deswegen muss man ja relative Imports in neueren Python-Versionen explizit schreiben: <cite>from . import django.conf</cite></p>
+<p>Jedenfalls war die Lösung also:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">rm</span> <span class="o">-</span><span class="n">R</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">snapshots</span><span class="o">/</span><span class="n">lino</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">django</span>
+</pre></div>
+</div>
+<p>Nach einigen weiteren Problemen (in der Apache-Konfig stand <cite>Alias /extjs/ /var/snapshots/extjs/ext-3.1.1/</cite> statt <cite>Alias /extjs/ /var/snapshots/ext-3.1.1/</cite>, und für die <cite>/tmp/dsbe_demo.db</cite> muss ich nach dem fill.py immer manuell <cite>chgrp www-data</cite> und <cite>chmod g+w</cite> machen) funktioniert jetzt endlich wieder ein öffentlicher Demo-Lino:</p>
+<blockquote>
+<div><a class="reference external" href="http://dsbe.saffre-rumma.ee/">http://dsbe.saffre-rumma.ee/</a></div></blockquote>
+<p>Bemerkungen:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Um Daten zu sehen, muss man sich anmelden als &#8220;user&#8221; oder &#8220;root&#8221;, die beide als Passwort &#8220;1234&#8221; haben.</li>
+<li>Kann sein, dass man FireBug aktivieren muss, weil ich an manchen Stellen noch &#8220;console.log()&#8221; benutze.</li>
+<li>Die Performance lässt zu wünschen übrig.</li>
+</ul>
+</div></blockquote>
+<p>Oh je! Dieses Release auf Tups (eigentlich nur für mich, um in Übung zu bleiben) hat 2 Stunden gedauert... aber immerhin ist ja jetzt Issue 79 gelöst.</p>
+<hr class="docutils" />
+<p>Nachtrag: kurz danach hatten wir zwei Stunden lang Strompanne, so dass saffre-rumma.ee Zwangsurlaub hatte.</p>
+<p>Anschließend musste ich die Demo-Datenbank (sqlite) neu generieren, weil die durch den unangemeldeten Aussetzer kaputtgegangen war.</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python fill.py demo
+Using default logging config
+Gonna reset database /tmp/dsbe_demo.db. Are you sure? [Y,n]
+Error: Error: auth couldn&#39;t be reset. Possible reasons:
+  * The database isn&#39;t running or isn&#39;t configured correctly.
+  * At least one of the database tables doesn&#39;t exist.
+  * The SQL was invalid.
+Hint: Look at the output of &#39;django-admin.py sqlreset auth&#39;. That&#39;s the SQL this command wasn&#39;t able to run.
+The full error: attempt to write a readonly database
+
+$ ls -l /tmp/dsbe_demo.db
+-rw-r--r-- 1 www-data www-data 0 Feb 26 21:52 /tmp/dsbe_demo.db
+
+# rm /tmp/dsbe_demo.db
+
+$ python fill.py  demo
+Using default logging config
+Gonna reset database /tmp/dsbe_demo.db. Are you sure? [Y,n]
+Installing dpy fixture &#39;initial_data&#39; from &#39;/var/snapshots/lino/src/lino/modlib/countries/fixtures&#39;.
+Installed 5 object(s) from 1 fixture(s)
+Installing dpy fixture &#39;demo&#39; from &#39;/var/snapshots/lino/src/lino/modlib/countries/fixtures&#39;.
+Installing dpy fixture &#39;demo&#39; from &#39;/var/snapshots/lino/src/lino/modlib/contacts/fixtures&#39;.
+Installing dpy fixture &#39;demo&#39; from &#39;/var/snapshots/lino/src/lino/modlib/notes/fixtures&#39;.
+Installing dpy fixture &#39;demo&#39; from &#39;/var/snapshots/dsbe/src/dsbe/fixtures&#39;.
+Installed 141 object(s) from 4 fixture(s)
+
+$ chown luc:www-data /tmp/dsbe_demo.db
+
+$ chmod g+w /tmp/dsbe_demo.db
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0227.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0225.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0226.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0226.html">Online Link</a>
+    </div>
+  </body>
+</html>

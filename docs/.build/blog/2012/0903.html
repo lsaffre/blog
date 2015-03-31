@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120903 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120904" href="0904.html" />
+    <link rel="prev" title="20120901" href="0901.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0904.html" title="20120904"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0901.html" title="20120901"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120903<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><code class="xref py py-mod docutils literal"><span class="pre">lino.ui.extjs3.ext_store</span></code> :
+added <cite>DisabledFieldsStoreField.disabled_fields</cite>
+because GenericForeignKey has no attribute <cite>editable</cite>.</li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.accounts.models.html#lino.modlib.accounts.models.Account" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Account</span></code></a>:
+The new <cite>ref</cite> field now is blank=True but not null=True.
+If not specified,
+a default value is being set in <cite>full_clean</cite>.</li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.outbox.html#module-lino.modlib.outbox" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.outbox</span></code></a> : added new menu command
+<span class="menuselection">Explorer ‣ Attachments</span></li>
+<li>renamed lino.core.table to lino.core.dbtables,
+renamed lino.utils.tables to lino.core.tables</li>
+</ul>
+<p>A subtile side effect occurs when lino_welfare tried
+to generate docs.
+Here is a snippet that reproduces it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;lino_welfare.settings&#39;</span>
+<span class="kn">from</span> <span class="nn">lino_welfare.modlib.pcsw</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">pcsw</span>
+</pre></div>
+</div>
+<p>It causes the following traceback:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;0903.py&quot;, line 3, in &lt;module&gt;
+    from lino_welfare.modlib.pcsw import models as pcsw
+  File &quot;t:\hgwork\welfare\lino_welfare\modlib\pcsw\models.py&quot;, line 1344, in &lt;module&gt;
+    class UsersWithClients(dd.VirtualTable):
+  File &quot;t:\hgwork\lino\lino\core\actors.py&quot;, line 145, in __new__
+    cls.add_virtual_field(k,v)
+  File &quot;t:\hgwork\lino\lino\core\actors.py&quot;, line 815, in add_virtual_field
+    vf.lino_resolve_type(cls,name)
+  File &quot;t:\hgwork\lino\lino\core\fields.py&quot;, line 233, in lino_resolve_type
+    self.return_type = resolve_field(self.return_type)
+  File &quot;t:\hgwork\lino\lino\core\modeltools.py&quot;, line 404, in resolve_field
+    model = models.get_model(app_label,l[0])
+  File &quot;l:\snapshots\django\django\db\models\loading.py&quot;, line 213, in get_model
+    self._populate()
+  File &quot;l:\snapshots\django\django\db\models\loading.py&quot;, line 67, in _populate
+    self.load_app(app_name)
+  File &quot;l:\snapshots\django\django\db\models\loading.py&quot;, line 88, in load_app
+    models = import_module(&#39;.models&#39;, app_name)
+  File &quot;l:\snapshots\django\django\utils\importlib.py&quot;, line 35, in import_module
+    __import__(name)
+  File &quot;t:\hgwork\welfare\lino_welfare\modlib\jobs\models.py&quot;, line 88, in &lt;module&gt;
+    from lino_welfare.modlib.pcsw import models as pcsw
+ImportError: cannot import name models
+</pre></div>
+</div>
+<p>The reason was that <cite>lino_resolve_type</cite>
+of virtual fields on actors was being called too early
+during the startup process.
+Here it triggered a premature call to _populate() Django&#8217;s model cache.</p>
+<div class="section" id="accessing-virtual-fields">
+<h2>Accessing virtual fields<a class="headerlink" href="#accessing-virtual-fields" title="Permalink to this headline">¶</a></h2>
+<p>While working on the template for printing a sales invoice,
+I stumbled over a missing feature which I described as follows
+in the MTI tutorial (<code class="xref py py-mod docutils literal"><span class="pre">lino.test_apps.mti</span></code>):</p>
+<blockquote>
+<div><p><code class="xref py py-class docutils literal"><span class="pre">lino.fields.VirtualField</span></code> instances are
+no Django fields, Django ignores them and so doesn&#8217;t
+install the simple attribute instance get/set
+access for them.
+That&#8217;s why the following <code class="docutils literal"><span class="pre">obj.is_restaurant</span></code> does not
+give <code class="docutils literal"><span class="pre">False</span></code> as you might expect.</p>
+<blockquote>
+<div>obj.is_restaurant
+&lt;lino.utils.mti.EnableChild object at ...&gt;</div></blockquote>
+<p>This is not implemented because the only
+need for it would be to make the following
+examples more elegant...</p>
+</div></blockquote>
+<p>Added the following simple <cite>__get__</cite> and <cite>__set__</cite> methods to
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.fields.html#lino.core.fields.VirtualField" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.core.fields.VirtualField</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">owner</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_from_object</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">value</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_value_in_object</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span><span class="n">instance</span><span class="p">,</span><span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which turns virtual fields into <a class="reference external" href="http://docs.python.org/reference/datamodel.html#implementing-descriptors">descriptors</a>.</p>
+<p>So the above section from the MTI tutorial is no longer necessary
+because the feature is no longer missing.</p>
+</div>
+<div class="section" id="lino-welfare">
+<h2>Lino-Welfare<a class="headerlink" href="#lino-welfare" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>added <cite>Account.ref</cite> to debts std fixtures</li>
+<li>Researched on a mysterious message
+&#8220;outbox.Attachment Controllers of Attachment must define a method <cite>get_target_url</cite>. (1 object(s) with primary key 1)&#8221;
+during data migration.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0904.html" title="20120904"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0901.html" title="20120901"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0903.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0903.html">Online Link</a>
+    </div>
+  </body>
+</html>

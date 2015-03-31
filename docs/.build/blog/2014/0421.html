@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Monday, April 21, 2014 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Tuesday, April 22, 2014" href="0422.html" />
+    <link rel="prev" title="Thursday, April 17, 2014" href="0417.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0422.html" title="Tuesday, April 22, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0417.html" title="Thursday, April 17, 2014"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monday-april-21-2014">
+<h1>Monday, April 21, 2014<a class="headerlink" href="#monday-april-21-2014" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="customizable-submitinsert-actions">
+<h2>Customizable SubmitInsert actions<a class="headerlink" href="#customizable-submitinsert-actions" title="Permalink to this headline">¶</a></h2>
+<p>Uff! I feel (a bit) as if Lino had resurrected from death.</p>
+<p>Since Friday I had been fiddling in the JavaScript part of the new
+customizable implementation for SubmitInsert actions. <cite>weblino.js</cite> is
+really very tricky. Now it is a bit cleaner. There should be no
+visible changes, neither in user interface nor in the API.</p>
+<p>Checked in so that others may test it. Thanks in advance for any bug
+reports.</p>
+<p>The last part will be again in Python and thus much easier: imagine an
+API for rewriting a SubmitInsert and write the first use case: test
+for duplicates before creating new client, with interactive
+confirmation if necessary.</p>
+</div>
+<div class="section" id="sphinx-apidoc">
+<h2>Sphinx-apidoc<a class="headerlink" href="#sphinx-apidoc" title="Permalink to this headline">¶</a></h2>
+<p>Wes Turner wrote <a class="reference external" href="https://bitbucket.org/birkenfeld/sphinx/issue/1456/apidoc-add-a-m-option-to-put-module">a new command-line option for sphinx-apidoc</a>
+that implements an idea <cite>apidoc output format
+&lt;https://groups.google.com/forum/#!topic/sphinx-users/Bm4w7OQcWYM&gt;</cite>
+which I posted in January to sphinx-users.  I adapted my <a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#command-fab api" title="(in atelier v0.0)"><code class="xref std std-cmd docutils literal"><span class="pre">fab</span> <span class="pre">api</span></code></a>
+command in <a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#module-atelier.fablib" title="(in atelier v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">atelier.fablib</span></code></a> to use this option.</p>
+</div>
+<div class="section" id="customizable-submitinsert-actions-continued">
+<h2>Customizable SubmitInsert actions (continued)<a class="headerlink" href="#customizable-submitinsert-actions-continued" title="Permalink to this headline">¶</a></h2>
+<p>Instead of writing <code class="docutils literal"><span class="pre">ar.response.update(foo=X)</span></code> we now recommend
+<code class="docutils literal"><span class="pre">ar.set_response(foo=X)</span></code>. This has the advantage of raising
+(immediately) an exception when you specify an invalid keyword.</p>
+<p>Started a documentation page about <a class="reference external" href="http://www.lino-framework.org/dev/actions.html">/dev/actions</a> for developers.</p>
+<p>The new action <code class="xref py py-class docutils literal"><span class="pre">SubmitInsertClient</span></code> is the first
+example on how to use the new feature in application code.
+The application developer writes a new Action:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lino.core.actions</span> <span class="kn">import</span> <span class="n">SubmitInsert</span>
+
+<span class="k">class</span> <span class="nc">SubmitInsertClient</span><span class="p">(</span><span class="n">SubmitInsert</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">run_from_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">create_instance_from_request</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">ok</span><span class="p">(</span><span class="n">ar2</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_new_instance</span><span class="p">(</span><span class="n">ar2</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">first_name</span> <span class="o">==</span> <span class="s">&#39;Foo&#39;</span><span class="p">:</span>
+            <span class="n">ar</span><span class="o">.</span><span class="n">confirm</span><span class="p">(</span><span class="n">ok</span><span class="p">,</span> <span class="n">_</span><span class="p">(</span><span class="s">&quot;Is that true? Your name is &#39;Foo&#39;?&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ok</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then overrides the default <cite>submit_insert</cite> action (either on the
+Model or on a Table) with an instance of this class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">model</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">submit_insert</span> <span class="o">=</span> <span class="n">SubmitInsertClient</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>An unexpected subtlety was that <cite>SubmitInsertClient</cite>, like every
+submit_insert action must set <cite>data_record</cite>. And this must be in the
+callback request (&#8220;ar2&#8221;), not in the original action request &#8220;ar&#8221;.
+But the callback request until now was just a BaseRequest, without
+methods like <cite>create_instance</cite> (i.e. the methods to create an instance
+and to fill <cite>data_record</cite>).  So the callback request (created by
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.kernel.html#lino.core.kernel.Kernel.run_callback" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.kernel.Kernel.run_callback()</span></code></a>) had to become a more
+close clone of the original request.</p>
+<p>Checkin after midnight and without thorough testing. But</p>
+<p>TODO:</p>
+<p>During testing I discovered a bug which was already there for some
+time: the &#8220;Must read eID card&#8221; action link in <cite>newcomers.NewClients</cite>
+doesn&#8217;t work. It causes an <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#ise" title="(in Lino v1.6)"><span>Internal Server Error</span></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>ParameterStore of LayoutHandle for ParamsLayout on pcsw.Clients expected a list of 12 values, but got [u&#39;21.03.2014&#39;, u&#39;false&#39;, u&#39;false&#39;, u&#39;&#39;]
+</pre></div>
+</div>
+<p>This is because the action is being called using pcsw/Clients instead
+of pcsw/NewClients as URI.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0422.html" title="Tuesday, April 22, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0417.html" title="Thursday, April 17, 2014"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0421.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0421.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130809 (Friday, 09 August 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130810 (Saturday, 10 August 2013)" href="0810.html" />
+    <link rel="prev" title="20130808 (Thursday, 08 August 2013)" href="0808.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0810.html" title="20130810 (Saturday, 10 August 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0808.html" title="20130808 (Thursday, 08 August 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-09-august-2013">
+<h1>20130809 (Friday, 09 August 2013)<a class="headerlink" href="#friday-09-august-2013" title="Permalink to this headline">¶</a></h1>
+<p>Continued to work on <span class="xref std std-ref">welfare.reception</span>.
+Now it is time to insert some real attestations.
+Here we go with the devils in the detail!</p>
+<div class="section" id="libreoffice-appy-pod-using-conditional-fields-to-insert-python-expressions">
+<h2>LibreOffice &amp; <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a> : Using conditional fields to insert Python expressions<a class="headerlink" href="#libreoffice-appy-pod-using-conditional-fields-to-insert-python-expressions" title="Permalink to this headline">¶</a></h2>
+<p>I was glad to discover that <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a>
+now uses conditional fields.
+I used to believe that
+&#8220;defining Python expressions with pod was done via text inserted
+in &#8216;track changes&#8217; mode&#8221;.
+But &#8220;conditional fields (as explained <a class="reference external" href="http://appyframework.org/podWritingTemplates.html">here</a>)
+have become the preferred
+way to insert Python expressions.&#8221;
+This is very nice because now it is possible to copy
+and paste them. Thanks, Gaëtan, for your work!</p>
+<p>One pitfall however (in LibreOffice, not in <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a>)
+took me more than two hours of my life:
+All my conditional fields contained the word &#8220;true&#8221; in
+the &#8220;Condition&#8221; part and a Python expression to be evaluated by
+<a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a> in the &#8220;Then&#8221; part.
+Here is how this looked:</p>
+<a class="reference internal image-reference" href="../../_images/0809a.png"><img alt="../../_images/0809a.png" src="../../_images/0809a.png" style="width: 665.6px; height: 337.6px;" /></a>
+<p>I had six fields with the following expressions:</p>
+<ol class="arabic simple">
+<li>sc.site_company.city.name.upper()</li>
+<li><strong>self.user</strong></li>
+<li>self.user.coaching_type</li>
+<li><strong>dtos(self.date)</strong></li>
+<li>self.user.initials</li>
+<li><strong>self.subject</strong></li>
+</ol>
+<p>Only the second, the fourth and the sixth
+(those who are marked in bold) actually worked.</p>
+<p>Do you want to know why?
+Then read
+<a class="reference external" href="https://bugs.freedesktop.org/show_bug.cgi?id=58533">Bug #58533</a>
+at <cite>freedesktop.org</cite>.
+(Summary:
+LibreOffice doesn&#8217;t actually just insert the <cite>Then</cite> or <cite>Else</cite>
+part depending on the condition,
+but uses artificial intelligence:
+if the text contains two periods,
+then it is expected to be a database field.
+To avoid this magic behaviour, simply include it within quotes.
+Good to know...</p>
+</div>
+<div class="section" id="avoiding-recursive-odt-templates">
+<h2>Avoiding recursive <cite>.odt</cite> templates<a class="headerlink" href="#avoiding-recursive-odt-templates" title="Permalink to this headline">¶</a></h2>
+<p>So we are going to generate many different documents using many
+templates. But they should share some common base.
+And that common base contains variables
+(i.e. Python expressions to be rendered by <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a>).
+Tried with a base template <cite>base.ott</cite> which would get inherited by
+a <cite>letter.odt</cite> which would serve as template for <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-appy-pod" title="(in Lino v1.6)"><span class="xref std std-term">appy.pod</span></a>.
+But that doesn&#8217;t work: once <cite>letter.odt</cite> is created, its contents won&#8217;t
+be updated when the content of the <cite>base.ott</cite> changes.</p>
+<p>Another observation is that the content of these templates is mostly
+the same for every centre. If some formulation in the content of
+some certification changes in one centre, it is likely that the other
+centres also want this change.</p>
+<p>I think the best solution is to add a new field
+<cite>NoteType.body_template</cite> which points to a <cite>*.body.html</cite>
+file.
+And then give a context variable &#8220;body&#8221; to the appy.pod renderer.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0810.html" title="20130810 (Saturday, 10 August 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0808.html" title="20130808 (Thursday, 08 August 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0809.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0809.html">Online Link</a>
+    </div>
+  </body>
+</html>

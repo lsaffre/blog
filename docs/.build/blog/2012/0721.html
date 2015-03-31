@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120721 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120722" href="0722.html" />
+    <link rel="prev" title="20120720" href="0720.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0722.html" title="20120722"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0720.html" title="20120720"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120721<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><cite>on_user_change</cite> and <cite>after_ui_save</cite> are two solutions
+for the same problem. Can replace <cite>after_ui_save</cite>
+with <cite>on_user_change</cite>, but <cite>on_user_change</cite> should receive
+the complete <cite>ar</cite>, not only the web request.</li>
+</ul>
+<p>&#8211;&gt; Replaced <cite>on_user_change</cite> by new method
+<code class="xref py py-meth docutils literal"><span class="pre">lino.core.modeltools.Model.before_ui_save()</span></code>.
+And we now call it from
+<code class="xref py py-meth docutils literal"><span class="pre">lino.ui.extjs3.ext_ui.ExtUI.form2obj_and_save()</span></code>
+and no longer from <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.dblogger.html#module-lino.utils.dblogger" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dblogger</span></code></a>
+(who is responsible just for logging:
+e.g. it is also used by <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a>
+which cannot be considered as a user change).</p>
+<ul class="simple">
+<li>Bugfix: Calling &#8220;Act as...&#8221; from the Calendar Panel doesn&#8217;t work.</li>
+</ul>
+<p>Caused a &#8220;Uncaught TypeError: Object [object Object] has no
+method &#8216;set_base_param&#8217;&#8221; in JS console.</p>
+<div class="section" id="calendar-workflow">
+<h2>Calendar workflow<a class="headerlink" href="#calendar-workflow" title="Permalink to this headline">¶</a></h2>
+<p>Event state &#8220;suggested&#8221; now means that your colleague has
+fixed a rendez-vous in your name with a client,
+the client is informed and
+you must confirm that the date/time suits you.
+If it doesn&#8217;t, <em>you</em> are responsible for contacting
+the client and finding a new date/time.</p>
+</div>
+<div class="section" id="writing-end-user-documentation">
+<h2>Writing end-user documentation<a class="headerlink" href="#writing-end-user-documentation" title="Permalink to this headline">¶</a></h2>
+<p>I started a user documentation page for the calendar module:
+<a class="reference external" href="http://www.lino-framework.org/pcsw/calendrier.html">/pcsw/calendrier</a>.
+But this page obviously is another example of why you should not
+ask the developer of a framework to write end-user documentation
+for one of the applications developed using that framework.</p>
+<p>I got stuck when I had the feeling that now I should add some screenshots,
+and I wanted them to be in French, of course.
+Instead of screenshots, Lino has now a series of subtle
+optimizations and bugfixes which are useful only in
+multilingual sites:</p>
+<p>Automatic events and tasks are now generated in the user&#8217;s language.
+cal.PanelCalendars now returns calendar descriptions in the user&#8217;s language.
+Users now inherit the language of their partner (if they have one).
+The messages in <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-linolib.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linolib.js</span></code></a> hadn&#8217;t been extracted during the last 5 months.</p>
+<p>Or a funny little problems like with this
+excerpt from <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/ui/extjs3/linolib.js">/lino/ui/extjs3/linolib.js</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">config</span><span class="o">.</span><span class="n">bbar</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">bbar</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+  <span class="s">&#39;-&gt;&#39;</span><span class="p">,</span>
+  <span class="p">{</span> <span class="n">text</span><span class="p">:</span> <span class="s">&#39;[$_(&quot;Help Text Editor&quot;)]&#39;</span><span class="p">,</span>
+    <span class="n">handler</span><span class="p">:</span> <span class="n">Lino</span><span class="o">.</span><span class="n">help_text_editor</span><span class="p">,</span>
+    <span class="n">qtip</span><span class="p">:</span> <span class="s">&quot;$_(&#39;Edit help texts for fields on this model.&#39;)&quot;</span><span class="p">,</span>
+    <span class="n">scope</span><span class="p">:</span> <span class="n">this</span><span class="p">}</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+<p>(And the French for &#8220;Help Text Editor&#8221; is &#8220;Editeur textes d&#8217;aide&#8221;.
+Do you guess why there was a Javascript syntax error after translating?)</p>
+<p>Another subtile bug was:</p>
+<ul>
+<li><p class="first">Event.summary_row generated the following link
+which was supposed to open the detail window on that event:</p>
+<div class="highlight-python"><div class="highlight"><pre>javascript:Lino.cal.Events.detail_action.run({ &quot;record_id&quot;: 238 })
+</pre></div>
+</div>
+<p>That worked for system admins, but normal users
+don&#8217;t have <cite>Lino.cal.Events</cite> (seeing all Events
+at once is reserved to managers).</p>
+</li>
+</ul>
+<p>Lino now links to the detail action of MyEvents.
+<code class="xref py py-func docutils literal"><span class="pre">lino.modlib.cal.reminders()</span></code> manually adds a <cite>_detail_action</cite> attribute
+to each instance which is detected by
+<code class="xref py py-meth docutils literal"><span class="pre">instance_handler</span></code>.
+This solution is not beautiful, but works at least.</p>
+<p><code class="xref py py-meth docutils literal"><span class="pre">instance_handler</span></code>
+now also tests whether the user has permission to execute that detail handler.
+For example the user names in jobs.UsersWithClients are no longer clickable
+for normal users because only system administrators may see the detail of
+other users.</p>
+<p>And this one took me also quite some time:</p>
+<ul class="simple">
+<li>Buttons &#8220;Save&#8221; and &#8220;Delete&#8221; are displayed in German also for French users.</li>
+</ul>
+<p>It was simply due to the fact that <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#module-lino.core.actions" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.actions</span></code></a>
+used <cite>ugettext</cite> and not <cite>ugettext_lazy</cite> as <cite>_</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># from django.utils.translation import ugettext as _</span>
+<span class="kn">from</span> <span class="nn">django.utils.translation</span> <span class="kn">import</span> <span class="n">ugettext_lazy</span> <span class="k">as</span> <span class="n">_</span>
+</pre></div>
+</div>
+<p>But the most difficult and not yet solved problem is:
+the Ext.ensible CalendarPanel translates &#8220;Calendar&#8221;
+to &#8220;Agenda&#8221; in French...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0722.html" title="20120722"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0720.html" title="20120720"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0721.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0721.html">Online Link</a>
+    </div>
+  </body>
+</html>

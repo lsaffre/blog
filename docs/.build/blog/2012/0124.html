@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120124 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120125" href="0125.html" />
+    <link rel="prev" title="20120123" href="0123.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20120125"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0123.html" title="20120123"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120124<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>05.00 Uhr.</p>
+<p>Wie gut, dass ich das Release verschoben habe:</p>
+<p>Lino hatte in der Tat ein gewaltiges Performance-Problem: ich hatte gedacht,
+dass wenn man <cite>len()</cite> von einem QuerySet macht, Django dies automatisch in
+einen entsprechenden &#8220;SELECT COUNT&#8221; konvertiert. Aber Pustekuchen, der
+machte dann jedesmal ein &#8220;SELECT * FROM Persons&#8221;, und zwar ohne LIMIT.
+Und ich rief das ungeniert mehrere Male pro Request auf.</p>
+<p>Interessant, dass mir das bei den Tests mit der Demo-Datenbank gar nicht
+aufgefallen war.
+Erst bei 5000 Records machte es sich bemerkbar.</p>
+<p>Um das rauszufinden, habe ich übrigens zunächst mal einen TestCase
+geschrieben: new module <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.pcsw.tests.pcsw_sql_tests</span></code>.</p>
+<p>Das war nicht ganz leicht, eigentlich musste ich zunächst mal ein
+Test-Framework zum Testen der SQL-Queries aufbauen:
+Added new class attribute
+<code class="xref py py-attr docutils literal"><span class="pre">lino.utils.test.TestCase.defining_module</span></code> and
+method <code class="xref py py-meth docutils literal"><span class="pre">lino.utils.test.TestCase.check_sql_queries()</span></code>.
+Also fixed a little bug in <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.auth</span></code>.</p>
+<p>Noch Kleinkram:</p>
+<ul>
+<li><p class="first">Der Button mit den Benutzereinstellungen benutzte noch eine
+url mit permalink statt javascript.</p>
+</li>
+<li><p class="first">ClientsTest prüft jetzt par défaut nur die aktiven Klienten.
+Wer alle prüfen will, muss das Datumsfeld auf leer setzen.</p>
+</li>
+<li><p class="first">Person.get_image_url() verlangt jetzt ein weiterens Argument <cite>request</cite>
+und gibt dafür jetzt auch dann den richtigen URL, wenn Lino nicht
+im Root des Webservers installiert ist.</p>
+</li>
+<li><p class="first">Bug in der Anbindung von Lino.show_fk_detail:
+Wenn man vom Detail einer Person aus auf die Lupe beim Feld &#8220;Stadt&#8221;
+klickte um deren Detail zu öffnen, und dieses Fenster dann wieder schloss,
+dann kam in der Console:</p>
+<div class="highlight-python"><div class="highlight"><pre>Uncaught TypeError: Object [object Object] has no method &#39;refresh&#39;
+(anonymous function)                               lino_de.js:3257
+Lino.FormPanel.Ext.extend.do_when_clean            lino_de.js:1858
+Lino.Window.Ext.extend.hide                        lino_de.js:3246
+(anonymous function)                        ext-all-debug.js:17401
+h
+</pre></div>
+</div>
+</li>
+<li><p class="first">Wenn man versuchte, einen Termin auszudrucken, bekam man eine Fehlermeldung
+&#8220;&#8216;Event&#8217; object has no attribute &#8216;language&#8217;. Ein Fehlerbericht wurde
+an den Systemverwalter geschickt.&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;t:\hgwork\lino\lino\ui\extjs3\ext_ui.py&quot;, line 1466, in api_element_view
+    return a.run(ar,elem)
+  File &quot;t:\hgwork\lino\lino\mixins\printable.py&quot;, line 541, in run
+    kw = self.run_(rr.request,rr.ui,elem,**kw)
+  File &quot;t:\hgwork\lino\lino\mixins\printable.py&quot;, line 519, in run_
+    t = bm.build(self,elem)
+  File &quot;t:\hgwork\lino\lino\mixins\printable.py&quot;, line 253, in build
+    tpl_leaf = self.get_template_leaf(action,elem)
+  File &quot;t:\hgwork\lino\lino\mixins\printable.py&quot;, line 230, in get_template_leaf
+    lang = elem.get_print_language(self)
+  File &quot;t:\hgwork\lino\lino\mixins\printable.py&quot;, line 786, in get_print_language
+    return self.language
+AttributeError: &#39;Event&#39; object has no attribute &#39;language&#39;
+</pre></div>
+</div>
+<p>Jetzt wird der Termin in der Sprache des Klienten ausgedruckt.
+Falls der Termin mit keinem Klient verknüpft ist in der Sprache
+des Benutzers.</p>
+</li>
+<li><p class="first">Ha, noch ein kleiner Bug: beim Ausdrucken einer Kandidatenliste:</p>
+<div class="highlight-python"><div class="highlight"><pre>Error while evaluating expression &quot;self.candidates()&quot;.
+File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;
+File &quot;t:\hgwork\lino\lino\apps\pcsw\models.py&quot;, line 1754, in candidates
+return CandidatesByCourse().request(master_instance=self)
+File &quot;t:\hgwork\lino\lino\utils\tables.py&quot;, line 439, in __init__
+raise NotImplementedError(&quot;20120104&quot;)
+&lt;type &#39;exceptions.NotImplementedError&#39;&gt;: 20120104
+</pre></div>
+</div>
+<p>Erklärung:
+<code class="xref py py-meth docutils literal"><span class="pre">lino.apps.pcsw.models.Course.participants()</span></code>
+und
+<code class="xref py py-meth docutils literal"><span class="pre">lino.apps.pcsw.models.Course.candidates()</span></code>
+versuchten, die Tabelle zu instanziieren. Was jetzt ja nicht mehr nötig ist.</p>
+<p>Außerdem ist ein TableRequest per se jetzt nicht mehr iterable.
+Man muss sich entscheiden für entweder <cite>data_iterator</cite> oder <cite>sliced_data_iterator</cite>.
+Ob das so toll ist? Sollte ich nicht doch den __iter__ wieder reintun,
+und die loopt dann über den sliced iterator. Nur wenn man explizit das
+offset und limit ignorieren will (was außer von get_total_count auch
+von den druckbaren Versionen (csv, html, pdf) benutzt wird, fragt man
+sich den data_iterator.</p>
+</li>
+</ul>
+<p>23.56 Uhr. Voilà, die Version <a class="reference external" href="http://www.lino-framework.org/releases/1.3.4.html">/releases/1.3.4</a>
+hat die interne QC bestanden und wurde released und in Eupen
+installiert.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20120125"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0123.html" title="20120123"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0124.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0124.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121009 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121010" href="1010.html" />
+    <link rel="prev" title="20121008" href="1008.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1010.html" title="20121010"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1008.html" title="20121008"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121009<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="miscellaneous">
+<h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Administratoren bekamen in &#8220;Arbeiten als...&#8221; auch Benutzer angezeigt,
+die gar kein Profil haben. Behoben.
+<code class="xref py py-class docutils literal"><span class="pre">lino.utils.choicelists.ChoiceListField</span></code>.</li>
+<li>Ich arbeite übrigens zur Zeit auch an der Dokumentation
+des neuen Releases im ÖSHZ:
+<a class="reference external" href="http://packages.python.org/lino-welfare/de/releases/coming.html">http://packages.python.org/lino-welfare/de/releases/coming.html</a></li>
+</ul>
+</div>
+<div class="section" id="weiter-mit-aktionsdialogfenstern">
+<h1>Weiter mit Aktionsdialogfenstern<a class="headerlink" href="#weiter-mit-aktionsdialogfenstern" title="Permalink to this headline">¶</a></h1>
+<p>So. Jetzt kommt die letzte große Operation für die Aktionsdialogfenster.
+Zur Zeit hat der [Ablehnen]-Button auf einem Neuantrag folgende URL:</p>
+<div class="highlight-python"><div class="highlight"><pre>javascript:Lino.pcsw.ClientStates.wf2.run({
+  &quot;record_id&quot;: 116,
+  &quot;param_values&quot;: {
+    &quot;also_obsolete&quot;: false, &quot;new_since&quot;: &quot;09.09.2012&quot;,
+    &quot;coached_byHidden&quot;: null, &quot;also_refused&quot;: false, &quot;coached_by&quot;: null },
+  &quot;base_params&quot;: {  } })
+</pre></div>
+</div>
+<p>Und in der lino*.js steht:</p>
+<div class="highlight-python"><div class="highlight"><pre>  Lino.pcsw.Clients.wf2_ActionFormPanel = Ext.extend(Lino.ActionFormPanel,{
+    autoScroll: false,
+    autoHeight: true,
+    border: false,
+    layout: &quot;form&quot;,
+    labelWidth: 198,
+    hideCheckBoxLabels: true,
+    frame: true,
+    bodyBorder: false,
+    labelAlign: &quot;top&quot;,
+    autoHeight: true,
+    initComponent : function() {
+      var containing_panel = this;
+      var dummy4908 = new Ext.form.Checkbox({ &quot;boxLabel&quot;: &quot;Dummy RefuseNewClient&quot;, &quot;hideLabel&quot;: true, &quot;checked&quot;: false, &quot;name&quot;: &quot;dummy&quot;, &quot;selectOnFocus&quot;: true, &quot;anchor&quot;: &quot;-20&quot; });
+      ...
+      var reason4909 = new Ext.form.TextField({ &quot;fieldLabel&quot;: &quot;Grund&quot;, &quot;name&quot;: &quot;reason&quot;, &quot;maxLength&quot;: 200, &quot;selectOnFocus&quot;: true, &quot;anchor&quot;: &quot;-20&quot;, &quot;allowBlank&quot;: false });
+      this.items = [ { &quot;autoHeight&quot;: true, &quot;layout&quot;: &quot;form&quot;, &quot;xtype&quot;: &quot;panel&quot;, &quot;items&quot;: dummy4908, &quot;anchor&quot;: &quot;-20&quot;, &quot;labelAlign&quot;: &quot;top&quot; }, { &quot;autoHeight&quot;: true, &quot;layout&quot;: &quot;form&quot;, &quot;xtype&quot;: &quot;panel&quot;, &quot;items&quot;: reason4909, &quot;anchor&quot;: &quot;-20&quot;, &quot;labelAlign&quot;: &quot;top&quot; } ];
+      this.fields = [ dummy4908, reason4909 ];
+      Lino.pcsw.Clients.wf2_ActionFormPanel.superclass.initComponent.call(this);
+    }
+  });
+
+
+Lino.pcsw.ClientStates.wf2 = new Lino.WindowAction({
+    &quot;draggable&quot;: true, &quot;width&quot;: Lino.chars2width(50),
+    &quot;autoHeight&quot;: true, &quot;maximizable&quot;: true,
+    &quot;modal&quot;: true, &quot;maximized&quot;: false
+  }, function(){
+    var p = { &quot;is_main_window&quot;: true, &quot;hide_top_toolbar&quot;: true };
+    return new Lino.pcsw.Clients.wf2_ActionFormPanel({});
+  });
+</pre></div>
+</div>
+<p>Die Klassendefinition bleibt gleich, aber der Aufruf muss noch
+eine Info mehr enthalten, nämlich die Basis-URL, zu der die Aktion
+bei Klick aufs OK dann geschickt werden soll.</p>
+<p>Interne Änderungen:</p>
+<ul class="simple">
+<li>WindowAction.run() hat jetzt einen weiteren Parameter requesting_panel</li>
+<li>Actions kriegen ihr params_panel jetzt pro Instanz gemacht.
+Hier fällt störend auf, dass Actors nie instanziert werden.
+Dadurch ist die Vererbung von Parametrizable nicht sehr elegant.</li>
+</ul>
+<p>18.20 Uhr : Wieder ein Stück näher am Ziel.
+Jetzt muss ich noch im Store rumschneiden und die Werte übergeben.
+Aber vorher ein Checkin.</p>
+<p>Neue Klasse ParameterStore, ...</p>
+<p>19.40 Uhr : Ta-da, es klappt!
+Erstmals nach 26 Stunden Arbeitszeit während zwei Wochen.</p>
+<p>Jetzt bleiben nur noch ein paar Details zu tun:</p>
+<ul class="simple">
+<li>Dialogfenster schließt sich nicht nach OK und success.</li>
+<li>reason ist blank=True, aber das prüft er nicht nach.</li>
+<li>ClientStates workflow : er schlägt [Ablehnen] auch vor, wenn er schon im Zustand Abgelehnt ist.
+Idem für [Neuzugang].</li>
+<li>workflow_buttons ist ebenfalls in disabled_fields</li>
+<li>Das Dummy-Feld muss ich durch etwas Unauffälligeres ersetzen...</li>
+</ul>
+<p>Aber jetzt erstmal Checkin und Feierabend.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1010.html" title="20121010"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1008.html" title="20121008"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1009.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1009.html">Online Link</a>
+    </div>
+  </body>
+</html>

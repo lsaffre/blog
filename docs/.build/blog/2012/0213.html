@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120213 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120214" href="0214.html" />
+    <link rel="prev" title="20120211" href="0211.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0214.html" title="20120214"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0211.html" title="20120211"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120213<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="nachtrag">
+<h2>Nachtrag<a class="headerlink" href="#nachtrag" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Ein Bug weniger:
+GridPanel.set_status() speichert jetzt die aktuelle Seite der PagingToolbar.</li>
+<li>Ein weiterer Bug weniger,
+der schon in der 1.3.8 drin war und den ich jetzt erst entdeckt habe:
+Man konnte im Reiter &#8220;Kompetenzen&#8221; einer Person nichts eingeben
+(alle Auswahllisten waren leer).
+Das lag daran, dass
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.choosers.html#lino.utils.choosers.Chooser.get_request_choices" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.utils.choosers.Chooser.get_request_choices()</span></code></a>
+die <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.known_values" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">known</span> <span class="pre">values</span></code></a> ignorierte.</li>
+</ul>
+<p>Diese beiden Bugfixes sind nachträglich noch in der <a class="reference external" href="http://www.lino-framework.org/releases/1.3.9.html">/releases/1.3.9</a>
+mit drin.</p>
+</div>
+<div class="section" id="grids-having-the-correct-number-of-rows">
+<h2>Grids having the correct number of rows<a class="headerlink" href="#grids-having-the-correct-number-of-rows" title="Permalink to this headline">¶</a></h2>
+<p>There was still a bug in 1.3.9:</p>
+<ol class="arabic simple">
+<li>Wenn man z.B. im Detail eines Benutzers auf den
+Aktenreiter &#8220;Kalender&#8221; klickt, dann funktioniert beim ersten Mal
+calculatePageSize() nicht korrekt. Er zeigt nur 5 Zeilen an, auch wenn
+es deren mehr gibt. Erst wenn man Refresh klickt, wird die
+korrekte Zeilenanzahl geladen.</li>
+</ol>
+<p>The general question for this problem is:
+<strong>How can I automatically set the pageSize of a PagingToolbar
+so that it takes as many rows as fit into the GridPanel?</strong></p>
+<p>I did not find a correct answer using Google,
+although it seems to be a common problem. For example:</p>
+<ul class="simple">
+<li>final resize event in gridpanel
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?106609-final-resize-event-in-gridpanel">http://www.sencha.com/forum/showthread.php?106609-final-resize-event-in-gridpanel</a></li>
+<li><a class="reference external" href="http://www.sencha.com/forum/showthread.php?82647">http://www.sencha.com/forum/showthread.php?82647</a></li>
+<li><a class="reference external" href="http://www.sencha.com/forum/archive/index.php/t-37231.html">http://www.sencha.com/forum/archive/index.php/t-37231.html</a></li>
+</ul>
+<p>I solved it now by capturing a combination of the <cite>resize</cite> and
+<cite>viewready</cite> events:</p>
+<div class="highlight-python"><div class="highlight"><pre>initComponent : function() {
+  ...
+  this.on(&#39;resize&#39;, function(){  this.refresh(); },this);
+  this.on(&#39;viewready&#39;, function(){ this.view_is_ready = true; this.refresh(); },this);
+  }
+
+refresh : function() {
+  ...
+  if (! this.view_is_ready) return;
+  ...
+  this.store.load(options);
+},
+</pre></div>
+</div>
+<p>Thanks also to <a class="reference external" href="http://www.sencha.com/learn/grid-faq">http://www.sencha.com/learn/grid-faq</a>
+who collected and published Aaron Conran&#8217;s
+simple captureEvents utility which helped my to discover
+the <cite>viewready</cite> event:</p>
+<div class="highlight-python"><div class="highlight"><pre>function captureEvents(observable) {
+    Ext.util.Observable.capture(
+        observable,
+        function(eventName) {
+            console.info(eventName);
+        },
+        this
+    );
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="css-tooltips">
+<h2>CSS Tooltips<a class="headerlink" href="#css-tooltips" title="Permalink to this headline">¶</a></h2>
+<p>Tried to integrate <a class="reference external" href="http://sixrevisions.com/css/css-only-tooltips/">Alexander Dawson&#8217;s CSS tooltips</a>
+into Lino.
+Problem seems to be that ExtJS does some trickery with
+CSS which partly overrides Dawson&#8217;s definitions.
+So I didn&#8217;t yet manage to get them work when defined on
+field labels in an ExtJS form.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0214.html" title="20120214"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0211.html" title="20120211"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0213.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0213.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110221 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110222" href="0222.html" />
+    <link rel="prev" title="20110218" href="0218.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0222.html" title="20110222"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0218.html" title="20110218"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110221<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-und-multi-table-inheritance">
+<h2>Lino und multi-table inheritance<a class="headerlink" href="#lino-und-multi-table-inheritance" title="Permalink to this headline">¶</a></h2>
+<p>Das Modell <code class="xref py py-class docutils literal"><span class="pre">Kursanbieter</span></code>)
+war bisher einfach nur ein Alias für <code class="xref py py-class docutils literal"><span class="pre">Company</span></code>,
+dortselbst gab es ein Feld <cite>is_courseprovider</cite>
+und der Report <code class="xref py py-class docutils literal"><span class="pre">CourseProviders</span></code> arbeitete
+mit einem Filter
+(genauer gesagt mit <code class="xref py py-attr docutils literal"><span class="pre">lino.reports.Report.known_values</span></code>),
+um nur die Firmen anzuzeigen, die dieses Feld eingeschaltet haben.
+Das geht gut, solange ich keine weiteren Felder in <cite>CourseProvider</cite>
+brauche.</p>
+<p>Das Gleiche könnte ich auch für Apotheken und Krankenkassen machen.</p>
+<p>Ich würde aber gerne auch für Personen Djangos <cite>multi-table inheritance</cite>
+ausnutzen: <cite>contacts.Person</cite> wäre dann nicht mehr abstrakt, und
+die DSBE-Erweiterungen (das bisherige Modell <code class="xref py py-class docutils literal"><span class="pre">Person</span></code>)
+würde ich umbenennen nach <cite>CoachedPerson</cite>,
+das von Person via <cite>multi-table inheritance</cite> erbt.</p>
+<p>Ich möchte das rein prinzipiell, weil es Ressourcenverschwendung ist,
+wenn z.B. für die Ansprechpartner von Firmen
+(die ja ebenfalls Personen sind)
+auch Angaben wie Id-Karte, Passbild usw. angeboten werden.</p>
+<p>Im Lino/DSBE ist das nicht sonderlich tragisch, aber
+es ist auch ein intuitives Gefühl:
+mit Lino sollte man MTI machen können,
+und das hier ist ein Fall für MTI,
+und ich mach das lieber jetzt als in einem Jahr,
+wenn der DSBE Lino tagtächlich benutzt.</p>
+<p>Deshalb habe ich das probeweise
+nun mit den Kursanbietern per MTI gelöst.
+<cite>CourseProvider</cite> ist jetzt eine Unterklasse von Firmen (Company).</p>
+<p>Das ging auch auf Anhieb erfreulich reibungslos.</p>
+<p>Mit einem <strong>Haken</strong>:
+Man kann bestehende Firmen nicht ohne weiteres
+zu Kursanbietern machen und vice-versa
+(Kursanbieter aus der Kursanbieterliste rausholen,
+ohne die Firma zu löschen).</p>
+<p>Wie löse ich das?</p>
+<p>Das User-Interface mit dem Ankreuzfeld <cite>is_courseprovider</cite>
+in der allgemeinen Firmenliste finde ich gut.
+Ich wüsste kein besseres.
+Ich muss also ein virtuelles Feld <cite>is_courseprovider</cite> machen,
+das beim PUT einer Company speziell ausgewertet wird:
+- wenn es leer ist und ein CourseProvider besteht, diesen löschen
+- wenn es angekreuzt ist und keiner besteht, diesen erstellen</p>
+<p>In
+<code class="xref py py-mod docutils literal"><span class="pre">lino.test_apps.mti.models</span></code>
+und <code class="xref py py-mod docutils literal"><span class="pre">lino.test_apps.2.models</span></code>
+teste ich, wie das prinzipiell geht.</p>
+<p>Außerdem muss ich jetzt schreibbare virtuelle Felder implementieren.
+Wenn man <cite>is_courseprovider</cite> verändert, muss dann
+<code class="xref py py-meth docutils literal"><span class="pre">lino.test_apps.mti.models.Company.set_is_courseprovider()</span></code>
+ausgeführt werden.</p>
+<p>Und ich muss aufpassen, dass dieses virtuelle Feld nicht
+zu einem zusätzlichen Datenbank-Query führt.
+Das bedeutet hoffentlich einfach nur, dass
+ich <cite>courseprovider</cite> (das automatisch von Django generierte OneToOneField)
+mit ins select_related reinsetzen muss.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0222.html" title="20110222"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0218.html" title="20110218"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0221.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0221.html">Online Link</a>
+    </div>
+  </body>
+</html>

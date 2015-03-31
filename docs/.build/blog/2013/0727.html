@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130727 (Saturday, 27 July 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130729 (Monday, 29 July 2013)" href="0729.html" />
+    <link rel="prev" title="20130726 (Friday, 26 July 2013)" href="0726.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0729.html" title="20130729 (Monday, 29 July 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0726.html" title="20130726 (Friday, 26 July 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-27-july-2013">
+<h1>20130727 (Saturday, 27 July 2013)<a class="headerlink" href="#saturday-27-july-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="multilingual-userdocs">
+<h2>Multilingual userdocs<a class="headerlink" href="#multilingual-userdocs" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a bug in yesterday&#8217;s <code class="file docutils literal"><span class="pre">select_lang.html</span></code>.</p>
+<p>A project with multilingual userdocs
+no longer needs its own
+<code class="file docutils literal"><span class="pre">select_lang.html</span></code> template,
+and the <code class="file docutils literal"><span class="pre">conf.py</span></code>
+should no longer set
+<a class="reference external" href="http://sphinx-doc.org/config.html#confval-templates_path">templates_path</a>
+because
+<a class="reference external" href="http://atelier.lino-framework.org/api/atelier.sphinxconf.html#atelier.sphinxconf.configure" title="(in atelier v0.0)"><code class="xref py py-func docutils literal"><span class="pre">atelier.sphinxconf.configure()</span></code></a>
+now sets it to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="s">&#39;.templates&#39;</span><span class="p">,</span><span class="n">Path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">absolute</span><span class="p">()]</span>
+</pre></div>
+</div>
+<p>The <code class="file docutils literal"><span class="pre">select_lang.html</span></code> template is now part of
+the <a class="reference external" href="http://atelier.lino-framework.org/api/atelier.sphinxconf.html#module-atelier.sphinxconf" title="(in atelier v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">atelier.sphinxconf</span></code></a> package.</p>
+<p>The <code class="file docutils literal"><span class="pre">fabfile.py</span></code> of a project with multlingual userdocs
+should now specify the Django settings module of the
+demo database as second argument to
+<a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#atelier.fablib.setup_from_project" title="(in atelier v0.0)"><code class="xref py py-func docutils literal"><span class="pre">atelier.fablib.setup_from_project()</span></code></a>.
+Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">atelier.fablib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="n">setup_from_project</span><span class="p">(</span><span class="s">&#39;lino_faggio&#39;</span><span class="p">,</span><span class="s">&#39;lino_faggio.settings.demo&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This will automatically set <cite>env.demo_databases</cite> and <cite>env.languages</cite>
+to the correct value.</p>
+<p>The userdocs for Lino-Welfare were French-based until now.
+I switched to EN also for this project.
+This has the disadvantage that
+I must sometimes research certain specialized vocabulary,
+but certain advantages which I (meanwhile) consider more important:</p>
+<ul class="simple">
+<li>reusability of userdocs from or to other projects</li>
+<li>a chance for non-Belgians to read about what it does</li>
+</ul>
+</div>
+<div class="section" id="belgian-vocabulary">
+<h2>Belgian vocabulary<a class="headerlink" href="#belgian-vocabulary" title="Permalink to this headline">¶</a></h2>
+<p>Added two new entries to <code class="xref py py-mod docutils literal"><span class="pre">lino.projects.belref.fixtures.demo</span></code>.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>yield C(</dt>
+<dd>&#8220;LEA (Local Employment Agency)&#8221;,
+&#8220;LBA (Lokale Beschäftigungsagentur)&#8221;,
+&#8220;ALE (Agence locale pour l&#8217;emploi)&#8221;,
+&#8220;PWA (Plaatselijk werkgelegenheidsagentschap)&#8221;)</dd>
+<dt>yield C(</dt>
+<dd>&#8220;NEO (National Employment Office)&#8221;,
+&#8220;LfA (Landesamt für Arbeitsbeschaffung)&#8221;,
+&#8220;ONEM (Office national de l&#8217;emploi)&#8221;,
+&#8220;RVA (Rijksdienst voor Arbeidsvoorziening)&#8221;)</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="upgraded-to-babel-1-0">
+<h2>Upgraded to Babel 1.0<a class="headerlink" href="#upgraded-to-babel-1-0" title="Permalink to this headline">¶</a></h2>
+<p>Armin Ronacher has released the long-awaited
+<a class="reference external" href="https://groups.google.com/forum/#!topic/python-babel/BdQjN5P1cPQ">Babel 1.0</a>.
+I just did <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-U</span> <span class="pre">Babel</span></code>.</p>
+<p>The new Babel version even fixes a bug in Estonian full date format
+which I hadn&#8217;t yet noticed.
+After upgrading Babel, one of my test suites failed in
+<a class="reference external" href="http://www.lino-framework.org/tutorials/mldbc/index.html#mldbc-tutorial" title="(in Lino v1.6)"><span>Multilingual database content</span></a>
+which &#8211;as i then noticed&#8211; contained indeed a wrong example.</p>
+</div>
+<div class="section" id="a-hide-languages-set-per-userprofile">
+<h2>A <cite>hide_languages</cite> set per UserProfile<a class="headerlink" href="#a-hide-languages-set-per-userprofile" title="Permalink to this headline">¶</a></h2>
+<p>The test suite for <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> failed because
+now the demo database has one language more.
+Instead of adapting lots of test cases in test docs
+I decided to use this as an excuse to implement a new feature
+which nobody has asked until now but which I had been wanting
+for some time:
+it is about multilingual Lino sites with many different languages
+(more than four or five). Such sites (until now) would have a
+problem because Lino always wants to expand all babel fields
+horizontally. Users of such sites probably don&#8217;t want to see all
+languages at once.
+So Lino needs to provide a possibility to specify
+per UserProfile a subset of the site&#8217;s languages.</p>
+<ul class="simple">
+<li>New method <code class="xref py py-meth docutils literal"><span class="pre">north.north_site.Site.resolve_languages()</span></code></li>
+<li>Applications can use the new feature by specifying
+a <code class="docutils literal"><span class="pre">hide_languages</span></code> attribut for either the whole
+<code class="xref py py-attr docutils literal"><span class="pre">UserProfiles</span></code>
+list or for
+<code class="xref py py-attr docutils literal"><span class="pre">individual</span> <span class="pre">profiles</span></code>.</li>
+</ul>
+<p>The new feature works nice but didn&#8217;t spare me from going through
+the tested docs.</p>
+<p>The new languages distribution of the Welfare demo database required
+another change: until now the default language for new partners was
+simply the database&#8217;s default language. This approach might be
+too simple in centres in Brussels where a Flemish user won&#8217;t like
+to have French as default when she creates a new client. And vice-versa.</p>
+<p>Another problem is that we can&#8217;t deny the fact that Lino-Welfare is
+currently being used only in the German-speaking region. This is why I
+added a new method <code class="xref py py-meth docutils literal"><span class="pre">north.north_site.Site.get_default_language()</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0729.html" title="20130729 (Monday, 29 July 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0726.html" title="20130726 (Friday, 26 July 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0727.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0727.html">Online Link</a>
+    </div>
+  </body>
+</html>

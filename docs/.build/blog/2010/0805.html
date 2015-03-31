@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100805 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100806" href="0806.html" />
+    <link rel="prev" title="20100804" href="0804.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0806.html" title="20100806"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0804.html" title="20100804"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20100805<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tagsuber">
+<h2>Tagsüber<a class="headerlink" href="#tagsuber" title="Permalink to this headline">¶</a></h2>
+<p>Weiter mit ReportConfig und Kolonnenfiltern.</p>
+<p>DONE:</p>
+<ul class="simple">
+<li>Nebenbei: <a class="reference external" href="http://www.lino-framework.org/ref/obsolete.html#xfile-fill.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">fill.py</span></code></a> heißt jetzt <code class="xref std std-xfile docutils literal"><span class="pre">initdb.py</span></code>.</li>
+<li>Die Antwort auf ein <cite>GET</cite> mit <cite>fmt=json</cite> eines Reports hat jetzt neben <cite>rows</cite>, <cite>total</cite> und <cite>title</cite> ein neues Attribut <cite>gc_choices</cite>,
+das eine einfache Liste der Auswahlmöglichkeiten für diese Combobox ist.</li>
+<li>Lino.GridPanel hat jetzt zwei neue config parameter <cite>ls_columns</cite> und <cite>ls_grid_config</cite>.
+In der site.js werden nun diese beiden Parameter statt colModel benutzt.
+<cite>ls_grid_config</cite> kann undefiniert sein: das bedeutet, dass keine GridConfig existiert.</li>
+<li>ReportConfig habe ich nach GridConfig umbenannt (und ReportColumn nach GridColumn).</li>
+<li>ViewReportRequest fragt einen neuen URI-Parameter <cite>gc</cite> ab, der den Namen der gewünschten GC enthält.</li>
+<li>Pro Report kann es auch eine GC mit leerem <cite>name</cite> geben. Das ist die Standard-Konfiguration.
+Die ist in der site.js schon berücksichtigt.
+Also falls ViewReportRequest eine leere gc findet, macht er keine Datenbank-Abfrage.</li>
+<li>Für die Tests musste ich GridConfigs manuell eingeben, dabei kamen noch einige Bugs beim Speichern raus.
+Er setzte für AutoField immer einen Wert 0 und deshalb konnte man übers UI höchstens einen Record erstellen.
+Und man konnte ein normales Textfeld nicht auf leer setzen.</li>
+</ul>
+<p>TODO:</p>
+<ul class="simple">
+<li>Wenn eine GridConfig erstellt wird, sollte er automatisch deren Kolonnen erstellen.</li>
+<li>Wartbarkeit. Was passiert mit den GridConfigs, wenn deren Report verändert worden ist?
+Prinzipiell kann sich Lino.GridPanel darauf verlassen, dass <cite>ls_grid_config</cite> sauber ist,
+weil der Server das kontrollieren kann.</li>
+<li>In der <cite>Lino.GridPanel.tbar</cite> kommen zwei neue Elemente: eine ComboBox, in der man die verschiedenen ReportConfigs auswählen kann, und ein Button &#8220;Save Config&#8221; zum Speichern. Eine andere (bestehende) ReportConfig lädt man, indem man sie in der Combobox auswählt. Neue ReportConfigs erstellt man, indem man in der Combobox einen neuen Namen tippt und dann auf &#8220;Save Config&#8221; klickt.</li>
+</ul>
+<p>17.40 Uhr : Check-In wegen Feierabend.</p>
+</div>
+<div class="section" id="abends">
+<h2>Abends<a class="headerlink" href="#abends" title="Permalink to this headline">¶</a></h2>
+<p>19.20 Uhr : Wie gut, dass man  manchmal gegen seinen Willen aus der Arbeit rausgerissen wird! Bei der Unterbrechung ist mir aufgefallen, dass es Quatsch ist, die Grid-Konfigurationen in der Datenbank zu speichern; die müssen in schlichten Textdateien auf dem Server liegen! Also system.GridConfig und system.GridColumn kommen wieder raus. Stattdessen wird <code class="xref py py-attr docutils literal"><span class="pre">Report.grid_configs</span></code> in  <code class="xref py py-meth docutils literal"><span class="pre">Report.do_setup()</span></code> gefüllt, indem er nach einer Datei <code class="xref std std-xfile docutils literal"><span class="pre">contacts.Persons.config.js</span></code> sucht. Für den Anfang dürfte eine Datei pro Report reichen, die alle <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-gc" title="(in Lino v1.6)"><span class="xref std std-term">GC&#8217;s</span></a> dieses Reports enthält. Die Datei wird vom Server generiert und könnte (z.B. für <cite>countries.Countries</cite>) ungefähr folgenden Inhalt haben:</p>
+<div class="highlight-python"><div class="highlight"><pre>[
+  { name: &#39;&#39;,
+    columns:[
+      [90, &#39;isocode&#39;,&#39;ASC&#39;,&#39;&#39;],
+      [150, &#39;name&#39;,&#39;&#39;,&#39;&#39;],
+      [90, &#39;short_code&#39;,&#39;&#39;,&#39;&#39;]
+      ]
+  },
+  { name: &#39;by_name&#39;,
+    columns:[
+      [150, &#39;name&#39;,&#39;ASC&#39;,&#39;&#39;],
+      [90, &#39;isocode&#39;,&#39;&#39;,&#39;&#39;],
+      [90, &#39;short_code&#39;,&#39;&#39;,&#39;&#39;]
+      ]
+  },
+  { name: &#39;only short_code&#39;,
+    columns:[
+      [90, &#39;short_code&#39;,&#39;ASC&#39;,&#39;isnull&#39;,false],
+      [90, &#39;isocode&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;],
+      [150, &#39;name&#39;,&#39;&#39;,&#39;&#39;,&#39;&#39;]
+      ]
+  }
+</pre></div>
+</div>
+<p>Also eine relativ kompakte Liste von Objekten (eines pro GC). Jede GC hat einen Namen und eine Liste von Kolonnen.
+Jede Kolonne ist ein Array mit folgenden Feldern:</p>
+<blockquote>
+<div><ul class="simple">
+<li>width (<a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.grid.Column">Ext.grid.Column</a>.width)</li>
+<li>dataIndex (<a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.grid.Column">Ext.grid.Column</a>.dataIndex)</li>
+<li>sortDirection (<a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.data.Store">Ext.data.Store</a>.sortInfo)</li>
+<li>filter_operator</li>
+<li>filter_value</li>
+</ul>
+</div></blockquote>
+<p>Für <cite>filter_operator</cite> begnügen wir uns fürs erste mit Djangos <a class="reference external" href="http://docs.djangoproject.com/en/1.2/ref/models/querysets/#field-lookups">field lookup operators</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre>exact
+contains
+gt
+gte
+lt
+lte
+startswith
+endswith
+year
+month
+day
+week_day
+
+in          Liste mit beliebig vielen Werten
+range       Liste mit 2 Werten
+
+isnull      true/false
+</pre></div>
+</div>
+<p>Das UI muss also wissen, welche Operatoren mit welchen Datentypen erlaubt sind und was sie als filter_value brauchen.</p>
+<p>Aber bevor ich auf der Serverseite weiter ins Detail gehe, sollte ich wohl besser
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?76185-GridFilters-enhanced-filtering-for-grids">Ext.ux.grid.GridFilters</a>
+anschauen.</p>
+<p>0.30 Uhr. Dieses Plugin ist super! Obwohl ich zuerst mal anderthalb Stunden lang einen Bug suchen musste.
+(Ich habe in meinen Kolonnen einfach nur <code class="docutils literal"><span class="pre">filterable:true</span></code> konfiguriert.
+Laut Doku und auch laut Source (<code class="xref js js-func docutils literal"><span class="pre">GridFilters.addFilters()</span></code> in <code class="file docutils literal"><span class="pre">examples/ux/gridfilters/GridFilters.js</span></code>)
+müsste das klappen, er findet dann den Datentyp selber raus, indem er in den Store schaut.
+Aber er findet trotzdem für <cite>type</cite> statt eines Strings (z.B. <code class="docutils literal"><span class="pre">'auto'</span></code>) ein Objekt <code class="docutils literal"><span class="pre">{type:'auto'}</span></code>.
+Tilt: Der GridFilters-Plugin verträgt keine <a class="reference external" href="http://www.sencha.com/deploy/dev/docs/?class=Ext.data.Types">Ext.data.Types</a>!
+Ende gut, alles gut, nachdem die Erklärung gefunden habe, musste ich das natürlich noch ins
+<a class="reference external" href="http://www.sencha.com/forum/showthread.php?76185-GridFilters-enhanced-filtering-for-grids&amp;p=497959#post497959">Forum mitteilen</a>.</p>
+<p>Aber jetzt ist erstmal Feierabend!</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0806.html" title="20100806"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0804.html" title="20100804"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0805.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0805.html">Online Link</a>
+    </div>
+  </body>
+</html>

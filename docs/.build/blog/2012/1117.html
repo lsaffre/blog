@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121117 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121119" href="1119.html" />
+    <link rel="prev" title="20121116" href="1116.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1119.html" title="20121119"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1116.html" title="20121116"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121117<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Continued on <code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.pcsw.models.BeIdReadCardAction</span></code>.</p>
+<ul class="simple">
+<li>Renamed <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.niss</span></code> to <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.ssin.html#module-lino.utils.ssin" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.ssin</span></code></a></li>
+<li><code class="xref py py-func docutils literal"><span class="pre">lino.core.modeltools.obj2str()</span></code> has become more human-readable:<ul>
+<li>datetime.date values are rendered as simple strings <cite>YYYY-MM-DD</cite></li>
+<li>unicode strings are no longer preceded by an &#8216;u&#8217;</li>
+</ul>
+</li>
+<li>There was a bug in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.ssin.html#lino.utils.ssin.generate_ssin" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">lino.utils.ssin.generate_ssin()</span></code></a>.</li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.ssin.html#module-lino.utils.ssin" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.ssin</span></code></a> is now handles birth dates after 2000 correctly.</li>
+</ul>
+<p>All four live demo sites are now working.</p>
+<p><a class="reference external" href="http://www.lino-framework.org/demos.html">/demos</a></p>
+<div class="section" id="managing-a-park-of-lino-applications">
+<h2>Managing a park of Lino applications<a class="headerlink" href="#managing-a-park-of-lino-applications" title="Permalink to this headline">¶</a></h2>
+<p>Currently I have for each demo site the two files <cite>manage.py</cite> and <cite>wsgi.py</cite>.</p>
+<ul>
+<li><p class="first">manage.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="kn">import</span> <span class="nn">sys</span><span class="p">;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;/home/luc/mypy&#39;</span><span class="p">)</span>  <span class="c"># [Note1]</span>
+    <span class="kn">import</span> <span class="nn">os</span> <span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;demo1.settings&#39;</span> <span class="c"># [Note2]</span>
+
+    <span class="kn">from</span> <span class="nn">django.core.management</span> <span class="kn">import</span> <span class="n">execute_from_command_line</span>
+    <span class="n">execute_from_command_line</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">wsgi.py:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span> <span class="p">;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;/home/luc/mypy&#39;</span><span class="p">)</span> <span class="c"># [Note1]</span>
+<span class="kn">import</span> <span class="nn">os</span> <span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;demo1.settings&#39;</span> <span class="c"># [Note2]</span>
+
+<span class="kn">import</span> <span class="nn">django.core.handlers.wsgi</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">django</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">wsgi</span><span class="o">.</span><span class="n">WSGIHandler</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>[Note1] This line is the same for each site.
+[Note2] differs for each site, but is each time equal to <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.project_name</span></code></p>
+<p>I can replace the two following lines:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span> <span class="p">;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;/home/luc/mypy&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">os</span> <span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;demo1.settings&#39;</span>
+</pre></div>
+</div>
+<p>by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span> <span class="p">;</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;/home/luc/mypy&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">demo_sites</span> <span class="kn">import</span> <span class="n">setup</span> <span class="p">;</span> <span class="n">setup</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Und dann die <code class="file docutils literal"><span class="pre">/home/luc/mypy/demo_sites/__init__.py</span></code> sähe
+wie folgt aus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">split</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">abspath</span>
+<span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">prj</span> <span class="o">=</span> <span class="n">split</span><span class="p">(</span><span class="n">dirname</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)))[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;demo_sites.&#39;</span> <span class="o">+</span> <span class="n">prj</span> <span class="o">+</span> <span class="s">&#39;.settings&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="loading-demo-fixtures">
+<h2>Loading demo fixtures<a class="headerlink" href="#loading-demo-fixtures" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>moved the Polls Tutorial from lino.tutorials.t1 to lino.apps.polls_tutorial</li>
+<li><code class="xref py py-mod docutils literal"><span class="pre">initdb</span></code> now uses the <cite>load_initial_data</cite>
+stealth option to avoid the automatic loading of <cite>initial_data</cite> fixtures
+which caused an irritating message &#8220;No fixtures found&#8221;.
+This message came because there are no <cite>initial_data</cite> fixtures.
+No registered Lino user ever used <cite>initial_data</cite> fixtures.
+They cause only problems.
+One of them, by the way is that <cite>syncdb</cite>, when called with &#8211;traceback,
+forgets to forward this option when calling loaddata for initial_data.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1119.html" title="20121119"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1116.html" title="20121116"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1117.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1117.html">Online Link</a>
+    </div>
+  </body>
+</html>

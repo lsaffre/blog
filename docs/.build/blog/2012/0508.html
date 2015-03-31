@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120508 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120509" href="0509.html" />
+    <link rel="prev" title="20120507" href="0507.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0509.html" title="20120509"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0507.html" title="20120507"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120508<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cbss-connection">
+<h2>CBSS connection<a class="headerlink" href="#cbss-connection" title="Permalink to this headline">¶</a></h2>
+<p>After having fiddled and fought with <cite>lino.utils.xmlgen</cite>, <cite>lxml</cite> and <cite>elementtree</cite>,
+there is now hope that I finally found what I have been looking for:
+I discovered the <cite>suds.sax</cite> module for which
+<a class="reference external" href="https://fedorahosted.org/suds/wiki/Documentation#TECHNICALFYINOTES">the docs</a> say
+say that it
+&#8220;was written because elementtree and other python XML packages
+either:
+have a DOM API which is very unfriendly
+or: (in the case of elementtree) do not
+deal with namespaces and especially prefixes sufficiently.&#8221;</p>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.xmlgen.cbss.html#module-lino.utils.xmlgen.cbss" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.xmlgen.cbss</span></code></a> is no longer used.
+Everything is now in <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cbss</span></code> and uses <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-suds" title="(in Lino v1.6)"><span class="xref std std-term">suds</span></a>.
+New table RetrieveTIGroupsRequest.</p>
+<p>Added test cases <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cbss.tests.cbss_tests</span></code>
+Seems that I&#8217;m now ready to run these tests at the customer
+from behind a registered IP address.
+This requires to set up a test instance on their server,
+and that&#8217;s for tomorrow.</p>
+<p><a class="reference external" href="http://code.google.com/p/lino/source/detail?r=cf29f855b734">Checkin cf29f855b734</a> at 1:33, long after I should have gone to bed.</p>
+<p>Note: when Lino starts up,
+it generates two files to <cite>WebServiceConnector.wsdl</cite>
+and <cite>RetrieveTIGroupsV3.wsdl</cite> into <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-media/cache/wsdl" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">media/cache/wsdl</span></code></a>.
+These are needed for the suds Client, and Lino must generate
+them from the original files provided by the <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-cbss" title="(in Lino v1.6)"><span class="xref std std-term">CBSS</span></a>,
+of which the copy is stored in Lino&#8217;s source repository
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/modlib/cbss/XSD">lino/modlib/cbss/XSD</a> (in fact this is not a simple
+copy but a template, containing a pattern <cite>%s(cbss_environment)s</cite>
+where the real location must get filled in.
+There are also (currently) two xsd files
+<cite>RetrieveTIGroupsV3.xsd</cite>
+and <cite>rn25_Release201104.xsd</cite>
+which are a completely
+unmodified copy of the original CBSS files. But they also
+need to be in the same directory <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-media/cache/wsdl" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">media/cache/wsdl</span></code></a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0509.html" title="20120509"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0507.html" title="20120507"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0508.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0508.html">Online Link</a>
+    </div>
+  </body>
+</html>

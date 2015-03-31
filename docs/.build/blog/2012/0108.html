@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120108 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120109" href="0109.html" />
+    <link rel="prev" title="20120107" href="0107.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0109.html" title="20120109"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0107.html" title="20120107"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120108<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="a-yet-undiscovered-bug-in-context-sensitive-comboboxes">
+<h2>A yet undiscovered bug in context-sensitive ComboBoxes<a class="headerlink" href="#a-yet-undiscovered-bug-in-context-sensitive-comboboxes" title="Permalink to this headline">¶</a></h2>
+<p>Ein anderer Bug, der möglicherweise schon länger existiert:
+Wenn ich im Detail einer Person bin:</p>
+<ul class="simple">
+<li>ein anderes Land auswählen</li>
+<li>die Liste im Feld &#8220;Stadt&#8221; aufklappen und wieder schließe, ohne eine Stadt auszuwählen</li>
+<li>das Land wieder auf das vorige zurücksetzen</li>
+<li>Speichern</li>
+</ul>
+<p>Dann kommt eine Fehlermeldung im Stil
+&#8220;{&#8216;city&#8217;: ValidationError([u&#8217;Refused to auto-create city Aachen in Deutschland because same name exists.&#8217;])}&#8221;</p>
+<p>Schon beim PUT hat er fälschlicherweise im Feld <cite>cityHidden</cite>
+den Namen statt die ID der Stadt stehen:</p>
+<div class="highlight-python"><div class="highlight"><pre>cityHidden:Aachen
+city:Aachen
+</pre></div>
+</div>
+<p>Bisher noch keine Lösung gefunden.</p>
+</div>
+<div class="section" id="models-tables-and-their-app-label">
+<h2>Models, Tables and their app_label<a class="headerlink" href="#models-tables-and-their-app-label" title="Permalink to this headline">¶</a></h2>
+<p>Discovered another bug caused by the removal of actors.actors_dict:
+<cite>ext_elems.RemoteComboFieldElement</cite> finds a wrong URL to query.
+For the Person.city field, it should be
+&#8220;/choices/dsbe/Person/city&#8221; but currently it is
+&#8220;/choices/contacts/Person/city&#8221;.</p>
+<p>This was because the <cite>dsbe.Person</cite> model
+has <cite>app_label = contacts</cite>.
+With the new actor lookup system after the removal of actors.actors_dict,
+this points to the abstract Person model in <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.models.html#module-lino.modlib.contacts.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.contacts.models</span></code></a>,
+which is not what we want here.</p>
+<p>I cannot easily remove that app_label on dsbe.Person
+because this name (and the freedom from needing to know
+where Person is really defined) is used in a lot of places.</p>
+<p>A first attempt failed:
+But are there really so many of them?
+Shouldn&#8217;t I better use global settings
+<cite>person_model</cite> and <cite>company_model</cite>,
+as I did for <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.user_model</span></code>?
+Yes, that seems a good solution.
+Overriding app_label of a model is simply no longer supported.
+This feature was a little insane anyway.
+Flexibility is good, but it should remain under control.
+If there are &#8220;variable&#8221; or &#8220;overridable&#8221; models,
+then this should be a configuration option.
+Currently we have four of them:
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.user_model</span></code>,
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.person_model</span></code>,
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.company_model</span></code> and
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.project_model</span></code>.</p>
+<p>The same problem was with <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.models.html#lino.modlib.notes.models.Note" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.notes.models.Note</span></code></a>
+which was also abstract to make application-specific overrides
+possible. Here I decided to make the whole modlib module
+specific to <cite>lino.apps.dsbe</cite> because also the modlib version was
+already quite dsbe-specific.</p>
+<p>I abandoned this attempt after realizing that
+&#8220;the freedom to not need to know where Person is really
+defined&#8221; <em>is</em> important.
+One example of why this is such a complex topic:
+<code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.Persons</span></code> is accessible as <cite>dsbe.Persons</cite>,
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contacts.models.html#lino.modlib.contacts.models.Persons" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.contacts.models.Persons</span></code></a> as <cite>contacts.Persons</cite>.
+<cite>dsbe.Persons</cite> inherits the modlib version, but adds application-specific rules
+of not showing newcomers and inactive Persons.
+I&#8217;ll have to write more about that topic one day.</p>
+<p>The solution was to not store the <code class="docutils literal"><span class="pre">models</span></code> modules
+themselves in <cite>settings.LINO.modules</cite>, but to rather
+build an equivalent of the <cite>actors_dict</cite>, with some
+differences:</p>
+<ul class="simple">
+<li>accessible using dotted notation using <code class="xref py py-class docutils literal"><span class="pre">lino.utils.AttrDict</span></code></li>
+<li>contains models, actors (tables, frames) <em>and also</em> the <cite>setup_</cite> methods.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0109.html" title="20120109"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0107.html" title="20120107"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0108.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0108.html">Online Link</a>
+    </div>
+  </body>
+</html>

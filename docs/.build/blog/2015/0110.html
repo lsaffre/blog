@@ -1,0 +1,174 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saturday, January 10, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Sunday, January 11, 2015" href="0111.html" />
+    <link rel="prev" title="Friday, January 9, 2015" href="0109.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0111.html" title="Sunday, January 11, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0109.html" title="Friday, January 9, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-january-10-2015">
+<h1>Saturday, January 10, 2015<a class="headerlink" href="#saturday-january-10-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="termin-erstellen-fur-klient-ohne-begleitung">
+<h2>Termin erstellen für Klient ohne Begleitung<a class="headerlink" href="#termin-erstellen-fur-klient-ohne-begleitung" title="Permalink to this headline">¶</a></h2>
+<p>Working for <a class="reference external" href="http://trac.lino-framework.org/ticket/55">#55</a></p>
+<p>Yesterday I noticed that after creating an appointment, the client is
+not automatically added as a Guest to that appointment.</p>
+<p>The basic problem was in
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models_event.html#lino.modlib.cal.models_event.Event.suggest_guests" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.modlib.cal.models_event.Event.suggest_guests()</span></code></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">suggest_guests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">suggest_cal_guests</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">obj</span>
+</pre></div>
+</div>
+<p>It&#8217;s not enough to ask only the owner. Manually created events don&#8217;t
+have an owner. But in <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>, even for manually created events
+we have <cite>EventType.invite_client</cite> which means that the <cite>Event.project</cite>
+(which always is a Client in <a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a>) should be suggested as
+Guest.</p>
+<p>A second problem was that Lino did not &#8220;automatically click the
+lightning button&#8221; on a newly created event. So I added an
+<cite>after_ui_created</cite> method to get this. Similarily to what we had
+already for Household.</p>
+<p>This causes the number of <cite>cal.Guest</cite> in the demo databases to
+increase because all isip.Contract and job.Contact now also get their
+Client as a Guest. The total number of guests in
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.docs</span></code> increases from 616 to 1042.  Which
+needed two changes in Welfare&#8217;s test suite:</p>
+<ul class="simple">
+<li><cite>lino_welfare/projects/docs/tests/test_isip.py</cite></li>
+<li><cite>docs/tested/general.rst</cite></li>
+</ul>
+<p>I moved to documentation in <a class="reference external" href="http://www.lino-framework.org/dev/ml/cal.html#module-ml.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">ml.cal</span></code></a> back to the source code. See
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a>.</p>
+<p>Note: I also tried to convert <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.models.html#module-lino.modlib.cal.models" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal.models</span></code></a> into a
+package, but this caused &#8220;the hell to break loose&#8221;, as Andrew Cooke
+explained already 2009 in a post titled <a class="reference external" href="http://www.acooke.org/cute/UsingaDire0.html">Using a Directory (Package)
+for Django&#8217;s Model</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0111.html" title="Sunday, January 11, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0109.html" title="Friday, January 9, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0110.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0110.html">Online Link</a>
+    </div>
+  </body>
+</html>

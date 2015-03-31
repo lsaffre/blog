@@ -1,0 +1,31 @@
+==========================
+Saturday, November 8, 2014
+==========================
+
+Rien n'est simple
+-----------------
+
+:ref:`cosi` failed because it uses
+:mod:`ml.excerpts`
+which in turn depends on 
+:mod:`ml.outbox`
+(which in turn depends on :mod:`ml.uploads`),
+but does not install these dependencies.
+
+The test suite failed to reveal this problem because
+:ref:`cosi.tested.demo` was not being tested.
+
+:ref:`new`: Thte new attribute :attr:`ad.Site.needs_plugins` makes it
+possible to resolve such dependencies transparently.
+
+
+The :attr:`dd.AbstractTable.start_at_bottom` option starts to work.
+This was quite tricky. See the source code.
+TODO:
+
+- the `PagingToolbar.cursor` is set to -1, which leads to a wrong
+  value for `getPageData().activePage`. Add an onload handler on
+  `Lino.GridPanel` or `Lino.GridStore` which sets it to the correct
+  value when it is -1.
+
+- test for side effects

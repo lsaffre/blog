@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121029 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121030" href="1030.html" />
+    <link rel="prev" title="20121027" href="1027.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1030.html" title="20121030"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1027.html" title="20121027"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121029<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>StartedSummaryDescription wasn&#8217;t abstract.
+isip.ExamPolicy is no longer ProjectRelated (<cite>project</cite>)
+and no longer cal.ComponentBase (<cite>uid</cite>).</li>
+</ul>
+<div class="section" id="fixed-a-bug-in-lino-utils-dumpy">
+<h2>Fixed a bug in <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dumpy</span></code><a class="headerlink" href="#fixed-a-bug-in-lino-utils-dumpy" title="Permalink to this headline">¶</a></h2>
+<p>Oops, the double dump test fails!
+The coming Lino version is not able to read her own dumps!</p>
+<div class="highlight-python"><div class="highlight"><pre>$ initdb_demo
+...
+Installed 1595 object(s) from 28 fixture(s)
+INFO Lino initdb done (&#39;std&#39;, &#39;few_countries&#39;, &#39;few_cities&#39;, &#39;few_languages&#39;, &#39;props&#39;, &#39;cbss&#39;, &#39;democfg&#39;, &#39;demo&#39;, &#39;demo_
+events&#39;, &#39;cpas_eupen&#39;) on database t:\data\luc\lino_local\dsbe\dsbe_test.db.
+
+$ python manage.py dumpdata --format py &gt; fixtures/a.py
+</pre></div>
+</div>
+<p>Until here everything seems okay. But then:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py initdb a
+...
+Problem installing fixture &#39;t:\data\luc\lino_local\dsbe\fixtures\a.py&#39;: Traceback (most recent call last):
+  File &quot;l:\snapshots\django\django\core\management\commands\loaddata.py&quot;, line 186, in handle
+    for obj in objects:
+  File &quot;t:\hgwork\lino\lino\utils\dumpy.py&quot;, line 456, in deserialize
+    for o in expand(obj):
+  File &quot;t:\hgwork\lino\lino\utils\dumpy.py&quot;, line 442, in expand
+    for o in obj:
+  File &quot;t:\data\luc\lino_local\dsbe\fixtures\a.py&quot;, line 907, in contacts_person_objects
+    yield create_contacts_person(112,u&#39;EE&#39;,12,None,u&#39;78003&#39;,u&#39;Saffre Luc&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;Uus&#39;,u&#39;1&#39;,u&#39;&#39;,u&#39;Vana-Vigala k\xfcla&#39;,u&#39;de&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;&#39;,u&#39;1968-06-01&#39;,u&#39;Luc&#39;,u&#39;Saffre&#39;,u&#39;&#39;,&#39;M&#39;)
+  File &quot;t:\data\luc\lino_local\dsbe\fixtures\a.py&quot;, line 161, in create_contacts_person
+    return create_child(contacts_Partner,partner_ptr_id,contacts_Person,country_id=country_id,city_id=city_id,region_id=region_id,zip_code=zip_code,name=name,addr1=addr1,street_prefix=street_prefix,street=street,street_no=street_no,street_box=street_box,addr2=addr2,language=language,email=email,url=url,phone=phone,gsm=gsm,fax=fax,remarks=remarks,birth_date=birth_date,first_name=first_name,last_name=last_name,title=title,gender=gender)
+  File &quot;t:\hgwork\lino\lino\utils\mti.py&quot;, line 278, in create_child
+    ignored))
+Exception: create_child() Person 112 from Partner : ignored non-local fields {&#39;fax&#39;: u&#39;&#39;, &#39;name&#39;: u&#39;Saffre Luc&#39;, &#39;language&#39;: u&#39;de&#39;, &#39;url&#39;: u&#39;&#39;, &#39;street_box&#39;: u&#39;&#39;, &#39;street_no&#39;: u&#39;1&#39;, &#39;phone&#39;: u&#39;&#39;, &#39;street&#39;: u&#39;Uus&#39;, &#39;addr2&#39;: u&#39;Vana-Vigala k\xfcla&#39;, &#39;addr1&#39;: u&#39;&#39;, &#39;remarks&#39;: u&#39;&#39;, &#39;street_prefix&#39;: u&#39;&#39;, &#39;gsm&#39;: u&#39;&#39;, &#39;email&#39;: u&#39;&#39;, &#39;zip_code&#39;: u&#39;78003&#39;}
+</pre></div>
+</div>
+<p>Looking into the fixture, we can see that <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dumpy</span></code>
+indeed creates the following function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">create_contacts_person</span><span class="p">(</span><span class="n">partner_ptr_id</span><span class="p">,</span> <span class="n">country_id</span><span class="p">,</span> <span class="n">city_id</span><span class="p">,</span> <span class="n">region_id</span><span class="p">,</span> <span class="n">zip_code</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">addr1</span><span class="p">,</span> <span class="n">street_prefix</span><span class="p">,</span> <span class="n">street</span><span class="p">,</span> <span class="n">street_no</span><span class="p">,</span> <span class="n">street_box</span><span class="p">,</span> <span class="n">addr2</span><span class="p">,</span> <span class="n">language</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">phone</span><span class="p">,</span> <span class="n">gsm</span><span class="p">,</span> <span class="n">fax</span><span class="p">,</span> <span class="n">remarks</span><span class="p">,</span> <span class="n">birth_date</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">gender</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">create_child</span><span class="p">(</span><span class="n">contacts_Partner</span><span class="p">,</span><span class="n">partner_ptr_id</span><span class="p">,</span><span class="n">contacts_Person</span><span class="p">,</span><span class="n">country_id</span><span class="o">=</span><span class="n">country_id</span><span class="p">,</span><span class="n">city_id</span><span class="o">=</span><span class="n">city_id</span><span class="p">,</span><span class="n">region_id</span><span class="o">=</span><span class="n">region_id</span><span class="p">,</span><span class="n">zip_code</span><span class="o">=</span><span class="n">zip_code</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span><span class="n">addr1</span><span class="o">=</span><span class="n">addr1</span><span class="p">,</span><span class="n">street_prefix</span><span class="o">=</span><span class="n">street_prefix</span><span class="p">,</span><span class="n">street</span><span class="o">=</span><span class="n">street</span><span class="p">,</span><span class="n">street_no</span><span class="o">=</span><span class="n">street_no</span><span class="p">,</span><span class="n">street_box</span><span class="o">=</span><span class="n">street_box</span><span class="p">,</span><span class="n">addr2</span><span class="o">=</span><span class="n">addr2</span><span class="p">,</span><span class="n">language</span><span class="o">=</span><span class="n">language</span><span class="p">,</span><span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">,</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span><span class="n">phone</span><span class="o">=</span><span class="n">phone</span><span class="p">,</span><span class="n">gsm</span><span class="o">=</span><span class="n">gsm</span><span class="p">,</span><span class="n">fax</span><span class="o">=</span><span class="n">fax</span><span class="p">,</span><span class="n">remarks</span><span class="o">=</span><span class="n">remarks</span><span class="p">,</span><span class="n">birth_date</span><span class="o">=</span><span class="n">birth_date</span><span class="p">,</span><span class="n">first_name</span><span class="o">=</span><span class="n">first_name</span><span class="p">,</span><span class="n">last_name</span><span class="o">=</span><span class="n">last_name</span><span class="p">,</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span><span class="n">gender</span><span class="o">=</span><span class="n">gender</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which is wrong because street, addr1 etc are stored in <cite>Partner</cite>, not in <cite>Person</cite>.
+Seems that Django has a different definition of <cite>local_fields</cite> than what I thought:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">local_fields</span><span class="p">]</span>
+<span class="go">[&#39;partner_ptr&#39;, &#39;country&#39;, &#39;city&#39;, &#39;region&#39;, &#39;zip_code&#39;, &#39;name&#39;, &#39;addr1&#39;, &#39;street_prefix&#39;, &#39;street&#39;, &#39;street_no&#39;, &#39;street_box&#39;, &#39;addr2&#39;, &#39;language&#39;, &#39;email&#39;, &#39;url&#39;, &#39;phone&#39;, &#39;gsm&#39;, &#39;fax&#39;, &#39;remarks&#39;, &#39;birth_date&#39;, &#39;first_name&#39;, &#39;last_name&#39;, &#39;title&#39;, &#39;gender&#39;]</span>
+</pre></div>
+</div>
+<p>What we want is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span><span class="p">,</span><span class="n">m</span> <span class="ow">in</span> <span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">contacts</span><span class="o">.</span><span class="n">Person</span><span class="o">.</span><span class="n">_meta</span><span class="o">.</span><span class="n">get_fields_with_model</span><span class="p">()</span> <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">]</span>
+<span class="go">[&#39;partner_ptr&#39;, &#39;birth_date&#39;, &#39;first_name&#39;, &#39;last_name&#39;, &#39;title&#39;, &#39;gender&#39;]</span>
+</pre></div>
+</div>
+<p>Seems that this bug has &#8220;always&#8221; been there, but didn&#8217;t lead to a failure before
+I changed the &#8220;ignored non-local fields&#8221; warning into an Exception (<a class="reference external" href="http://www.lino-framework.org/2012/0929.html">/2012/0929</a>).</p>
+</div>
+<div class="section" id="dumpy-resolving-cirular-dependencies">
+<h2>Dumpy resolving cirular dependencies<a class="headerlink" href="#dumpy-resolving-cirular-dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The dumpy Serializer now generates, as a comment,
+an overview of the unresolved circular dependencies.
+This helped me to discover that it abandoned the resolution
+process too early, causing fixtures to have a
+lot of deferred instances when getting loaded back.</p>
+<p>Cool! Ich hatte mich schon gewundert (aber war der Sache aus Zeitmangel
+nie auf den Grund gegangen), weshalb er immer noch so viele &#8220;deferred&#8221;
+meldet beim einlesen eines Dumps.</p>
+<p>14.40 Uhr: Uff:</p>
+<div class="highlight-python"><div class="highlight"><pre>lsaffre@lino:/usr/local/django/test_dsbe$ python manage.py dumpdata --format py &gt; fixtures/a.py
+INFO Source version is 1.0 : no migration needed
+INFO Loading /usr/local/django/test_dsbe/fixtures/a.py...
+Installed 53248 object(s) from 1 fixture(s)
+INFO Lino initdb done (&#39;a&#39;,) on database test_dsbe.
+lsaffre@lino:/usr/local/django/test_dsbe$ python manage.py dumpdata --format py &gt; fixtures/b.py
+lsaffre@lino:/usr/local/django/test_dsbe$ diff fixtures/a.py fixtures/b.py
+</pre></div>
+</div>
+</div>
+<div class="section" id="nachtsitzung">
+<h2>Nachtsitzung<a class="headerlink" href="#nachtsitzung" title="Permalink to this headline">¶</a></h2>
+<p>Noch Tests und Bugfixes.</p>
+<ul class="simple">
+<li>contact_role wurde nicht automatisch zugewiesen</li>
+<li>assign_coach gab dict statt JsonResponse zurück.
+Ich Wirklichkeit geben success_response und error_response jetzt ebenfalls dicts zurück. Eine RowAction.run() muss entweder None oder einen dict zurückgeben, nicht eine action_response().</li>
+<li>watch_tim</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1030.html" title="20121030"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1027.html" title="20121027"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1029.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1029.html">Online Link</a>
+    </div>
+  </body>
+</html>

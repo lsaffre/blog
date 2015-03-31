@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111217 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111219" href="1219.html" />
+    <link rel="prev" title="20111216" href="1216.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1219.html" title="20111219"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1216.html" title="20111216"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111217<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="termine-erstellen-vom-kalender-aus">
+<h2>Termine erstellen vom Kalender aus<a class="headerlink" href="#termine-erstellen-vom-kalender-aus" title="Permalink to this headline">¶</a></h2>
+<p>Continued on <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/52">docs/tickets/52</a>.</p>
+<p><cite>Lino.on_eventadd()</cite> starts to work.
+There is now a caching problem: the eventStore doesn&#8217;t add a <cite>_dc</cite>
+parameter so that the new event becomes visible only after a server restart.</p>
+<p>Hmm... Nach fast 6 Stunden Rumprobieren funktioniert es noch immer nicht
+und für heute ist mir die Lust vergangen.
+Warum schließt sich bei mir das EventEditWindow nicht, wenn der Termin
+gepostet wurde?
+Es scheint, dass ich nicht daran vorbeikomme, im EventStore
+einen <cite>writer</cite> zu benutzen.
+Denn erst wenn der Store den Erfolg der save-Aktion meldet,
+schließt sich das EventEditWindow.</p>
+<p>Also habe ich begonnen, ein ein restful interface à la ExtJS zu machen.
+GET funktioniert schon, POST erst fast: der Termin wird angelegt,
+aber dann kommt in der JS-Console:</p>
+<div class="highlight-python"><div class="highlight"><pre>Uncaught Ext.data.DataReader: #realize was called with invalid remote-data.  Please see the docs for DataReader#realize and review your DataReader configuration.
+Ext.handleErrorext-all-debug.js:10448
+Ext.data.Store.Ext.extend.handleExceptionext-all-debug.js:23882
+Ext.data.Store.Ext.extend.onCreateRecordsext-all-debug.js:23839
+(anonymous function)ext-all-debug.js:23793
+Ext.extend.onWriteext-all-debug.js:25183
+(anonymous function)ext-base-debug.js:868
+(anonymous function)ext-all-debug.js:25128
+Ext.extend.handleResponseext-all-debug.js:4064
+handleTransactionResponseext-base-debug.js:1864
+checkResponseext-base-debug.js:1912
+(anonymous function)ext-base-debug.js:902
+</pre></div>
+</div>
+<p>Kann sein, dass er durcheinander kommt, weil meine row
+ja ein Array und nicht wie üblich ein Objekt ist.</p>
+</div>
+<div class="section" id="testing-release-1-3-0">
+<h2>Testing release 1.3.0<a class="headerlink" href="#testing-release-1-3-0" title="Permalink to this headline">¶</a></h2>
+<p>Checkin.</p>
+<p>Discovered another bug: the insert window didn&#8217;t behave correctly
+after a successful POST.</p>
+<p>Checkin.</p>
+<p>Discovered another bug: jobs.StudiesByCity hadn&#8217;t yet been tested.</p>
+<p>Checkin.</p>
+<p>German translations</p>
+<p>Checkin.</p>
+</div>
+<div class="section" id="worked-on-the-release-process">
+<h2>Worked on the release process<a class="headerlink" href="#worked-on-the-release-process" title="Permalink to this headline">¶</a></h2>
+<p>From now on there will be source
+distribution tarballs for each released version
+on our <a class="reference external" href="http://www.lino-framework.org/downloads.html">/downloads</a> page.</p>
+</div>
+<div class="section" id="first-screencast">
+<h2>First screencast<a class="headerlink" href="#first-screencast" title="Permalink to this headline">¶</a></h2>
+<p>I&#8217;m working on a first screencast. Installed CamStudio 2.0 on
+my Windows machine and did first recordings. But I won&#8217;t yet
+publish them, they are too bad quality.
+I&#8217;ll first have to write a script <a class="reference external" href="http://www.lino-framework.org/casts/lino_intro.html">/casts/lino_intro</a>.</p>
+<p>Discovered some more minor bugs while playing:</p>
+<ul class="simple">
+<li>Adding a newcomer in the newcomers list didn&#8217;t automatically
+set the newcomer flag.</li>
+<li>Translation of Newcomers menu label wasn&#8217;t dynamic.
+Same for verbose names of babel fields.</li>
+<li>Newcomers report accidentally got used as <cite>_lino_model_report</cite>
+because <code class="xref py py-func docutils literal"><span class="pre">lino.reports.register_report()</span></code> didn&#8217;t test for <cite>known_values</cite>.</li>
+<li>New testcase <code class="xref py py-func docutils literal"><span class="pre">lino.apps.dsbe.tests.dsbe_demo_tests.test12()</span></code>.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1219.html" title="20111219"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1216.html" title="20111216"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1217.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1217.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120915 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120917" href="0917.html" />
+    <link rel="prev" title="20120914" href="0914.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0917.html" title="20120917"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0914.html" title="20120914"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120915<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li>Fixed an unreleased bug:
+Traceback when trying to select a contact of a
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.contacts.models.CompanyContact</span></code>.</li>
+</ul>
+<div class="section" id="rotating-logfiles">
+<h2>Rotating logfiles<a class="headerlink" href="#rotating-logfiles" title="Permalink to this headline">¶</a></h2>
+<p>Noticed that the testlino logger does <em>not</em> as expected rotate at midnight.
+Main reason was a bug in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.log.html#module-lino.utils.log" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.log</span></code></a>.</p>
+<p>But I also discovered this post:
+<a class="reference external" href="http://stackoverflow.com/questions/3496727/why-doesnt-my-timedrotatingfilehandler-rotate-at-midnight">Why doesn&#8217;t my TimedRotatingFileHandler rotate at midnight?</a>
+which makes me think
+that TimedRotatingFileHandler is <em>not</em> a candidate for a Django site, because:</p>
+<ul class="simple">
+<li>Several processes share the same logfile</li>
+<li>Some processes are long-running (mod_wsgi, watch_tim), some others not
+(most other management commands)</li>
+</ul>
+<p>Next attempt is to use WatchedFileHandler, which (after today) happens if
+there&#8217;s neither a <cite>when</cite> nor a <cite>rotate</cite> keyword:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">LOGGING</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s">&#39;/var/log/lino/testlino.log&#39;</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s">&#39;INFO&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This supposes of course that you also configure logrotate by creating
+a file <cite>/etc/logrotate.d/lino</cite> with e.g. the  following content:</p>
+<div class="highlight-python"><div class="highlight"><pre>/var/log/lino/testlino.log {
+        weekly
+        missingok
+        rotate 52
+        compress
+        delaycompress
+        notifempty
+        create 640 root adm
+        sharedscripts
+        endscript
+}
+</pre></div>
+</div>
+</div>
+<div class="section" id="specifying-param-values-to-a-request">
+<h2>Specifying <cite>param_values</cite> to a request<a class="headerlink" href="#specifying-param-values-to-a-request" title="Permalink to this headline">¶</a></h2>
+<p>Fixed an internal Bug (since yesterday):
+<code class="xref py py-meth docutils literal"><span class="pre">lino.core.actions.ActionRequest.__init__()</span></code>
+didn&#8217;t obey when caller explicitly specified
+<cite>param_values</cite>.</p>
+</div>
+<div class="section" id="beid-jslib-root">
+<h2><cite>beid_jslib_root</cite><a class="headerlink" href="#beid-jslib-root" title="Permalink to this headline">¶</a></h2>
+<p>New Lino site setting  <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.beid_jslib_root</span></code>.</p>
+</div>
+<div class="section" id="lino-welfare">
+<h2>lino_welfare<a class="headerlink" href="#lino-welfare" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">ClientContactTypes, HealthInsurances, Pharmacies ...</p>
+<p>In der Tabelle Klientenkontakte (Kontakte pro Klient) hängt die
+Auswahlliste der Firmen jetzt von der Kontaktart ab.
+Also bei Kontaktart &#8220;Krankenkasse&#8221; kann man nur noch Krankenkassen
+auswählen etc.</p>
+</li>
+<li><p class="first">tim2lino, migrate: Personen, die keine NISS aber wohl eine Gesdos-Nr haben,
+bleiben jetzt ebenfalls Klienten, und kriegen die Partner-Nr als NISS.</p>
+</li>
+<li><p class="first">Removed obsolete field Company.hourly_rate</p>
+</li>
+<li><p class="first">Removed the tables MyClients, MyClientsByGroup,
+MyActiveClients and MyPrimaryClients because these cases
+are now handled via <cite>Clients.parameters</cite>.</p>
+</li>
+</ul>
+<p>Uff! die Tabelle <code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.pcsw.models.UsersWithClients</span></code>
+in der Demo-Datenbank hat jetzt einen einigermaßen realistischen Inhalt:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="6%" />
+<col width="10%" />
+<col width="10%" />
+<col width="8%" />
+<col width="8%" />
+<col width="17%" />
+<col width="17%" />
+<col width="6%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Begleiter 1</th>
+<th class="head">Bilan</th>
+<th class="head">Formation</th>
+<th class="head">Recherche</th>
+<th class="head">Travail</th>
+<th class="head">Standby</th>
+<th class="head">Komplette Akten</th>
+<th class="head">Aktive Klienten</th>
+<th class="head">Total</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Alicia Allmanns</td>
+<td>3</td>
+<td>3</td>
+<td>5</td>
+<td>2</td>
+<td>2</td>
+<td>7</td>
+<td>13</td>
+<td>15</td>
+</tr>
+<tr class="row-odd"><td>Hubert Huppertz</td>
+<td>4</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>5</td>
+<td>9</td>
+<td>19</td>
+<td>24</td>
+</tr>
+<tr class="row-even"><td>Mélanie Mélard</td>
+<td>6</td>
+<td>5</td>
+<td>7</td>
+<td>4</td>
+<td>6</td>
+<td>17</td>
+<td>22</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>Total (3 rows)</td>
+<td>13</td>
+<td>13</td>
+<td>17</td>
+<td>11</td>
+<td>13</td>
+<td>33</td>
+<td>54</td>
+<td>67</td>
+</tr>
+</tbody>
+</table>
+<p>Hier übrigens das Skript, das ich zum Generieren obiger Tabelle benutzt habe:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">lino_welfare.modlib.pcsw</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">pcsw</span>
+<span class="kn">from</span> <span class="nn">lino.api</span> <span class="kn">import</span> <span class="n">dd</span><span class="p">,</span> <span class="n">rt</span>
+<span class="n">pcsw</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_app</span><span class="p">(</span><span class="s">&#39;pcsw&#39;</span><span class="p">)</span>
+<span class="n">users</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">resolve_app</span><span class="p">(</span><span class="s">&#39;users&#39;</span><span class="p">)</span>
+<span class="n">root</span> <span class="o">=</span> <span class="n">users</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">&#39;root&#39;</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">pcsw</span><span class="o">.</span><span class="n">UsersWithClients</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">user</span><span class="o">=</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">to_rst</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0917.html" title="20120917"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0914.html" title="20120914"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0915.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0915.html">Online Link</a>
+    </div>
+  </body>
+</html>

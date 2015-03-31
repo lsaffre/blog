@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100125" href="0125.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0122.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20100125"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0122.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>#summary Rendering ForeignKey fields using ComboBox</p>
+<p><cite>Form.submit()</cite> schickt meine erweiterten ComboBoxen, deren <cite>value</cite> ein <cite>Array</cite> sind, nicht als Arrays. Muss ich mir also die Submit-Action mal genauer ansehen.</p>
+<p>Zwischendurch stolperte ich bei
+[<a class="reference external" href="http://stackoverflow.com/questions/tagged/extjs">http://stackoverflow.com/questions/tagged/extjs</a> Stackoverflow] über die  Antwort auf eine Frage, die ich mir noch gar nicht gestellt hatte, die aber sicherlich bald gekommen wäre: [<a class="reference external" href="http://stackoverflow.com/questions/2106104/word-wrap-grid-cells-in-ext-js">http://stackoverflow.com/questions/2106104/word-wrap-grid-cells-in-ext-js</a>
+Word-wrap grid cells in ExtJS].
+Das habe ich gleich eingebaut.
+Bemerkungen:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Wird Zeit für separate <cite>lino.css</cite> und <cite>lino.js</cite>: Neues Issue 89</li>
+<li>Wenn eine oder mehrere Zeilen wrappen und somit höher sind, dann funktioniert das Ermitteln der Anzahl Zeilen pro Seite nicht mehr. Issue 60 wieder eröffnet.</li>
+</ul>
+</div></blockquote>
+<p>Also die Submit-Action. Woher kriegt die die Daten, sie sie per POST verschickt? <cite>Lino.form_submit()</cite> sagt sie ihr nicht, sondern gibt nur eine Meta-Info [[[p[pkname] = job.get_current_record().data.id}}} für den Fall, dass der primary key nicht in der Form enthalten ist. Und ruft dann <cite>Ext.form.BasicForm.submit()</cite>. Die leitet weiter an
+<cite>Ext.form.Action.Submit.run()</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>run : function(){
+    var o = this.options;
+    var method = this.getMethod();
+    var isGet = method == &#39;GET&#39;;
+    if(o.clientValidation === false || this.form.isValid()){
+        Ext.Ajax.request(Ext.apply(this.createCallback(o), {
+            form:this.form.el.dom,
+            url:this.getUrl(isGet),
+            method: method,
+            headers: o.headers,
+            params:!isGet ? this.getParams() : null,
+            isUpload: this.form.fileUpload
+        }));
+    }else if (o.clientValidation !== false){
+        this.failureType = Ext.form.Action.CLIENT_INVALID;
+        this.form.afterAction(this, false);
+    }
+},
+</pre></div>
+</div>
+<p>Die ruft also <cite>Ext.Ajax.request()</cite> mit dem <cite>el.dom</cite> meiner Form.
+<cite>Ext.Ajax.request()</cite> gibt das weiter an <cite>Ext.lib.Ajax.serializeForm()</cite> und, oh je, da haben wir es:</p>
+<div class="highlight-python"><div class="highlight"><pre>Ext.each(fElements, function(element) {
+  name = element.name;
+  type = element.type;
+  if (!element.disabled &amp;&amp; name){
+    if(/select-(one|multiple)/i.test(type)) {
+      Ext.each(element.options, function(opt) {
+        if (opt.selected) {
+            data += String.format(&quot;{0}={1}&amp;&quot;, encoder(name),
+              encoder((opt.hasAttribute ? opt.hasAttribute(&#39;value&#39;) :
+                opt.getAttribute(&#39;value&#39;) !== null) ? opt.value : opt.text));
+        }
+      });
+</pre></div>
+</div>
+<p>Also eine Form Action findet die Werte ihrer Felder nicht raus, indem
+sie die Felder selber fragt, sondern indem sie das von den Feldern
+generierte HTML (besser gesagt das DOM) analysiert. Ja klar, ExtJS
+soll ja auch funktionieren mit Forms, die sie gar nicht selbst
+generiert hat.</p>
+<p>Tja, und da kann ich so leicht nichts dran ändern: wenn ich <cite>BasicForm.submit()</cite> benutze, dann wird der Wert einer ComboBox als <cite>country=Belgium</cite> verschickt, Punkt.</p>
+<p>Ich muss also doch <cite>hiddenName</cite> benutzen, und meine erweiterte ComboBox, die Arrays als  <cite>value</cite> speichert, hat nichts genützt (außer dass ich einiges gelernt habe).
+Und hiermit wird auch meine [20100122 gestern] formulierte Konvention definitiv:</p>
+<blockquote>
+<div><cite>countryHidden=BE</cite> und <cite>country=Belgium</cite></div></blockquote>
+<p>Und jetzt, wo ich die Konfigurationsparameter <cite>hiddenName</cite> und <cite>valueField</cite> einer ComboBox einigermaßen verstanden habe, funktioniert auch endlich alles: Anzeige und Speichern, sowohl im Grid als im Detail, sind korrekt. Schön!</p>
+<p>Jetzt fehlt nur noch, dass die Auswahlliste der Städte sich auf Städte des jeweiligen Landes bezieht. <cite>ComboBox.doQuery()</cite> muss dazu einen neuen Parameter <cite>ck</cite> (ein Name, den ich in URL_PARAM_CHOICES_PK definiere) übergeben, der den pk des aktuellen records enthält. Aber wie soll eine ComboBox _das_ wissen?!</p>
+<p>Ich nehme mal an, dass ich beim Definieren der ComboBox einen <cite>listener</cite> auf <cite>beforequery</cite> setzen muss.
+Der Listener muss dann <cite>qe.combo.store.setBaseParam(URL_PARAM_CHOICES_PK)</cite> setzen. Sieht in Lino so aus:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">js</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="s">&quot;function(combo) {&quot;</span>
+    <span class="k">yield</span> <span class="s">&quot;  console.log(&#39;focus&#39;,combo)&quot;</span>
+    <span class="k">yield</span> <span class="s">&quot;  combo.store.setBaseParam(</span><span class="si">%r</span><span class="s">,job.get_current_record().data.id);&quot;</span> \
+       <span class="o">%</span> <span class="n">URL_PARAM_CHOICES_PK</span>
+    <span class="k">yield</span> <span class="s">&quot;}&quot;</span>
+<span class="n">kw</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">listeners</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">focus</span><span class="o">=</span><span class="n">js</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Nein, <cite>ComboBox.beforequery</cite> ist nicht das richtige Event, das wird
+nur gefeuert, wenn er ein filterndes query macht.  Eher dann das
+<cite>beforeload</cite>-Event des <cite>Store</cite>. Da ist es dann allerdings zu spät für
+<cite>store.setBaseParam()</cite>, sondern ich setze den pk direkt nach
+<cite>options.params</cite>. Auch machbar:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">js</span><span class="p">():</span>
+    <span class="k">yield</span> <span class="s">&quot;function(store,options) {&quot;</span>
+    <span class="k">yield</span> <span class="s">&quot;  options.params[</span><span class="si">%r</span><span class="s">] = job.get_current_record().data.id;&quot;</span> \
+          <span class="o">%</span> <span class="n">URL_PARAM_CHOICES_PK</span>
+    <span class="k">yield</span> <span class="s">&quot;}&quot;</span>
+<span class="n">listeners</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">beforeload</span><span class="o">=</span><span class="n">js</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ha! Es funktioniert: Wenn ich auf einem deutschen Kontakt die Stadt auswähle, erscheinen nur die deutschen Städte.</p>
+<p>Oh... aber nur beim ersten Mal: wenn ich danach auf einem Belgier die Stadt auswähle, kriegt der auch nur deutsche Städte zur Auswahl. Da muss ich noch was dran feilen...</p>
+<p>Was ist mit dem <cite>ComboBox.render</cite>-Event? Wird nur einmal gefeuert.
+Und <cite>ComboBox.focus</cite>? wird jedesmal gefeuert, aber erst nach dem Laden des Stores.</p>
+<p>Neue Idee: Die Listener sind jetzt nur noch einfache calls an die neue Methode <cite>ComboBox.setQueryContext()</cite>. Und <cite>ComboBox.getParams()</cite> habe ich überschrieben.
+Und das ganze System wird nur aktiviert, wenn <cite>contextParam</cite> definiert ist.
+Cool, müsste super klappen. Ist aber noch nicht fertig:</p>
+<blockquote>
+<div><ul class="simple">
+<li>In der Grid deklarieren die ComboBoxen des columnModels ihre <cite>setQueryContext</cite> nicht an job.add_row_listener(), weil da ja nicht js_lines() ausgeführt wird. Dazu müsste ich alle Kolonnen (oder besser gesagt deren Editoren) als Variablen deklarieren.</li>
+<li>Im Detail wird der Handler gerufen, verursacht dann aber &#8220;this.setQueryContext is not a function&#8221;</li>
+</ul>
+</div></blockquote>
+<p>([20100125 Fortsetzung folgt])</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0125.html" title="20100125"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0122.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0124.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0124.html">Online Link</a>
+    </div>
+  </body>
+</html>

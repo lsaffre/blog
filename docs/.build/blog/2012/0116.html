@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120116 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120117" href="0117.html" />
+    <link rel="prev" title="20120113" href="0113.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0117.html" title="20120117"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0113.html" title="20120113"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120116<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Ich war am Wochenende nochmal wieder ziemlich aktiv:
+der &#8220;Report-Generator&#8221; wird langsam fertig. Es gibt
+jetzt neben dem [csv]-Button einen [html]-Button, das
+Äquivalent der [Sh-F7]-Taste in TIM. Es kommt dort jetzt
+auch schon eine HTML-Ansicht der Grid raus, die allerdings
+noch nicht gestylt ist und auch noch nicht die geplanten
+(Zwischen)summen hat.
+Mein Plan ist, dass man in diesem Fenster dann mit Ctrl-P ohne viel Hantier einen &#8220;schönen&#8221; Ausdruck der Tabelle bekommt.</p>
+<p>Auch gibt es jetzt die Möglichkeit, interaktive Parameter
+einer Tabelle anzugeben. Tabellen, die Parameter definiert haben,
+haben vor dem [csv]-Button einen [filter]-Button.
+Das ist ein Togglebutton, der das &#8220;Parameter-Panel&#8221;
+anzeigt/versteckt.
+Die erste Tabelle mit solchen Parametern (die neue Tabelle
+ContractsByUser) funktioniert schon ganz gut.</p>
+<p>Bald kriegt z.B. auch die Tabelle &#8220;Personen&#8221; ein
+solches Parameterfenster, das dann teilweise
+die bisherigen Personensuchen ersetzt.
+Also die Felder, die momentan dort stehen, kommen in die Tabelle Personen
+als Parameter rein und können dann in allen Personenlisten benutzt werden.
+Personensuchen bleiben trotzdem bestehen für die Suche nach
+(un)erwünschten Sprachkenntnissen und Eigenschaften.
+Das sind Slave-Tabellen und die kann das ParameterPanel nicht
+(zumindest bis auf weiteres).</p>
+<p>Und dann werden die beiden bisherigen &#8220;Listings&#8221; durch solche
+parametrierbaren Tabellen ersetzt:</p>
+<ul class="simple">
+<li>&#8220;Datenkontrollliste&#8221; verschwindet in dieser Form, wird ersetzt
+entweder durch eine Serie von parametrierbaren Tabellen oder
+durch neue Filteroptionen wie &#8220;nur Personen mit ungültiger NR-Nummer&#8221;
+oder &#8220;nur überschneidende Verträge&#8221;.</li>
+<li>&#8220;Übersicht Art.60§7-Konventionen&#8221; : das kann er momentan noch nicht</li>
+</ul>
+<p>Es gibt auch noch ein Problem mit dem Layout des Parameter-Panels:
+Hintergrund ist weiß statt blau).
+Scheinbar das Gleiche Problem wie im Detail einer Notiz.</p>
+<div class="section" id="internal-design-decisions">
+<h2>Internal design decisions<a class="headerlink" href="#internal-design-decisions" title="Permalink to this headline">¶</a></h2>
+<p>Another 5 hours of internal work on the report generator.
+Not yet worth to think in English...</p>
+<p><cite>summary_row</cite> kriegt jetzt den TableRequest (Parameter <code class="docutils literal"><span class="pre">rr</span></code>) nicht mehr.
+contacts.Person und ProjectRelated nutzten das theoretisch aus.
+Die Idee war, dass summary_row z.B. den Namen der Person
+eines Termins nur anzeigt, wenn rr.master_key nicht &#8216;person&#8217; ist.
+Also wenn es sich um eine Liste von Terminen einer bekannten Person handelt,
+sollten nur die anderen Infos, aber nicht der Personenname angezeigt werden.
+Dieses Feature kam aber bisher in der Praxis nicht vor und war sowieso recht wackelig
+implementiert.</p>
+<p>Das Problem damit war, dass ich <cite>TableRequest.__iter__</cite> rausgeholt
+habe und summary_row dennoch sowohl für Listen als auch für Querysets
+funktionieren sollte.</p>
+<p>Dann fiel mir auf, dass die ComputedColumn Quatsch sind.
+Stattdessen sollte ich machen, dass man virtuelle Felder auf auf
+einer Tabelle definieren kann.
+Summen will ich ja auch für normalen Felder haben.
+Gedacht, getan.
+Aber die Idee mit dem decorator &#64;computed war gut, die übernehme ich zum
+Definieren von  virtuellen Feldern:
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.fields.html#lino.core.fields.virtualfield" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">&#64;virtualfield</span></code></a> und
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.fields.html#lino.core.fields.displayfield" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">&#64;displayfield</span></code></a>.</p>
+<p>OverviewClientsByUser ist konvertiert, das scheint zu funktionieren.
+Bis auf die Tatsache, dass ContractsByUser in der ersten Kolonne
+statt des Benutzernamens dessen Nummer zeigt.
+Und ich muss noch eine neue Feldart &#8220;RequestField&#8221; machen.</p>
+<p>Checkin erst am nächsten Morgen.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0117.html" title="20120117"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0113.html" title="20120113"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0116.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0116.html">Online Link</a>
+    </div>
+  </body>
+</html>

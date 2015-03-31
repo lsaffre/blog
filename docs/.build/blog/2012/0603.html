@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120603 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120604" href="0604.html" />
+    <link rel="prev" title="20120602" href="0602.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0604.html" title="20120604"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0602.html" title="20120602"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120603<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cbss-connection">
+<h2>CBSS connection<a class="headerlink" href="#cbss-connection" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Moved most CBSS site-wide parameters
+(UserID,OrgUnit,Sector, password,...)
+from <cite>settings.py</cite> to SiteConfig.
+The SiteConfig detail has a new Tab panel &#8220;CBSS&#8221;.</p>
+</li>
+<li><p class="first">Beim Speichern einer Tx25 wurde die NR-Nummer des Klienten nicht
+automatisch ins Parameterfeld eingetragen.
+Das war ein Bug im Framework.
+Lag daran, dass die <cite>person_changed</cite> zu früh ausgeführt wurde:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO 20120603 StoreField.form2obj() person = u&#39;193&#39;
+20120603 fill_from_person 680601 053-29
+INFO 20120603 StoreField.form2obj() sent = None
+INFO 20120603 StoreField.form2obj() status = u&#39;0&#39;
+INFO 20120603 StoreField.form2obj() environment = u&#39;&#39;
+INFO 20120603 StoreField.form2obj() ticket = u&#39;&#39;
+INFO 20120603 StoreField.form2obj() request_xml = None
+INFO 20120603 StoreField.form2obj() response_xml = None
+INFO 20120603 StoreField.form2obj() logged_messages = None
+INFO 20120603 StoreField.form2obj() national_id = u&#39;&#39;
+INFO 20120603 StoreField.form2obj() birth_date = None
+INFO 20120603 StoreField.form2obj() sis_card_no = None
+INFO 20120603 StoreField.form2obj() id_card_no = None
+INFO 20120603 StoreField.form2obj() first_name = None
+INFO 20120603 StoreField.form2obj() last_name = None
+INFO 20120603 StoreField.form2obj() language = u&#39;de&#39;
+INFO 20120603 StoreField.form2obj() history = u&#39;off&#39;
+INFO 20120603 StoreField.form2obj() user = u&#39;1&#39;
+INFO 20120603 StoreField.form2obj() result = None
+</pre></div>
+</div>
+<p>Also <cite>Store.form2obj</cite> ruft jetzt die eventuellen xxx_changed-Methoden erst auf,
+nachdem alle Felder des Formulars eingelesen wurden.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="schuldnerberatung">
+<h2>Schuldnerberatung<a class="headerlink" href="#schuldnerberatung" title="Permalink to this headline">¶</a></h2>
+<p>Die Verteilung au marc-le-franc
+(<code class="xref py py-class docutils literal"><span class="pre">DistByBudget</span></code>)
+fehlte noch im Ausdruck (d.h. in der Default.odt).</p>
+<p>Auch hatte diese Tabelle am Bildschirm den falschen Titel.</p>
+<p>Kolonnentitel von
+<code class="xref py py-class docutils literal"><span class="pre">BudgetSummary</span></code>
+fehlten (eigentlich dachte ich hier, gar keine Titel zu drucken,
+aber das ist noch nicht möglich.</p>
+</div>
+<div class="section" id="migrating-to-1-4-4">
+<h2>Migrating to 1.4.4<a class="headerlink" href="#migrating-to-1-4-4" title="Permalink to this headline">¶</a></h2>
+<p>Worked on the automatization of migrating to 1.4.4.
+Problem is that there are a few contracts (isip and jobs)
+that don&#8217;t pass the new validation rules and cause
+a ValidatonError &#8220;Contracts ends before it started.&#8221;
+These need to be adapted by the end users.</p>
+<p>Best solution seems to
+change <code class="xref py py-class docutils literal"><span class="pre">lino.utils.dumpy.DpyDeserializer</span></code>
+so that it does not raise any exception when it says
+&#8220;Abandoning with %d unsaved instances from ...&#8221;</p>
+</div>
+<div class="section" id="on-site-config-saved">
+<h2>on_site_config_saved<a class="headerlink" href="#on-site-config-saved" title="Permalink to this headline">¶</a></h2>
+<p>Oops, of course: now that we keep
+an in-memory version of the only SiteConfig instance (in <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino._site_config</span></code>),
+we must make <cite>SiteConfig.save()</cite> have this copy updated:
+<code class="xref py py-meth docutils literal"><span class="pre">lino.Lino.on_site_config_saved()</span></code>.</p>
+</div>
+<div class="section" id="budgets-without-actors">
+<h2>Budgets without actors<a class="headerlink" href="#budgets-without-actors" title="Permalink to this headline">¶</a></h2>
+<p>Oops, <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.debts</span></code>
+didn&#8217;t yet handle the case of a budget without actors
+or with only one actor.
+But both cases make sense and are now be possible.</p>
+<p>TODO: Should Default.odt print more information
+about the partner (or the single actor)?</p>
+</div>
+<div class="section" id="live-tests-cbss">
+<h2>Live tests CBSS<a class="headerlink" href="#live-tests-cbss" title="Permalink to this headline">¶</a></h2>
+<p>Bei einer Runde von live-Tests kamen noch eine ganze Serie von
+Kleinigkeiten zum Vorschein. Die erste war leicht:</p>
+<div class="highlight-python"><div class="highlight"><pre>[2012-06-03 16:18:52.532798] Traceback (most recent call last):
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/modlib/cbss/models.py&quot;, line 422, in execute_request
+    retval = self.execute_request_(now,simulate_response)
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/modlib/cbss/models.py&quot;, line 548, in execute_request_
+    wrapped_srvreq = self.wrap_ssdn_request(srvreq,now)
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/modlib/cbss/models.py&quot;, line 655, in wrap_ssdn_request
+    au.append(E(&#39;ssdn:UserID&#39;).setText(sc.ssdn_user_id))
+UnboundLocalError: local variable &#39;sc&#39; referenced before assignment
+</pre></div>
+</div>
+<p>Die fiesteste war eine Fehlermeldung &#8220;A validation error occurred while
+parsing the request header. Please check your message format and content.&#8221;
+Die kam durch ein leeres Feld <cite>lino.SiteConfig.site_company.email</cite>.
+Aber bevor ich das rausbekommen hatte, habe
+ich mal schnell eine Aktion <cite>validate</cite> geschrieben.
+Aber die hing mir dann den Server auf,
+weil sich <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-lxml" title="(in Lino v1.6)"><span class="xref std std-term">lxml</span></a> dann mit <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-mod-wsgi" title="(in Lino v1.6)"><span class="xref std std-term">mod_wsgi</span></a> in die Haare kriegt.
+Also sorry: lokales Validieren wird wohl vom Web-Client aus nicht so
+schnell möglich sein.
+Ich könnte einen management command schreiben,
+den man in so einem Fall von einer Shell aus aufrufen könnte.
+Gedacht, getan:</p>
+<div class="highlight-python"><div class="highlight"><pre>T:\data\luc\lino_local\dsbe&gt;python manage.py cbss_validate_request IdentifyPersonRequest 1
+Traceback (most recent call last):
+  File &quot;manage.py&quot;, line 12, in &lt;module&gt;
+    execute_manager(settings)
+  File &quot;l:\snapshots\django\django\core\management\__init__.py&quot;, line 462, in execute_manager
+    utility.execute()
+  File &quot;l:\snapshots\django\django\core\management\__init__.py&quot;, line 385, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;l:\snapshots\django\django\core\management\base.py&quot;, line 195, in run_from_argv
+    self.execute(*args, **options.__dict__)
+  File &quot;l:\snapshots\django\django\core\management\base.py&quot;, line 231, in execute
+    output = self.handle(*args, **options)
+  File &quot;t:\hgwork\lino\lino\modlib\cbss\management\commands\cbss_validate_request.py&quot;, line 31, in handle
+    req.validate_request()
+  File &quot;t:\hgwork\lino\lino\modlib\cbss\models.py&quot;, line 556, in validate_request
+    wrapped_srvreq = self.wrap_ssdn_request(srvreq,datetime.datetime.now())
+  File &quot;t:\hgwork\lino\lino\modlib\cbss\models.py&quot;, line 676, in wrap_ssdn_request
+    au.append(E(&#39;ssdn:Email&#39;).setText(sc.site_company.email))
+AttributeError: &#39;NoneType&#39; object has no attribute &#39;email&#39;
+</pre></div>
+</div>
+<p>Schön. Stimmt: in meinem lokalen Test mit Demo-Daten
+ist ja sogar <cite>lino.SiteConfig.site_company</cite> momentan leer.</p>
+<p>Daraufhin habe ich beschlossen, dass ich doch einen weiteren
+Konfigurationsparameter <cite>cbss_email</cite> in der SiteConfig mache.</p>
+<p>Aber den Befehl <code class="xref py py-mod docutils literal"><span class="pre">cbss_validate_request</span></code>
+sollten wir uns also merken für den Fall, dass mal jemand die
+Meldung &#8220;A validation error occurred while parsing the request
+header. Please check your message format and content.&#8221; kriegt.</p>
+</div>
+<div class="section" id="presto">
+<h2>Presto<a class="headerlink" href="#presto" title="Permalink to this headline">¶</a></h2>
+<p>Renamed <cite>lino.apps.luc</cite> to <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.presto</span></code>.
+This project has been sleeping a while, but now I had some
+inspirations...
+Did some database changes.
+New module <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.blog</span></code> replaces <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.html#module-lino.modlib.notes" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.notes</span></code></a>.</p>
+<p>TODO: I want a view of MySessions <em>per day</em>,
+with an easy way (1 click or keystrocke)
+to switch back and forth between days.
+Currently it needs 2 clicks.
+Seems that a DateField with a Spinner would now be good.
+Like <a class="reference external" href="http://members.upc.nl/j.chim/ext/spinner2/ext-spinner.html">this one</a> which was for ExtJS 2.
+For 3.4 there is some code on
+<a class="reference external" href="http://extjs-public.googlecode.com/svn/extjs-3.x/release/examples/spinner/spinner.html">extjs-public</a>
+ExtJS 4 has a Spinner field integrated.
+One reason to upgrade some day.</p>
+<p>Another approach might be an <cite>EndlessTable</cite>.
+Endless tables have an endless series of rows (days in our case).
+The Detail view of my &#8220;Days&#8221; table would then have a <cite>MySessionsByDate</cite>
+slave grid.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0604.html" title="20120604"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0602.html" title="20120602"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0603.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0603.html">Online Link</a>
+    </div>
+  </body>
+</html>

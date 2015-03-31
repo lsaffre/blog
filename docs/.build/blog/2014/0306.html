@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20140306 (Thursday, 06 March 2014) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="20140307 (Friday, 07 March 2014)" href="0307.html" />
+    <link rel="prev" title="20140305 (Wednesday, 05 March 2014)" href="0305.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0307.html" title="20140307 (Friday, 07 March 2014)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0305.html" title="20140305 (Wednesday, 05 March 2014)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-06-march-2014">
+<h1>20140306 (Thursday, 06 March 2014)<a class="headerlink" href="#thursday-06-march-2014" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-mergedata-management-command">
+<h2>The <cite>mergedata</cite> management command<a class="headerlink" href="#the-mergedata-management-command" title="Permalink to this headline">¶</a></h2>
+<p>The new management command <a class="reference external" href="http://www.lino-framework.org/api/lino.management.commands.mergedata.html#management_command-mergedata" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">mergedata</span></code></a> takes the full name of
+a python module as argument. It then imports this module and expects
+it to define a function <cite>objects</cite> in its global namespace. It calls
+this function and expects it to yield a series of Django instance
+objects which have not yet been saved. It then compares these objects
+with the &#8220;corresponding data&#8221; in the database and prints a summary to
+stdout. It then suggests to merge the new data into the database.</p>
+<ul class="simple">
+<li>It never <em>deletes</em> any stored records.</li>
+<li>All incoming objects <em>either</em> replace an existing (stored) object, <em>or</em>
+will be added to the database.</li>
+<li>If an incoming object has a non-empty primary key, then it replaces
+the corresponding stored object. Otherwise, if the model has
+<cite>unique</cite> fields, then these cause potential replacement.</li>
+</ul>
+</div>
+<div class="section" id="upgrade-in-chatelet">
+<h2>Upgrade in Châtelet<a class="headerlink" href="#upgrade-in-chatelet" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.statbel.fixtures.inscodes</span></code> now gives more helpful
+error report when <cite>Place.MultipleObjectsReturned</cite> occurs.</li>
+<li><code class="docutils literal"><span class="pre">props</span></code> was lacking in the <code class="xref std std-setting docutils literal"><span class="pre">demo_fixtures</span></code> of
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.settings.fr</span></code>.</li>
+<li>translations</li>
+</ul>
+</div>
+<div class="section" id="sphinx-build-gettext-very-slow">
+<h2>sphinx-build gettext very slow<a class="headerlink" href="#sphinx-build-gettext-very-slow" title="Permalink to this headline">¶</a></h2>
+<p>I want to write and maintain multilingual end-user documentation for
+my software applications using &#8220;sphinx-build gettext&#8221;.  For example,
+here is the source of one of my doctrees:
+<a class="reference external" href="https://github.com/lsaffre/lino-welfare/tree/master/userdocs">https://github.com/lsaffre/lino-welfare/tree/master/userdocs</a></p>
+<p>I noticed that, already on a medium-sized doctree, a build can become
+very slow. By inserting print statements at different places I found
+out that the slowness is due to the calculations done in
+<cite>sphinx.versioning</cite> (called by <cite>Environment.read_doc</cite>) where it merges
+doctrees for each document.</p>
+<p>Is there hope that I can get it accelerated?  Am I doing something
+wrong?</p>
+</div>
+<div class="section" id="module-object-has-no-attribute-coachingevents">
+<h2>&#8216;module&#8217; object has no attribute &#8216;CoachingEvents&#8217;<a class="headerlink" href="#module-object-has-no-attribute-coachingevents" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a bug: Trying to get a <cite>welfare.integ.ActivityReport</cite>
+failed with an AttributeError &#8216;module&#8217; object has no attribute
+&#8216;CoachingEvents&#8217;.</p>
+<p>Also fixed another bug &#8220;ERROR &#8216;NoneType&#8217; object has no attribute
+&#8216;PendingCourseRequests&#8217;&#8221; which occured only when courses not
+installed.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0307.html" title="20140307 (Friday, 07 March 2014)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0305.html" title="20140305 (Wednesday, 05 March 2014)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0306.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0306.html">Online Link</a>
+    </div>
+  </body>
+</html>

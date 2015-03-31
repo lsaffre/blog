@@ -1,0 +1,60 @@
+=====================================
+20140129 (Wednesday, 29 January 2014)
+=====================================
+
+
+
+Fixed a bug in
+:meth:`lino.core.fields.GenericForeignKey.contribute_to_class`: the
+default `get_{fk_field}_display` installed automatically caused a test
+in :ref:`faggio` to fail with "AttributeError: 'Event' object has no
+attribute 'object_type'".
+
+
+Worked on :doc:`/tickets/93`.
+Tried and understood that `outbox` can't replace `attestations`.
+Because an `outbox.Mail` also has a subject and a body.
+
+Removed fields `SiteConfig.attestation_note_nature` and
+`Note.is_attestation` (IOW no longer inject them in
+:mod:`lino_welfare.modlib.reception`).
+
+"Bescheinigung Ausländerbeihilfe" und "Anwesenheitsbescheinigung" sind
+die beiden Bescheinigungsarten, die in der `lino_welfare.fixtures.std`
+definiert werden. Das sind jetzt keine NoteType mehr sondern
+AttestationType.
+
+An Attestation does not need a `date` field but a timestamp. But which
+moment should get stamped? When it was created? printed? modified?  Or
+all of them? Some thoughts:
+
+- Creation time is usually not important.
+
+- Attestations are generally not editable after they have 
+  been issued.
+
+- Modification made by a system adminstrator "for technical reason"
+  should not lead to an update of the timestamp.
+
+As a first suggestion the `build_time` field is what we want
+here. Maybe a method `get_attestation_date` to make that choice
+overridable. But anyway we'll see in practice what's necessary.
+
+Ein Lebenslauf ist jetzt keine Ereignis/Notiz mehr, sondern eine
+Bescheinigung. Bei der Migration müssen bestehende Lebenläufe
+konvertiert werden. 
+
+New setting :setting:`extjs.use_statusbar` because I'd like to 
+collect feedback about whether this is used at all.
+
+Der Reiter "Status" wurde aufgeteilt in "Arbeit" und "Hilfen".
+Letzterer zeigt jetzt nicht mehr *ein* Feld "Sozialhilfeart"
+(aid_type), sondern eine Liste aller im Laufe der Zeit bewilligten
+Hilfen.
+
+TODO:
+
+- Frage an Gerd: Ich schätze mal, dass die Kinder (Nutzniesser) eines
+  Hilfsantrags für jeden Antrag neu erfasst/gespeichert werden
+  müssen. Stimmt das?
+  

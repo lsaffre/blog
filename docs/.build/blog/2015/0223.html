@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Monday, February 23, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Tuesday, February 24, 2015" href="0224.html" />
+    <link rel="prev" title="Sunday, February 22, 2015" href="0222.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0224.html" title="Tuesday, February 24, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0222.html" title="Sunday, February 22, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monday-february-23-2015">
+<h1>Monday, February 23, 2015<a class="headerlink" href="#monday-february-23-2015" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="about-genericforeignkey-fields">
+<h2>About GenericForeignKey fields<a class="headerlink" href="#about-genericforeignkey-fields" title="Permalink to this headline">¶</a></h2>
+<p>I continued to research and document about GFK fields in
+<a class="reference external" href="http://www.lino-framework.org/dev/gfks.html">/dev/gfks</a> and  <a class="reference external" href="http://www.lino-framework.org/tutorials/gfks/index.html">/tutorials/gfks/index</a>.</p>
+<p>I understood that the <cite>allow_stale_generic_foreignkey</cite> attribute can
+be replaced by a nullable <cite>ForeignKey</cite>, so I removed this feature and
+adapted the only place where it was used (<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.changes.html#module-lino.modlib.changes" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.changes</span></code></a>).</p>
+<p>I added a column &#8220;Action&#8221; to the <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.contenttypes.models.html#lino.modlib.contenttypes.models.BrokenGFKs" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">BrokenGFKs</span></code></a> table.  See
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.kernel.html#lino.core.kernel.Kernel.get_broken_generic_related" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">get_broken_generic_related</span></code></a>.</p>
+<p>TODO: a management command to cleanup broken GFK fields. This would
+execute the suggested actions (delete and clear) without any further
+user interaction.</p>
+</div>
+<div class="section" id="refundconfirmation-has-no-doctor-type">
+<h2>RefundConfirmation has no doctor_type<a class="headerlink" href="#refundconfirmation-has-no-doctor-type" title="Permalink to this headline">¶</a></h2>
+<p>This error message occured in Eupen in yesterday&#8217;s version.  The
+reason was that <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.aids.models.html#lino_welfare.modlib.aids.models.RefundConfirmation.create_doctor_choice" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-meth docutils literal"><span class="pre">create_doctor_choice</span></code></a>
+may not do:</p>
+<div class="highlight-python"><div class="highlight"><pre>if not self.doctor_type:
+</pre></div>
+</div>
+<p>but must do:</p>
+<div class="highlight-python"><div class="highlight"><pre>if not self.doctor_type_id:
+</pre></div>
+</div>
+<p>This is because <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.aids.models.html#lino_welfare.modlib.aids.models.RefundConfirmation.doctor_type" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-attr docutils literal"><span class="pre">doctor_type</span></code></a> is
+not nullable, and because Django behaves oddly in that case.  I told
+them already <a class="reference external" href="https://code.djangoproject.com/ticket/12801">5 years ago</a> that this behaviour
+is odd, but they don&#8217;t listen to me.  Oh (wow!) I just noticed that <a class="reference external" href="https://code.djangoproject.com/ticket/12708#comment:7">3
+months ago</a>
+they even started to consider that I might be right. Thanks,
+<cite>simon29</cite>.</p>
+<p>I also wrote a docstring for
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.store.html#lino.core.store.ForeignKeyStoreField.parse_form_value" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">ForeignKeyStoreField.parse_form_value</span></code></a>.</p>
+<p>I added a section &#8220;Creating a doctor&#8221; in <a class="reference external" href="http://welfare.lino-framework.org/tested/aids.html#welfare-tested-aids" title="(in Lino Welfare Reference Manual v1.1)"><span>Social aids (tested tour)</span></a> to
+test this.</p>
+<p>I changed the language distribution of
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.eupen.html#module-lino_welfare.projects.eupen" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.eupen</span></code></a> from <cite>&#8220;de fr nl&#8221;</cite> to <cite>&#8220;de fr en&#8221;</cite>.
+Which &#8211;as expected&#8211; caused some changes in the test suite.  But I
+think that it is necessary so that Mahmoud an optential other future
+team members can follow.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0224.html" title="Tuesday, February 24, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0222.html" title="Sunday, February 22, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0223.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0223.html">Online Link</a>
+    </div>
+  </body>
+</html>

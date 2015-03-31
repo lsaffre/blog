@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120702 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120703" href="0703.html" />
+    <link rel="prev" title="20120630" href="0630.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0703.html" title="20120703"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0630.html" title="20120630"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120702<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="endspurt-vor-dem-release">
+<h2>Endspurt vor dem Release<a class="headerlink" href="#endspurt-vor-dem-release" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">Behoben: vorzeitige Vertragsbeendigung muss man auch in einem
+ausgedruckten Vertrag noch ändern können.</p>
+</li>
+<li><p class="first">Behoben: Wenn man versuchte eine Notiz per E-Mail zu verschicken,
+und wenn die Notiz für einen Klienten war, der keine E-Mail-Adresse hatte,
+dann kam auf dem Server ein Traceback:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/ui/extjs3/ext_ui.py&quot;, line 1760, in api_element_view
+    rv = a.run(elem,ar)
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/modlib/outbox/models.py&quot;, line 163, in run
+    r.full_clean()
+  File &quot;/usr/local/django/test_dsbe/using/lino/lino/modlib/outbox/models.py&quot;, line 262, in full_clean
+    super(Recipient,self).full_clean()
+  File &quot;/var/snapshots/django/django/db/models/base.py&quot;, line 832, in full_clean
+    raise ValidationError(errors)
+ValidationError: {&#39;address&#39;: [u&#39;Dieses Feld darf nicht leer sein.&#39;]}
+</pre></div>
+</div>
+</li>
+<li><p class="first">ManageAccess-Anfragen: [Neu] -&gt; NRNr ist unformatiert.
+Das war Fehlanzeige.
+Lag daran, dass die Nummer schon in den Stammdaten unformatiert stand.
+Die NR-Nummern aus TIM werden momentan ja weder formatiert noch validiert.</p>
+</li>
+<li><p class="first">(ungemeldeter Bug behoben:)
+Wenn man das Schnellsuche-Feld in der Listenansicht benutzt hatte,
+um auf eine Person zu springen,
+dann in deren Detail den KBSS-Reiter öffnete, so wurden dort keine KBSS-Anfragen
+angezeigt, auch wenn es deren gab.
+Weil der Suchstring fälschlicherweise an die child requests weitergeleitet wurde.</p>
+</li>
+<li><p class="first">Wenn man einen bestehenden MAR (im Detail) dupliziert,
+dann kam &#8220;Keine weiteren Records vorhanden. Detail-Fenster wird geschlossen&#8221;.</p>
+<p>Lag daran, dass duplicate() mit <cite>set_status=dict(record_id=))</cite>
+antwortete, und dadurch wurden mt und mk aus dem Status gelöscht.
+Die action response <cite>set_status</cite> habe ich also wieder ausrangiert,
+stattdessen gibt es eine neue Antwort <cite>goto_record_id</cite>.</p>
+</li>
+<li><p class="first">Bestehenden MAR duplizieren: dann kommt:
+Keine weiteren Records vorhanden. Detail-Fenster wird geschlossen</p>
+</li>
+</ul>
+</div>
+<div class="section" id="field-level-permission-control">
+<h2>Field Level Permission Control<a class="headerlink" href="#field-level-permission-control" title="Permalink to this headline">¶</a></h2>
+<p>Gedanken über <cite>get_row_permission</cite> und <cite>disabled_fields</cite>.</p>
+<p>Für
+<a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.CachedPrintable" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">CachedPrintable</span></code></a>
+hatte ich mir ja folgendes ausgedacht:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_row_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">user</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">action</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cached printables may not be edited after they have been printed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_time</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">action</span><span class="o">.</span><span class="n">readonly</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">CachedPrintable</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_row_permission</span><span class="p">(</span><span class="n">user</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">action</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Aber das war ein bisschen zu viel des Guten, denn z.B. eine
+vorzeitige Vertragsbeendigung muss man auch in einem ausgedruckten
+Vertrag noch ändern können.</p>
+<p>Weil <cite>get_row_permission</cite> nur pauschal für den ganzen Record denkt,
+müssen wir das wie bisher über <cite>disabled_fields</cite> regeln.
+Man kann nicht generell sagen, dass alle
+<a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.printable.html#lino.mixins.printable.CachedPrintable" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">CachedPrintable</span></code></a>
+readonly werden, bloß weil sie ausgedruckt worden sind.</p>
+<p><cite>disabled_fields</cite> gibt ja
+eine Liste von Feldnamen zurück, die auf dem betreffenden Record
+schreibgeschützt sein sollen.
+Das ist natürlich sinnlos,
+wenn durch <cite>get_row_permission</cite>
+schon der gesamte Record schreibgeschützt ist.
+Insofern ist dieses System mit einer separaten Method
+<cite>disabled_fields</cite> ein bisschen unlogisch.
+Logischer (leichter zu dokumentieren) wäre es,
+wenn wir <cite>get_row_permission</cite>
+ersetzten durch eine Methode
+<cite>get_field_permission(self,user,state,action,field)</cite>.
+Aber in der Praxis wäre das
+(1) fies zu warten,
+und (2) technisch uneffizienter.</p>
+<p>Also <cite>disabled_fields</cite> ist sozusagen eine
+pragmatische Lösung für <em>field level permission control</em>.</p>
+</div>
+<div class="section" id="standard-anzeigebreite-von-feldern">
+<h2>Standard-Anzeigebreite von Feldern<a class="headerlink" href="#standard-anzeigebreite-von-feldern" title="Permalink to this headline">¶</a></h2>
+<p>Es gab noch ein subtiles Layout-Problem, das jetzt eine politisch
+vorbildliche Lösung gefunden hat.</p>
+<p>Betrachten wir folgenden Ausschnitt aus dem Detail eines MAR.
+Das Feld &#8220;T/A/B&#8221; (<cite>environment</cite>) ist deklariert mit <cite>max_length=4</cite>.
+Aber in der hier gezeigten Fenstergröße und Auflösung
+(das Problem kam nur, &#8220;wenn es eng wird&#8221;)
+war es nicht breit genug, um diese vier Buchstaben anzuzeigen:</p>
+<a class="reference internal image-reference" href="../../_images/0702a.jpg"><img alt="../../_images/0702a.jpg" src="../../_images/0702a.jpg" style="width: 972.9px; height: 228.6px;" /></a>
+<p>Ein erster Woraround war, dass ich im Layout die Breite
+manuell auf 5 setze:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">CBSSRequestDetail</span><span class="p">(</span><span class="n">dd</span><span class="o">.</span><span class="n">DetailLayout</span><span class="p">):</span>
+    <span class="n">main</span> <span class="o">=</span> <span class="s">&#39;request technical&#39;</span>
+
+    <span class="n">request</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    info</span>
+<span class="s">    parameters</span>
+<span class="s">    result</span>
+<span class="s">    &quot;&quot;&quot;</span>
+
+    <span class="o">...</span>
+
+    <span class="n">info</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">    id person user environment:5 sent status ticket</span>
+<span class="s">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>Ja, das geht...</p>
+<a class="reference internal image-reference" href="../../_images/0702b.jpg"><img alt="../../_images/0702b.jpg" src="../../_images/0702b.jpg" style="width: 970.2px; height: 237.6px;" /></a>
+<p>... aber es ist nur eine Frickelslösung.</p>
+<p>Lino müsste so was eigentlich automatisch korrekt handhaben.
+Das kommt, weil ich in einer hbox die Feldbreiten einfach in hflex-Werten formuliere.
+Das ist zu einfach gedacht.
+Lino ignoriert die Tatsache, dass &#8220;große&#8221; Felder mehr Spielraum zum Sparen haben.
+Wenn es eng wird, ist es ungerecht, dass die Kleinen
+erdrückt werden, während die Großen weiterhin mehr als gut über die Runden kommen.</p>
+<p>In der Welt draußen ist das nicht so leicht zu implementieren,
+aber in Lino benutze ich jetzt <cite>boxMinWidth</cite> um das zu verhindern:</p>
+<ul class="simple">
+<li><cite>CharField</cite> mit <cite>max_length</cite> bis 10 Zeichen (momentan ein hardkodierter Schwellenert)
+kriegen eine solche <cite>boxMinWidth</cite>.</li>
+<li><cite>Lino.DateField</cite> und <cite>Lino.IncompleteDateField</cite> haben jetzt ebenfalls
+(schon in der <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-linolib.js" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">linolib.js</span></code></a>)
+eine hardcodierten <cite>boxMinWidth</cite>.
+Der Wert 11 von <cite>Lino.DateField</cite> ist experimentell.
+Eigentlich sollte es mit 10 auskommen, aber entweder ist meine <cite>Lino.chars2width</cite>
+nicht ganz richtig, oder ExtJS rechnet den Trigger-Button mit in die <cite>minBoxWidth</cite>
+hinein.</li>
+</ul>
+<p><a class="reference external" href="http://code.google.com/p/lino/source/detail?r=ebbec0736a5e">Checkin ebbec0736a5e</a> und Upgrade testlino in Eupen.</p>
+<p>Es gibt noch mindestens zwei offene Probleme:</p>
+<ol class="arabic">
+<li><p class="first">Wenn man über &#8220;Meine Tx25-Anfragen&#8221; eine neue Anfrage erstellt,
+füllt Lino die NR-Nr. nicht ein, nachdem man den Klienten ausgewählt hat.</p>
+<p>Das ist auch nicht so einfach hinzukriegen, weil ich nicht
+einfach z.B. das Feld <cite>person</cite> aktiv machen kann. Für gut müssten
+aktive Felder eines Insert-Fensters
+kein echtes save bewirken, sondern der Server muss create_instance
+aufrufen, dann form2obj_and_save <em>ohne</em> save aufrufen und dann mit
+diesem <cite>data_record</cite> antworten. Sehr subtil.</p>
+</li>
+</ol>
+<ul class="simple">
+<li>Wenn man es über den Klienten macht ([Neu]-Button im Reiter KBSS),
+<em>und</em> wenn der Klient eine ungültige NR-Nr. in den Stammdaten hat,
+dann kommt das im Insert-Fenster zur Sprache, aber man kann dieses Fenster
+dann nicht mehr schließen, weil <cite>auto_save</cite>
+fälschlicherweise auch beim close button
+zuschlägt und den Record dann jedesmal zu speichern versucht
+(was jedesmal fehlschlägt). Irritierend.</li>
+<li>Auch für ManageAccessRequest (MAR) ein separates <cite>insert_template</cite> machen.
+Hier stellt sich jedoch vorher die Frage, wie wir das überhaupt mit den
+MAR regeln.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0703.html" title="20120703"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0630.html" title="20120630"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0702.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0702.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131126 (Tuesday, 26 November 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131127 (Wednesday, 27 November 2013)" href="1127.html" />
+    <link rel="prev" title="20131125 (Monday, 25 November 2013)" href="1125.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1127.html" title="20131127 (Wednesday, 27 November 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1125.html" title="20131125 (Monday, 25 November 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-26-november-2013">
+<h1>20131126 (Tuesday, 26 November 2013)<a class="headerlink" href="#tuesday-26-november-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="reading-belgian-eid-cards">
+<h2>Reading Belgian eID cards<a class="headerlink" href="#reading-belgian-eid-cards" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/eidreader/index.html#eidreader" title="(in Lino v1.6)"><span>The EIDReader applet</span></a> project encounters two important problems:</p>
+<ul class="simple">
+<li>Java sucks</li>
+<li>No supporting community</li>
+</ul>
+<p>Maybe less important, but the last straw that breaks the camel&#8217;s back:
+I realized that an applet will always act only &#8220;upon user request&#8221;.
+More elegant than eidreader would be an action which starts
+automatically when the user inserts an eid card.</p>
+<p>The client machines who want to read eid cards would need to install
+and run a background task which listens to the smartcard slot and when
+it finds a card, instead of popping up a window it writes that data to
+a configurable place on the Lino server. And the server would then
+watch that directory and read every incoming file.</p>
+<p>The official way is to use the <a class="reference external" href="http://eid.belgium.be/en/developing_eid_applications/eid_software_development_kit/">eID Middleware</a>
+which &#8220;enables you to use the content of the electronic identity card
+from a desktop application&#8221;.  The SDK has no Python binding, only
+C++,C#, VB and Java.  So I would still need to write Java code. But at
+least not an applet.</p>
+<p>The alternative way might be to write such an application
+in Python using
+<a class="reference external" href="https://code.google.com/p/pssi/">pssi</a>, written by
+Eric Bourry and Julien Flaissy,
+for which
+Laurent Léonard has written a <code class="docutils literal"><span class="pre">belgian_eid</span></code> plugin.
+<a class="reference external" href="https://code.google.com/p/pssi/">pssi</a>
+is a &#8220;Python script that
+provides an abstract layer for smartcard reading. Thanks to it, it is
+possible to read a smartcard by simply adding its structure in the
+form of a plugin, without taking care of the communication layer. The
+tool comes with several plugins, namely SIM, EMV, Navigo and Belgian
+eID.&#8221;</p>
+<p>I installed <code class="docutils literal"><span class="pre">pssi</span></code> in order to see whether it works.</p>
+<p><code class="docutils literal"><span class="pre">pssi</span></code> requires the smartcard module which needs either system-wide
+or (if you want it in a virtualenv klike me) manual installation.
+Downloaded it from <a class="reference external" href="http://pyscard.sourceforge.net/">pyscard</a>,
+then:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ tar xvzf ~/Downloads/pyscard-1.6.12.tar.gz
+$ cd ~/snapshots/pyscard-1.6.12
+$ pip install -e .
+</pre></div>
+</div>
+<p>The <cite>setup.py</cite> requires certain additional system packages:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo aptitude install swig
+$ sudo aptitude install libpcsclite-dev
+</pre></div>
+</div>
+<p>Then I checked out pssi from <a class="reference external" href="https://code.google.com/p/pssi/">pssi</a>
+and can run the <cite>pssi.py</cite> script directly:</p>
+<div class="highlight-python"><div class="highlight"><pre>~/repositories/pssi-read-only/pssi$ python pssi.py plugins/belgian-eid
+Failed to load symbol for: SCardCancelTransaction, /lib/i386-linux-gnu/libpcsclite.so.1: undefined symbol: SCardCancelTransaction!
+
+ ATR                         : 3B 98 13 40 0A A5 03 01 01 01 AD 13 11
+ Content
+    DF ID
+       ID
+          Card Number                 : 123-1234567-12                      ()
+          Chip Number                 : 123c123e12345678901d123456789123    ()
+          Card validity date begin    : 19.08.2011                          (DD.MM.YYYY)
+          Card validity date end      : 19.08.2016                          (DD.MM.YYYY)
+          Card delivery municipality  : Tallinn                             ()
+          National Number             : 68.06.01-012.34                     ()
+          Name                        : Saffre                              ()
+          2 first given names         : Luc Johannes                        ()
+          First letter of 3rd given names :                                     ()
+          Nationality                 : Belgier                             ()
+          Birth location              : Eupen                               ()
+          Birth date                  : 01.JUN. 1968                        (DD mmmm YYYY or DD.mmm.YYYY (German))
+          Sex                         : Man                                 ()
+          Noble condition             :                                     ()
+          Document type               : Belgian citizen                     ()
+          Special status              : No status                           ()
+          Hash photo                  : 56bf0a64c8c6914727670093b7f99063a71d4ff2 (SHA-1)
+</pre></div>
+</div>
+<p>Cool!</p>
+<p><strong>Summary</strong> (so far)</p>
+<p>Both the official and the alternative way seem possible.  The latter
+would have the advantage of using Python.  And of being
+&#8220;international&#8221;: support operation in places where different eId cards
+from different nations need to be read.</p>
+<p>But for installation this is not an advantage: clients anyway need the
+official middleware and a Java JRE.
+Since I have no customer who requires international operation,
+I&#8217;d rather implement it as a Java application.</p>
+</div>
+<div class="section" id="sphinx-has-a-new-beta-release">
+<h2>Sphinx has a new beta release<a class="headerlink" href="#sphinx-has-a-new-beta-release" title="Permalink to this headline">¶</a></h2>
+<p>Georg Brandl announced a new beta release of
+<a class="reference external" href="http://sphinx-doc.org/install.html">Sphinx</a>.</p>
+<p>$ pip install -U sphinx</p>
+<p>Which solved the problem of those thousands of &#8220;cannot read css
+stylesheet&#8221; messages.
+Thanks!</p>
+<p>And <a class="reference external" href="http://sphinx-doc.org/latest/changes.html">here</a>!
+See what I have been missing!
+<cite>sphinx-apidoc</cite> now can generate
+a separate page for each module!
+Cool!</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>I noticed that the &#8220;(source code)&#8221; link of the API docs still refers
+to the Google repository.</li>
+</ul>
+</div>
+<div class="section" id="tx25-no-handler-for-guardians">
+<h2>Tx25: No handler for Guardians<a class="headerlink" href="#tx25-no-handler-for-guardians" title="Permalink to this headline">¶</a></h2>
+<p>Added new handler for &#8220;Guardians&#8221; element of a <span class="xref std std-ref">tx25.</span></p>
+<p>TODO:</p>
+<ul class="simple">
+<li>The <cite>run_action_from_console</cite> method of <cite>tables.Table</cite> can be
+removed.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1127.html" title="20131127 (Wednesday, 27 November 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1125.html" title="20131125 (Monday, 25 November 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1126.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1126.html">Online Link</a>
+    </div>
+  </body>
+</html>

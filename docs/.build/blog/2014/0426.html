@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Saturday, April 26, 2014 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2014" href="index.html" />
+    <link rel="next" title="Sunday, April 27, 2014" href="0427.html" />
+    <link rel="prev" title="Friday, April 25, 2014" href="0425.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0427.html" title="Sunday, April 27, 2014"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0425.html" title="Friday, April 25, 2014"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2014</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-april-26-2014">
+<h1>Saturday, April 26, 2014<a class="headerlink" href="#saturday-april-26-2014" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="forwarding-slave-tables">
+<h2>Forwarding slave tables<a class="headerlink" href="#forwarding-slave-tables" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.households.models.html#lino.modlib.households.models.SiblingsByPerson" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.households.models.SiblingsByPerson</span></code></a> is like
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.outbox.models.html#lino.modlib.outbox.models.SentByPartner" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.outbox.models.SentByPartner</span></code></a>.</p>
+<p>I&#8217;d suggest to call this usage pattern a &#8220;forwarding slave table&#8221;.</p>
+<p>Thoughs about <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.households.html#module-lino.modlib.households" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.households</span></code></a>.</p>
+<p>Should there be a field <cite>Househould.head</cite>? Because in fact a
+Household <em>must</em> have a &#8220;Head of household&#8221;. This is a case for a
+mandatory field (not nullable).</p>
+<p>On the other hand the head of a household is also a member.  We want a
+table <cite>households.MembersByPerson</cite>, and that table should show all
+households of that person.</p>
+<p>Can a person be member of more than one households <em>at a given time</em>?
+This is technically possible, but it should lead to a plausibility
+warning.</p>
+<p>The role of a membership: should this be a database model or a
+choicelist?</p>
+</div>
+<div class="section" id="visibility-of-actions">
+<h2>Visibility of actions<a class="headerlink" href="#visibility-of-actions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Some actions have a &#8220;hard-coded default implementation&#8221; and are
+rendered automatically: ShowDetail, InsertRow, DeleteRow, ...</li>
+<li>Custom actions (including many library actions like &#8220;Print&#8221;,
+&#8220;Duplicate&#8221; etc) can be asked to show up at different places.</li>
+</ul>
+<p>I updated the docstrings of
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.Action.custom_handler" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">custom_handler</span></code></a>,
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.Action.show_in_bbar" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">show_in_bbar</span></code></a>
+and
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.actions.html#lino.core.actions.Action.show_in_workflow" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">show_in_workflow</span></code></a></p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0427.html" title="Sunday, April 27, 2014"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0425.html" title="Friday, April 25, 2014"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2014</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2014/0426.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2014/0426.html">Online Link</a>
+    </div>
+  </body>
+</html>

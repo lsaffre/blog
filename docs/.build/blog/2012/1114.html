@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20121114 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20121115" href="1115.html" />
+    <link rel="prev" title="20121113" href="1113.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1115.html" title="20121115"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1113.html" title="20121113"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20121114<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Ich bin noch immer mit den Online-Demos dran,
+die demnächst fertig werrden müssten.</p>
+<div class="section" id="eins">
+<h2>Eins<a class="headerlink" href="#eins" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre>MultipleObjectsReturned: get() returned more than one City -- it returned 2! Lookup parameters were {&#39;name&#39;: &#39;Eupen&#39;}
+INFO Lino initdb done (&#39;std&#39;, &#39;all_countries&#39;, &#39;be&#39;, &#39;few_cities&#39;, &#39;all_languages&#39;, &#39;props&#39;, &#39;democfg&#39;, &#39;demo&#39;, &#39;demo_ev
+ents&#39;) on database :memory:.
+</pre></div>
+</div>
+<p>Oh, das war ein subtiler Bug!
+Es gab eine Fixture <cite>lino.modlib.ledger.fixtures.be</cite>, in dem
+fälschlicherweise keine Funktion <cite>objects</cite> definiert war.</p>
+<p>Aber <code class="xref py py-mod docutils literal"><span class="pre">lino.utils.dumpy</span></code> merkte das nicht, sondern rief stattdesen
+die <cite>objects</cite> der vorigen Fixture nochmal neu auf.
+Zumindest falls es denn der Zufall
+wollte, dass just zuvor eine Fixture mit dem gleichen Namen (hier &#8220;be&#8221;) geladen worden war.
+Das lag daran, dass ich <a class="reference external" href="http://docs.python.org/2.7/library/imp.html#imp.load_module">imp.load_module</a>
+falsch aufrief. Jetzt generiert er eindeutige temporäre Modulnamen im Stil &#8220;lino.utils.dumpy_tmp_37091808&#8221;.</p>
+<p>When <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.build_js_cache_on_startup</span></code>
+is None, <a class="reference external" href="http://www.lino-framework.org/api/lino.core.kernel.html#module-lino.core.kernel" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.kernel</span></code></a> now also considers
+<a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-DEBUG" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">DEBUG</span></code></a> for finding the default value.</p>
+</div>
+<div class="section" id="zwei">
+<h2>Zwei<a class="headerlink" href="#zwei" title="Permalink to this headline">¶</a></h2>
+<p>Problem Nummer Zwei war besonders dumm und deshalb besonders schwer zu finden.
+Auf lf.org kam bei der initdb_demo von demo2 (presto) folgender Traceback:</p>
+<div class="highlight-python"><div class="highlight"><pre>Traceback (most recent call last):
+  File &quot;/home/luc/snapshots/django/django/core/management/commands/loaddata.py&quot;, line 221, in handle
+    return
+  File &quot;/usr/lib/python2.6/contextlib.py&quot;, line 34, in __exit__
+    self.gen.throw(type, value, traceback)
+  File &quot;/home/luc/snapshots/django/django/db/backends/__init__.py&quot;, line 271, in constraint_checks_disabled
+    yield
+  File &quot;/home/luc/snapshots/django/django/core/management/commands/loaddata.py&quot;, line 190, in handle
+    for obj in objects:
+  File &quot;/home/luc/mypy/demo2/using/lino/lino/utils/dumpy.py&quot;, line 497, in deserialize
+    for obj in module.objects():
+  File &quot;/home/luc/mypy/demo2/using/lino/lino/modlib/users/fixtures/demo.py&quot;, line 55, in objects
+    kw = root_kw(lang)
+  File &quot;/home/luc/mypy/demo2/using/lino/lino/modlib/users/fixtures/demo.py&quot;, line 23, in root_kw
+    kw.update(profile=dd.UserProfiles.admin)
+AttributeError: type object &#39;UserProfiles&#39; has no attribute &#39;admin&#39;
+</pre></div>
+</div>
+<p>War auch wie folgt reproduzierbar. Erstelle eine Datei <code class="file docutils literal"><span class="pre">t.py</span></code>
+mit folgendem Inhalt:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.conf</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="n">settings</span><span class="o">.</span><span class="n">LINO</span><span class="o">.</span><span class="n">startup</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Starte die Datei:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py run t.py
+INFO Starting Lino...
+20120705 lino.UserProfiles.user:100(level=user,office=user)
+20120705 lino.UserProfiles.admin:900(level=admin,office=admin)
+INFO Analyzing models...
+WARNING No help texts : no such table: lino_helptext
+INFO Lino Site &#39;presto@armand&#39; started. Languages: de, en, fr, et, nl. 197 actors.
+INFO Using Lino Presto 0.0.1, Lino 1.5.1, Django 1.4.2, python-dateutil 1.5, Cheetah 2.4.4, OdfPy ODFPY/0.9.4, docutils
+0.7, suds 0.4.1, PyYaml 3.08, Appy 0.8.0 (2011/12/15 22:41), Python 2.7.1, Silk Icons 1.3.
+</pre></div>
+</div>
+<p>Auf lf.org fehlen in beiden Debug-Zeilen die <cite>name</cite> der UserProfiles:</p>
+<div class="highlight-python"><div class="highlight"><pre>20120705 lino.UserProfiles:100(level=user,office=user)
+20120705 lino.UserProfiles:900(level=admin,office=admin)
+</pre></div>
+</div>
+<p>Lösung war einfach, dass Mercurial mir einen Streich gespielt hatte:
+ich hatte nicht gemerkt, dass er eine lokal bearbeitete Datei nicht aktualisiert hatte.</p>
+</div>
+<div class="section" id="drei">
+<h2>Drei<a class="headerlink" href="#drei" title="Permalink to this headline">¶</a></h2>
+<p>Eine dritte Überraschung war die Erkenntnis, dass die meisten Aktionen par défaut
+nur für angemeldete Benutzer sichtbare sein sollten.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1115.html" title="20121115"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1113.html" title="20121113"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/1114.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/1114.html">Online Link</a>
+    </div>
+  </body>
+</html>

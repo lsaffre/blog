@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100208 Arbeitsbericht" href="0208.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0206.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0208.html" title="20100208 Arbeitsbericht"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0206.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>= [20100207 Arbeitsbericht] =</p>
+<p>Mann, das war nicht einfach, dass die Slave Grids nicht mehr die Textfelder verdrängen! Die Lösung ist, alle <cite>VBoxLayout</cite> durch <cite>FormLayout</cite> und alle <cite>HBoxLayout</cite> durch <cite>ColumnLayout</cite> zu ersetzen. Und natürlich in den Kindern dann nicht mehr <cite>flex</cite> zu benutzen, sondern <cite>anchor</cite> bzw. <cite>columnWidth</cite>.</p>
+<p>Nachdem ich die [20100206 Frage] im ExtJS-Forum gestellt hatte, kam die Antwort kurz darauf von einem Programmierer aus Miami, und das war nur ein Satz. Aber allein die Frage zu stellen hat mich einige Stunden gekostet. Die anschließende Integration in Lino war dann dagegen überraschend einfach.</p>
+<a class="reference internal image-reference" href="../../_images/0207.jpg"><img alt="../../_images/0207.jpg" src="../../_images/0207.jpg" style="width: 889.7px; height: 602.7px;" /></a>
+<p>Momentan haben die Slave Grids <cite>autoWidth=True</cite> (bin nicht sicher, ob das so bleiben kann) und reagieren noch nicht auf Klicks, aber ich bin zufrieden.</p>
+<hr class="docutils" />
+<p>Beim Arbeiten in <cite>dsbe.fixtures.demo.dpy</cite> wird mir klar, dass für LinoDsbe noch etwas Wichtiges fehlt. Das Besondere an LinoDsbe ist, dass dort enorm viele Informationen zu einer Person gespeichert werden.
+Um das zu bewältigen, sehe ich 2 Möglichkeiten:</p>
+<blockquote>
+<div><ul class="simple">
+<li>die &#8220;doofe&#8221; Methode: viele Felder im <cite>Person</cite> model, und dann ein Eingabeformular mit Reitern und eventuellem sonstigem Pipapo, um Struktur in die Daten zu bringen. Das hätte seine Reize, ich habe noch nie mit so vielen Datenfeldern gearbeitet.</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li>die &#8220;komplizierte&#8221; Methode: mit dem Eigenschaften-Editor in [LinoModlibProperties lino.modlib.properties]. Das wäre natürlich am wiederverwertbarsten.</li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>Das Problem ist, dass [LinoModlibProperties lino.modlib.properties] dann noch die Fähigkeit kriegen muss, auch andere Datentypen als Text zu speichern: Logical, Boolean, Integer usw...). Dazu muss ich wahrscheinlich Unterklassen von <cite>PropValues</cite> anlegen (<cite>BooleanPropValues</cite>, <cite>IntegerPropValues</cite> usw.).
+Und als Editor reicht hoffentlich der [<a class="reference external" href="http://www.extjs.com/deploy/dev/docs/?class=Ext.grid.PropertyGrid">http://www.extjs.com/deploy/dev/docs/?class=Ext.grid.PropertyGrid</a> Ext.grid.PropertyGrid].</p>
+<p>Das Modell <cite>PropChoice</cite> kommt weg und stattdessen ist PropValue.owner jetzt nullable. Eigenschaften holen ihre Auswahlliste aus ihrer <cite>PropValue</cite>, und zwar par convention diejenigen, deren <cite>owner</cite> None ist.</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0208.html" title="20100208 Arbeitsbericht"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0206.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0207.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0207.html">Online Link</a>
+    </div>
+  </body>
+</html>

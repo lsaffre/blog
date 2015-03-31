@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110713 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110714" href="0714.html" />
+    <link rel="prev" title="20110712" href="0712.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0714.html" title="20110714"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0712.html" title="20110712"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110713<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="the-lino-modlib-cal-module-is-growing">
+<h2>The <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a> module is growing<a class="headerlink" href="#the-lino-modlib-cal-module-is-growing" title="Permalink to this headline">¶</a></h2>
+<p>What are &#8220;automatic tasks&#8221;?
+If a Person has a non-empty <cite>unavailable_until</cite> field,
+Lino will create an automatic task
+&#8220;becomes available again&#8221; for that Person and the responsible user
+on that date, with an alarm set 1 month before.</p>
+<p>Before the <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a> module, Lino knew
+only automatic tasks.</p>
+<p>Currently there are three models which create &#8220;automatic tasks&#8221;:
+Person, Note and Contract.
+(Where Note and Contract mostly inherit the corresponding behaviour from <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.Reminder</span></code>)</p>
+<p>This is implemented by overriding
+their <cite>save</cite> method.</p>
+<p>I think I&#8217;m going to do the following relationships for the
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.cal.html#module-lino.modlib.cal" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cal</span></code></a> module:</p>
+<p class="graphviz">
+<img src="../../_images/graphviz-6e4a4dc68d6c9f2b0113550dda49105c15befc4b.png" alt="digraph foo {
+&quot;Note&quot; -&gt; &quot;Task&quot;
+&quot;Note&quot; -&gt; &quot;Person&quot;
+&quot;Note&quot; -&gt; &quot;Company&quot;
+
+&quot;Task&quot; -&gt; &quot;Person&quot;
+&quot;Task&quot; -&gt; &quot;Company&quot;
+
+&quot;Note&quot; -&gt; &quot;Event&quot;
+&quot;Event&quot; -&gt; &quot;Person&quot;
+&quot;Event&quot; -&gt; &quot;Company&quot;
+}" />
+</p>
+<p>This leads to the following slave reports:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Notes : by Company, by Person, by Event</li>
+<li>Tasks : by Company, by Person</li>
+<li>Events : by Company, by Person, by Task</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="owner-field-of-lino-mixins-owned-now-nullable">
+<h2><cite>owner</cite> field of <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.Owned</span></code> now nullable<a class="headerlink" href="#owner-field-of-lino-mixins-owned-now-nullable" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>owner_type</cite> and <cite>owner_id</cite> fields of
+a <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.Owned</span></code> are now nullable.
+This is necessary for <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.Task</span></code>
+and probably doesn&#8217;t disturb for other cases
+(that is, Upload and Third).</p>
+</div>
+<div class="section" id="toggle-checkcolumns-from-a-grid">
+<h2>Toggle CheckColumns from a grid<a class="headerlink" href="#toggle-checkcolumns-from-a-grid" title="Permalink to this headline">¶</a></h2>
+<p>It is now again possible to toggle a CheckColumn simply by clicking on it.
+I&#8217;d prefer doubleclick for that, but it seems that a doubleclick never
+reaches the CheckColuimn component (I guess because it gets consumed by the row).</p>
+</div>
+<div class="section" id="displaying-genericforeignkey-in-a-grid">
+<h2>Displaying GenericForeignKey in a Grid<a class="headerlink" href="#displaying-genericforeignkey-in-a-grid" title="Permalink to this headline">¶</a></h2>
+<p>New <code class="xref py py-class docutils literal"><span class="pre">lino.fields.GenericForeignKeyIdField</span></code> is used by <cite>lino.ui.extjs3</cite>
+to handle the correct store field type for these fields.
+the <cite>owner_id</cite> field of <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.Owned</span></code> is currently the only usecase.</p>
+<p>Checkin 20110713</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0714.html" title="20110714"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0712.html" title="20110712"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0713.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0713.html">Online Link</a>
+    </div>
+  </body>
+</html>

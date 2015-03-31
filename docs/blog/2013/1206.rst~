@@ -1,0 +1,42 @@
+===================================
+20131206 (Friday, 06 December 2013)
+===================================
+
+The public demos for :ref:`polly` and 
+:ref:`logos` were broken due to a server 
+configuration problem.
+And I didn't notice it because they were not listed in :ref:`demos`.
+
+The conversion of existing: renderers to plugins
+will be an occasion to tidy up some historic ambiguities.
+
+- The Kernel. 
+  The object stored in `settings.SITE.ui` : is (like SITE itself) 
+  a "de facto singleton". But it remains 
+  an independent class/object instance 
+  (and is not merged into the Site)
+  because it gets created and imported only when the modules are 
+  populated. Might rename it to `kernel`. 
+
+  Until now the activities and methods of the kernel were 
+  scattered across
+  `ui.base`, `ui.ui` and `core.kernel`. 
+  Now they are all in one place.
+
+TODO:
+
+- The three renderers (TextRenderer, PlainRenderer and ExtRenderer) 
+  become subclasses of `ad.App` and are no longer available
+  as `SITE.plain_renderer` etc but using `SITE.plugins`::
+
+    SITE.plain_renderer -> SITE.plugins.plain
+    SITE.ext_renderer -> SITE.plugins.extjs
+    SITE.text_renderer -> SITE.plugins.text
+
+  (TODO: so we get 3 new "system app_labels": "plain", "extjs" 
+  and "text". This is a limit of Django's app_label system: you 
+  cannot define custom namespaces)
+
+  `SITE.default_renderer`
+
+

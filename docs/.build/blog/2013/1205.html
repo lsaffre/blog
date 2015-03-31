@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131205 (Thursday, 05 December 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131206 (Friday, 06 December 2013)" href="1206.html" />
+    <link rel="prev" title="20131204 (Wednesday, 04 December 2013)" href="1204.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1206.html" title="20131206 (Friday, 06 December 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1204.html" title="20131204 (Wednesday, 04 December 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-05-december-2013">
+<h1>20131205 (Thursday, 05 December 2013)<a class="headerlink" href="#thursday-05-december-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="plugins-are-apps">
+<h2>Plugins are Apps<a class="headerlink" href="#plugins-are-apps" title="Permalink to this headline">¶</a></h2>
+<p>I continued to think about what Joe and I had called &#8220;plugins&#8221;.
+And ha, I understood something!
+Excerpt from a mail I wrote to Joe on November 18:</p>
+<blockquote>
+<div><p>Difference between plugins and apps:</p>
+<p>The nature of plugins is to be another level of modularization besides
+apps, another direction of applying our analytic knife when describing a
+complex system (in case you have read &#8220;Zen and the Art of Motorcycle
+Maintenance&#8221;). Plugins can require certain apps to be installed, but the
+list of installed apps does <em>not</em> automatically lead to a list of
+<em>installed</em> plugins. This is why I have <cite>get_installed_plugins</cite>.</p>
+</div></blockquote>
+<p>The thing I understood is that the above paragraph is bullshit.
+The direction of your analytic knife should not depend on the fact
+whether it is a plugin or an app.</p>
+<p>So I merged the classes <cite>Plugin</cite> and <cite>App</cite> and
+converted our proof-of-concept plugin (<cite>BeIdReaderPlugin</cite>)
+into an app (named <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.beid</span></code>).</p>
+<p>The former <cite>BeIdJsLibPlugin</cite> is now in <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.eid_jslib.beid</span></code>.
+It overrides <code class="xref py py-mod docutils literal"><span class="pre">lino.apps.beid</span></code>, that&#8217;s why it must have the
+same app_label. Here is the content of <cite>lino/apps</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>.
+├── beid
+└── eid_jslib
+    └── beid
+</pre></div>
+</div>
+<p>Note that I hereby started to grow new apps in a
+package <code class="xref py py-mod docutils literal"><span class="pre">lino.apps</span></code> instead of <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.html#module-lino.modlib" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib</span></code></a>.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>move also the <cite>setup_xxx_menu</cite> methods from models module to App</li>
+<li>write documentation</li>
+</ul>
+<p>Now before going on it&#8217;s really time to get all test suites up and
+running again.  The suites for <a class="reference external" href="http://patrols.lino-framework.org/index.html#patrols" title="(in Lino Patrols Reference Manual v0.0)"><span>Lino Patrols</span></a>, <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a> and
+<a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> had been broken for some time. Now they pass again.</p>
+<p>I also had neglected the <code class="xref std std-xfile docutils literal"><span class="pre">userdocs</span></code> directories, now they all
+build again without any warning.</p>
+<p>Moved <cite>get_installed_apps</cite> method from <a class="reference external" href="http://www.lino-framework.org/api/index.html#module-lino" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino</span></code></a>
+to <code class="xref py py-mod docutils literal"><span class="pre">djangosite</span></code>.
+Because intuitively I&#8217;d say that this is a better place for it.
+This should make no difference for applications.
+One subtle difference is that <code class="docutils literal"><span class="pre">&quot;lino&quot;</span></code> is no longer at the
+end just before <code class="docutils literal"><span class="pre">&quot;djangosite&quot;</span></code>.</p>
+</div>
+<div class="section" id="replace-sitemixin-hacks-by-app-usages">
+<h2>Replace <cite>SiteMixin</cite> hacks by <cite>App</cite> usages<a class="headerlink" href="#replace-sitemixin-hacks-by-app-usages" title="Permalink to this headline">¶</a></h2>
+<p>A first positive effect of today&#8217;s work:
+I can remove the <cite>SiteMixin</cite> classes  from
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.vat.html#module-lino.modlib.vat" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.vat</span></code></a>
+and
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.cbss.html#module-lino_welfare.modlib.cbss" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.cbss</span></code></a>!
+And the latter even protect myself from forgetting
+to convert local settings files because I added an error
+message in that case.</p>
+<p>Summary:</p>
+<p>Every Django app which defines a class object called &#8220;App&#8221; in
+its main module (not in the models module) now gets some special
+functionality: the class object will be instiantiated exactly
+once when the Site instantiates (i.e. before Django
+settings are ready), and this object is stored (under the app_label
+as key), in <cite>settings.SITE.plugins</cite>.</p>
+<p>That&#8217;s really cool! (Just a pity that these human bodies need to sleep
+every now and then ;-) Don&#8217;t hesitate to contact me directly and ask
+questions, because this is complex stuff, and I won&#8217;t have time until
+end of January to document it as it would deserve.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>Convert lino.extjs to a plugin (oops, i mean &#8220;an app with
+an <code class="xref py py-class docutils literal"><span class="pre">ad.App</span></code>&#8221;).</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1206.html" title="20131206 (Friday, 06 December 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1204.html" title="20131204 (Wednesday, 04 December 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1205.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1205.html">Online Link</a>
+    </div>
+  </body>
+</html>

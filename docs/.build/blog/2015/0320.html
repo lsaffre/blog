@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Friday, March 20, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Saturday, March 21, 2015" href="0321.html" />
+    <link rel="prev" title="Thursday, March 19, 2015" href="0319.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0321.html" title="Saturday, March 21, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0319.html" title="Thursday, March 19, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-march-20-2015">
+<h1>Friday, March 20, 2015<a class="headerlink" href="#friday-march-20-2015" title="Permalink to this headline">¶</a></h1>
+<p>I started to work on a number of &#8220;minor&#8221; problems discovered with Gerd
+two days ago.</p>
+<div class="section" id="a-new-plugin-plausibility">
+<h2>A new plugin: &#8220;Plausibility&#8221;<a class="headerlink" href="#a-new-plugin-plausibility" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>StrangeClients</cite> table was definitively too slow in real life.  I
+finally did what I had been meditating for some time and wrote a whole
+new plugin <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.html#module-lino.modlib.plausibility" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.plausibility</span></code></a>.  I chose the name
+&#8220;plausible&#8221; (in the meaning of &#8220;credible&#8221;, &#8220;logical&#8221;, &#8220;consistent&#8221;,
+&#8220;tenable&#8221;).</p>
+<p>So Lino now has a generic infrastructure for handling this kind of
+problems.  The basic idea is to store the messages in a temporary
+table instead of running the checks &#8220;live&#8221; each time when somebody
+requests to see them.</p>
+<p>Users now see in their menu a new command &#8220;My plausibility problems&#8221;,
+and I guess that they will be asking &#8220;What does Lino know about my
+problems?&#8221; In German we should maybe rather use &#8220;Meine
+Aktenkontrollliste&#8221; instead of &#8220;Meine Plausibilitätsprobleme&#8221;.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.models.html#lino.modlib.plausibility.models.Problem" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.plausibility.models.Problem</span></code></a></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.plausibility.models.CheckPlausibility</span></code></li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.choicelists.html#lino.modlib.plausibility.choicelists.Checker" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.plausibility.choicelists.Checker</span></code></a></li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.choicelists.html#lino.modlib.plausibility.choicelists.Checkers" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.plausibility.choicelists.Checkers</span></code></a></li>
+<li><code class="docutils literal"><span class="pre">check_plausibility</span></code> (later renamed to <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.management.commands.checkdata.html#management_command-checkdata" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">checkdata</span></code></a></li>
+</ul>
+<p>Added new utility function <a class="reference external" href="http://www.lino-framework.org/api/lino.core.utils.html#lino.core.utils.gfk2lookup" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">lino.core.utils.gfk2lookup()</span></code></a>. This
+code was until now in <a class="reference external" href="http://www.lino-framework.org/api/lino.core.tables.html#lino.core.tables.AbstractTable.get_filter_kw" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">AbstractTable.get_filter_kw</span></code></a>, but moved it to
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.utils.html#module-lino.core.utils" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.core.utils</span></code></a> because it is of general interest, and
+especially now used by <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.plausibility.choicelists.html#lino.modlib.plausibility.choicelists.Checker.update_problems" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">Checker.update_problems</span></code></a>.</p>
+<p>I wanted a progress bar for <code class="xref std std-manage docutils literal"><span class="pre">check_plausibility</span></code> and
+discovered Kenneth Reitz&#8217;s <a class="reference external" href="https://github.com/kennethreitz/clint">clint</a>. Cool!</p>
+<p>New tested document <a class="reference external" href="http://welfare.lino-framework.org/tested/plausibility.html#welfare-tested-plausibility" title="(in Lino Welfare Reference Manual v1.1)"><span>Managing plausibility problems</span></a>.</p>
+</div>
+<div class="section" id="similar-clients">
+<h2>Similar clients<a class="headerlink" href="#similar-clients" title="Permalink to this headline">¶</a></h2>
+<p>The algorithm for finding similar clients
+is not yet good enough. For example if we have two duped clients
+&#8220;Albert Bruno GONZALES&#8221; and &#8220;Albert GONZALES&#8221;, then SimilarPersons for
+the first client does not show the other.</p>
+<p>New module
+<code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.similar_clients</span></code>.</p>
+<p>Our famous fictive dupe client <em>Dorothée Demeulenaere-Dobbelstein</em> no
+longer has a <cite>birth_date</cite> and a <cite>national_id</cite>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0321.html" title="Saturday, March 21, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0319.html" title="Thursday, March 19, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0320.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0320.html">Online Link</a>
+    </div>
+  </body>
+</html>

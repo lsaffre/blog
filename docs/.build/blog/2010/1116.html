@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101116 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101118" href="1118.html" />
+    <link rel="prev" title="20101115" href="1115.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1118.html" title="20101118"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1115.html" title="20101115"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101116<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="openoffice-server-startup-script">
+<h2>OpenOffice server startup script<a class="headerlink" href="#openoffice-server-startup-script" title="Permalink to this headline">¶</a></h2>
+<p>A Google search about &#8220;OpenOffice server daemon&#8221; led me to some interesting readings:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://sourceforge.net/projects/oodaemon/">http://sourceforge.net/projects/oodaemon/</a> :
+(September 2009)
+&#8220;Open Office Server Daemon based on older daemon written in python (oood).
+Open Office is unstable as a server (memory leaks, not multithreaded, ...),
+this daemon makes it working in long-term without having to
+change anything in your code.&#8221;
+(<cite>readme &lt;http://oodaemon.sourceforge.net/README.html&gt;</cite>)</li>
+<li><a class="reference external" href="http://doc.nuxeo.org/5.3/books/nuxeo-book/html/admin-openoffice.html">Chapter 46 of the Nuxeo Reference Guide</a>
+is a good documentation of the topic.
+It mentions and refers to an <a class="reference external" href="http://svn.nuxeo.org/nuxeo/tools/ooo/oooctl">oooctl control script</a> included with Nuxeo.</li>
+</ul>
+<p>However this script is for OOo before 2.3 (still uses Xvfb).
+I removed the Xvfb parts and also the automagic search for the SOFFICE
+binary and include it to the Lino repository as <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//bash/oood">/bash/oood</a>
+(TODO: But what about the copyright notice?)</p>
+<p>Some more readings:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.debianadmin.com/manage-linux-init-or-startup-scripts.html">Manage Linux init or startup scripts</a>.</li>
+<li><a class="reference external" href="http://www.debian-administration.org/articles/28">Making scripts run at boot time with Debian</a></li>
+</ul>
+<p>Now finally here is how to do it:</p>
+<div class="highlight-python"><div class="highlight"><pre># cp /var/snapshots/lino/bash/oood /etc/init.d
+# chmod 755 /etc/init.d/oood
+# update-rc.d oood defaults
+update-rc.d: warning: /etc/init.d/oood missing LSB information
+update-rc.d: see &lt;http://wiki.debian.org/LSBInitScripts&gt;
+ Adding system startup for /etc/init.d/oood ...
+   /etc/rc0.d/K20oood -&gt; ../init.d/oood
+   /etc/rc1.d/K20oood -&gt; ../init.d/oood
+   /etc/rc6.d/K20oood -&gt; ../init.d/oood
+   /etc/rc2.d/S20oood -&gt; ../init.d/oood
+   /etc/rc3.d/S20oood -&gt; ../init.d/oood
+   /etc/rc4.d/S20oood -&gt; ../init.d/oood
+   /etc/rc5.d/S20oood -&gt; ../init.d/oood
+</pre></div>
+</div>
+<p>Added these instructions to <a class="reference external" href="http://www.lino-framework.org/admin/install.html">/admin/install</a>.</p>
+<p>(TODO: <a class="reference external" href="http://wiki.debian.org/LSBInitScripts">How to LSBize an Init Script</a>)</p>
+</div>
+<div class="section" id="miscellaneous-changes">
+<h2>Miscellaneous changes<a class="headerlink" href="#miscellaneous-changes" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">trying to print contract #1 produced
+&#8220;Exception: Build method u&#8217;appypdf&#8217; doesn&#8217;t exist.&#8221;.
+This was because appy.pod couldn&#8217;t be imported after upgrade to 0.6.0.
+<code class="xref py py-func docutils literal"><span class="pre">lino.thanks_to()</span></code> now displays appy.pod also when not installed.</p>
+</li>
+<li><p class="first">bug fixed:
+Print Button in Detail view of a slave report didn&#8217;t set the correct mk.
+For example in ContractsByPerson it used the primary key of the current Contract.</p>
+</li>
+<li><p class="first">bug fixed:
+when calling &#8220;print&#8221; from Detail view, the <cite>fmt:print</cite> parameter was
+stored as base parameter, causing subsequent navigation buttons to fail.</p>
+</li>
+<li><p class="first">Updated release 0.8.12 in Eupen and marked repository as <cite>hg tag -f v0.8.12</cite>.</p>
+</li>
+<li><p class="first">A first known (and now fixed) bug in the above release ist that the following new feature
+didn&#8217;t yet work at all:
+&#8220;Contracts are now mostly read-only when they have been printed (<cite>Contract.disabled_fields</cite>).
+The flag <cite>must_build</cite> ist set to False after the first build (<cite>PrintAction.get_target_url</cite>).&#8221;</p>
+<p>Now it works basically, but the calling grid or detail view doesn&#8217;t
+get refreshed after printing or saving, so it won&#8217;t have the correct must_build
+flag and disabled_fields.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="openoffice-server-startup-script-continued">
+<h2>OpenOffice server startup script continued<a class="headerlink" href="#openoffice-server-startup-script-continued" title="Permalink to this headline">¶</a></h2>
+<p>More reading about this topic:</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.openvpms.org/documentation/install-openoffice-headless-service-ubuntu">Install Openoffice headless as a service in Ubuntu</a>
+describes almost exactly what I found out myself this morning...</li>
+<li><a class="reference external" href="http://code.google.com/p/openmeetings/wiki/OpenOfficeConverter">OpenOffice Converter Installation instructions</a></li>
+</ul>
+<p>The script by Vic Vijayakumar &amp; Federico Ch. Tomasczik
+uses a (pseudo) PID file
+but has no <cite>restart</cite> option,
+while Florent Guillaume&#8217;s script uses
+another method (<code class="docutils literal"><span class="pre">ps</span> <span class="pre">axw</span></code>)
+but has a <cite>restart</cite> option.</p>
+<p>I noticed that
+the <code class="docutils literal"><span class="pre">ps</span> <span class="pre">axw</span></code> method  didn&#8217;t work for me,
+made more tests and modifications to <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//bash/oood">/bash/oood</a>.
+This script is still not optimal: we should make it LSB-compliant.</p>
+<p>On Debian Lenny, OOo is &lt; 2.3, so it seems to me that installing manually
+a recent copy is at least okay.</p>
+<p>I&#8217;ll better wait a bit before writing documentation about all this,
+since things are moving there (LibreOffice is coming, Debian will make new releases,...)</p>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p class="first">I changed the method for finding primary key of previous/next records
+(needed to fill out navinfo)
+in <code class="xref py py-func docutils literal"><span class="pre">elem2rec_detailed</span></code>
+Later this turned out to be <em>much</em> quicker on reports with over thousand records.</p>
+</li>
+<li><p class="first">bugfix: user and CoachesByPerson where missing.
+dsbe.Person has now a 6th Detail layout.</p>
+</li>
+<li><p class="first">bugfix: the combobox for city didn&#8217;t work.
+choosers on ForeignKey fields now have
+automatically instance_values set to True,</p>
+</li>
+<li><p class="first">bugfix: Lino ignored an explicit width for an image (e.g. <code class="docutils literal"><span class="pre">image:12</span></code>)
+in .dtl files.</p>
+</li>
+<li><p class="first">Picture distortion problem is maybe solved.
+Introduced new <cite>LayoutElement.hflex</cite> which is False for PictureElements.</p>
+</li>
+<li><p class="first">extra row should be really empty.
+but grid columns with an xtype of datecolumn or booleancolumn override my renderer.
+maybe the server should return a really empty extra row?
+No, much easier: in <code class="xref std std-xfile docutils literal"><span class="pre">lino.css</span></code> I define font color as white intead of italic:</p>
+<div class="highlight-python"><div class="highlight"><pre>.lino-phantom-row td {
+    /* font-style: italic; */
+    color:white;
+}
+</pre></div>
+</div>
+</li>
+<li><p class="first">Detail window now has a Refresh button.</p>
+</li>
+</ul>
+<p>Last check-in for today at 01:34</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1118.html" title="20101118"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1115.html" title="20101115"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1116.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1116.html">Online Link</a>
+    </div>
+  </body>
+</html>

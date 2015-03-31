@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>#4 : Migrating Tups to Mops &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../index.html" />
+    <link rel="up" title="All tickets" href="all.html" />
+    <link rel="next" title="Glossary" href="../glossary.html" />
+    <link rel="prev" title="Ubuntu and Estonian ID cards" href="3.html" />
+   
+<script src="../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../glossary.html" title="Glossary"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="3.html" title="Ubuntu and Estonian ID cards"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Tickets</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="all.html" accesskey="U">All tickets</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="migrating-tups-to-mops">
+<h1>#4 : Migrating Tups to Mops<a class="headerlink" href="#migrating-tups-to-mops" title="Permalink to this headline">¶</a></h1>
+<p>The following is my condensed version of the article <a class="reference external" href="http://wiki.openvz.org/Physical_to_container">Physical to
+container</a> from OpenVZ
+Wiki.</p>
+<p>See also my blog entries:
+<a class="reference external" href="http://code.google.com/p/lino/source/browse/docs/blog/2011/0520.rst">2011-05-20</a>
+<a class="reference external" href="http://code.google.com/p/lino/source/browse/docs/blog/2011/0521.rst">2011-05-21</a></p>
+<div class="section" id="context">
+<h2>Context<a class="headerlink" href="#context" title="Permalink to this headline">¶</a></h2>
+<p><cite>tups</cite> is an old machine that has been serving a few websites
+for over five years. It has 40 GB of hard disk space, 256 KB of RAM.
+The OS is currently a Debian Lenny.</p>
+<p>Now I bought a new machine (500 GB hard disk space and 1 GB of RAM),
+installed Proxmox on it and want to migrate <cite>tups</cite> to a
+container on this machine.</p>
+<p>Note: the terms &#8220;Virtual Machine&#8221; and &#8220;Container&#8221; are equivalent.</p>
+<p>In our LAN, <cite>tups</cite> is running on <cite>192.168.1.101</cite>,
+the new Proxmox server on <cite>192.168.1.160</cite>.</p>
+<p>The ProxMox web interface is accessible at <cite>https://192.168.1.160</cite>.
+Using <span class="menuselection">VM Manager ‣ Virtual Machines ‣ List ‣ Create</span>
+I created a &#8220;dummy&#8221; container with ID 101.</p>
+</div>
+<div class="section" id="manually-creating-a-vm-using-a-dummy">
+<h2>Manually creating a VM using a dummy<a class="headerlink" href="#manually-creating-a-vm-using-a-dummy" title="Permalink to this headline">¶</a></h2>
+<p>We have a dummy VM with ID 101 and want to create a
+second VM with ID 103
+that will contain <cite>mops</cite>, the successor for <cite>tups</cite>.</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /var/lib/vz
+mkdir root/103 private/103
+
+cd /etc/vz/conf
+cp 101.conf 103.conf
+nano 103.conf
+</pre></div>
+</div>
+<p>The web interface would now show the new container,
+but of course we cannot yet start it since it is empty.</p>
+</div>
+<div class="section" id="copying-the-data">
+<h2>Copying the data<a class="headerlink" href="#copying-the-data" title="Permalink to this headline">¶</a></h2>
+<p>We are going to execute the following twice:
+a first time when tups is still running,
+and a second time &#8220;for real&#8221; (when tups is stopped).</p>
+<p>I log into the Proxmox server using <code class="docutils literal"><span class="pre">ssh</span> <span class="pre">root&#64;192.168.1.160</span></code>.</p>
+<p>I start a first <cite>rsync</cite> which takes about 5 hours at the first run
+(and much less at subsequent runs):</p>
+<div class="highlight-python"><div class="highlight"><pre># cd /var/lib/vz/private/103
+# rsync -arvpz --numeric-ids --exclude=/dev --exclude=/proc --exclude=/tmp -e ssh root@192.168.1.101:/ ./
+...
+sent 7440467 bytes  received 27367553246 bytes  1456310.35 bytes/sec
+total size is 32426725913  speedup is 1.18
+rsync error: some files could not be transferred (code 23) at main.c(1524) [generator=3.0.3]
+</pre></div>
+</div>
+<p>The errors are normal since I didn&#8217;t stop the services for that first run.</p>
+<p>If I&#8217;d now try to start <cite>mops</cite> at the web interface, I&#8217;d get quite somme error
+messages at the init log. The raw copy of <cite>tups</cite> is not able to live in a VM
+environment, it needs a few manual adjustments.
+The following instructions are copied and adapted from the
+Proxmox documentation.</p>
+<ul>
+<li><p class="first">A container does not have real ttys, so you have to disable getty
+in /etc/inittab (i.e. /var/lib/vz/private/103/etc/inittab):</p>
+<div class="highlight-python"><div class="highlight"><pre>cd /var/lib/vz/private/103
+sed -i -e &#39;s/^[0-9].*getty.*tty/#&amp;/g&#39; etc/inittab
+</pre></div>
+</div>
+</li>
+<li><p class="first">The <cite>/etc/mtab</cite> of <cite>mops</cite> must be replaced by a sympolic link to <cite>/proc/mounts</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre>ln -sf /proc/mounts etc/mtab
+</pre></div>
+</div>
+</li>
+<li><p class="first">Since you do not have any real disk partitions in a container,
+/etc/fstab (or most part of it) is no longer needed.
+Empty it (excluding the lines for /dev/pts, /proc, /sys and such):</p>
+<div class="highlight-python"><div class="highlight"><pre>mv etc/fstab etc/fstab.old
+egrep &#39;/dev/pts|/dev/shm|/proc|/sys&#39; etc/fstab.old &gt; etc/fstab
+</pre></div>
+</div>
+</li>
+<li><p class="first">Remove udev&#8217;s persistent net rules:</p>
+<div class="highlight-python"><div class="highlight"><pre>rm etc/udev/rules.d/70-persistent-net.rules
+rm etc/udev/rules.d/75-persistent-net-generator.rules
+</pre></div>
+</div>
+</li>
+<li><p class="first">Copy complete <cite>/dev</cite> directory from the previously
+created dummy host:</p>
+<div class="highlight-python"><div class="highlight"><pre>mv dev dev.old
+cp -R ../101/dev .
+</pre></div>
+</div>
+</li>
+</ul>
+<p>Now it&#8217;s time to start the container, either using <code class="docutils literal"><span class="pre">vzctl</span> <span class="pre">start</span> <span class="pre">103</span></code>
+at the command line, or clicking the start button in the web interface.
+Apache runs.</p>
+</div>
+<div class="section" id="the-definitive-copy">
+<h2>The definitive copy<a class="headerlink" href="#the-definitive-copy" title="Permalink to this headline">¶</a></h2>
+<p>Stop most services (but not <cite>ssh</cite>) on <cite>tups</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># /etc/init.d/exim4 stop</span>
+<span class="c"># /etc/init.d/mailman stop</span>
+<span class="c"># /etc/init.d/apache2 stop</span>
+
+<span class="c"># /etc/init.d/postfix stop</span>
+<span class="c"># /etc/init.d/postgresql stop</span>
+<span class="c"># /etc/init.d/mysql stop</span>
+<span class="c"># /etc/init.d/samba stop</span>
+</pre></div>
+</div>
+<p>The second <cite>rsync</cite> on <cite>proxmox</cite> takes much less time.
+It undoes of course all my adjustments:</p>
+<div class="highlight-python"><div class="highlight"><pre>rsync -arvpz --numeric-ids --exclude=/dev/ --exclude=/proc --exclude=/tmp -e ssh root@192.168.1.101:/ /var/lib/vz/private/104/
+</pre></div>
+</div>
+<p>Redo all adjustments, then start <cite>mops</cite> in the Web interface.
+check the init log.
+Try to log in to <cite>mops</cite> using ssh::</p>
+<div class="highlight-python"><div class="highlight"><pre>ssh root@192.168.1.103
+</pre></div>
+</div>
+<p>Disable services that are no longer needed on a VM:
+for SERVICE in <cite>checkfs.sh checkroot.sh console-screen.sh hwclock.sh hwclockfirst.sh lm-sensorsudev udev-mtab keymap.sh</cite>
+do</p>
+<div class="highlight-python"><div class="highlight"><pre>update-rc.d  -f SERVICE remove
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../index.html">
+              <img class="logo" src="../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../blog/index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../glossary.html" title="Glossary"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="3.html" title="Ubuntu and Estonian ID cards"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Tickets</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="all.html" >All tickets</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../_sources/tickets/4.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/tickets/4.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,251 @@
+Linux on a Compaq Presario CQ61-310EN
+=====================================
+
+In January 2010 I bought a Compaq Presario CQ61-310EN notebook computer and spent quite some time  to get Linux running on it. This page summarizes my experiences with this machine. Disclaimer: I write and maintain this report in my spare time. I've been playing with Unix and Debian for more than 10 years, but I am mainly a software developer and my knowlegde about hardware is rather humble.
+
+I started with *Debian Lenny* and used it for a few months despite of the low video resolution and wrong width/height ratio. I wrote a post to `LinuxQuestions.org <http://www.linuxquestions.org/questions/linux-laptop-and-netbook-25/display-driver-for-my-compaq-presario-cq61-806302>`_, but never got it solved.
+
+In May 2010, frustrated of not getting further with these problems, I tried *Ubuntu 10.04*. Ubuntu solved all video problems automatically, but I must disable certain power management features because they cause the machine to freeze. 
+
+One thing still doesn't work in August 2010:
+
+- I can provocate a "non-persistent" freeze by trying to change the :guilabel:`Set display brightness to` field in :menuselection:`System --> Preferences --> Power Management`. This freezes the machine instantly: SysRq or switching to a text terminal using Ctrl-Alt-F1 don't work, only a hard reset does.
+
+
+Persistend freezes
+------------------
+
+Until July 2010 I had "persistent" freezes: Once they were there, they happened on each startup, shortly after the Ubuntu logo and the mouse cursor is displayed. They would stop only after executing "Restore setup defaults" in the BIOS setup menu (independently of whether there were  manual BIOS changes or not). I guess that something wrote some buggy information into the BIOS.
+
+The following phenomens stopped suddenly in August 2010, probably after a routine upgrade:
+
+- When I shut down normally (using the Gnome menu command or using the ``halt`` command), everything is okay. But when I shut down by pressing the power button (and choosing "shutdown" in the menu), then a persistent freeze starts.
+
+- Persistent freezes seem to be related to the settings specified in :menuselection:`System --> Preferences --> Power Management`, the :guilabel:`When laptop lid is closed` option has 4 choices:
+
+  - blank screen : works well.
+
+  - suspend : after reopening the lid it asks for the password and continues to work, but the monitor remains dimmed. When I later shut down the machine (even normally), then it will freeze on each startup attempt until I do a BIOS reset.
+
+  - hibernate : after reopening the lid and pushing the power button, it asks for the password and continues to work, but (same situation as after suspend).
+
+  - shutdown : when i close the lid, it shuts down correctly... but afterwards it will freeze persistently.
+
+
+Historic notes
+--------------
+
+This problem is rather complex, and it's funny to see how quickly my own problem descriptions get obsolote... 
+
+
+Before I knew the BIOS reset trick, at some moment I had disabled the "Fan Always On" BIOS option, and after this the computer started to freeze systematically after less than 30 seconds. `ubuntuusers.de <http://forum.ubuntuusers.de/topic/live-cd-funktioniert-installierte-version-fri/>`_ advised to do a BIOS reset. This helped, and so I believed that the freezes have to do with this option. The BIOS reset helped just because it fixed the buggy BIOS information.
+
+Once I wrote:
+
+  - When I run Ubunto from LiveCD (using the "Try Ubuntu 10.04 LTS" button), everything works fine. No problems. 
+  
+  - When I install Ubunto to the hard disk (taking the full space), the installation works well and smoothly (except for the `small problem mentioned in the release notes <https://wiki.ubuntu.com/LucidLynx/ReleaseNotes#I/O%20error%20after%20CD%20is%20ejected%20at%20end%20of%20install>`_), but after restarting I have a "boot failure without message" as described in my post to `ubuntuforums.org <http://ubuntuforums.org/showthread.php?p=9394135#post9394135>`_.
+  
+  - When I press F6 while booting from the CD and choose "Boot from first hard disk", then it goes further, X starts and the login screen appears (or even the desktop if i chose "automatic login" during previous install), but also here the machine freezes after a short time (10 to 60 seconds).
+
+  I tried the following boot options without any success::
+
+    acpi=off
+    all_generic_ide
+    hpet=force
+    noapm
+    pci=nomsi
+
+  I ran the memory and hard disk test utilities provided on the Ubuntu CD: they detected no problem.
+  I also ran the memory and hard disk self test provided by the BIOS. Again no problem.
+
+  When I manage to log in before the freeze occurs, then I get the following message in a GUI window which I try to reproduce here::
+
+    A program is still running: 
+     Power Manager
+      Not responding
+
+    Waiting for program to finish.
+    Interrupting program may cause you to 
+    lose work
+    [Lock Screen] [Cancel] [Logout anyway]
+
+
+Debian
+------
+
+Here is how I described the situation on Debian Lenny shortly before I changed to Ubuntu:
+
+It works quite well, but doesn't autodetect a correct video driver: the highest screen resolution offered is 1024x768, which looks distorted on the wide monitor. I can watch videos on YouTube, but the quality is really bad.
+
+It took me some time to understand that my notebook has an ATI controller. 
+
+
+My `/etc/X11/xconf.org` contains only::
+
+  Section "InputDevice"
+          Identifier      "Generic Keyboard"
+          Driver          "kbd"
+          Option          "XkbRules"      "xorg"
+          Option          "XkbModel"      "pc105"
+          Option          "XkbLayout"     "ee"
+  EndSection
+
+  Section "InputDevice"
+          Identifier      "Configured Mouse"
+          Driver          "mouse"
+  EndSection
+
+  Section "Device"
+          Identifier      "Configured Video Device"
+  EndSection
+
+  Section "Monitor"
+          Identifier      "Configured Monitor"
+  EndSection
+
+  Section "Screen"
+          Identifier      "Default Screen"
+          Monitor         "Configured Monitor"
+  EndSection
+
+Here are some more diagnostics::
+
+
+  rose:~# lshw -class video
+    *-display UNCLAIMED
+         description: VGA compatible controller
+         product: ATI Technologies Inc
+         vendor: ATI Technologies Inc
+         physical id: 5
+         bus info: pci@0000:01:05.0
+         version: 00
+         width: 32 bits
+         clock: 33MHz
+         capabilities: pm msi vga_controller bus_master cap_list
+         configuration: latency=0
+
+::
+
+  rose:~# hwinfo --gfxcard
+  11: PCI 105.0: 0300 VGA compatible controller (VGA)
+    [Created at pci.310]
+    UDI: /org/freedesktop/Hal/devices/pci_1002_9712
+    Unique ID: ul7N.hoF65UtRFT7
+    Parent ID: vSkL.Wwwe8lyjkRE
+    SysFS ID: /devices/pci0000:00/0000:00:01.0/0000:01:05.0
+    SysFS BusID: 0000:01:05.0
+    Hardware Class: graphics card
+    Model: "ATI VGA compatible controller"
+    Vendor: pci 0x1002 "ATI Technologies Inc"
+    Device: pci 0x9712
+    SubVendor: pci 0x103c "Hewlett-Packard Company"
+    SubDevice: pci 0x363f
+    Memory Range: 0x80000000-0x8fffffff (rw,prefetchable)
+    I/O Ports: 0x3000-0x3fff (rw)
+    Memory Range: 0x90300000-0x9030ffff (rw,non-prefetchable)
+    Memory Range: 0x90200000-0x902fffff (rw,non-prefetchable)
+    IRQ: 10 (no events)
+    I/O Ports: 0x3c0-0x3df (rw)
+    Module Alias: "pci:v00001002d00009712sv0000103Csd0000363Fbc03sc00i00"
+    Config Status: cfg=new, avail=yes, need=no, active=unknown
+    Attached to: #30 (PCI bridge)
+  Primary display adapter: #11
+
+
+According to http://wiki.debianforum.de/AtiTreiberInstallation or
+http://www.debianhelp.org/node/9347, I must download these drivers from 
+http://support.amd.com/us/gpudownload/Pages/index.aspx
+
+But which one to choose there? The only answer I could imagine was "Linux x86" / "Notebook" / "HP", which lead to a statement:
+
+  Advisory:
+  The display driver supplied by the laptop manufacturer is customized for the
+  built-in flat panel display, and the graphics features and functions specific to the
+  laptop. It is strongly recommended to use the supplied drivers.
+
+  If installing a different operating system other than the one included with the laptop,
+  the laptop may not meet all the requirements, and supported drivers may not be 
+  available.
+
+  The laptop manufacturer is the exclusive provider of driver updates.  If the required 
+  driver update is not available at the laptop manufacturers’ website, it is recommended 
+  to contact the manufacturer directly, to see if an updated driver will be made 
+  available in the future.
+
+  AMD cannot provide driver updates directly from AMD.com.
+
+  AMD has provided a list of the major laptop manufacturers and corresponding support
+  websites below for your convenience.
+
+
+(They also asked "What can we do to improve this information?", which I answered with "Provide useful information for Linux users who are trying to find a driver for your product.")
+
+They then link me to http://welcome.hp.com/country/us/en/support.html
+
+HP asks me for the product number, then "Which operating system is used with your product?". There are 6 possible answers, all starting with "Microsoft Windows". 
+And then the laconic explanation:
+
+  Don't see your operating system?
+  If your operating system is not listed above, HP does not have software or driver
+  downloads available for this product in that operating system.
+
+
+
+The Compaq Presario CQ61
+------------------------
+
+Overview:
+
+ * Product Number: VJ539EA#B1R
+ * System Board ID : 363F
+ * Processor Type : AMD Sempron(tm) M100
+ * Processor Speed : 2000 MHz
+ * Total Memory : 2048 MB
+ * BIOS Version F.07
+ * BIOS Vendor : Insyde
+ * Factory installed OS : non Vista
+
+Output of lshw: :doc:`LinuxOnCompaqPresarioCQ61_lshw`
+
+By pressing Escape shortly after switching power on, I can start 
+the BIOS setup menu 
+(`InsydeH20 Setup utility 
+<http://www.insydesw.com/products/products-efi-h2o.htm>`_ 
+Rev 3.5):
+
+ * Main
+ 
+   * Sytem time & date
+   * Diagnostics log
+   * (as well as the system information mentioned above)
+ * Security
+ 
+   * Admininstrator password
+   * Power-on password
+ * Diagnostics
+ 
+   * Primary Hard Disk Self Test
+   * Memory test
+ * System Configuration
+ 
+   * Language : English
+   * Virtualization Technology : disabled
+   * Fan Always On : disabled
+   * Boot options:
+   
+     * POST Hotkey Delay : 0 secs
+     * CD-ROM Boot : enabled
+     * Floppy boot : disabled
+     * Internal Network Adapter Boot : disabled
+     * Boot order : 
+     
+       * Internal CD/DVD ROM Drive
+       * Notebook Hard Drive
+       * USB Diskette on Key/USB Hard Disk
+       * USB CD/DVD ROM Drive
+       * ! USB Floppy
+       * ! Network Adapter
+ * Exit
+
+

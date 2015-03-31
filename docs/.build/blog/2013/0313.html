@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130313 (Wednesday, 13 March 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130314 (Thursday, 14 March 2013)" href="0314.html" />
+    <link rel="prev" title="20130312 (Tuesday, 12 March 2013)" href="0312.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0314.html" title="20130314 (Thursday, 14 March 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0312.html" title="20130312 (Tuesday, 12 March 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-13-march-2013">
+<h1>20130313 (Wednesday, 13 March 2013)<a class="headerlink" href="#wednesday-13-march-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="more-fun-with-packaging">
+<h2>More fun with packaging<a class="headerlink" href="#more-fun-with-packaging" title="Permalink to this headline">¶</a></h2>
+<p>Oops, the installation instruction in <a class="reference external" href="http://www.lino-framework.org/tutorials/quickstart.html">/tutorials/quickstart</a>
+still doesn&#8217;t work.
+And I&#8217;m decided to get this working soon.
+But there are still a lot of stupid packaging problems which make it break.</p>
+<ul>
+<li><p class="first">Moved <cite>/lino/projects/sphinxdocs/settings.py</cite> to <cite>docs</cite>.
+Added new command <code class="docutils literal"><span class="pre">initdb</span></code> to <code class="xref py py-mod docutils literal"><span class="pre">djangosite.utils.fablib</span></code>
+which runs an <cite>initdb_demo</cite>
+on the docs database.</p>
+</li>
+<li><p class="first">removed usage of the <cite>djangodoctest</cite> directive and the
+<code class="xref py py-mod docutils literal"><span class="pre">djangosite.utils.doctest</span></code> module.</p>
+</li>
+<li><p class="first">Moved lino.utils.test to djangosite.utils.test</p>
+</li>
+<li><p class="first">More testing commands in <cite>fablib.py</cite>.
+My favourite command is now:</p>
+<div class="highlight-python"><div class="highlight"><pre>fab ci test html sdist pub
+fab ci sdist pub
+</pre></div>
+</div>
+</li>
+<li><p class="first">The automated sphinx-apidoc lacks two things:</p>
+<ul class="simple">
+<li>Specify a list of modules to exclude</li>
+<li>An option to specify a list of packages for which
+we want a separate page per module instead of
+grouping all modules of a package into a same page.</li>
+</ul>
+</li>
+<li><p class="first">New error message &#8220;Using remote authentication, but no
+user credentials found.&#8221;. On a development server with a
+<code class="xref py py-attr docutils literal"><span class="pre">lino.ui.Site.remote_user_header</span></code>
+but without
+<code class="xref py py-attr docutils literal"><span class="pre">lino.ui.Site.default_user</span></code>.</p>
+</li>
+<li><p class="first">Started test phase with several releases for Lino, North and Django-Site.
+- Lino 1.6.1, 1.6.2
+- North 0.0.3 through 0.0.4
+- django-site 0.0.3 through 0.0.4</p>
+<p>Certain files weren&#8217;t includedd in the Python egg:
+<cite>setup_info.py</cite> file and Lino&#8217;s static <cite>media</cite> directory
+(the one that gets linked more or less automatically to
+the <cite>/media/lino</cite> url).
+It seems that this topic is very hot for the moment,
+but a pragmatical solution seems to move this directory
+one level down into the <cite>lino</cite> package.</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0314.html" title="20130314 (Thursday, 14 March 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0312.html" title="20130312 (Tuesday, 12 March 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0313.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0313.html">Online Link</a>
+    </div>
+  </body>
+</html>

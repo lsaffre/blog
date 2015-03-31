@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130903 (Tuesday, 03 September 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130904 (Wednesday, 04 September 2013)" href="0904.html" />
+    <link rel="prev" title="20130902 (Monday, 02 September 2013)" href="0902.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0904.html" title="20130904 (Wednesday, 04 September 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0902.html" title="20130902 (Monday, 02 September 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-03-september-2013">
+<h1>20130903 (Tuesday, 03 September 2013)<a class="headerlink" href="#tuesday-03-september-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="configuring-vat-related-things">
+<h2>Configuring VAT-related things<a class="headerlink" href="#configuring-vat-related-things" title="Permalink to this headline">¶</a></h2>
+<p>Continued <a class="reference external" href="oops">yesterday&#8217;s work</a>.
+In fact we <em>don&#8217;t want</em> to store this decision <em>per document</em>.
+All cases I know can be handled by storing it  <em>per VatRegime</em>:</p>
+<ul class="simple">
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.vat.models.VatRegimes</span></code> has now a custom
+field <cite>item_vat</cite></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.vat.models.TradeTypes</span></code> has now two custom
+fields <cite>price_field_name</cite> and <cite>price_field_label</cite>,
+and a method <code class="xref py py-meth docutils literal"><span class="pre">get_catalog_price</span></code>.</li>
+<li>Added two (tested) utility functions
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.vat.utils.add_vat</span></code>
+and
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.vat.utils.remove_vat</span></code>.</li>
+<li><code class="xref py py-func docutils literal"><span class="pre">lino.modlib.vat.models.configure()</span></code> is a cool new system to
+specify configuration values. Works for me but is not mature.</li>
+</ul>
+<p>And (finally!) the visible result of all this: <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a> now
+produces invoices without VAT, simply by adding the following line
+to its <code class="xref py py-meth docutils literal"><span class="pre">lino.ui.Site.setup_choicelists()</span></code> method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="bp">self</span><span class="o">.</span><span class="n">modules</span><span class="o">.</span><span class="n">vat</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">default_vat_class</span><span class="o">=</span><span class="s">&#39;exempt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="newcomers-newclients-param-defaults-returned-invalid-keyword-observed-event">
+<h2>newcomers.NewClients.param_defaults() returned invalid keyword &#8216;observed_event&#8217;<a class="headerlink" href="#newcomers-newclients-param-defaults-returned-invalid-keyword-observed-event" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a which occured even in the test suite.</p>
+</div>
+<div class="section" id="getting-the-user-in-a-pisa-template">
+<h2>Getting the user in a Pisa template<a class="headerlink" href="#getting-the-user-in-a-pisa-template" title="Permalink to this headline">¶</a></h2>
+<p>Joe sent in a small patch to allow access to current request when
+printing using Pisa, useful to get current user.</p>
+<p>Joe, you suggested to use a variable name <code class="docutils literal"><span class="pre">request</span></code> to hold the
+Django request, but I think it is better to use the variable <code class="docutils literal"><span class="pre">ar</span></code>
+(for <a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.ActionRequest" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">ActionRequest</span></code></a>)
+because this is also given for appy templates and because it
+has some more possibilities:</p>
+<ul class="simple">
+<li><cite>{{ar.request.user}}</cite> : returns the user</li>
+<li><cite>{{ar.user}}</cite> : returns the user</li>
+<li><cite>{{ar.subst_user}}</cite> : None if user is acting as herself, otherwise
+the substituted user</li>
+<li><cite>{{ar.get_user()}}</cite> : Shortcut for <cite>ar.subst_user or ar.user</cite></li>
+</ul>
+<p>Wrote a new tutorial <a class="reference external" href="http://www.lino-framework.org/tutorials/pisa/index.html#lino-tutorial-pisa" title="(in Lino v1.6)"><span>Printing using Pisa</span></a> to demonstrate and
+test this.</p>
+</div>
+<div class="section" id="site-object-has-no-attribute-modules">
+<h2>&#8216;Site&#8217; object has no attribute &#8216;modules&#8217;<a class="headerlink" href="#site-object-has-no-attribute-modules" title="Permalink to this headline">¶</a></h2>
+<p>Joe reported &#8220;I&#8217;m unable to run Lino with latest pypi versions of Lino,
+djangosite, North .... after upgrading everything I have to downgrade
+djangosite to 0.1.4. There is an error that site.modules is not defined.&#8221;</p>
+<p>To reproduce it, I create a virgin Python environment and try the
+<a class="reference external" href="http://www.lino-framework.org/tutorials/quickstart/mysite/index.html#lino-tutorial-quickstart" title="(in Lino v1.6)"><span>Getting started</span></a> tutorial:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ virtualenv t
+$ . t/bin/activate
+$ pip install lino
+$ cd ~/hgwork/lino/docs/tutorials/quickstart
+$ python manage.py initdb_demo --traceback
+</pre></div>
+</div>
+<p>This produces indeed:</p>
+<div class="highlight-python"><div class="highlight"><pre>INFO Started manage.py initdb_demo --traceback (using mysite.settings) --&gt; PID 7754
+INFO This is Lino Così 0.1 using djangosite 0.1.7, Django 1.5.2, Python 2.7.3, Babel 1.3, Lino 1.6.11, Jinja 2.7.1, Sphinx 1.2b1, python-dateutil 2.1, OdfPy ODFPY/0.9.6, docutils 0.11, suds (not installed), PyYaml 3.10, Appy 0.8.5 (2013/08/12 09:51).
+Traceback (most recent call last):
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/core/management/base.py&quot;, line 222, in run_from_argv
+    self.execute(*args, **options.__dict__)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/core/management/base.py&quot;, line 254, in execute
+    self.validate()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/core/management/base.py&quot;, line 280, in validate
+    num_errors = get_validation_errors(s, app)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/core/management/validation.py&quot;, line 35, in get_validation_errors
+    for (app_name, error) in get_app_errors().items():
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/db/models/loading.py&quot;, line 166, in get_app_errors
+    self._populate()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/db/models/loading.py&quot;, line 72, in _populate
+    self.load_app(app_name, True)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/db/models/loading.py&quot;, line 96, in load_app
+    models = import_module(&#39;.models&#39;, app_name)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/django/utils/importlib.py&quot;, line 35, in import_module
+    __import__(name)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/djangosite/models.py&quot;, line 31, in &lt;module&gt;
+    settings.SITE.startup()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/djangosite/__init__.py&quot;, line 320, in startup
+    self.do_site_startup()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/lino/ui/__init__.py&quot;, line 669, in do_site_startup
+    super(Site,self).do_site_startup()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/lino/__init__.py&quot;, line 339, in do_site_startup
+    startup_site(self)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/lino/core/kernel.py&quot;, line 173, in startup_site
+    self.modules.define(model._meta.app_label,model.__name__,model)
+AttributeError: &#39;Site&#39; object has no attribute &#39;modules&#39;
+INFO Done manage.py initdb_demo --traceback (PID 7754)
+</pre></div>
+</div>
+<p>Thank you, Joe, for reporting this problem.</p>
+<p>Another symptom in that environment:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python setup.py test
+running test
+Traceback (most recent call last):
+  File &quot;setup.py&quot;, line 3, in &lt;module&gt;
+    setup(**SETUP_INFO)
+  File &quot;/usr/lib/python2.7/distutils/core.py&quot;, line 152, in setup
+    dist.run_commands()
+  File &quot;/usr/lib/python2.7/distutils/dist.py&quot;, line 953, in run_commands
+    self.run_command(cmd)
+  File &quot;/usr/lib/python2.7/distutils/dist.py&quot;, line 972, in run_command
+    cmd_obj.run()
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/distribute-0.6.24-py2.7.egg/setuptools/command/test.py&quot;, line 127, in run
+    self.distribution.fetch_build_eggs(self.distribution.install_requires)
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/distribute-0.6.24-py2.7.egg/setuptools/dist.py&quot;, line 245, in fetch_build_eggs
+    parse_requirements(requires), installer=self.fetch_build_egg
+  File &quot;/home/luc/tmp/t/local/lib/python2.7/site-packages/distribute-0.6.24-py2.7.egg/pkg_resources.py&quot;, line 588, in resolve
+    raise VersionConflict(dist,req) # XXX put more info here
+pkg_resources.VersionConflict: (djangosite 0.1.7 (/home/luc/tmp/t/lib/python2.7/site-packages), Requirement.parse(&#39;djangosite==0.1.5&#39;))
+</pre></div>
+</div>
+<p>So it is time to make a new release.
+But first answer the question: why did this error pass the test suites
+and make it into a released version?</p>
+<p>Not the reason, but disturbing is the bug that the message
+&#8220;using djangosite 0.1.7, Django 1.5.2, ...&#8221;
+didn&#8217;t include the North version number.
+This was in <code class="xref py py-meth docutils literal"><span class="pre">north.north_site.Site()</span></code>
+Fixed.</p>
+</div>
+<div class="section" id="cleanup-my-init-py-files">
+<h2>Cleanup my <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-__init__.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">__init__.py</span></code></a> files<a class="headerlink" href="#cleanup-my-init-py-files" title="Permalink to this headline">¶</a></h2>
+<p>After reading
+<a class="reference external" href="http://axialcorps.com/2013/08/29/5-simple-rules-for-building-great-python-packages/?goback=%2Egde_101591_member_270039332#%21">5 Simple Rules For Building Great Python Packages</a>
+I started to move the <cite>Site</cite> classes out of <a class="reference external" href="http://www.lino-framework.org/ref/files.html#xfile-__init__.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">__init__.py</span></code></a> into a
+separate file <code class="file docutils literal"><span class="pre">site.py</span></code>
+In fact I have always been wanting that.</p>
+<p>Application code needs no change since it continues to
+do <code class="docutils literal"><span class="pre">from</span> <span class="pre">lino.ui</span> <span class="pre">import</span> <span class="pre">Site</span></code>.
+The difference is just that it &#8220;looks better&#8221;.</p>
+<p>One side effect is that all my references in docs need an update</p>
+<p>Need to change all <code class="xref py py-class docutils literal"><span class="pre">lino.Site</span></code>
+to <code class="xref py py-class docutils literal"><span class="pre">lino.Site</span></code>.</p>
+</div>
+<div class="section" id="a-new-icon-for-external-links">
+<h2>A new icon for external links<a class="headerlink" href="#a-new-icon-for-external-links" title="Permalink to this headline">¶</a></h2>
+<p>Although I liked very much the wikipedia icon
+for the &#8220;Open this panel in own window&#8221; link
+displayed behind every &#8220;main item header&#8221;
+(see <a class="reference external" href="oops">2013-08-23</a>)</p>
+<p>Gerd now suggested another icon which looks even better.</p>
+</div>
+<div class="section" id="slave-tables-with-more-than-15-rows">
+<h2>Slave tables with more than 15 rows<a class="headerlink" href="#slave-tables-with-more-than-15-rows" title="Permalink to this headline">¶</a></h2>
+<p>Fixed a problem &#8220;Slave tables with more than 15 rows&#8221; reported by
+Gerd and Joe.
+Test case and description  in <a class="reference external" href="http://cosi.lino-framework.org/tested/index.html#cosi-tested" title="(in Lino Cosi Reference Manual v0.0)"><span>Tested documents</span></a>.</p>
+</div>
+<div class="section" id="difference-between-lino-ui-site-and-lino-site">
+<h2>Difference between <cite>lino.ui.Site</cite> and <cite>lino.Site</cite><a class="headerlink" href="#difference-between-lino-ui-site-and-lino-site" title="Permalink to this headline">¶</a></h2>
+<p>I removed the split between <cite>lino.ui.Site</cite> and <cite>lino.Site</cite>
+which was historic and obsolete.</p>
+<p>There is no longer a class <cite>lino.ui.Site</cite>, everything is in <cite>lino.Site</cite>.</p>
+<p>Application code usually does
+<code class="docutils literal"><span class="pre">from</span> <span class="pre">lino.projects.std.settings</span> <span class="pre">import</span> <span class="pre">*</span></code>
+and therefore needs no change.
+But in case you copied some tutorial and have
+<code class="docutils literal"><span class="pre">from</span> <span class="pre">lino.ui</span> <span class="pre">import</span> <span class="pre">Site</span></code>
+then change this to
+<code class="docutils literal"><span class="pre">from</span> <span class="pre">lino</span> <span class="pre">import</span> <span class="pre">Site</span></code>.</p>
+</div>
+<div class="section" id="miscellaneous">
+<h2>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://welfare.lino-framework.org/index.html#welfare" title="(in Lino Welfare Reference Manual v1.1)"><span>Lino Welfare</span></a> : EventStates has no attribute &#8220;accepted&#8221;</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0904.html" title="20130904 (Wednesday, 04 September 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0902.html" title="20130902 (Monday, 02 September 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0903.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0903.html">Online Link</a>
+    </div>
+  </body>
+</html>

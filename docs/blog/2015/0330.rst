@@ -1,0 +1,66 @@
+======================
+Monday, March 30, 2015
+======================
+
+Moved Luc's blog out of Lino
+============================
+
+This is my first blog entry which will not go to the Lino repository.
+As part of the process of decentralizing the Lino development, I moved
+my blog out the Lino documentation tree.  It is now available at
+http://luc.lino-framework.org.  Updated :lino:`/docs/blog`.
+
+
+
+Creating countries
+==================
+
+It was not possible to create new :class:`Country
+<lino.modlib.countries.models.Country>` objects because these have a
+non-numeric primary key.
+
+- Added new
+  :attr:`disable_primary_key<lino.core.actions.Action.disable_primary_key>`,
+  and :class:`lino.core.store.DisabledFieldsStoreField` uses this.
+
+- :meth:`lino.core.kernel.Kernel.get_generic_related` failed when
+  called on an object whose primary key was not integer
+  (i.e. AutoField, IntegerField or some subclass thereof)
+
+
+The type of the primary key
+===========================
+
+How to test whether an object's model has a primary key which can be
+pointed to using a :ref:`gfk`:
+
+>>> import os
+>>> os.environ['DJANGO_SETTINGS_MODULE'] = 'lino.projects.min1.settings.demo'
+>>> from django.db import models
+>>> from lino.api.shell import *
+
+
+>>> obj = countries.Country.objects.get(pk='BE')
+>>> obj.pk
+u'BE'
+
+>>> obj._meta.pk
+<django.db.models.fields.CharField: isocode>
+
+>>> GFK_TARGETS = (models.AutoField, models.IntegerField)
+>>> isinstance(obj._meta.pk, GFK_TARGETS)
+False
+
+>>> isinstance(contacts.Partner._meta.pk, GFK_TARGETS)
+True
+
+
+Duplicate humans
+================
+
+Two persons *Norbert Berg* and *Norbert van Berg* should be detected
+as similar, but *Norbert van Berg* and *Lydia van Berg* not
+
+Extended :mod:`lino.mixins.humans` and
+:mod:`lino_welfare.modlib.dupable_clients.mixins.DupableClient`. Added
+test cases in :lino:`/tutorials/human/index`.

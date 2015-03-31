@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20111006 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20111011" href="1011.html" />
+    <link rel="prev" title="20111004" href="1004.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1011.html" title="20111011"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1004.html" title="20111004"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20111006<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Tring to get the test suite running on <cite>wsl</cite>.</p>
+<p><code class="xref py py-mod docutils literal"><span class="pre">lino.apps.dsbe.fixtures.demo</span></code> now
+uses the romanized form &#8220;Tatjana Kasennova&#8221;
+instead of &#8220;Татьяна Казеннова&#8221;.</p>
+<p>The idea behind this was to show that cyrillic characters are supported.
+But this was more: it was a mix of cyrillic and other alphabets in a same
+table column.
+While sqlite accepts this and doesn&#8217;t really bother about how to
+sort them correctly,
+MySQL with charset <code class="docutils literal"><span class="pre">utf8</span></code> and the default
+collation <code class="docutils literal"><span class="pre">utf8_general_ci</span></code> does <em>not accept</em>
+cyrillic characters, saying:</p>
+<div class="highlight-python"><div class="highlight"><pre>Warning: Incorrect string value: &#39;\xD0\x9A\xD0\xB0\xD0\xB7...&#39; for column &#39;name&#39; at row 1
+</pre></div>
+</div>
+<p>So this example was not very useful and needs special configuration
+tricks on MySQL.</p>
+<p><code class="xref py py-func docutils literal"><span class="pre">lino.tools.obj2str()</span></code> now handles the fact that values of an <cite>AutoField</cite>
+are sometimes simple <code class="docutils literal"><span class="pre">int</span></code> and somtimes <code class="docutils literal"><span class="pre">long</span></code> integers.</p>
+<p>The following failure comes when using Django 1.3 (and not a pre-1.4 snapshot):</p>
+<div class="highlight-python"><div class="highlight"><pre>======================================================================
+ERROR: test_shortcut_view (django.contrib.contenttypes.tests.ContentTypesTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/contrib/contenttypes/tests.py&quot;, line 64, in test_shortcut_view
+    obj = User.objects.create(username=&quot;john&quot;)
+  ...
+  File &quot;/usr/lib/pymodules/python2.6/MySQLdb/connections.py&quot;, line 35, in defaulterrorhandler
+    raise errorclass, errorvalue
+DatabaseError: (1146, &quot;Table &#39;test_myproject.auth_user&#39; doesn&#39;t exist&quot;)
+</pre></div>
+</div>
+<p>Accessing the <cite>message</cite> attribute of an <cite>Exception</cite> raises a DeprecationWarning
+in Python 2.6.6, but not in Python 2.7:</p>
+<div class="highlight-python"><div class="highlight"><pre>./var/snapshots/lino/lino/apps/dsbe/tests/dsbe_tests.py:194:
+DeprecationWarning: BaseException.message has been deprecated as of Python 2.6
+</pre></div>
+</div>
+<p>(Solved this by testing on <code class="docutils literal"><span class="pre">str(e)</span></code> instead of <code class="docutils literal"><span class="pre">e.message</span></code>.)</p>
+<p>Here another funny failure that happens in wsl (Python 2.6.6, Django 1.4 pre-alpha SVN-16722)
+but not on jana (Python 2.6.6, Django 1.4 pre-alpha SVN-16714):</p>
+<div class="highlight-python"><div class="highlight"><pre>Problem installing fixture &#39;/var/snapshots/lino/lino/apps/dsbe/fixtures/demo.py&#39;: Traceback (most recent call last):
+  File &quot;/var/snapshots/django/django/core/management/commands/loaddata.py&quot;, line 175, in handle
+    for obj in objects:
+  ...
+  File &quot;/var/snapshots/lino/lino/utils/instantiator.py&quot;, line 80, in convert
+    model.__name__,lookup_kw,e))
+DataError: RoleType.objects.get(**{&#39;pk&#39;: 1}) : RoleType matching query does not exist.
+</pre></div>
+</div>
+<p>Updated <cite>/var/snapshots/django-1.4</cite> on wsl from revision 16722 to 16941.
+Updated <cite>/var/snapshots/django</cite> on jana from revision 16714 to 16941.
+Result: failure remains even if both systems have the same Django version.</p>
+<p>Database configurations are equivalent, both have servers something like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">DATABASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;default&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;ENGINE&#39;</span><span class="p">:</span> <span class="s">&#39;django.db.backends.mysql&#39;</span><span class="p">,</span>
+        <span class="s">&#39;NAME&#39;</span><span class="p">:</span> <span class="s">&#39;myproject&#39;</span><span class="p">,</span>
+        <span class="s">&#39;USER&#39;</span><span class="p">:</span> <span class="s">&#39;django&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PASSWORD&#39;</span><span class="p">:</span> <span class="s">&#39;my cool password&#39;</span><span class="p">,</span>
+        <span class="s">&#39;HOST&#39;</span><span class="p">:</span> <span class="s">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+        <span class="s">&#39;PORT&#39;</span><span class="p">:</span> <span class="s">&#39;3306&#39;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>How to compare the MySQL server configurations on two systems?
+The answer is:</p>
+<div class="highlight-python"><div class="highlight"><pre>mysqladmin variables -u root -p &gt; mysql.vars
+</pre></div>
+</div>
+<p>Difference:
+<cite>storage_engine</cite> was <cite>MyISAM</cite> on jana but <cite>InnoDB</cite> on wsl.
+About ` storage engines &lt;<a class="reference external" href="http://dev.mysql.com/doc/refman/5.1/en/storage-engines.html">http://dev.mysql.com/doc/refman/5.1/en/storage-engines.html</a>&gt;`_:</p>
+<ul class="simple">
+<li>MyISAM: The default MySQL storage engine and the one that is used
+the most in Web, data warehousing, and other application environments.
+MyISAM is supported in all MySQL configurations, and is the default
+storage engine unless you have configured MySQL to use a different
+one by default.</li>
+<li>InnoDB: A transaction-safe (ACID compliant) storage engine for
+MySQL that has commit, rollback, and crash-recovery capabilities
+to protect user data. InnoDB row-level locking (without escalation
+to coarser granularity locks) and Oracle-style consistent nonlocking
+reads increase multi-user concurrency and performance. InnoDB stores
+user data in clustered indexes to reduce I/O for common queries based
+on primary keys. To maintain data integrity, InnoDB also supports
+FOREIGN KEY referential-integrity constraints.</li>
+</ul>
+<p>Currently we use <cite>MyISAM</cite>, later we&#8217;ll get it running using <cite>InnoDB</cite>.</p>
+<dl class="docutils">
+<dt>Another little bug::</dt>
+<dd>AttributeError: &#8216;module&#8217; object has no attribute &#8216;JobRequest&#8217;</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1011.html" title="20111011"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1004.html" title="20111004"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/1007.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/1007.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110712 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110713" href="0713.html" />
+    <link rel="prev" title="20110711" href="0711.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0713.html" title="20110713"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0711.html" title="20110711"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110712<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="datenkontrollliste-kompromiss-zwischen-todesurteil-und-freispruch">
+<h2>Datenkontrollliste : Kompromiss zwischen Todesurteil und Freispruch<a class="headerlink" href="#datenkontrollliste-kompromiss-zwischen-todesurteil-und-freispruch" title="Permalink to this headline">¶</a></h2>
+<p>Ein Benutzer möchte beim Importieren mit <a class="reference external" href="http://www.lino-framework.org/ref/glossary.html#term-watch-tim" title="(in Lino v1.6)"><span class="xref std std-term">watch_tim</span></a>
+prüfen, ob die <cite>Person.national_id</cite> auch korrekt ist.
+Nichts einfacher als das, dachte ich mir:
+<code class="xref py py-func docutils literal"><span class="pre">lino.apps.dsbe.models.niss_validator()</span></code>
+und dann in der Deklaration des Feldes hinzufügen:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">national_id</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+    <span class="n">blank</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">verbose_name</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">&quot;National ID&quot;</span><span class="p">),</span>
+    <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">niss_validator</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Aber ganz so einfach ging das doch nicht:
+in der TIM-Datenbank sind ca. 381 Partner mit einer ungültigen NISS in PAR-&gt;NB2.
+TIM prüft auf eine korrekte NISS nur bei Sozialhilfeempfängern
+(IdPrt S), und dort auch nur, wenn man das Feld bearbeitet hat.</p>
+<p>Natürlich will der Bentuzer diese teilweise alten Daten
+nicht alle korrigieren vor dem nächsten Release.</p>
+<p>Ich habe deshalb nun in Lino ein Äquivalent von TIMs Integritätstest
+gemacht (<code class="xref py py-class docutils literal"><span class="pre">lino.models.DataControlListing</span></code>).
+Der Integritätstest in TIM ist ja ein Kompromiss zwischen Todesurteil und
+Freispruch.
+In Lino war das bisher nicht nötig.
+Statt &#8220;Integritätstest&#8221; nenne ich es &#8220;Datenkontrollliste&#8221;
+bzw. einfach nur &#8220;Kontrollliste&#8221; (man beachte die drei L).
+Den neuen Namen gebe ich, weil &#8220;Integritätstest&#8221; zu sehr
+an &#8220;Database Integrity&#8221; erinnert, und darum handelt es sich hier ja
+gerade <em>nicht</em>. Integritätsfehler führen in einer SQL-Datenbank
+dazu, dass der Record gar nicht erst gespeichert wird.
+Wir wollen im Fall einer ungültigen NISS aber speichern und
+&#8220;nur auf Anfrage&#8221; eventuelle zusätzliche Warnungen bekommen.</p>
+<p>In der nächsten Version haben wir also im neuen Menü &#8220;Listings&#8221;
+nicht nur das neue Listing &#8220;Situation Verträge&#8221;, sondern auch
+ein Listing &#8220;Kontrollliste&#8221;.</p>
+<p>Checkin 20110712a.</p>
+</div>
+<div class="section" id="calendar-module-replaces-reminders">
+<h2>Calendar module replaces Reminders<a class="headerlink" href="#calendar-module-replaces-reminders" title="Permalink to this headline">¶</a></h2>
+<p>The integration of lino.modlib.cal over the (soon obsolete)
+get_reminders system is almost finished.</p>
+<p>Checkin 20110712b.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0713.html" title="20110713"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0711.html" title="20110711"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0712.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0712.html">Online Link</a>
+    </div>
+  </body>
+</html>

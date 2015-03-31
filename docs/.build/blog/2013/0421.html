@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130421 (Sunday, 21 April 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130422 (Monday, 22 April 2013)" href="0422.html" />
+    <link rel="prev" title="20130420 (Saturday, 20 April 2013)" href="0420.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0422.html" title="20130422 (Monday, 22 April 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0420.html" title="20130420 (Saturday, 20 April 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="sunday-21-april-2013">
+<h1>20130421 (Sunday, 21 April 2013)<a class="headerlink" href="#sunday-21-april-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="upcoming-and-missed-events">
+<h2>&#8220;Upcoming&#8221; and &#8220;Missed&#8221; events<a class="headerlink" href="#upcoming-and-missed-events" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>coming_reminders</cite> and <cite>missed_reminders</cite>
+virtual fields of <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.Home</span></code>
+(&#8220;Ausblick&#8221; und &#8220;Verpasste Termine&#8221;)
+showed also events of other users.</p>
+<p>Added a new case to <a class="reference external" href="http://welfare.lino-framework.org/tested/misc.html#welfare-tested-misc" title="(in Lino Welfare Reference Manual v1.1)"><span>Miscellaneous</span></a> and
+fixed the bug.</p>
+<p>Which revealed that this bug is probably at least one release old.
+The fact that nobody complained indicates that
+these two panels are obsolete and should be replaced by something
+better.</p>
+</div>
+<div class="section" id="sphinx-unsupported-build-info-format-in-buildinfo">
+<h2>Sphinx: unsupported build info format in .buildinfo<a class="headerlink" href="#sphinx-unsupported-build-info-format-in-buildinfo" title="Permalink to this headline">¶</a></h2>
+<p>I sometimes had the following Sphinx warnings:</p>
+<div class="highlight-python"><div class="highlight"><pre>WARNING: unsupported build info format in u&#39;/home/luc/hgwork/welfare/docs/.build/.buildinfo&#39;, building all
+</pre></div>
+</div>
+<p>Which disturbed me because it stopped the build
+(because I have -W option turned on and want it to stay like this).</p>
+<p>This invalid <cite>.buildinfo</cite> file contained:</p>
+<div class="highlight-python"><div class="highlight"><pre># Sphinx build info version 1
+# This file hashes the configuration used when building these files. When it is not found, a full rebuild will be done.
+config:
+tags:
+</pre></div>
+</div>
+<p>It is indeed not normal to have this file exist with &#8220;empty&#8221; entries.
+Possible that this comes because I use complex configurations.
+But still it was Sphinx herself who generated this file and now
+she complains about the content. That&#8217;s not correct!
+Here is the responsible code in <cite>/sphinx/builders/html.py</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s">&#39;.buildinfo&#39;</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;# Sphinx build info version 1&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>  <span class="c"># skip commentary</span>
+        <span class="n">cfg</span><span class="p">,</span> <span class="n">old_config_hash</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;: &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg</span> <span class="o">!=</span> <span class="s">&#39;config&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+        <span class="n">tag</span><span class="p">,</span> <span class="n">old_tags_hash</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;: &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">!=</span> <span class="s">&#39;tags&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;unsupported build info format in </span><span class="si">%r</span><span class="s">, building all&#39;</span> <span class="o">%</span>
+              <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s">&#39;.buildinfo&#39;</span><span class="p">))</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>A principal problem with this code is that it uses the
+standard exception <cite>ValueError</cite> to handle a custom problem.
+It&#8217;s a mousetrap, and my concrete case of invalid build file
+makes Sphinx step into this trap.
+In fact (AFAICS) the author wants Sphinx to warn only in those
+special cases and to silently ignore (without any warning)
+any &#8220;really invalid&#8221; .buildinfo file.
+So I suggest to replace &#8220;ValueError&#8221; by a custom exception &#8220;InvalidInfo&#8221;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">InvalidInfo</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">fp</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s">&#39;.buildinfo&#39;</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">version</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span> <span class="o">!=</span> <span class="s">&#39;# Sphinx build info version 1&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidInfo</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>  <span class="c"># skip commentary</span>
+        <span class="n">cfg</span><span class="p">,</span> <span class="n">old_config_hash</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;: &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cfg</span> <span class="o">!=</span> <span class="s">&#39;config&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidInfo</span>
+        <span class="n">tag</span><span class="p">,</span> <span class="n">old_tags_hash</span> <span class="o">=</span> <span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;: &#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span> <span class="o">!=</span> <span class="s">&#39;tags&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidInfo</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">fp</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">except</span> <span class="n">InvalidInfo</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&#39;unsupported build info format in </span><span class="si">%r</span><span class="s">, building all&#39;</span> <span class="o">%</span>
+              <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s">&#39;.buildinfo&#39;</span><span class="p">))</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="more-bugs-fixed">
+<h2>More bugs fixed<a class="headerlink" href="#more-bugs-fixed" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>pcsw.Client.print_eid_content didn&#8217;t work.</li>
+<li>Added a test case to <a class="reference external" href="http://welfare.lino-framework.org/tested/pcsw.html#welfare-tested-pcsw" title="(in Lino Welfare Reference Manual v1.1)"><span>General PCSW</span></a>.</li>
+</ul>
+</div>
+<div class="section" id="merging-imported-partners">
+<h2>Merging imported Partners<a class="headerlink" href="#merging-imported-partners" title="Permalink to this headline">¶</a></h2>
+<p>Es war ein Denkfehler, die Aktion &#8220;Fusionieren&#8221; für importierte
+Partner zu verbieten.
+Zumindest im Fall &#8220;23219 nach 23624 fusionieren&#8221; ist dieses Verbot
+falsch. Also raus mit folgendem Code
+(aus der <code class="xref py py-class docutils literal"><span class="pre">lino_welfare.modlib.pcsw.models.Partner</span></code>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">get_row_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ar</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">ba</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ba</span><span class="o">.</span><span class="n">action</span><span class="p">,</span><span class="n">dd</span><span class="o">.</span><span class="n">MergeAction</span><span class="p">)</span> <span class="ow">and</span> <span class="n">settings</span><span class="o">.</span><span class="n">SITE</span><span class="o">.</span><span class="n">is_imported_partner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Partner</span><span class="p">,</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_row_permission</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span><span class="n">state</span><span class="p">,</span><span class="n">ba</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Oho, another surprise:
+adding MergeAction in post_analyze is too late, but adding
+it in pre_analyze is too early!
+See also <a class="reference external" href="oops">2013-04-09</a>:
+MergeAction needs the info in _lino_ddh to fill keep_volatiles.
+Solution: pre_analyze is now being emitted a little bit later: after
+setup_choicelists(), setup_workflows() and the loop which fills
+<cite>_lino_ddh</cite>.</p>
+<p>TODO:</p>
+<ul class="simple">
+<li>File does not exist: /usr/local/django/cpas_eupen/media/eid-jslib/media</li>
+<li>Shouldn&#8217;t we remove <cite>allow_cascaded_delete = [&#8216;client&#8217;]</cite>  on
+pcsw.Coaching? because it sounds more intuitive that you cannot
+delete a Client without first manually deleting every Coaching.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0422.html" title="20130422 (Monday, 22 April 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0420.html" title="20130420 (Saturday, 20 April 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0421.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0421.html">Online Link</a>
+    </div>
+  </body>
+</html>

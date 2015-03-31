@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20101018 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20101020" href="1020.html" />
+    <link rel="prev" title="20101016" href="1016.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1020.html" title="20101020"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1016.html" title="20101016"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20101018<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Heute feiern wir meinen Namenspatron, den
+<a class="reference external" href="denhttp://de.wikipedia.org/wiki/Lukas_(Evangelist)">Heiligen Lukas</a>.</p>
+<p>Ich bin weiter mit dem neuen Feature dran, das ich &#8220;Report-Panels&#8221; nennen könnte.
+Es geht darum, dass ein Slave-Report in einem Detail-Fenster nicht unbedingt
+nur als Grid dargestellt werden soll, sondern dass manchmal stattdessen eine
+zusammenfassende konfigurierbares HTML-Fragment nützlicher ist.
+Erstes konkretes Anwendungsbeispiel ist LinksByOwner, also die &#8220;Links pro Person&#8221;,
+die im DSBE dazu benutzn werden, um externe (eingescannte) Dokumente zu verwalten.</p>
+<p>14 Uhr: Hurra, es funktioniert! LinksByOwner kann ich jetzt sowohl als Kolonne einer Grid
+oder als Element in einem Detail verwenden, und in beiden Fällen wird eine Liste
+der Links im Stil
+<code class="docutils literal"><span class="pre">&lt;a</span> <span class="pre">href=&quot;&lt;URL&gt;&quot;&gt;&lt;lnk.name&gt;&lt;/a&gt;&lt;br&gt;...</span></code> angezeigt. Und zwar ohne,
+dass ich im Modell oder im Report des Masters (also hier
+<code class="xref py py-class docutils literal"><span class="pre">Person</span></code>) etwas sagen muss.
+Einfach weil <code class="xref py py-attr docutils literal"><span class="pre">links.LinksByOwner.slave_as_grid</span></code> auf <cite>False</cite> steht.</p>
+<p>Das Layout-Problem <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/1">docs/tickets/1</a> &#8220;funktioniert&#8221; leider auch bei HtmlBoxen.
+Also im Detail einer Person muss man im Notizen-Tab zunächst auf den Permalink
+klicken, damit die Seite (diesmal richtig) neu geladen wird.</p>
+<p>Ein paar interne Änderungen waren noch nötig.
+Zum Beispiel <code class="xref py py-func docutils literal"><span class="pre">lino.ui.extjs.ext_ui.elem2rec()</span></code> und Co krigen
+jetzt als ersten Parameter
+einen ReportRequest und nicht mehr nur einen Django-Request.
+(ReportRequest und/oder ViewReportRequest
+sind sowieso vielleicht
+ein Fall für <a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/http/middleware/">Django-Middleware</a>,
+aber das kommt in die <a class="reference external" href="http://www.lino-framework.org/todo.html">/todo</a>).</p>
+<p>Wohin will man eigentlich, wenn man auf so einen Link klickt?
+Im Fall von <code class="xref py py-class docutils literal"><span class="pre">links.LinksByOwner</span></code> möchte man ja auf die
+angewiesene externe Seite springen.
+Aber das Standardverhalten ist, dass man auf die Detail-Seite kommt.
+Das wird in <code class="xref py py-meth docutils literal"><span class="pre">lino.reports.Report.summary_row()</span></code>
+definiert.</p>
+<p>Die Methode <cite>Person.language_knowledge</cite> ist jetzt nicht mehr nötig,
+stattdessen definieren wir
+<code class="xref py py-meth docutils literal"><span class="pre">lino.projects.dsbe.models.LanguageKnowledge.__unicode__()</span></code></p>
+<p>N.B.: <code class="xref py py-attr docutils literal"><span class="pre">lino.projects.dsbe.models.LanguageKnowledgesByPerson.slave_as_grid</span></code>
+muss <em>nicht</em> auf <cite>False</cite> stehen, weil wir diesen Report in der Detail-Ansicht
+ja als Grid haben wollen.
+Das tolle Neue ist: wenn ein Report in Report.column_names genannt wird,
+dann erscheint automatisch dieser summary
+<code class="xref py py-meth docutils literal"><span class="pre">lino.reports.Report.slave_as_summary_meth()</span></code></p>
+<p>In der Demo-Datenbank waren zwei Personen &#8220;Luc Saffre&#8221;. Behoben.</p>
+<p>Die Demo-fixture für dsbe legte noch Integer-Werte für LanguageKnowledges an.
+Jetzt ruft dpyserializer auch <code class="xref py py-meth docutils literal"><span class="pre">django.db.Model.full_clean()</span></code> auf,
+um so etwas in Zukunft zu vermeiden. Dabei kamen gleich noch ein paar
+weitere kleine Bugs dieser Art zu Tage.
+<code class="xref py py-attr docutils literal"><span class="pre">links.Link.url</span></code> ist jetzt mit <cite>verify_exists=False</cite>.
+Ich wusste nicht, dass das par défaut eingeschaltet ist.
+Denn sonst ist initdb deutlich langsamer, wenn die Validierung eingeschaltet ist.</p>
+<p>18 Uhr. <a class="reference external" href="http://code.google.com/p/lino/source/detail?r=7ff3506984570682747ddb4b47c87f902128b8cf">Check-In</a>
+wegen Feierabend.
+Ich bin zufrieden, obgleich ich das Gefühl habe, mit
+einem siebenköpfigen Drachen zu kämpfen, dessen Köpfe
+schneller nachwachsen als man sie abschlagen kann....</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1020.html" title="20101020"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1016.html" title="20101016"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/1018.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/1018.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>23.02.2010 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0225.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0222.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0225.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0222.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>23.02.2010<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Uff: <cite>PropValuesByOwner.render_to_dict()</cite> funktioniert im
+[<a class="reference external" href="http://code.google.com/p/lino/source/browse/src/lino/test_apps/properties/models.py">http://code.google.com/p/lino/source/browse/src/lino/test_apps/properties/models.py</a>  Testcase] jetzt endlich so wie ich will.</p>
+<p>Wenn <cite>master_instance</cite> None ist (aber master bekannt), dann zeigt er
+eine allgemeine Liste aller <em>möglichen</em> Eigenschaften für Instanzen
+dieses Modells. Dieses Query braucht der Server, um den Ei-Editor zu
+konfigurieren:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">PropValuesByOwner</span><span class="p">()</span><span class="o">.</span><span class="n">render_to_dict</span><span class="p">(</span><span class="n">master</span><span class="o">=</span><span class="n">Person</span><span class="p">)</span>
+<span class="go">{&#39;count&#39;: 3, &#39;rows&#39;: [\</span>
+<span class="go">  {&#39;name&#39;: u&#39;favdish&#39;, &#39;value&#39;: &#39;&#39;},</span>
+<span class="go">  {&#39;name&#39;: u&#39;married&#39;, &#39;value&#39;: None},</span>
+<span class="go">  {&#39;name&#39;: u&#39;weight&#39;, &#39;value&#39;: None}</span>
+<span class="go">], &#39;title&#39;: u&#39;Properties for persons&#39;}</span>
+</pre></div>
+</div>
+<p>Später, wenn man die Eigenschaften einer konkreten Person sehen will,
+wird jeweils folgendes Query gemacht:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">properties</span><span class="o">.</span><span class="n">PropValuesByOwner</span><span class="p">()</span><span class="o">.</span><span class="n">render_to_dict</span><span class="p">(</span><span class="n">master_instance</span><span class="o">=</span><span class="n">fred</span><span class="p">)</span>
+<span class="go">{&#39;count&#39;: 3, &#39;rows&#39;: [</span>
+<span class="go">  {&#39;name&#39;: u&#39;favdish&#39;, &#39;value&#39;: u&#39;Fish&#39;},</span>
+<span class="go">  {&#39;name&#39;: u&#39;married&#39;, &#39;value&#39;: False},</span>
+<span class="go">  {&#39;name&#39;: u&#39;weight&#39;, &#39;value&#39;: 110}</span>
+<span class="go">], &#39;title&#39;: u&#39;Properties for Fred&#39;}</span>
+</pre></div>
+</div>
+<p>N.B.: PropValuesByOwner gibt immer die gleiche Anzahl Zeilen zurück, weil immer alle Eigenschaften angezeigt werden (auch die, für die dieser Owner keinen Wert bekommen hat).</p>
+<p>19.10 Uhr
+[<a class="reference external" href="http://code.google.com/p/lino/source/detail?r=68b49021d8aed2a8f1ae8e9434196c4510cf7bc2">http://code.google.com/p/lino/source/detail?r=68b49021d8aed2a8f1ae8e9434196c4510cf7bc2</a> Check-In wegen Feierabend].</p>
+<p>Der Ei-Editor funktioniert jetzt endlich wieder wie vorigen Freitag, aber eben nicht mehr manuell gefrickelt, sondern unter Verwendung des Reports PropValuesByOwner. Jetzt müsste das Submit ein Kinderspiel sein. Das wartet aber jetzt bis morgen, bzw. übermorgen, denn morgen ist Nationalfeiertag in Estland, da darf ich nicht arbeiten...</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0225.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0222.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0223.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0223.html">Online Link</a>
+    </div>
+  </body>
+</html>

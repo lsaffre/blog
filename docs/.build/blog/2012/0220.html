@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120220 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120221" href="0221.html" />
+    <link rel="prev" title="20120218" href="0218.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0221.html" title="20120221"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0218.html" title="20120218"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120220<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Rosenmontag. Während die Jecken in Eupen sich zum Rosenmontagszug sammeln,
+liege ich bequem unterm Computer und gehe meiner Lieblingsbeschäftigung nach.
+&#8220;Du legst mir größere Freude ins Herz, als andere haben bei Korn und Wein in Fülle.&#8221;
+(Ps 4,7f)</p>
+<div class="section" id="endspurt-vor-dem-release">
+<h2>Endspurt vor dem Release<a class="headerlink" href="#endspurt-vor-dem-release" title="Permalink to this headline">¶</a></h2>
+<p>Ein paar Bugs waren noch drin:</p>
+<ul class="simple">
+<li>Das Detail einer Note war versehentlich wieder nur Ext.Container statt Ext.Panel</li>
+<li>In lino.About würde ich ja gerne auch die Ext.version anzeigen.
+Über eine Stunde Wurstelei...
+und das vorläufige Resultat ist noch immer nicht wirklich
+zufriedenstellend.</li>
+<li>Wenn man in &#8220;Termine von Annette Arens&#8221; auf einem Termin doppelklickte
+und dann das Detail-Fenster speicherte, dann stimmte der Fenstertitel
+nicht mehr (lautet &#8220;Termine von None » Termin #18&#8221;).
+parse_req() hat jetzt einen neuen Parameter rqdata, der meistens
+dem request.REQUEST entspricht, außer bei PUT-Methoden wo Django
+das leider nicht überträgt und Lino es deshalb selber tut.</li>
+</ul>
+</div>
+<div class="section" id="mails-verschicken">
+<h2>Mails verschicken<a class="headerlink" href="#mails-verschicken" title="Permalink to this headline">¶</a></h2>
+<p>Die folgenden Gedanken müssen warten bis nach dem Release <a class="reference external" href="http://www.lino-framework.org/releases/1.4.0.html">/releases/1.4.0</a></p>
+<p>Ich glaube erkannt zu haben, dass Notizen das Gleiche wie die momentanen
+&#8220;ausgehenden Mails&#8221; sind.</p>
+<p>Eine Notiz ist doch schon jetzt ein Dokument, das zu einem bestimmten Zeitpunkt
+von einem bestimmten Benutzer erstellt wurde, das normalerweise eine bestimmte
+Person (Projekt) betrifft, und das normalerweise entweder ausgedruckt oder
+per E-Mail verschickt wird. Der Sonderfall von internen Notizen ist vergleichbar
+mit einer Mail im Drafts-Folder eines Mail-Clients, die keine Empfänger hat und
+nie verschickt wurde. Und das einzige, was Lino mit den Notizen noch nicht kann,
+ist sie als E-Mail zu verschicken.</p>
+<p>Und incoming mails? Das sind ebenfalls Notizen.</p>
+<p>Konsequenzen für die Benutzer:</p>
+<ul class="simple">
+<li>Jede Notiz kann höchstens einmal verschickt werden.</li>
+<li>Neben &#8220;Druckdatum&#8221; kommen zwei weitere Felder &#8220;gesendet am&#8221; und &#8220;empfangen am&#8221;</li>
+<li>Die Slave-Tabelle &#8220;Drittpartner&#8221; heißt jetzt &#8220;Empfänger&#8221;.
+In dieser Tabelle kommt eine neue Kolonne &#8220;Empfänger-Art&#8221;,
+die enthält ob es to:, cc: oder bcc: ist. Bei bisherigen Drittpartnern
+ist das Feld leer.</li>
+</ul>
+<p>Im Code werden folgende Änderungen kommen:</p>
+<ul class="simple">
+<li>Mailable kommt raus</li>
+<li>Mail wird abstrakt, und pro Site muss es ein Model
+geben, das Mail erbt und konkretisiert.</li>
+<li>notes.Note erbt nun Mail und nicht mehr Mailable</li>
+<li>notes.Note erbt nun nicht mehr AutoUser. Der Inhalt des bisherigen Feldes
+<cite>user</cite> (FK nach User) kommt nach <cite>sender</cite> (FK nach Contact).
+Bei eingehenden Mails ist der Absender ja nicht unbedingt ein User.
+Statt <cite>sender</cite> würde es vielleicht besser <cite>author</cite> heißen,
+weil Notizen ja nicht unbedingt verschickt werden.</li>
+<li>Neue Konfig-Option <cite>mail_model</cite>, or rather
+automatic detection since there must be exactly
+one model that implements Mail.</li>
+<li>thirds kommt raus</li>
+<li>data migration :
+- what to do with existing thirds?
+- Note.user renamed to Mail.sender</li>
+</ul>
+</div>
+<div class="section" id="actors-and-their-actions">
+<h2>Actors and their actions<a class="headerlink" href="#actors-and-their-actions" title="Permalink to this headline">¶</a></h2>
+<p>Auch der folgende Schönheitsfehler wird noch ein paar interne Änderungen brauchen:</p>
+<ul class="simple">
+<li>User Detail has UpdateReminders as <em>first</em> button. Das kommt dadurch,
+dass diese Aktion in der site_setup() von modlib.cal erstellt wird, was
+vor dem setup() der Tabellen geschieht.</li>
+</ul>
+<p>Vielleicht kriege ich das bis Aschermittwoch fertig, dann käme es noch mit in die
+<a class="reference external" href="http://www.lino-framework.org/releases/1.4.0.html">/releases/1.4.0</a> rein.
+Aber vorher ein Checkin und ein inoffizielles pre-release.
+Upps, das hat er gleich auch nach
+<cite>PyPI &lt;http://pypi.python.org/pypi/lino/1.4.0&gt;</cite>
+gepostet,
+also weniger inoffiziell als ich es ursprünglich dachte...</p>
+</div>
+<div class="section" id="noch-kleinkram-vor-dem-release">
+<h2>Noch Kleinkram vor dem Release<a class="headerlink" href="#noch-kleinkram-vor-dem-release" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Zwei selten benutzte Menübefehle
+<span class="menuselection">Konfigurierung ‣ Kontakte ‣ Funktionen</span>
+und
+<span class="menuselection">Explorer ‣ Drittpartner</span>
+fehlten.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.newcomers.models.UsersByNewcomer</span></code> hatte kein Detail
+weil es nicht von users.Users erbte.</li>
+<li><code class="xref py py-func docutils literal"><span class="pre">lino.apps.pcsw.migrate.migrate_from_1_3_9()</span></code></li>
+</ul>
+</div>
+<div class="section" id="automatic-refresh-when-user-changes-table-parameters">
+<h2>Automatic refresh when user changes table parameters<a class="headerlink" href="#automatic-refresh-when-user-changes-table-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Wenn man in den Parametern einer Tabelle etwas ändert,
+braucht man jetzt nicht mehr den Refresh-Button zu klicken.
+Diese Feature könnte aber auch lästig sein in langsamen Listen.
+Zu beobachten.</p>
+</div>
+<div class="section" id="kann-man-auf-pypi-ein-release-uberschreiben">
+<h2>Kann man auf PyPI ein Release überschreiben?<a class="headerlink" href="#kann-man-auf-pypi-ein-release-uberschreiben" title="Permalink to this headline">¶</a></h2>
+<p>Mal probieren: ich mache einfach <code class="docutils literal"><span class="pre">make</span> <span class="pre">sdist</span> <span class="pre">html</span> <span class="pre">upload</span></code>, und dann:</p>
+<div class="highlight-python"><div class="highlight"><pre>Submitting docs/dist\lino-1.4.0.tar.gz to http://pypi.python.org/pypi
+Upload failed (400): A file named &quot;lino-1.4.0.tar.gz&quot; already exists for  lino-1.4.0. To fix problems with that file you should create a new release.
+Submitting docs/dist\lino-1.4.0.zip to http://pypi.python.org/pypi
+Upload failed (400): A file named &quot;lino-1.4.0.zip&quot; already exists for  lino-1.4.0. To fix problems with that file you should create a new release.
+</pre></div>
+</div>
+<p>Aha. Und wenn ich übers Web-Interface zuerst die Dateien lösche? Ja, dann geht es.
+Dort kann ich auch sehen, dass dort &#8220;0 downloads&#8221; stand.</p>
+<p>Also alle heutigen Änderungen kommen noch mit in die
+<a class="reference external" href="http://www.lino-framework.org/releases/1.4.0.html">/releases/1.4.0</a> rein.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0221.html" title="20120221"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0218.html" title="20120218"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0220.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0220.html">Online Link</a>
+    </div>
+  </body>
+</html>

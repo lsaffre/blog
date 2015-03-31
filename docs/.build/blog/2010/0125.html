@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20100125 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="20100126" href="0126.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0124.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0126.html" title="20100126"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0124.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20100125<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Bei den Änderungen, um die Kolonnen und/oder Editoren des ColumnModel
+als eigene Variablen zu deklarieren, stellt sich raus, dass der Trick
+mit der <cite>FieldElement.ext_options()</cite>, die um die eigentliche Component
+noch mal einen Container mit <cite>layout=&#8217;form&#8217;</cite> packt, jetzt stört. Denn
+der <cite>editor</cite> einer <cite>Ext.grid.Column</cite> muss natürlich nur der Component
+ohne Verpackung sein. Puh!</p>
+<p>Also:
+Der künstliche Container mit <cite>layout=&#8217;form&#8217;</cite> wird jetzt nicht mehr in <cite>FieldElement.ext_options()</cite> erzeugt, sondern in <cite>field2elem()</cite>, die aus dem UI ins dessen main_panel_class() verlagert wurde.
+Neue Klassen <cite>MainPanel</cite> und <cite>WrappingMainPanel(MainPanel)</cite>.</p>
+<hr class="docutils" />
+<p>Ich glaube, die erweiterte ComboBox funktioniert jetzt. Ich habe in <cite>setValue()</cite> den Test, ob der Store geladen werden muss, erweitert, denn wenn er zwar geladen ist aber für einen anderen <cite>queryContext</cite>, dann muss er ja neu geladen werden. Ich kann einfach auf <cite>this.lastQuery</cite> testen, weil <cite>setQueryContext()</cite> den löscht.
+Aber das <cite>setQueryContext()</cite> ist noch nicht an die richtigen Events angebunden. Im GridMainPanel funktioniert es, aber im Detail ist sie momentan überhaupt nicht angebunden. Ich weiß auch noch nicht, ob die Slave Grids ihre ComboBoxen richtig einbinden.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="id2">
+<h1>20100126<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<p>Also Anbinden der <cite>ComboBox.setQueryContext()</cite> auch in DetailMainPanels.
+Anderthalb Stunden Aufräum-Arbeiten in <cite>extjs.py</cite>, um diesen Schachzug vorzubereiten.</p>
+<p><cite>Variable.has_comp</cite> kann weg.</p>
+<p><cite>Variable.js_lines()</cite> ist ein Iterator, der zeilenweise Javascript-Code überreicht.
+<cite>js_lines</cite> umbenannt nach <cite>js_declare</cite>, weil es die Deklaration der Variable generiert.</p>
+<p>Hinzu kommt <cite>js_run()</cite>.</p>
+<p><cite>Variable.subvars()</cite> (die bisherige <cite>Variable.js_elements()</cite>) ist auch
+ein Iterator, der aber keinen JS-Code überreicht, sondern eine Liste
+von Variablen, die von dieser Variablen gebraucht werden. Präfix <cite>js_</cite>
+sollte reserviert sein für JS-Generatoren. Ausnahme ist noch
+<cite>js_code</cite>, für die ich mit einen besseren Namen ausdenken muss.</p>
+<p>Neue Methode <cite>MainPanel.job_constructor()</cite> enthält den Code, der vorher in ExtUI.view_report() und ExtUI.view_form() definiert war.</p>
+<p>Diese Aufräumarbeiten haben übrigens auch schon mit Issue 90 zu tun.</p>
+<hr class="docutils" />
+<p>So, es funktioniert: auch die ComboBoxen in DetailMainPanel kriegen jetzt ein <cite>setQueryContext()</cite> gemacht, wenn der selected_record in der Grid ändert. Außer dass mein Test in der ComboBox-Erweiterung (ob wegen geändertem queryContext neu geladen werden muss) offenbar noch nicht funktioniert: wenn ich nur blättere und sich das Land des Kontakts ändert, dann sehe ich zwar jetzt die drei Aufrufe von <cite>setQueryContext()</cite>, aber statt des Städtenamens steht nur die Nummer da. Erst wenn ich triggere, steht die richtige Städteliste da, und beim Zurückblättern kennt er jetzt die Städte aus diesem Land.</p>
+<p>In der Tat, mein Test via <cite>!Ext.isDefined(this.lastQuery)</cite> bzw. <cite>this.lastQuery === null</cite> scheint noch nicht ganz das Wahre zu sein. Aber das lass ich jetzt mal offen, es gibt Dringenderes zu tun.</p>
+<p>En passant habe ich das Interface für ContextAwareChoices noch verändert: Lino sucht die Methode <cite>get_XXX_choices()</cite> (wobei XXX der Name eines Feldes ist) jetzt nicht mehr im Report, sondern im Model. Habe ein bisschen gezögert, weil Django damit vielleicht in Zukunft mal Probleme hätte. Aber Vorteil ist, dass das jetzt noch ein bisschen eleganter ist, weil ich keinen Parameter <cite>recipient</cite> mehr brauche.
+Und der abstrakte Report <cite>Contacts</cite>, der nur zu diesem Zweck existierte, kann jetzt auch wieder weg.</p>
+<p>Neue Seite LinoFeatures, und jetzt wird es langsam Zeit, dass ich igen mal wieder ans Laufen bringe für den Fall, dass sich am Freitag jemand für Lino interessiert.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0126.html" title="20100126"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0124.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0125.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0125.html">Online Link</a>
+    </div>
+  </body>
+</html>

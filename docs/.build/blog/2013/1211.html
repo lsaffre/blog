@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131211 (Wednesday, 11 December 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131212 (Thursday, 12 December 2013)" href="1212.html" />
+    <link rel="prev" title="20131210 (Tuesday, 10 December 2013)" href="1210.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1212.html" title="20131212 (Thursday, 12 December 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1210.html" title="20131210 (Tuesday, 10 December 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="wednesday-11-december-2013">
+<h1>20131211 (Wednesday, 11 December 2013)<a class="headerlink" href="#wednesday-11-december-2013" title="Permalink to this headline">¶</a></h1>
+<p>Updated the <a class="reference external" href="http://www.lino-framework.org/demos.html#demos" title="(in Lino v1.6)"><span>Demo sites</span></a> because the bug which I fixed yesterday
+was still active there.</p>
+<div class="section" id="django-s-languages-setting">
+<h2>Django&#8217;s <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-LANGUAGES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">LANGUAGES</span></code></a> setting<a class="headerlink" href="#django-s-languages-setting" title="Permalink to this headline">¶</a></h2>
+<p>I realized that <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-LANGUAGES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">LANGUAGES</span></code></a> still contains all Django
+languages even on sites who have <code class="xref std std-setting docutils literal"><span class="pre">languages</span></code> set.  The
+expected behaviour is to reduce this array to only those languages
+which are actually being used.  The bug was in <code class="xref py py-mod docutils literal"><span class="pre">north.north_site</span></code>,
+where I did the conversion too late: modifying <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-LANGUAGES" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">LANGUAGES</span></code></a>
+has no effect when <cite>settings</cite> have been loaded.  Now it is fixed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;DJANGO_SETTINGS_MODULE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;lino.projects.docs.settings.demo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">lino.api.shell</span> <span class="kn">import</span> <span class="n">settings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">LANGUAGES</span><span class="p">)</span>
+<span class="go">[(&#39;de&#39;, &#39;German&#39;), (&#39;en&#39;, &#39;English&#39;), (&#39;es&#39;, &#39;Spanish&#39;), (&#39;et&#39;, &#39;Estonian&#39;), (&#39;fr&#39;, &#39;French&#39;), (&#39;nl&#39;, &#39;Dutch&#39;), (&#39;pt-br&#39;, &#39;Brazilian Portuguese&#39;)]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="converting-use-extensible-to-plugin-continued">
+<h2>Converting <cite>use_extensible</cite> to plugin (continued)<a class="headerlink" href="#converting-use-extensible-to-plugin-continued" title="Permalink to this headline">¶</a></h2>
+<p>Pooh! In a three-hours surgery session I made the
+<cite>setup_media_link</cite> thing pluggable.</p>
+<p>In your <cite>settings.py</cite> file, if you had <cite>use_extensible</cite> set
+to True, then you must now replace:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Site</span><span class="p">(</span><span class="n">Site</span><span class="p">):</span>
+    <span class="n">extensible_base_url</span> <span class="o">=</span> <span class="s">&quot;foo&quot;</span>
+    <span class="n">extensible_root</span> <span class="o">=</span> <span class="s">&quot;bar&quot;</span>
+<span class="n">SITE</span> <span class="o">=</span> <span class="n">Site</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>by:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">Site</span><span class="p">(</span><span class="n">Site</span><span class="p">):</span>
+    <span class="o">...</span>
+<span class="n">SITE</span> <span class="o">=</span> <span class="n">Site</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+
+<span class="n">SITE</span><span class="o">.</span><span class="n">configure_plugin</span><span class="p">(</span><span class="s">&#39;extensible&#39;</span><span class="p">,</span>
+    <span class="n">media_base_url</span><span class="o">=</span><span class="s">&quot;foo&quot;</span><span class="p">,</span>
+    <span class="n">media_root</span><span class="o">=</span><span class="s">&quot;bar&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Documentation is still almost absent...</p>
+<p>TODO: move specific chunks from linoweb.js to js_snippets</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1212.html" title="20131212 (Thursday, 12 December 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1210.html" title="20131210 (Tuesday, 10 December 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1211.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1211.html">Online Link</a>
+    </div>
+  </body>
+</html>

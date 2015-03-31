@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131224 (Tuesday, 24 December 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131226 (Thursday, 26 December 2013)" href="1226.html" />
+    <link rel="prev" title="20131223 (Monday, 23 December 2013)" href="1223.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1226.html" title="20131226 (Thursday, 26 December 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1223.html" title="20131223 (Monday, 23 December 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tuesday-24-december-2013">
+<h1>20131224 (Tuesday, 24 December 2013)<a class="headerlink" href="#tuesday-24-december-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-make-money-with-lino">
+<h2>How to make money with Lino<a class="headerlink" href="#how-to-make-money-with-lino" title="Permalink to this headline">¶</a></h2>
+<p>I made more changes to <a class="reference external" href="http://www.lino-framework.org/about/license.html">/about/license</a>.
+Especially I added another way to make money with Lino
+(which existed before, but I didn&#8217;t mention it).</p>
+</div>
+<div class="section" id="groupware-a-la-lino">
+<h2>Groupware à la Lino<a class="headerlink" href="#groupware-a-la-lino" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://www.lino-framework.org/examples/presto/index.html#presto" title="(in Lino v1.6)"><span>Lino Presto</span></a> is already almost a groupware. Some modules are missing:</p>
+<ul class="simple">
+<li><cite>lino.apps.news</cite> : Newsletters</li>
+<li><cite>lino.apps.lists</cite> : Mailing lists</li>
+<li><cite>lino.apps.forums</cite> : Discussion forums</li>
+</ul>
+<p>Before doing these, I think I should do certain model renames to make
+things easier:</p>
+<ul class="simple">
+<li>countries: City -&gt; Place</li>
+<li>contacts:
+Role -&gt; Contact,
+Company -&gt; Group,
+CompanyType -&gt; GroupType
+(and later, when all production sites have migrated: RoleType -&gt; Role)</li>
+</ul>
+<p>This is also the beginning of <a class="reference external" href="http://faggio.lino-framework.org/api/lino_faggio.migrate.html#module-lino_faggio.migrate" title="(in Lino Faggio Reference v0.0)"><code class="xref py py-mod docutils literal"><span class="pre">lino_faggio.migrate</span></code></a> since a first
+<a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a> has gone into production.</p>
+<p>After renaming <cite>countries.City</cite> to <cite>countries.Place</cite> I understood that
+this is enough code change for today.  But I changed already
+<cite>verbose_name</cite> from &#8220;Company&#8221; to &#8220;Group&#8221; and <cite>verbose_name_plural</cite>
+from &#8220;Companies&#8221; to &#8220;Groups&#8221;.  Existing applications which want to
+preserve the old label can override the new default by overriding the
+model.</p>
+</div>
+<div class="section" id="how-to-have-landslides-use-typographic-quotes">
+<h2>How to have landslides use typographic quotes<a class="headerlink" href="#how-to-have-landslides-use-typographic-quotes" title="Permalink to this headline">¶</a></h2>
+<p>I just discovered Adam Zapletal&#8217;s
+<a class="reference external" href="https://github.com/adamzap/landslide">landslides</a>
+module. Coool!</p>
+<p>Here is my first contribution:
+I use landslides with restructuredtext markup.
+I then had the problem that landslides does not convert
+plain quotes to typographic ones.</p>
+<p>In docutils this is a parser option called
+<a class="reference external" href="http://docutils.sourceforge.net/docs/user/config.html#smart-quotes">smart_quotes</a>.</p>
+<p>How to tell landslides to activate that option?
+It seems that this kind of configuration is not yet implemented.
+There should be a [docutils] section in the config file.</p>
+<p>I solved it for my by editing the source code directly.
+In file
+<a class="reference external" href="https://github.com/adamzap/landslide/blob/master/src/landslide/rst.py">landslide/rst.py</a>
+I find the place qhere it says:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">overrides</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="n">input_encoding</span><span class="p">,</span>
+    <span class="s">&#39;doctitle_xform&#39;</span><span class="p">:</span> <span class="n">doctitle</span><span class="p">,</span>
+    <span class="s">&#39;initial_header_level&#39;</span><span class="p">:</span> <span class="n">initial_header_level</span><span class="p">,</span>
+    <span class="s">&#39;report_level&#39;</span><span class="p">:</span> <span class="s">&#39;quiet&#39;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And I add a line to that dictionary:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">overrides</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;input_encoding&#39;</span><span class="p">:</span> <span class="n">input_encoding</span><span class="p">,</span>
+    <span class="s">&#39;doctitle_xform&#39;</span><span class="p">:</span> <span class="n">doctitle</span><span class="p">,</span>
+    <span class="s">&#39;initial_header_level&#39;</span><span class="p">:</span> <span class="n">initial_header_level</span><span class="p">,</span>
+    <span class="s">&#39;report_level&#39;</span><span class="p">:</span> <span class="s">&#39;quiet&#39;</span><span class="p">,</span>
+    <span class="s">&#39;smart_quotes&#39;</span><span class="p">:</span> <span class="s">&#39;on&#39;</span>  <span class="c"># LS 20131224</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1226.html" title="20131226 (Thursday, 26 December 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1223.html" title="20131223 (Monday, 23 December 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1224.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1224.html">Online Link</a>
+    </div>
+  </body>
+</html>

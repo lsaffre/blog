@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120120 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120121" href="0121.html" />
+    <link rel="prev" title="20120118" href="0118.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0121.html" title="20120121"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0118.html" title="20120118"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120120<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="calendar-panel">
+<h2>Calendar panel<a class="headerlink" href="#calendar-panel" title="Permalink to this headline">¶</a></h2>
+<p>Ta-daa! The long awaited calendar panel finally works!
+Users can create, move resize and delete events using
+the calendar panel.</p>
+<p>The Ta-daa doesn&#8217;t apply to the following limitations which
+we&#8217;ll tackle when need arises:</p>
+<ul class="simple">
+<li>managing recurrent events</li>
+<li>displaying also tasks in the calendar panel</li>
+</ul>
+<p>As expected, it was all just a fiddling with the gory details of
+AJAX communication between Lino and the Ext.ensible CalendarPanel.</p>
+<p>Each <code class="xref py py-class docutils literal"><span class="pre">StoreField</span></code>
+now has a <cite>name</cite> attribute.</p>
+<p><a class="reference external" href="http://www.lino-framework.org/api/lino.utils.jsgen.html#lino.utils.jsgen.py2js" title="(in Lino v1.6)"><code class="xref py py-func docutils literal"><span class="pre">py2js</span></code></a>
+and
+the <cite>Ext.ensible.cal.EventMappings</cite> defined in <code class="xref std std-xfile docutils literal"><span class="pre">:linolib.js</span></code>
+now use the
+new Lino configuration settings
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.datetime_format_strftime</span></code>,
+<code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.datetime_format_extjs</span></code>
+and
+<code class="xref py py-meth docutils literal"><span class="pre">lino.Lino.parse_datetime()</span></code>.</p>
+<p>Note that datetime is not simply a combination of date and time:
+time fields contain
+only minutes, while datetime fields have also seconds
+(in a default configuration).</p>
+<p>So there are now 9 settings to handle date and time values:
+2 attributes containing a format string (one using strftime and the other using extjs syntax),
+and one method that parses such strings to a Python value:</p>
+<ul class="simple">
+<li>date:
+<code class="xref py py-attr docutils literal"><span class="pre">strftime</span></code>
+<code class="xref py py-attr docutils literal"><span class="pre">extjs</span></code>
+<code class="xref py py-meth docutils literal"><span class="pre">parse</span></code></li>
+<li>time:
+<code class="xref py py-attr docutils literal"><span class="pre">strftime</span></code>
+<code class="xref py py-attr docutils literal"><span class="pre">extjs</span></code>
+<code class="xref py py-meth docutils literal"><span class="pre">parse</span></code></li>
+<li>datetime:
+<code class="xref py py-attr docutils literal"><span class="pre">strftime</span></code>
+<code class="xref py py-attr docutils literal"><span class="pre">extjs</span></code>
+<code class="xref py py-meth docutils literal"><span class="pre">parse</span></code></li>
+</ul>
+</div>
+<div class="section" id="endspurt-vor-dem-release">
+<h2>Endspurt vor dem Release<a class="headerlink" href="#endspurt-vor-dem-release" title="Permalink to this headline">¶</a></h2>
+<p>Neue Klasse <code class="xref py py-class docutils literal"><span class="pre">lino.apps.dsbe.models.ResidenceType</span></code>.
+Das Feld Person.registry_type ist jetzt kein Integer mehr sondern ein CHAR
+und wird <code class="xref py py-func docutils literal"><span class="pre">automatisch</span></code>
+konvertiert.
+Als Test importiere ich einen aktuellen Dump eine laufenden Lino:
+funktioniert auf Anhieb. Bravo, Lino!</p>
+</div>
+<div class="section" id="noch-was-neues">
+<h2>Noch was Neues<a class="headerlink" href="#noch-was-neues" title="Permalink to this headline">¶</a></h2>
+<p>Upps: vor dem Release muss ich noch
+<code class="xref py py-class docutils literal"><span class="pre">lino.modlib.jobs.models.ContractsSituation</span></code>
+(&#8220;Situation Art 60-7&#8221;)
+konvertieren bzw. neu
+implementieren.
+Das ist nicht trivial, weil dieser Report eigentlich
+gar keine Kolonnen hat,
+sondern eine tabellarisch angeordnete Liste von Views...
+hm...
+Aufschieben wäre jedenfalls uneffizient, denn die alten Listings
+funktionieren momentan überhaupt nicht (wahrscheinlich
+zwar nur ein kleiner Bug im Javascript,
+aber da die Listings sowieso in den Müll kommen, lohnt der sich nicht)</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">lino.modlib.jobs.models.JobsOverview</span></code>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0121.html" title="20120121"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0118.html" title="20120118"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0120.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0120.html">Online Link</a>
+    </div>
+  </body>
+</html>

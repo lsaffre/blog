@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110722 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110723" href="0723.html" />
+    <link rel="prev" title="20110721" href="0721.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0723.html" title="20110723"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0721.html" title="20110721"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110722<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="noch-einfugetexte">
+<h2>Noch Einfügetexte<a class="headerlink" href="#noch-einfugetexte" title="Permalink to this headline">¶</a></h2>
+<p>Der englische Name <code class="xref py py-class docutils literal"><span class="pre">lino.models.TextFieldTemplate</span></code>
+für die Einfügetexte gefällt mir übrigens nicht wirklich,
+aber momentan fällt mir nichts Besseres ein.</p>
+<p>Dann noch ein paar Verbesserungen:</p>
+<ul>
+<li><p class="first">Das Feld <cite>user</cite> eines <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.AutoUser</span></code> kann jetzt auch
+leer sein.</p>
+</li>
+<li><p class="first">Einfügetexte erben jetzt <code class="xref py py-class docutils literal"><span class="pre">lino.mixins.AutoUser</span></code>,
+haben jetzt ein Feld <cite>user</cite>,
+und es gibt einen Menübefehl <span class="menuselection">Mein Menu ‣ Meine Einfügetexte</span>.</p>
+</li>
+<li><p class="first">Einfügetexte mit leerem Feld &#8220;Benutzer&#8221; sind <em>öffentlich</em>:
+können nur vom Systemverwalter bearbeitet werden (<span class="menuselection">Konfigurierung ‣ System ‣ Einfügetexte</span>), aber von jedem benutzt werden.</p>
+</li>
+<li><p class="first">TinyMCE hat auch eine Möglichkeit, beim Einfügen eines Einfügetextes
+dynamisch Variablen zu ersetzen.
+Aber das habe ich noch nicht gut genug integriert.
+Ich habe folgenden Code:</p>
+<div class="highlight-python"><div class="highlight"><pre>template_replace_values : {
+    data_field : function(element){
+        var fieldName = element.innerHTML;
+        element.innerHTML = t.ww.get_current_record().data[fieldName];
+    }
+}
+</pre></div>
+</div>
+<p>Und wenn ich dann einen Einfügetext mit folgendem Inhalt definiere (die Klassenzuweisung habe ich manuell mit dem HTML-Button gemacht):</p>
+<div class="highlight-python"><div class="highlight"><pre>&lt;p&gt;Mit freundlichen Gr&amp;uuml;&amp;szlig;en,&lt;/p&gt;
+&lt;p class=&quot;data_field&quot;&gt;root&lt;/p&gt;
+</pre></div>
+</div>
+<p>dann ersetzt er das brav durch den Benutzernamen...
+aber das ist freilich noch nicht sehr sinnvoll, und den vollen
+Benutzernamen kennt an dieser Stelle nur der Server.</p>
+</li>
+</ul>
+<p>Checkin 20110722.  Proberelease auf Jana.</p>
+</div>
+<div class="section" id="anderung-bzgl-lino-lino-root-url">
+<h2>Änderung bzgl. <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.root_url</span></code><a class="headerlink" href="#anderung-bzgl-lino-lino-root-url" title="Permalink to this headline">¶</a></h2>
+<p>Da waren noch noch ein paar Stellen, wo <code class="xref py py-attr docutils literal"><span class="pre">lino.Lino.root_url</span></code>
+nicht beachtet wurde. Falls das Feld nicht leer ist, muss der Slash jetzt
+am Anfang und nicht am Ende stehen.</p>
+<p>Checkin 20110722b.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0723.html" title="20110723"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0721.html" title="20110721"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0722.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0722.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+====================
+Luc's developer blog
+====================
+
+Welcome to my developer blog.  This is where I write about my software
+projects, especially :mod:`lino`.
+
+Sitemap
+-------
+
+.. toctree::
+   :maxdepth: 2
+
+   blog/index
+   about/index
+
+
+.. toctree::
+   :hidden:
+
+   howto/index
+   tickets/index
+   glossary
+   ref/index
+
+

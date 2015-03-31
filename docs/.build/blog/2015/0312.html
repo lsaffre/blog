@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Thursday, March 12, 2015 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2015" href="index.html" />
+    <link rel="next" title="Friday, March 13, 2015" href="0313.html" />
+    <link rel="prev" title="Wednesday, March 11, 2015" href="0311.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0313.html" title="Friday, March 13, 2015"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0311.html" title="Wednesday, March 11, 2015"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2015</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="thursday-march-12-2015">
+<h1>Thursday, March 12, 2015<a class="headerlink" href="#thursday-march-12-2015" title="Permalink to this headline">¶</a></h1>
+<p>Last adaptions in test suites after yesterday&#8217;s changes.</p>
+<div class="section" id="unicodeencodeerror">
+<h2>UnicodeEncodeError<a class="headerlink" href="#unicodeencodeerror" title="Permalink to this headline">¶</a></h2>
+<p>I had a UnicodeEncodeError when running the <a class="reference external" href="http://www.lino-framework.org/api/lino.management.commands.show.html#management_command-show" title="(in Lino v1.6)"><code class="xref std std-manage docutils literal"><span class="pre">show</span></code></a> command:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py show pcsw.StrangeClients
+
+Traceback (most recent call last):
+  ...
+  File &quot;.../lino/core/renderer.py&quot;, line 308, in show_request
+    print(ar.to_rst(*args, **kw))
+UnicodeEncodeError: &#39;ascii&#39; codec can&#39;t encode character u&#39;\xe9&#39; in position 1712: ordinal not in range(128)
+</pre></div>
+</div>
+<p>But Lino was innocent. It was because the terminal or the system was
+poorly configured.  See <a class="reference external" href="https://wiki.python.org/moin/PrintFails">https://wiki.python.org/moin/PrintFails</a></p>
+<p>My ~/.bashrc contained:</p>
+<div class="highlight-python"><div class="highlight"><pre>export LANG=en_GB.UTF-8
+</pre></div>
+</div>
+<p>and I solved it by changing this to:</p>
+<div class="highlight-python"><div class="highlight"><pre>export LANG=C.UTF-8
+</pre></div>
+</div>
+<p>after invoking <code class="docutils literal"><span class="pre">locale</span> <span class="pre">-a</span></code> in order to see which locales are
+available:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ locale -a
+C
+C.UTF-8
+POSIX
+fr_BE.utf8
+</pre></div>
+</div>
+<p>Another workaround was to set <span class="target" id="index-0"></span><code class="xref std std-envvar docutils literal"><span class="pre">PYTHONIOENCODING</span></code> to &#8220;utf-8&#8221;.</p>
+</div>
+<div class="section" id="repairable-data">
+<h2>Repairable data<a class="headerlink" href="#repairable-data" title="Permalink to this headline">¶</a></h2>
+<p>Tonight I had the inspiration for solving a series of subtle but
+disturbing problems:</p>
+<ul class="simple">
+<li>pcsw.Clients with an SSIN which actually is valid, but wrongly
+formatted</li>
+<li>some Partners have a single address, but which is not marked as
+primary</li>
+<li>some Calendar events should have their client as guest, but they
+don&#8217;t have</li>
+</ul>
+<p>The solution is a new module <code class="xref py py-mod docutils literal"><span class="pre">lino.mixins.repairable</span></code> and a
+management command <code class="xref std std-manage docutils literal"><span class="pre">repairdata</span></code>.</p>
+<p>The first item of above list is already implemented, tested by
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.projects.std.tests.test_beid.html#module-lino_welfare.projects.std.tests.test_beid" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.projects.std.tests.test_beid</span></code></a>.  I also worked on
+the documentation of <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.ssin.html#module-lino.utils.ssin" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.utils.ssin</span></code></a>.  The other two items are
+for tomorrow...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0313.html" title="Friday, March 13, 2015"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0311.html" title="Wednesday, March 11, 2015"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2015</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2015/0312.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2015/0312.html">Online Link</a>
+    </div>
+  </body>
+</html>

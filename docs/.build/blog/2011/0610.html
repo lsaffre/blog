@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20110610 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2011" href="index.html" />
+    <link rel="next" title="20110611" href="0611.html" />
+    <link rel="prev" title="20110609" href="0609.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0611.html" title="20110611"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0609.html" title="20110609"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2011</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20110610<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="lino-1-1-14">
+<h2>Lino 1.1.14<a class="headerlink" href="#lino-1-1-14" title="Permalink to this headline">¶</a></h2>
+<p>Released <a class="reference external" href="http://www.lino-framework.org/releases/2011/0610.html">/releases/2011/0610</a>.
+Installed in Eupen.</p>
+</div>
+<div class="section" id="fixed-several-bugs-in-countrycity">
+<h2>Fixed several bugs in <code class="xref py py-class docutils literal"><span class="pre">CountryCity</span></code><a class="headerlink" href="#fixed-several-bugs-in-countrycity" title="Permalink to this headline">¶</a></h2>
+<p>A request <cite>GET /choices/dsbe/StudiesByPerson/city?start=0&amp;limit=30&amp;country=&amp;query=</cite>
+caused a traceback <cite>&#8216;unicode&#8217; object has no attribute &#8216;city_set&#8217;</cite>.
+The bug was actually in <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.instantiator.html#lino.utils.instantiator.ForeignKeyConverter" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.instantiator.ForeignKeyConverter</span></code></a>.
+Added test case <code class="xref py py-func docutils literal"><span class="pre">test09</span></code>.</p>
+<p>A <cite>&#8216;NoneType&#8217; object has no attribute &#8216;_meta&#8217;</cite>
+error happened either as a simple warning or as a traceback
+when Lino tried
+(on a <code class="xref py py-class docutils literal"><span class="pre">CountryCity</span></code>),
+to auto-create a <cite>city</cite> and no <cite>country</cite> was given.
+<code class="xref py py-meth docutils literal"><span class="pre">CountryCity.create_choice()</span></code> now raises a
+<cite>ValidationError</cite> &#8220;Cannot auto-create city %r if country is empty&#8221;
+instead of logging a warning.</p>
+<p>And <code class="xref py py-class docutils literal"><span class="pre">City</span></code> has now a <cite>unique_together</cite> constraint
+to work around the following problem:</p>
+<blockquote>
+<div>Selbstlernende Felder:
+die Stadt Eupen war 5x automatisch angelegt worden.
+Also irgendwie schaffen es die Benutzer, Lino durcheinander zu bringen.
+Aber wie machen die das?
+Zu beobachten.
+Hat vielleicht ein schnellfingriger Benutzer den Namen in
+die ComboBox getippt, bevor diese ihren Store gefüllt hatte?
+Comboboxen müssten in der Tat gegen diesen Fall absichern.</div></blockquote>
+<p>Added some German translations.</p>
+<p>Checked in 20110610b.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0611.html" title="20110611"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0609.html" title="20110609"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2011</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2011/0610.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2011/0610.html">Online Link</a>
+    </div>
+  </body>
+</html>

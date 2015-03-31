@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2010-09-14 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="2010-09-15" href="0915.html" />
+    <link rel="prev" title="2010-09-13" href="0913.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="2010-09-15"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="2010-09-13"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>2010-09-14<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="optimierungen-an-tim2lino-py">
+<h2>Optimierungen an <code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code><a class="headerlink" href="#optimierungen-an-tim2lino-py" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Rief unnötigerweise <code class="xref py py-meth docutils literal"><span class="pre">lino.lino_site.setup()</span></code></li>
+<li>Wenn was schief geht, dann schreibt er die betreffende Zeile jetzt
+in eine Datei <code class="xref std std-xfile docutils literal"><span class="pre">changelog.failed.json</span></code> und macht weiter.</li>
+</ul>
+</div>
+<div class="section" id="release">
+<h2>Release<a class="headerlink" href="#release" title="Permalink to this headline">¶</a></h2>
+<p>Den heutigen Stand nenne ich Lino 0.8.5 und Lino-DSBE 0.1.4
+und markiere das mit tags im Repository.</p>
+<p>0.8.4 und 0.1.3 sind nie released worden, weil ich eher aus
+Versehen einen Fehler in meiner bisherigen Release-Methode bemerkt habe:
+die neue Versionsnummer muss natürlich <em>vor</em> jedem Release entschieden werden.
+In den Zwischenversionen nach dem Release bleibt die Nummer des letzten Releases stehen.
+Ein &#8220;+&#8221; um das zu kennzeichnen halte ich bis auf weiteres für unnötig.</p>
+</div>
+<div class="section" id="gedanken-zum-logging">
+<h2>Gedanken zum <cite>logging</cite><a class="headerlink" href="#gedanken-zum-logging" title="Permalink to this headline">¶</a></h2>
+<p>Ich bin noch weiter am suchen, wie ich das Logging verwalten muss.</p>
+<p>Die Standard-Konfiguration in <code class="file docutils literal"><span class="pre">lino/__init__.py</span></code> ist wohl noch nicht das non plus ultra...</p>
+<dl class="docutils">
+<dt>Interessante Lektüre:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://code.google.com/p/modwsgi/wiki/DebuggingTechniques">http://code.google.com/p/modwsgi/wiki/DebuggingTechniques</a></li>
+<li><a class="reference external" href="http://code.google.com/p/modwsgi/wiki/ApplicationIssues#Writing_To_Standard_Output">http://code.google.com/p/modwsgi/wiki/ApplicationIssues#Writing_To_Standard_Output</a></li>
+</ul>
+</dd>
+</dl>
+<p>Was will ich eigentlich? Ich will ja eigentlich nur, dass ich
+von überall aus mit einem einfachen <code class="docutils literal"><span class="pre">lino.log.info()</span></code> oder <code class="docutils literal"><span class="pre">lino.log.debug()</span></code>
+loggen kann.</p>
+<p>Die <code class="file docutils literal"><span class="pre">lino/__init__.py</span></code> macht ja vor allem:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;lino&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Diese beiden Zeilen wären mir eben schon zu viel, wenn ich sie in jedem Modul schreiben müsste.</p>
+<p>Reicht eigentlich ein einziger Logger?
+Müsste ich nicht einen zusätzlichen Logger vorsehen
+für Meldungen, die die Daten selber betreffen?
+Zum Beispiel detaillierter changelog (falls ein Benutzer das will).
+Also einen weiteren Logger <code class="docutils literal"><span class="pre">lino.data</span></code>, der auch in den zentralen Log geht (stimmt das?),
+aber zusätzlich irgendwo separat geloggt wird für den Fall, dass man die
+Historie der Änderungen in der Datenbank konsultieren will.</p>
+<p>Müsste es nicht doch immer eine lino.log geben, die in der <a class="reference external" href="http://www.lino-framework.org/dev/settings.html#xfile-settings.py" title="(in Lino v1.6)"><code class="xref std std-xfile docutils literal"><span class="pre">settings.py</span></code></a> angegeben wird</p>
+<p>Ich habe drei Methoden, wie Lino gestartet wird:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="file docutils literal"><span class="pre">manage.py</span></code>, <code class="file docutils literal"><span class="pre">initdb.py</span></code>, <code class="file docutils literal"><span class="pre">load_tim.py</span></code> &amp; Co. (interaktiv an der Kommandozeile)</li>
+<li><code class="file docutils literal"><span class="pre">apache.wsgi</span></code></li>
+<li><code class="file docutils literal"><span class="pre">tim2lino.py</span></code> (Hintergrundprozess)</li>
+</ul>
+</div></blockquote>
+<p>Experiment: Die eigentliche <code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code> habe ich von /dsbe/demo nach /dsbe verschoben. In <cite>/dsbe/demo</cite> steht jetzt ein Muster für eine lokale tim2lino.py, die das Logging konfiguriert und dann <cite>from dsbe.tim2lino import main</cite> macht und aufruft.</p>
+</div>
+<div class="section" id="noch-bugs-in-tim2lino-py">
+<h2>Noch Bugs in <code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code><a class="headerlink" href="#noch-bugs-in-tim2lino-py" title="Permalink to this headline">¶</a></h2>
+<p>Okay, wie zu erwarten sind wir mit der Synchronhaltung der Daten noch nicht so schnell
+fertig.</p>
+<ul>
+<li><p class="first">Experimente, wie <code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code> am besten loggen soll. Momentan mach ich:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;lino.tim2lino&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Die Entscheidung, ob ein PAR  eine Person oder eine Company ist, wird komplexer und deshalb in eine eigene Funktion <code class="xref py py-func docutils literal"><span class="pre">tim2lino.is_company()</span></code> ausgelagert: Wer eine Nationalregisternummer (PAR-&gt;NB2) hat ist eine Person, selbst wenn er auch eine MWSt-Nummer hat. Die MWSt-Nummer geht in so einem Fall verloren.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="management-commands">
+<h2>Management commands<a class="headerlink" href="#management-commands" title="Permalink to this headline">¶</a></h2>
+<p>Wenn tim2lino einen OperationalError &#8220;unable to open database file&#8221; kriegt, dann darf er natürlich nicht gleich aufgeben und die Zeile nach <code class="xref std std-xfile docutils literal"><span class="pre">changelog.failed.json</span></code> schreiben, sondern muss neu probieren. Denn dieser Fehler kommt ja nur, weil zu diesem Zeitpunkt der Webserver-Prozess die sqlite-Datenbank blockiert hat. Deshalb macht er jetzt im Fall eines Fehlers 10 Versuche, bevor er aufgibt.</p>
+<p>Aber stimmt es, dass sqlite nicht erlaubt, dass zwei Prozesse gleichzeitig auf die Datenbank zugreifen?</p>
+<p>An den Zugriffsrechten auf die Datenbank scheint es jedenfalls nicht zu liegen:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ ls -al /usr/local/django/dsbe-eupen/data
+total 3436
+drwxrwsr-x 2 lsaffre www-data    4096 2010-09-14 10:09 .
+drwxrwsr-x 3 lsaffre www-data    4096 2010-09-14 11:15 ..
+-rw-rw-r-- 1 lsaffre www-data 3506176 2010-09-14 10:09 dsbe-eupen.db
+</pre></div>
+</div>
+<p>Andererseits sieht es aus als ob der Server-Prozess die Datenbank ziemlich lange gesperrt hält, und dass tim2lino somit nie zum Zuge kommt, wenn der Server einmal aktiv geworden ist.</p>
+<p>Außerdem kann ich von einem <code class="docutils literal"><span class="pre">manage.py</span> <span class="pre">shell</span></code> aus sehr wohl auf die Datenbank zugreifen und darin verändern, während der Serverprozess läuft:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ python manage.py shell
+Lino-DSBE 0.1.4 &lt;http://dsbe.saffre-rumma.net&gt;
+Lino 0.8.5 &lt;http://code.google.com/p/lino/&gt;
+Django 1.3 pre-alpha SVN-13818 &lt;http://www.djangoproject.com&gt;
+Python 2.5.2 &lt;http://www.python.org/&gt;
+ReportLab Toolkit 2.1 &lt;http://www.reportlab.org/rl_toolkit.html&gt;
+PyYaml  &lt;http://pyyaml.org/&gt;
+python-dateutil 1.4.1 &lt;http://labix.org/python-dateutil&gt;
+Python 2.5.2 (r252:60911, Jan 24 2010, 17:44:40)
+[GCC 4.3.2] on linux2
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+(InteractiveConsole)
+&gt;&gt;&gt; from dsbe.models import Person
+&gt;&gt;&gt; p = Person.objects.get(pk=20474)
+&gt;&gt;&gt; p.first_name += &quot;TEST&quot;
+&gt;&gt;&gt; p.save()
+&gt;&gt;&gt;
+</pre></div>
+</div>
+<p>Außerdem kommt der OperationalError sogar dann, wenn ich Apache runtergefahren habe.</p>
+<p>Also muss der OperationalError noch einen anderen Grund haben. Aber welchen?
+Scheinbar ist das ein <a class="reference external" href="http://code.djangoproject.com/wiki/NewbieMistakes#DjangosaysUnabletoOpenDatabaseFilewhenusingSQLite3">Newbie Mistake</a>, aber keiner der dort angeführten Lösungsvorschläge trifft zu.</p>
+<p>Tilt! Nach stundenlanger Suche sehe ich, dass tim2lino.py irgendwie die falsche settings.py nimmt und deshalb versucht auf eine (nicht existierende) Datenbank in <code class="file docutils literal"><span class="pre">/var/snapshots/dsbe/demo/data</span></code> zuzugreifen! Das ist ein Wink mit dem Zaunpfahl! Jetzt mache ich aus tim2lino einen
+<a class="reference external" href="http://docs.djangoproject.com/en/dev/howto/custom-management-commands">management command</a>!</p>
+<p>Die Aktion an sich hat kaum eine Stunde gedauert:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="xref std std-xfile docutils literal"><span class="pre">tim2lino.py</span></code> ersetzt durch <code class="xref py py-mod docutils literal"><span class="pre">dsbe.management.commands.watch_tim</span></code>.</li>
+<li><code class="xref std std-xfile docutils literal"><span class="pre">initdb.py</span></code> ersetzt durch <code class="xref py py-mod docutils literal"><span class="pre">dsbe.management.commands.initdb</span></code>.</li>
+<li><code class="xref std std-xfile docutils literal"><span class="pre">load_tim.py</span></code> ersetzt durch <code class="xref py py-mod docutils literal"><span class="pre">dsbe.management.commands.initdb_tim</span></code>.</li>
+</ul>
+</div></blockquote>
+<p>Also wenn ich mich gestern noch über Djangos Macken geärgert habe, dann darf ich mich heute über seine Genialität freuen (und mich ärgern, dass ich meine Scripts nicht schon früher in management commands konvertiert hatte)!</p>
+<p>Den 10-mal-neu-versuchen-Loop hole ich dann auch wieder raus.</p>
+</div>
+<div class="section" id="weiter">
+<h2>Weiter<a class="headerlink" href="#weiter" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><code class="xref py py-attr docutils literal"><span class="pre">dsbe.Person.civil_state</span></code> ist jetzt ein CharField und nicht mehr ein SmallIntegerField. Weil ja choices auf Integer-Feldern noch nicht funktionieren.</li>
+<li>Einige Felder waren noch nicht als read-only markiert für Personen die aus TIM importiert wurden.</li>
+<li>Bankkonten und Gesdos-Nummer (PAR-&gt;NB1) werden jetzt aus TIM übernommen</li>
+<li>Der doppelte Report für Personen ist wieder raus. Kunde ist einverstanden, dass kleinere Bildschirme und mehr Tabs besser sind.</li>
+<li>Kolonnen sind jetzt wieder sortierbar.</li>
+<li>Noch Übersetzungen</li>
+</ul>
+<p>Release und initdb_tim auf dsbe-eupen.
+Eine Latte von Warnungen:</p>
+<div class="highlight-python"><div class="highlight"><pre>pharmacy 0000086213 not found
+pharmacy 0000086121 not found
+pharmacy 0000086372 not found
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0915.html" title="2010-09-15"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0913.html" title="2010-09-13"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0914.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0914.html">Online Link</a>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131011 (Friday, 11 October 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131012 (Saturday, 12 October 2013)" href="1012.html" />
+    <link rel="prev" title="20131010 (Thursday, 10 October 2013)" href="1010.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1012.html" title="20131012 (Saturday, 12 October 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1010.html" title="20131010 (Thursday, 10 October 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="friday-11-october-2013">
+<h1>20131011 (Friday, 11 October 2013)<a class="headerlink" href="#friday-11-october-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="mailinglist-managers">
+<h2>Mailinglist managers<a class="headerlink" href="#mailinglist-managers" title="Permalink to this headline">¶</a></h2>
+<p>For my own usage I am fully satisfied with mailman, but
+<a class="reference external" href="http://serverfault.com/questions/72940/alternatives-to-mailman">TrueDuality</a>
+is right when he or she writes
+&#8220;it is starting to show it&#8217;s age in a bad way&#8221;:
+the web interface isn&#8217;t anything you want to offer
+to your customers.</p>
+<p>Scanning over <a class="reference external" href="http://en.wikipedia.org/wiki/Electronic_mailing_list">http://en.wikipedia.org/wiki/Electronic_mailing_list</a>
+I still couldn&#8217;t find any alternative in Python.</p>
+<p>One thing is theoretically clear: since a MLM needs a web interface
+to manage memberships, this is a candidate for another new
+Lino application.
+I&#8217;m of course scared by the idea of having to reinvent the wheel
+once more.
+But it is true: as long as we don&#8217;t have the &#8220;Universal Framework&#8221;,
+people are forced to reinvent wheels all the time.</p>
+</div>
+<div class="section" id="recurrent-events">
+<h2>Recurrent Events<a class="headerlink" href="#recurrent-events" title="Permalink to this headline">¶</a></h2>
+<p>DONE:</p>
+<ul>
+<li><p class="first">Removed field <cite>uid</cite> from <code class="xref py py-class docutils literal"><span class="pre">lino.modlib.cal.models.Companent</span></code>
+because it was useless. (One CharField less in every Task and Event!)</p>
+</li>
+<li><p class="first">Added a new model
+<code class="xref py py-class docutils literal"><span class="pre">cal.RecurrentEvent</span></code>.
+New menu command <span class="menuselection">Configuration ‣ Calendar ‣ Recurrent events</span></p>
+</li>
+<li><p class="first">Renamed &#8220;update_cal_subject&#8221; to &#8220;update_cal_summary&#8221; (the old name
+was obviously a typo).</p>
+</li>
+<li><p class="first"><cite>max_auto_events</cite> is no longer a class attribute in settings.py but a
+SiteConfig field.</p>
+</li>
+<li><p class="first">New SiteConfig fields <cite>farest_future</cite> and <cite>default_calendar</cite>.</p>
+</li>
+<li><p class="first"><cite>next_partner_id</cite> is now nullable.</p>
+</li>
+<li><p class="first">The start_date field of new RecurrenceSets (Contracts, Courses,...)
+is no longer empty but today:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">dd</span><span class="o">.</span><span class="n">update_field</span><span class="p">(</span><span class="n">RecurrenceSet</span><span class="p">,</span><span class="s">&#39;start_date&#39;</span><span class="p">,</span><span class="n">default</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Moved fields for RemoteCalendar out of Calendar.
+Changed verbose_name of Calendar to &#8220;EventType&#8221;.</p>
+</li>
+<li><p class="first">TeacherType and PupilType are now <a class="reference external" href="http://www.lino-framework.org/api/lino.mixins.html#lino.mixins.Referrable" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Referrable</span></code></a>.</p>
+</li>
+<li><p class="first">Tabelle der Ferientage : Globale Liste der Daten, an denen Lino
+<em>keine</em> automatischen Termine vorschlagen soll.
+<span class="menuselection">Konfigurierung ‣ Kalender ‣ Recurrent Events</span></p>
+</li>
+<li><p class="first">Renamed Calendar to EventType.
+Extended cal.Subscription to be what the extensible CalendarPanel
+calls &#8220;Calendars&#8221;</p>
+</li>
+<li><p class="first">Renamed all fields named &#8220;<em>calendar</em>&#8221; &#8220;<em>event_type</em>&#8221;
+Except for <cite>Task.calendar</cite> which has been simply removed.</p>
+</li>
+<li><p class="first">Wenn man in den Parametern von Kursen als Thema &#8220;Sport&#8221; ausgewählt,
+und dann war die Liste leer. Und auf dem Server kam
+&#8220;ERROR: Cannot resolve keyword u&#8217;topic&#8217; into field.&#8221;</p>
+</li>
+<li><p class="first">Beim Generieren von Terminen muss er die Recurrent Events jetzt noch
+berücksichtigen. IOW muss Terminkollisionen vermeiden.</p>
+</li>
+<li><p class="first">Layout Kurs Detail : Beginndatum hat keinen Button für Kalender</p>
+</li>
+<li><p class="first">Termin mit einem Klick &#8220;verschieben&#8221;
+(d.h. &#8220;an diesem Datum ausfallen&#8221; lassen, und Lino soll hinten dranhängen).
+So ein Button ist jetzt vielleicht nicht mehr nötig, weil ihr ja die
+Feiertage eingeben könnt und theoretisch alles automatisch richtig gesetzt wird.
+Aber ich habe das Datum als änderbare Kolonne in die Tabelle
+hinzugefügt, dort kannst du F2 drücken und dann den Kalender öffnen.
+Das ist ja auch relativ komfortabel.</p>
+</li>
+</ul>
+<p>TODO:</p>
+<ul>
+<li><p class="first">Chronologische Reihenfolge der Einschreibungen nicht nur pro Datum,
+sondern auch Uhrzeit.</p>
+</li>
+<li><p class="first">Wenn ich Einschreibung bestätige (vom Kurs aus):</p>
+<div class="highlight-python"><div class="highlight"><pre>Exception
+ParameterStore of LayoutHandle for ParamsLayout on courses.Enrolments expected a list of 6 values, but got [u&#39;&#39;, u&#39;&#39;, u&#39;&#39;, u&#39;&#39;, u&#39;&#39;]
+
+TRACEBACK:
+File &quot;/usr/local/pythonenv/demo/lib/python2.6/site-packages/django/core/handlers/base.py&quot;, line 115, in get_response
+(...)
+File &quot;/home/luc/hgwork/lino/lino/core/requests.py&quot;, line 456, in __init__
+pv.update(self.actor.params_layout.params_store.parse_params(request))
+File &quot;/home/luc/hgwork/lino/lino/ui/store.py&quot;, line 982, in parse_params
+self,len(self.param_fields),pv))
+</pre></div>
+</div>
+</li>
+<li><p class="first">Nach Einfügen einer Einschreibung nicht ins Detail springen sondern in der Listenansicht bleiben.</p>
+</li>
+<li><p class="first">Dokumentieren:</p>
+<blockquote>
+<div><p>Partner : alle Personen und Organisationen, mit denen wir Geschäfte machen</p>
+<ul class="simple">
+<li>Organisationen</li>
+<li>Personen : alle möglichen Menschen<ul>
+<li>Teilnehmer : alle Personen, die als Teilnehemer ausgewählt
+werden können mit einer &#8220;Schülerart&#8221; (Eiche, LFV, COK,
+Nichtmitglied...)</li>
+<li>Kursleiter :</li>
+</ul>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1012.html" title="20131012 (Saturday, 12 October 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1010.html" title="20131010 (Thursday, 10 October 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1011.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1011.html">Online Link</a>
+    </div>
+  </body>
+</html>

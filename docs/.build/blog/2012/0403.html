@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120403 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120405" href="0405.html" />
+    <link rel="prev" title="20120402" href="0402.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0405.html" title="20120405"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0402.html" title="20120402"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120403<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="cbss-connection">
+<h2>CBSS connection<a class="headerlink" href="#cbss-connection" title="Permalink to this headline">¶</a></h2>
+<p>Tested the new command <code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.cbss.cbss_testconnection</span></code>.
+Since this needs to run on the customer&#8217;s machine and since
+we don&#8217;t yet want to make a release, I first had to create a
+new project on that machine.</p>
+<p>Aha, here is the next problem:</p>
+<div class="highlight-python"><div class="highlight"><pre>lsaffre@lino:/usr/local/django/test_dsbe$ python manage.py cbss_testconnection
+Sending request...
+Traceback (most recent call last):
+  File &quot;manage.py&quot;, line 19, in &lt;module&gt;
+    execute_manager(settings)
+  File &quot;/var/snapshots/django/django/core/management/__init__.py&quot;, line 442, in execute_manager
+    utility.execute()
+  File &quot;/var/snapshots/django/django/core/management/__init__.py&quot;, line 379, in execute
+    self.fetch_command(subcommand).run_from_argv(self.argv)
+  File &quot;/var/snapshots/django/django/core/management/base.py&quot;, line 191, in run_from_argv
+    self.execute(*args, **options.__dict__)
+  File &quot;/var/snapshots/django/django/core/management/base.py&quot;, line 220, in execute
+    output = self.handle(*args, **options)
+  File &quot;/var/snapshots/lino_dev/lino/modlib/cbss/management/commands/cbss_testconnection.py&quot;, line 32, in handle
+    print tcs.execute(&#39;test&#39;,req,settings.LINO.cbss2_user_params)
+  File &quot;/var/snapshots/lino_dev/lino/utils/xmlgen/cbss/__init__.py&quot;, line 350, in execute
+    res = server.soap(xml)
+  File &quot;/var/snapshots/appy-current/appy/shared/dav.py&quot;, line 274, in soap
+    res = self.post(data, uri, headers=headers, encode=None)
+  File &quot;/var/snapshots/appy-current/appy/shared/dav.py&quot;, line 264, in post
+    return self.send(&#39;POST&#39;, uri, headers=headers, body=body)
+  File &quot;/var/snapshots/appy-current/appy/shared/dav.py&quot;, line 189, in send
+    body = conn.getfile().read()
+  File &quot;/usr/lib/python2.6/httplib.py&quot;, line 1244, in read
+    return s + self._file.read()
+  File &quot;/usr/lib/python2.6/socket.py&quot;, line 348, in read
+    data = self._sock.recv(rbufsize)
+socket.error: [Errno 104] Connection reset by peer
+</pre></div>
+</div>
+</div>
+<div class="section" id="lino-modlib-schools">
+<h2>lino.modlib.schools<a class="headerlink" href="#lino-modlib-schools" title="Permalink to this headline">¶</a></h2>
+<p>Continued on <cite>lino.modlib.schools</cite>.
+Introduced the notion of &#8220;time slot&#8221; (Zeitnische).
+Still searching...</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0405.html" title="20120405"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0402.html" title="20120402"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0403.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0403.html">Online Link</a>
+    </div>
+  </body>
+</html>

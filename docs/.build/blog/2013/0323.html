@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20130323 (Saturday, 23 March 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20130324 (Sunday, 24 March 2013)" href="0324.html" />
+    <link rel="prev" title="20130322 (Friday, 22 March 2013)" href="0322.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0324.html" title="20130324 (Sunday, 24 March 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0322.html" title="20130322 (Friday, 22 March 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="saturday-23-march-2013">
+<h1>20130323 (Saturday, 23 March 2013)<a class="headerlink" href="#saturday-23-march-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="extract-messages-using-babel-instead-of-django">
+<h2>Extract messages using Babel instead of Django<a class="headerlink" href="#extract-messages-using-babel-instead-of-django" title="Permalink to this headline">¶</a></h2>
+<p>Cool! Today I replaced the sophisticated and intransparent system for handling
+internationalization (which used only Django&#8217;s builtin possibilities and
+needed <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//Makefile">/Makefile</a>)
+by a transparent and easy-to-use system using <a class="reference external" href="http://babel.edgewall.org/wiki/Documentation/setup.html">Babel</a>
+(and Jinja&#8217;s <a class="reference external" href="http://jinja.pocoo.org/docs/integration/">Babel Integration</a>).</p>
+<p>The configuration is in <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/setup_info.py">/lino/setup_info.py</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">SETUP_INFO</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">message_extractors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;lino&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s">&#39;**/sandbox/**&#39;</span><span class="p">,</span>        <span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;**/cache/**&#39;</span><span class="p">,</span>          <span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;**.py&#39;</span><span class="p">,</span>                <span class="s">&#39;python&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;**.js&#39;</span><span class="p">,</span>                <span class="s">&#39;javascript&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">&#39;**/templates_jinja/**.html&#39;</span><span class="p">,</span> <span class="s">&#39;jinja2&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+<p>The raw commands to issue (supposing locale &#8220;de&#8221; ) are:</p>
+<div class="highlight-python"><div class="highlight"><pre>setup.py extract_messages -o lino/locale/django.pot
+setup.py init_catalog    --domain django -d lino/locale -l de -i lino/locale/django.pot
+setup.py update_catalog  --domain django -d lino/locale -l de -i lino/locale/django.pot
+setup.py compile_catalog --domain django -d lino/locale -l de
+</pre></div>
+</div>
+<p>A first nice surprise is the following message:</p>
+<blockquote>
+<div>SyntaxError: python refuses to compile code with both a UTF8 byte-order-mark and a magic encoding comment</div></blockquote>
+<p>There were indeed a few files with this problem (which had never occured
+on my machine, though, and I&#8217;m not going to research why).</p>
+<p>One fundamental difference is: until now I had a
+lot of <cite>locale</cite> directories (one for each app),
+but I&#8217;m going to have now a single one in
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/locale">/lino/locale</a>.
+Because that simplifies everything a lot!
+Except that I&#8217;ll need to find out how to recover the
+existing translations.
+Here is the Windows shell command used to get a list of the German ones:</p>
+<div class="highlight-python"><div class="highlight"><pre>T:\hgwork\lino&gt;dir /s django.po /b | grep de\\
+</pre></div>
+</div>
+<p>Another little difference:
+Django&#8217;s makemessages command automatically removed the .pot files,
+I am going to leave the <a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/locale/django.pot">/lino/locale/django.pot</a> file hanging around.</p>
+<p>The above commands are now fully implemented in <code class="xref py py-mod docutils literal"><span class="pre">djangosite.utils.fablib</span></code> as:</p>
+<div class="highlight-python"><div class="highlight"><pre>fab em
+fab im
+fab um
+fab cm
+</pre></div>
+</div>
+<p>While converting lino_welfare to the new system I
+noticed that I can now finally also put the central things
+like the settings.py file, demo fixtures and management commands
+to where they belong (to the top-level directory)
+I used the occasion to split the central parts of
+<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.modlib.pcsw.models.html#module-lino_welfare.modlib.pcsw.models" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.pcsw.models</span></code></a>
+into a new module <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.models.html#module-lino_welfare.models" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.models</span></code></a>.</p>
+<p><code class="xref py py-class docutils literal"><span class="pre">north.north_site.Site</span></code> now does the same for <cite>LOCALE_PATHS</cite> as for <cite>FIXTURE_DIRS</cite>:
+it extends Django&#8217;s automatic discovery system by searching also for
+&#8220;locale&#8221; subdirectories relative to any Python module
+that defines a subclass of <code class="xref py py-class docutils literal"><span class="pre">north.north_site.Site</span></code>
+(usually a <code class="file docutils literal"><span class="pre">settings.py</span></code> file)
+and which are <em>not</em> part of an app
+(in which case a locale directory should not be mentioned there because
+Django already searches them, as explained
+in <a class="reference external" href="https://docs.djangoproject.com/en/dev/topics/i18n/translation/#how-django-discovers-translations">How Django discovers translations</a>).</p>
+<p>One &#8220;detail&#8221; causes still headache: <a class="reference external" href="http://babel.edgewall.org/wiki/Documentation/setup.html">Babel</a> doesn&#8217;t seem to
+support message contexts, at least it doesn&#8217;t extract them
+using <cite>pgettext</cite> instead of <cite>gettext</cite>.
+A ticket <a class="reference external" href="http://babel.edgewall.org/ticket/278">278</a>
+mentioned this, but it has been closed as duplicate
+of <a class="reference external" href="http://babel.edgewall.org/ticket/277">277</a>
+which afaics doesn&#8217;t speak at all about pgettext.</p>
+<p>An example of where this causes problem is
+the German male salutation &#8220;Herr&#8221; or &#8220;Herrn&#8221;:
+both salutations are &#8220;Mr&#8221; in English,
+but in German there are two cases.
+Lino provides some utility functions for this,
+see <a class="reference external" href="http://www.lino-framework.org/tutorials/human/index.html#lino-tutorial-human" title="(in Lino v1.6)"><span>About Humans</span></a>.
+This is done using pgettext (see source code at
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master//lino/mixins/human.py">/lino/mixins/human.py</a>),
+but Babel seems to simply ignore these.
+It does read the file:</p>
+<div class="highlight-python"><div class="highlight"><pre>...
+extracting messages from lino\mixins\human.py
+...
+</pre></div>
+</div>
+<p>UPDATE: What a funny coincidence!
+The last post in Babel&#8217;s mailinglist was exactly
+about this problem, and it told me that Babel <em>can</em>
+do pgettext, but they just didn&#8217;t yet release it officially!
+Tried with a checkout of the latest trunk version
+(which is not completely trivial but
+<a class="reference external" href="http://babel.edgewall.org/wiki/SubversionCheckout">there are clear instructions</a>): yes, that works.</p>
+<p>Only remaining problem is that I&#8217;d prefer to use a released
+version on my customer&#8217;s site.</p>
+</div>
+<div class="section" id="to-trust-or-not-to-trust">
+<h2>To trust or not to trust?<a class="headerlink" href="#to-trust-or-not-to-trust" title="Permalink to this headline">¶</a></h2>
+<p>Before releasing yesterdays new &#8220;textfield templates are now parsed using Jinja&#8221;
+feature to <a class="reference external" href="http://www.lino-framework.org/ref/jargon.html#lf" title="(in Lino v1.6)"><span>lino-framework.org</span></a>,
+I&#8217;d rather add the new attribute <code class="xref py py-attr docutils literal"><span class="pre">lino.ui.Site.trusted_templates</span></code> which is False
+by default. So sorry, you cannot see this feature in our live demos.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0324.html" title="20130324 (Sunday, 24 March 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0322.html" title="20130322 (Friday, 22 March 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/0323.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/0323.html">Online Link</a>
+    </div>
+  </body>
+</html>

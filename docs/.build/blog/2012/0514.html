@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120514 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120515" href="0515.html" />
+    <link rel="prev" title="20120513" href="0513.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0515.html" title="20120515"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0513.html" title="20120513"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120514<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="schuldnerberatung">
+<h2>Schuldnerberatung<a class="headerlink" href="#schuldnerberatung" title="Permalink to this headline">¶</a></h2>
+<p>Continued with <a class="reference external" href="https://github.com/lsaffre/lino/blob/master/docs/tickets/63">docs/tickets/63</a>.
+Removed field <cite>Entry.name</cite>.</p>
+<p>The new field <cite>periods</cite> means: for how many months
+(or any other period of time this budget is designed for)
+the entered amount counts.
+Default value is 1. For yearly amounts set it to 12
+(when the budget is conceived with a monthly periodicity).
+Currently there is no need to have the periodicity o a
+budget stored somewhere. Currently it is always &#8220;monthly&#8221;.
+I just didn&#8217;t want to choose &#8220;months&#8221; as internal field
+name.</p>
+</div>
+<div class="section" id="lino-on-cloud-7">
+<h2>Lino on Cloud 7<a class="headerlink" href="#lino-on-cloud-7" title="Permalink to this headline">¶</a></h2>
+<p>Worked on <a class="reference external" href="http://lino.cld7.com/">http://lino.cld7.com/</a>, the first public (but not yet official)
+Lino demo on a server with normal connection speed.</p>
+<p>Fixed a bug in <code class="xref py py-meth docutils literal"><span class="pre">lino.utils.auth.RemoteUserMiddleware.process_request()</span></code>:
+&#8220;Unknown username %s from request %s&#8221;
+(When the REMOTE_USER doesn&#8217;t exist, Lino failed to give a proper error message).</p>
+<p>Otto discovered an general bug: a Lino.GridPanel didn&#8217;t prevent editing
+of disabled fields (this was only done for editing a Detail).
+A user can edit their own data,
+except for the fields <cite>is_active</cite>, <cite>is_superuser</cite>, <cite>is_staff</cite> and <cite>is_expert</cite>
+(the last 2 only since today).
+<cite>Lino.CheckColumn</cite> manually called an event &#8220;validateedit&#8221;,
+changed this to &#8220;beforeedit&#8221;.</p>
+<p>Another problem:
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.fixtures.ee.html#module-lino.modlib.countries.fixtures.ee" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.fixtures.ee</span></code></a> caused the following error
+when being used on a MySQL database:</p>
+<div class="highlight-python"><div class="highlight"><pre>WARNING Failed to save City(name=u&#39;\xd5ru&#39;,country=u&#39;EE&#39;).
+Traceback (most recent call last):
+  File &quot;/home/linodev/snapshots/Django-1.4/django/core/management/commands/loaddata.py&quot;, line 196, in handle
+    obj.save(using=using)
+  File &quot;/home/linodev/snapshots/lino/lino/utils/dumpy.py&quot;, line 287, in save
+    self.try_save(*args,**kw)
+  File &quot;/home/linodev/snapshots/lino/lino/utils/dumpy.py&quot;, line 300, in try_save
+    obj.full_clean()
+  File &quot;/home/linodev/snapshots/Django-1.4/django/db/models/base.py&quot;, line 824, in full_clean
+    raise ValidationError(errors)
+ValidationError: {&#39;__all__&#39;: [u&#39;City with this Country, Name and Zip code already exists.&#39;]}
+</pre></div>
+</div>
+</div>
+<div class="section" id="copyright-on-sihtnumbrid-csv">
+<h2>Copyright on <cite>sihtnumbrid.csv</cite><a class="headerlink" href="#copyright-on-sihtnumbrid-csv" title="Permalink to this headline">¶</a></h2>
+<p>Oops: while working on the above problem I discovered that
+&#8220;3.1.9 Kliendil on keelatud sihtnumbrite andmebaasi
+publitseerimine ilma POSTI eelneva nõusolekuta.&#8221;</p>
+<p>Don&#8217;t remember that this was there at the time I
+wrote <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.fixtures.ee.html#module-lino.modlib.countries.fixtures.ee" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.fixtures.ee</span></code></a>...
+but of course, this means that I cannot distribute
+the file <cite>sihtnumbrid.csv</cite> together with Lino,
+and therefore we must remove it from the repository.</p>
+<p>So the <a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.countries.fixtures.ee.html#module-lino.modlib.countries.fixtures.ee" title="(in Lino v1.6)"><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.countries.fixtures.ee</span></code></a>
+fixture is broken until we find some other
+solution.</p>
+<p>In fact we need a GPL-licensed version of something like
+<a class="reference external" href="http://www.addressdoctor.com/">http://www.addressdoctor.com/</a>.
+IOW we need the <a class="reference external" href="http://www.lino-framework.org/topics/gpdn.html">/topics/gpdn</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0515.html" title="20120515"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0513.html" title="20120513"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0514.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0514.html">Online Link</a>
+    </div>
+  </body>
+</html>

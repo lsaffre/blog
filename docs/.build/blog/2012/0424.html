@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20120424 &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2012" href="index.html" />
+    <link rel="next" title="20120425" href="0425.html" />
+    <link rel="prev" title="20120421" href="0421.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0425.html" title="20120425"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0421.html" title="20120421"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2012</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>20120424<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Continued on <cite>Tx25 (new style CBSS connection)</cite>.</p>
+<p>After weeks of trying and fiddling, we finally got a first
+RetrieveTIGroups request working using <a class="reference external" href="http://www.lino-framework.org/ref/links.html#term-suds" title="(in Lino v1.6)"><span class="xref std std-term">suds</span></a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;suds.client&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span> <span class="nn">suds.client</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;/path/to/local/RetrieveTIGroupsV3.wsdl&#39;</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;file://&#39;</span> <span class="o">+</span> <span class="n">url</span>
+
+<span class="n">USERNAME</span> <span class="o">=</span> <span class="s">&#39;E1234567890&#39;</span>
+<span class="n">PASSWORD</span> <span class="o">=</span> <span class="s">&#39;p1234567890123456789012345678&#39;</span>
+<span class="n">CBE_NO</span> <span class="o">=</span> <span class="s">&#39;0123456789&#39;</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">)</span>
+
+<span class="n">ci</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;ns0:CustomerIdentificationType&#39;</span><span class="p">)</span>
+<span class="n">cbeNumber</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;ns0:CbeNumberType&#39;</span><span class="p">)</span>
+<span class="n">ci</span><span class="o">.</span><span class="n">cbeNumber</span> <span class="o">=</span> <span class="n">CBE_NO</span>
+<span class="n">ic</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;ns0:InformationCustomerType&#39;</span><span class="p">)</span>
+<span class="n">ic</span><span class="o">.</span><span class="n">ticket</span> <span class="o">=</span> <span class="s">&quot;test-123456&quot;</span>
+<span class="n">ic</span><span class="o">.</span><span class="n">timestampSent</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+<span class="n">ic</span><span class="o">.</span><span class="n">customerIdentification</span> <span class="o">=</span> <span class="n">ci</span>
+
+<span class="n">si</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="s">&#39;ns0:SearchInformationType&#39;</span><span class="p">)</span>
+<span class="n">si</span><span class="o">.</span><span class="n">ssin</span> <span class="o">=</span> <span class="s">&quot;70100853190&quot;</span> <span class="c"># one of the demo SSIN</span>
+<span class="n">si</span><span class="o">.</span><span class="n">language</span> <span class="o">=</span> <span class="s">&quot;fr&quot;</span>
+<span class="n">si</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">True</span>
+
+<span class="k">print</span> <span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">retrieveTI</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">si</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The main obstacle was: to access the CBSS, we cannot query
+the WSDL online, we must use a locally stored file which contains
+the &#8220;hard-coded&#8221; location.</p>
+<p>Der SOAP-Server der BCSS antwortet auf einen Request &#8221;...?wsdl&#8221;
+zwar mit einer WSDL-Definition, aber die kann
+unmöglich gültig sein, weil der Server nicht wissen kann, über welchen
+Namen wir ihn anrufen. Weil er hinter einem reverse proxy steht. Wir
+müssen mit einer lokalen wsdl-Datei arbeiten. Ist auch prinzipiell kein
+Problem.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0425.html" title="20120425"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0421.html" title="20120421"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2012</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2012/0424.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2012/0424.html">Online Link</a>
+    </div>
+  </body>
+</html>

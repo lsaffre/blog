@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>&lt;no title&gt; &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2010" href="index.html" />
+    <link rel="next" title="&lt;no title&gt;" href="0122.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="0120.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="0122.html" title="&lt;no title&gt;"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="0120.html" title="&lt;no title&gt;"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2010</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>Ich bin noch immer am issue 49 und issue 80 dran.  Die URL-Struktur stimmt ungefähr (das war das Schwierigste): unter <cite>/choices/</cite> antwortet jetzt wieder <cite>choices_view()</cite>. Neue Klasse <cite>ChoicesViewRequest</cite>.</p>
+<p>Und wenn ich in <cite>http://127.0.0.1:8000/?show=contacts_Persons</cite> im Feld <cite>City</cite> doppelklicke und die Combobox triggere, dann habe ich jetzt eine Liste mit nur den belgischen Städten. Super.</p>
+<p>Aber leider schickt die ComboBox die ausgewählte Stadt nicht nach <cite>grid_afteredit()</cite>.
+Sieht aus als ob es nicht in <cite>grid_afteredit()</cite> liegt, sondern dass die ComboBox die ausgewählte value gar nicht erst ans event rübergibt. <cite>e.value</cite> ist jedenfalls immer leer. Ich tippe darauf, dass ich Konfigurationsparameter <cite>valueField</cite>, <cite>hiddenField</cite> usw. falsch benutze.</p>
+<p>Es hilft nichts, ich muss ein isoliertes Snippet schreiben, um im ExtJS-Forum fragen zu können.</p>
+<p>Zuerst mal Testdaten herbeischaffen. Oho, <cite>fill.py demo</cite> funktioniert nicht mehr, weil ich das nach Issue 83 noch anpassen muss.</p>
+<p>Oh je, jetzt hab ich mich festgebissen: 2 Stunden Spielerei, und jetzt installiert <cite>python fill.py be ee demo</cite> alle 2853 belgischen und 367 estnischen Städte. Und nützen tut das vorerst nichts, denn ich brauche für mein isoliertes Snippet <em>kleine</em> Testdatensätze. Nein, das muss ich verfeinern. Hier jetzt eine Übersicht der fixtures, die mit Lino kommen:</p>
+<p>Demo-Daten:</p>
+<blockquote>
+<div><ul class="simple">
+<li>demo : kleines Testdatenset Ostbelgien</li>
+<li>demo_ee : kleines Testdatenset Estland</li>
+</ul>
+</div></blockquote>
+<p>&#8220;Echte&#8221; Daten:</p>
+<blockquote>
+<div><ul class="simple">
+<li>be : lädt alle belgischen Städte und Postleitzahlen</li>
+<li>ee : lädt die wichtigsten estnischen Städten, ohne Dörfer und ohne Postleitzahlen</li>
+<li>iso3166 : lädt eine Liste mit allen Ländern der Welt laut ISO 3166.</li>
+</ul>
+</div></blockquote>
+<p>Wenn man Demo-Daten lädt, darf man keine &#8220;echten&#8221; laden.
+<cite>be</cite> und <cite>ee</cite> erfordern <cite>iso3166</cite>.</p>
+<p>So, mit <cite>python fill.py demo</cite> kriegt man jetzt eine übersichtliche kleine Demo-Datenbank.</p>
+<p>Aber jetzt wird mir klar, dass es auch mit einer übersichtlichen kleinen Demo-Datenbank nicht möglich sein wird, mein isoliertes Snippet hinzukriegen. Es geht ja um ComboBoxes mit <cite>mode=&#8217;remote&#8217;</cite> und PagingToolbar. Hier einige URLs von AJAX-calls:</p>
+<p>{{{
+GET <a class="reference external" href="http://127.0.0.1:8000/list/contacts/Companies?_dc=1264087888005">http://127.0.0.1:8000/list/contacts/Companies?_dc=1264087888005</a>
+GET <a class="reference external" href="http://127.0.0.1:8000/list/contacts/Companies?_dc=1264087889024&amp;limit=4&amp;start=0">http://127.0.0.1:8000/list/contacts/Companies?_dc=1264087889024&amp;limit=4&amp;start=0</a>
+GET <a class="reference external" href="http://127.0.0.1:8000/choices/contacts/Companies/city?_dc=1264088486580&amp;start=0&amp;limit=10&amp;query=">http://127.0.0.1:8000/choices/contacts/Companies/city?_dc=1264088486580&amp;start=0&amp;limit=10&amp;query=</a>
+}}}</p>
+<p>Und jetzt zeigt die Uhr Feierabend! Also issue 49 und issue 80 sind auch morgen noch dran...</p>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="0122.html" title="&lt;no title&gt;"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="0120.html" title="&lt;no title&gt;"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2010</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2010/0121.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2010/0121.html">Online Link</a>
+    </div>
+  </body>
+</html>

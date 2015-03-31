@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>20131007 (Monday, 07 October 2013) &mdash; Luc&#39;s website</title>
+    
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/centeredlogo.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/taglist_tags.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/sidebar.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within Luc&#39;s website"
+          href="../../_static/opensearch.xml"/>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="Luc&#39;s website" href="../../index.html" />
+    <link rel="up" title="2013" href="index.html" />
+    <link rel="next" title="20131008 (Tuesday, 08 October 2013)" href="1008.html" />
+    <link rel="prev" title="20131005 (Saturday, 05 October 2013)" href="1005.html" />
+   
+<script src="../../.htmldata/lightbox/js/jquery-1.11.0.min.js"></script>
+<script src="../../.htmldata/lightbox/js/lightbox.min.js"></script>
+<link href="../../.htmldata/lightbox/css/lightbox.css" rel="stylesheet" />
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="1008.html" title="20131008 (Tuesday, 08 October 2013)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="1005.html" title="20131005 (Saturday, 05 October 2013)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" accesskey="U">2013</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="monday-07-october-2013">
+<h1>20131007 (Monday, 07 October 2013)<a class="headerlink" href="#monday-07-october-2013" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="issuing-payment-reminders">
+<h2>Issuing payment reminders<a class="headerlink" href="#issuing-payment-reminders" title="Permalink to this headline">¶</a></h2>
+<p>Continued on <a class="reference external" href="http://faggio.lino-framework.org/index.html#faggio" title="(in Lino Faggio Reference v0.0)"><span>Lino Faggio</span></a>: Lino can now issue payment reminders.
+In its simplest form (just a reminder, without automatically computing
+a severeness and/or interests to add) the user simply creates
+a Note of type &#8220;Payment Reminder&#8221; and prints it or sends it via email.
+I like the straightforwardness and transparence of this implementation
+which will be part of <a class="reference external" href="http://cosi.lino-framework.org/index.html#cosi" title="(in Lino Cosi Reference Manual v0.0)"><span>Lino Così</span></a>.</p>
+<p>Added an <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.insert_layout" title="(in Lino v1.6)"><code class="xref py py-attr docutils literal"><span class="pre">insert_layout</span></code></a> to
+<a class="reference external" href="http://www.lino-framework.org/api/lino.modlib.notes.models.html#lino.modlib.notes.models.NoteTypes" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">notes.NoteTypes</span></code></a>.</p>
+<p>Added
+<code class="xref py py-class docutils literal"><span class="pre">notes.NotesByPerson</span></code>
+and
+<code class="xref py py-class docutils literal"><span class="pre">notes.NotesByCompany</span></code>.</p>
+<p>New files
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/modlib/notes/config/notes/Note/Letter.odt">Letter.odt</a>
+and
+<a class="reference external" href="https://github.com/lsaffre/lino/blob/master/lino/modlib/finan/config/notes/Note/payment_reminder.body.html">payment_reminder.body.html</a>.
+A payment reminder
+uses the <code class="xref py py-class docutils literal"><span class="pre">ledger.DuePaymentsByPartner</span></code>
+table with the Note&#8217;s
+<code class="xref py py-meth docutils literal"><span class="pre">partner</span></code>
+property as <cite>master_instance</cite>.</p>
+<p><code class="xref py py-mod docutils literal"><span class="pre">lino.modlib.ledger.fixtures.mini</span></code>
+now adds a NoteType &#8220;Payment reminder&#8221;.</p>
+<p>Should <cite>ar.show()</cite> call <code class="xref py py-meth docutils literal"><span class="pre">E.tostring()</span></code> or not?
+Answer: it depends.
+Yes when called from inside a &#8220;do text from&#8221; of an appy.pod template,
+No when called from inside a plain html template.</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.core.requests.html#lino.core.requests.BaseRequest.show" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.requests.BaseRequest.show()</span></code></a></li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">lino.ui.render.HtmlRenderer.show_request()</span></code></li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">lino.ui.render.TextRenderer.show_request()</span></code></li>
+<li><code class="xref py py-meth docutils literal"><span class="pre">lino.extjs.ext_renderer.ExtRenderer.show_request()</span></code></li>
+<li><a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.show" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">lino.core.actors.Actor.show()</span></code></a></li>
+</ul>
+</div>
+<div class="section" id="cannot-choose-template-or-body-template-of-a-printabletype">
+<h2>Cannot choose template or body_template of a PrintableType<a class="headerlink" href="#cannot-choose-template-or-body-template-of-a-printabletype" title="Permalink to this headline">¶</a></h2>
+<p>When trying to choose a template or body_template of a PrintableType,
+the selection list is always empty and the server reports a
+TypeError
+&#8220;unbound method get_templates_group() must be called with
+NoteType instance as first argument (got nothing instead)&#8221;.</p>
+<p>This bug had been introduced when I made <cite>ledger.Journal</cite>
+a <cite>PrintableType</cite>.
+Fixing this bug revealed two other bugs:</p>
+<ul class="simple">
+<li>Lino didn&#8217;t yet support specifying a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.core.choicelists.html#lino.core.choicelists.ChoiceListField" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">ChoiceListField</span></code></a>
+as parameter of a
+<a class="reference external" href="http://www.lino-framework.org/api/lino.utils.choosers.html#lino.utils.choosers.Chooser" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">Chooser</span></code></a>.
+Fixed.
+Added <a class="reference external" href="http://www.lino-framework.org/api/lino.utils.instantiator.html#lino.utils.instantiator.ChoiceConverter" title="(in Lino v1.6)"><code class="xref py py-class docutils literal"><span class="pre">lino.utils.instantiator.ChoiceConverter</span></code></a>.</li>
+<li>Until now it was not possible to select per Journal another template
+than <cite>Default.odt</cite> for printing an invoice.
+Fixed.</li>
+</ul>
+</div>
+<div class="section" id="released-lino-welfare-1-1-10">
+<h2>Released Lino-Welfare 1.1.10<a class="headerlink" href="#released-lino-welfare-1-1-10" title="Permalink to this headline">¶</a></h2>
+<p>Release notes see <a class="reference external" href="http://welfare.lino-framework.org/changes.html#welfare-changes" title="(in Lino Welfare Reference Manual v1.1)"><span>Changes in Lino Welfare</span></a>.
+This also required a new version (<a class="reference external" href="http://www.lino-framework.org/changes.html#lino-changes" title="(in Lino v1.6)"><span class="xref std std-ref">1.6.13</span></a>) of Lino.</p>
+<p><code class="xref std std-cmd docutils literal"><span class="pre">fab</span> <span class="pre">sdist_test</span></code> still failed with an
+ImportError &#8220;Could not import settings &#8216;lino.projects.belref.settings&#8217;
+(Is it on sys.path?): No module named lino_welfare.modlib.statbel&#8221;</p>
+<p><code class="xref std std-cmd docutils literal"><span class="pre">fab</span> <span class="pre">sdist_test</span></code> no longer asks for a user confirmation before
+deleting the temporary directory.</p>
+<p>Renamed the fab command <cite>upload</cite> to <a class="reference external" href="http://atelier.lino-framework.org/api/atelier.fablib.html#command-fab release" title="(in atelier v0.0)"><code class="xref std std-cmd docutils literal"><span class="pre">fab</span> <span class="pre">release</span></code></a>.</p>
+<p>Upgrading to a relased version is now really easy:</p>
+<blockquote>
+<div>$ . env/bin/activate
+$ python manage.py dump2py /var/log/lino/backups/20131007
+$ pip install -U lino-welfare
+$ python manage.py run /var/log/lino/backups/20131007</div></blockquote>
+<p>Oops, except if you get e.g. the following:</p>
+<div class="highlight-python"><div class="highlight"><pre>IOError: [Errno 28] No space left on device
+</pre></div>
+</div>
+<p>which means that you must either tidy up or install a bigger hard drive.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/logo.png" alt="Logo"/>
+            </a></p>
+<h3><a href="../../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../about/index.html">About me</a></li>
+</ul>
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><p align="center">
+<a href="https://github.com/lsaffre" target="_blank">GitHub</a>
+<br/><a href="http://www.lino-framework.org" target="_blank">Lino</a>
+<br/><a href="http://www.saffre-rumma.net" target="_blank">Rumma & Ko</a>
+</p>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="1008.html" title="20131008 (Tuesday, 08 October 2013)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="1005.html" title="20131005 (Saturday, 05 October 2013)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">Home</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Blog</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="index.html" >2013</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/2.5/88x31.png" /></a>
+This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/">Creative Commons Attribution-ShareAlike 2.5 Generic License</a>.<br />
+      Last updated on 2015-03-31.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3.
+<a href="../../_sources/blog/2013/1007.txt">Show Source</a> 
+    <a href="http://luc.lino-framework.org/blog/2013/1007.html">Online Link</a>
+    </div>
+  </body>
+</html>
