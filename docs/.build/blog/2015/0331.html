@@ -137,9 +137,22 @@ to <a class="reference external" href="http://www.lino-framework.org/api/lino.co
 </div>
 <div class="section" id="about-plugin-inheritance">
 <h2>About plugin inheritance<a class="headerlink" href="#about-plugin-inheritance" title="Permalink to this headline">¶</a></h2>
-<p>I removed another usage of <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.set_detail_layout" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">set_detail_layout</span></code></a> and of a magic
-<cite>site_setup</cite> function, namely those which were in
-<a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.models.html#module-lino_welfare.models" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.models</span></code></a>.</p>
+<p>The new module <code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.modlib.countries</span></code> is because I
+converted the usage of <a class="reference external" href="http://www.lino-framework.org/api/lino.core.actors.html#lino.core.actors.Actor.set_detail_layout" title="(in Lino v1.6)"><code class="xref py py-meth docutils literal"><span class="pre">set_detail_layout</span></code></a> and of the magic
+<cite>site_setup</cite> function which were in <a class="reference external" href="http://welfare.lino-framework.org/api/lino_welfare.models.html#module-lino_welfare.models" title="(in Lino Welfare Reference Manual v1.1)"><code class="xref py py-mod docutils literal"><span class="pre">lino_welfare.models</span></code></a>.</p>
+<p>My plan is to declare this usage pattern as deprecated, but the topic
+needs more investigation and documentation.</p>
+<p>I also tried to solve the problem that a plugin, when it inherits from
+an existing plugin, must create a wrapper for everything in its
+parent&#8217;s <cite>fixtures</cite> and <cite>config</cite> directories.  That problem is
+described in <code class="xref doc docutils literal"><span class="pre">/dev/plugin_inheritance</span></code>.  My idea was to add
+<cite>fixtures</cite> directories of parent plugins to Django&#8217;s
+<code class="xref std std-setting docutils literal"><span class="pre">FIXTURE_DIR</span></code> setting. I even got this wo work, but then
+discovered that it is useless because it changes the order in which
+the fixtures are being loaded: Django&#8217;s loaddata command first loads
+all fixtures of <a class="reference external" href="http://www.lino-framework.org/ref/settings.html#setting-INSTALLED_APPS" title="(in Lino v1.6)"><code class="xref std std-setting docutils literal"><span class="pre">INSTALLED_APPS</span></code></a>, and only then those from
+<code class="xref std std-setting docutils literal"><span class="pre">FIXTURE_DIR</span></code>. No, I think we must continue to live with these
+fixture wrappers.</p>
 </div>
 </div>
 
