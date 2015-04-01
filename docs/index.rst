@@ -2,8 +2,9 @@
 Luc's developer blog
 ====================
 
-Welcome to my developer blog.  This is where I write about my software
-projects, especially :mod:`lino`.
+Welcome to my developer blog.  This is where I write almost daily
+about my software projects, especially the `Lino framework
+<http://www.lino-framework.org/>`_.
 
 Sitemap
 -------

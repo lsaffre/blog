@@ -2,9 +2,9 @@
 
    <br />
 
-==========
-Luc Saffre
-==========
+================
+Curriculum vitae
+================
 
 .. image:: photo.jpg
    :width: 200 px
@@ -17,31 +17,20 @@ Address            Uus 1 |br|
                    Vigala vald |br|
                    78003 Raplamaa |br|
                    Estonia
-Contact            Email <luc *dot* saffre *at* gmail *dot* com> |br|
-                   `Google+ <https://plus.google.com/104488487380470927379>`_ |br|
-                   `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ |br|
-                   `Facebook <https://www.facebook.com/luc.saffre>`_ |br|
-                   `GitHub <https://github.com/lsaffre>`_ |br|
-                   Wikipedia (`German <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`_, `Estonian <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ |br|
-                   Phone +372/4824548 |br| 
-                   Mobile +372/56672435 |br| 
-                   `GPG Public key <../dl/pubkey.gpg>`_
-IRC                #lino (English), #lino-de (German), #lino-fr (French)
-Blog               http://luc.saffre-rumma.net
 ================== ====================================================================
 
 
 
-TIM and Lino
-------------
+Projects
+--------
 
-My main projects are Lino_ (a framework for writing desktop-like web
-applications using Django and ExtJS) and TIM_ (a customizable database
-application that runs on 60 sites in Belgium).  Lino is the successor
-for TIM.
-
-All my software projects are published as free software, using GPL,
-LGPL or BSD.
+I am author and active maintainer of the `Lino framework
+<http://www.lino-framework.org/>`_ which based on `Django
+<https://www.djangoproject.com/>`_ and `Sencha ExtJS
+<http://www.sencha.com/products/extjs/>`_ and written mainly in the
+`Python <https://www.python.org/>`_ programming language.  I am also
+the author of TIM_, written in Clipper, Lino's venerable predecessor
+which still runs on 30 sites in Belgium.
 
 Other projects:
 
@@ -64,7 +53,7 @@ Work experience
 ================= =============================== ====================================
 From-until        Employer                        Responsibilities             
 ================= =============================== ====================================
-since 11/2001     Rumma & Ko OÜ, Tallinn          Independant Software Developer and Project Manager. Software maintenance. Research, Analysis, Programming, Customer support.	
+since 11/2001     Rumma & Ko OÜ, Tallinn / Vigala Independant Software Developer and Project Manager. Software maintenance. Research, Analysis, Programming, Customer support.	
 03/1992 - 08/2001 PAC Systems PGmbH (now AbAKUS_) Software Developer / Analysis, Programming, Customer Projects, User Training, Research
 09/1990 - 01/1992 Siemens Software Center Liège	  Programmer / Source code maintenance.	BS/2000 & UNIX
 ================= =============================== ====================================
