@@ -2,10 +2,18 @@
 Wednesday, April 1, 2015
 ========================
 
-I moved module :mod:`lino_welfare.modlib.countries` to
-:mod:`lino.modlib.statbel.countries` and finished to digest what I
+About plugin inheritance (continued)
+====================================
+
+I finished to digest what I
 discovered yesterday (not *definitively* finished of course, but for
 this time): 
+
+- I renamed module :mod:`lino_welfare.modlib.countries` to
+  :mod:`lino.modlib.statbel.countries`, and :mod:`lino.modlib.statbel`
+  is no longer a plugin but just a package which contains plugins
+  (similar to :mod:`lino.modlib.auto`, I currently call them
+  "Differentiator packages").
 
 - The :meth:`set_detail_layout
   <lino.core.actors.Actor.set_detail_layout>` method is still
@@ -25,4 +33,96 @@ they are now available from `github.com/lsaffre/blog`.
 
 I worked a bit in `An introduction to Lino Così
 <http://cosi.lino-framework.org/tour/index.html>`_.
+
+
+Types of Trainings and Studies
+==============================
+
+In :mod:`lino.modlib.cv` we have two tables
+:mod:`TrainingType <lino.modlib.cv.models.TrainingType>`
+and
+:mod:`StudyType <lino.modlib.cv.models.StudyType>`.
+
+And an :class:`isip.Contract
+<lino_welfare.modlib.isip.models.Contract>` has a field "Study type" (
+:attr:`study_type
+<lino_welfare.modlib.isip.models.Contract.study_type>`).
+
+Now Mathieu asked to add a second field "Training type".  I suggested
+(and Mathieu confirmed) that we should rather use a common table for
+these "Study and training types", and every row of that table would
+have two checkboxes "training" and "study".
+
+The last but not least problem is a vocabulary decision to do: what is
+the best term for designating both **trainings** and **studies**? I
+was hesitating between `Schooling`, `Education` and
+`Learning`. Finally opted for "Education":
+
+== =========== ======== ==========
+en Training    Study    Education
+fr Formation   Étude    Éducation
+de Ausbildung  Studium  Bildung
+== =========== ======== ==========
+
+
+
+Excerpt from a site about `Training and Study
+<http://www.careers.govt.nz/education-and-training/study-and-training-options/what-are-your-options/#cID_693>`_:
+
+    If you want to work toward a degree or qualification, it makes
+    sense to choose a study or training programme that suits your
+    personality and your commitments.  You can choose how much time
+    you want to commit to your study (full-time or part-time study)
+    and what type of study you want to do (ie practical training or
+    academic learning).
+
+
+Printing on the demo sites
+==========================
+
+Printing did not work on the demo sites.  To solve (or work around)
+it, I intalled Python 3 and added the following line to my
+:xfile:`djangosite_local.py` file::
+
+    self.appy_params.update(pythonWithUnoPath='/usr/bin/python3')
+
+Updated :lino:`/admin/oood`.
+
+
+Refugees and their nationality
+==============================
+
+I added a new field :attr:`actual_country
+<lino.modlib.statbel.countries.models.Country.actual_country>` to the
+:class:`Country <lino.modlib.statbel.countries.models.Country>` model.
+
+In Lino Welfare, the :attr:`nationality
+<lino.modlib.beid.mixins.BeIdCardHolder.nationality>` field of a
+client is a pointer to the table of countries
+(:class:`Country <lino.modlib.statbel.countries.models.Country>`).
+
+And that countries table may contain countries which no longer exist.
+
+Now we discovered that, when a person receives the status of a
+refugee, she "looses" her former nationality. So we need another type
+of "fake country", to be used only in the :attr:`nationality
+<lino.modlib.beid.mixins.BeIdCardHolder.nationality>` field and not
+for example for an address.
+
+Added new tested doc :ref:`welfare.tested.countries`.
+
+Finding duplicate clients
+=========================
+
+Gerd and I found a few cases of clients where Lino warns about similar
+clients, and where we absolutely could not see any similarity. To help
+us and future users to understand how Lino detects them, we decided to
+add a possibility to see the phonetic words per client.
+
+Two changes in :class:`lino.mixins.dupable.SimilarObjects`:
+
+- The summary panel now also displays the phonetic words when there
+  are similar objects.
+- Discovered that the table did not work when opened in a separate
+  window. Fixed.
 
