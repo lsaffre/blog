@@ -1,7 +1,0 @@
-====
-Blog
-====
-
-.. blogger_index:: 
-
-
