@@ -309,3 +309,5 @@ html_sidebars = {
 
 html_theme = "classic"
 html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
+
+blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
