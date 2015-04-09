@@ -19,6 +19,7 @@ Sitemap
 .. toctree::
    :hidden:
 
+   topics/index
    howto/index
    tickets/index
    glossary
