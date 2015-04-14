@@ -1,0 +1,140 @@
+========================
+Saturday, April 11, 2015
+========================
+
+Rumma & Ko is now 
+`member of Alvatal <http://alvatal.ee/business/>`_, the
+Estonian Free and Open-Source Software Association.
+
+Which caused a first challenge for me: learn how to work with `Github
+Pages <https://pages.github.com/>`_ and `Jekyll
+<http://jekyllrb.com/docs/home/>`_.
+Jekyll is a static website generator written in Ruby.
+
+
+GitHub pages without Jekyll
+===========================
+
+The "Hello world" described on `Github Pages
+<https://pages.github.com/>`_ was easy.  The `-u` or `--set-upstream`
+switch of `git push` was new to me::
+
+  $ git push -u origin master
+
+It sets the default upstream reference.
+
+Okay, http://lsaffre.github.io might be useful if one day I want to
+move my blog out of `Lino <http://luc.lino-framework.org>`_.
+
+
+Using Jekyll with GitHub Pages
+==============================
+
+`Using Jekyll with Pages
+<https://help.github.com/articles/using-jekyll-with-pages/>`_
+
+The installation for `github-pages` did not work out of the box
+because it requires Ruby > 2 (and because a Ruby1.9 was already
+installed on my machine and because it is not possible to have two
+different system-wide versions of Ruby).
+
+So I needed to learn about `rbenv
+<https://github.com/sstephenson/rbenv#readme>`_, a "simple per-user
+Ruby version manager", i.e. the Ruby equivalent of `virtualenv`.
+
+Installing `rbenv`::
+
+
+    $ sudo aptitude install rbenv
+    $ type rbenv
+    rbenv is hashed (/usr/bin/rbenv)
+
+    $ rbenv init
+    # Load rbenv automatically by adding
+    # the following to ~/.bash_profile:
+
+    eval "$(rbenv init -)"
+    
+    $ echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+    
+    (restart bash)
+
+    $ type rbenv
+    rbenv is a function
+    
+Registering a Ruby version for a project.
+    
+First I need to install the `install` command of `rbenv` (don't ask me
+why this is not included out of the box)::
+
+    $ sudo aptitude install ruby-build
+
+Use ``install -l`` to see the available versions::
+
+    $ rbenv install -l
+    usage: rbenv install VERSION
+           rbenv install /path/to/definition
+
+    Available versions:
+      1.8.6-p383
+      ...
+      1.9.3-rc1
+      2.0.0-dev
+      jruby-1.6.3
+      ...
+      ree-1.8.7-2012.02
+
+The list is surprisingly long, and I am surprised to not see the
+currently stable version 2.2.1 (acfording to
+https://www.ruby-lang.org/en/downloads/).
+
+But okay, let's take the newes available version::
+
+    $ rbenv install 2.0.0-dev
+    Downloading http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz...
+    Installing yaml-0.1.4...
+    Installed yaml-0.1.4 to /home/luc/.rbenv/versions/2.0.0-dev
+    Cloning https://github.com/ruby/ruby.git...
+    Installing ruby-2.0.0-dev...
+    Installed ruby-2.0.0-dev to /home/luc/.rbenv/versions/2.0.0-dev    
+    
+As we see, this installs the given version of ruby into my home
+directory. 
+
+Note that the above also needs autoconf and bison::
+
+    $ sudo aptitude install autoconf bison
+
+Selecting the Ruby version using `rbenv local
+<https://github.com/sstephenson/rbenv#rbenv-local>`_::
+
+
+    $ cd hgwork/alvatal
+    $ rbenv local
+    rbenv: no local version configured for this directory
+    $ rbenv local 2.0.0-dev 
+    $ rbenv local
+    2.0.0-dev
+
+Now the step 3 of following works::
+
+    $ gem install github-pages
+
+But not out of the box::
+
+    $ bundle install
+    Fetching gem metadata from https://rubygems.org/..........
+    Fetching version metadata from https://rubygems.org/..
+    Resolving dependencies...
+    ...
+
+    Your user account isn't allowed to install to the system Rubygems.
+    You can cancel this installation and run:
+
+        bundle install --path vendor/bundle
+
+    to install the gems into ./vendor/bundle/, or you can enter your password
+    and install the bundled gems to Rubygems using sudo.
+
+    Password: 
+
