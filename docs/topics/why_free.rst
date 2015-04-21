@@ -12,72 +12,59 @@ choose --or migrate to-- `Linux
 <https://en.wikipedia.org/wiki/Linux>`_ rather than `Windows
 <https://en.wikipedia.org/wiki/Microsoft_Windows>`_ or `OS X
 <https://en.wikipedia.org/wiki/OS_X>`_.
-why this choice is currently not the mainstream 
+
+I also try to explain why this choice is currently not the mainstream
 and why you should nevertheless consider it.
 
-This is just my private summary, it is not finished and probably never
-will be.
+This text is not finished and probably never will be.
+
+Vocabulary
+==========
+
+`Free software <https://en.wikipedia.org/wiki/Free_software>`_ is when
+users have the freedom to *run* it, to *see the source code*, to *modify*
+it, and to *distribute* the original software and the adapted versions.
+
+The world of `free software
+<https://en.wikipedia.org/wiki/Free_software>`_ and the world of
+`proprietary software
+<https://en.wikipedia.org/wiki/Proprietary_software>`_ are two
+separate universes.  They communicate sometimes, but they are
+substantially different.
+
+
+Free software is not to be confused with `Open-source software
+<https://en.wikipedia.org/wiki/Open-source_software>`_ (software with
+its source code publicly available) or with `Freeware
+<https://en.wikipedia.org/wiki/Freeware>`_ (software with no monetary
+cost.
+
+
+Success stories
+===============
+
+- `How Munich rejected Steve Ballmer and kicked Microsoft out of the
+  city
+  <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
+
 
 It is a choice
 ==============
 
-The world of free software and the world of `proprietary software
-<https://en.wikipedia.org/wiki/Proprietary_software>`_ are two
-separate universes.  They communicate sometimes, but they are
-substantially different and cannot merge.
 
 
-It's about power
-================
+Who controls my computers?
+==========================
 
-Democracy has its weaknesses.  Currently most people wouldn't even
-manage to govern a sandwich bar for more than a few years in a
-democratic way. Not to speak about a village, a country or a planet.
-Every year brings at least one sad example of a dictature which tries
-to gain power over their neighbours.
+The more our everyday lives depend on computers, the more it is
+important to ask who controls these computers.
 
-But our western civilization is based on the assumption that
-governments should be democratic.  History has told us that
-monarchies, aristocracies and dictatures fail to bring peace and
-welfare in the long run.  "Democracy is a poor system of government at
-best; the only thing that can honestly be said in its favor is that it
-is about eight times as good as any other method the human race has
-ever tried."  [#heinlein]_
-
-The European Union and the United Nations are not free of problems,
-but we must be immensely grateful for having them.  Governing the
-earth in a peaceful way is one of the big challenges of humanity.
-Already the Old Testament speaks about it (`Gen 1:28
-<http://www.kingjamesbibleonline.org/Genesis-1-28/>`_).
-
-Eric S.  Raymond describes in `The Cathedral and the Bazaar
-<https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_ the
-democratic ("bazaar") and monocratic ("cathedral") models.
-
-But do our democratic structures actually govern the world?  Recent
-years reveal a *shift of power from national states to transnational
-corporations* [#vatican]_.
-
-The free software question is a political choice.  It is about whether
-we want to be governed by a monopolistic dictature or a democratic
-community.
-
-
-If we want to rule the world in a democratic way, then we need to
-switch over to free software *as soon as possible* and *at any price*.
-*As soon as possible* because the power of proprietary software giants
-is growing every year.  And *at any price* because choosing free
-software is not the easier way.
-
-The easier way is to close your eyes and let others decide. But such
-inadvertance might lead to dictature and slavery.
-
-
-Why it is a political choice
-============================
-
-You might wonder how you computer can be the battefield of a political
-war.
+..  A software product is usually the result of the collaboration of
+   many humans.  Free software means democracy, proprietary software
+   means monocracy.  Eric S. Raymond describes the democratic
+   ("bazaar") and monocratic ("cathedral") models in his book `The
+   Cathedral and the Bazaar
+   <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
 
     Imagine that you are the owner of a well-running sandwich bar in a
     little town. And as your sandwich bar gets more and more
@@ -102,11 +89,11 @@ war.
 You would probably fire this manager, maybe even file a lawsuit
 against him.
 
-That's how enterprises are run.  The managers do the dirty work of
-ruling, and they write regular activity reports to the owners. The
-managers gets a salary, and the owners get the profit.  The owners
-continue to control their enterprise or institution because they can
-fire their managers at any moment.
+That's how enterprises are run.  The managers do the work of ruling,
+and they write regular activity reports to the owners. The managers
+gets a salary, and the owners get the profit.  The owners continue to
+control their enterprise or institution because they can fire their
+managers at any moment.
 
 That's how enterprises are run, and that's also how a computer works.
 The computer hardware are the rooms of your sandwich bar, the
@@ -114,40 +101,11 @@ operating system is the manager. You communicate with your manager
 using the keyboard and the monitor.
 
 The point of this story is that **while you would probably fire such a
-manager in a real-world enterprise, in a computer which runs
-closed-source software this is happening constantly.** The more our
-everyday lives depend on computers, the more it is important to ask
-who controls these computers.
+manager in a real-world enterprise, this is happening constantly in a
+computer which runs closed-source software.**
 
 I hope that this picture opens your eyes, and that you start to feel
 with me why it is time to wake up.
-
-
-
-Why it is difficult
-===================
-
-Choosing free software is actually not difficult. But most people
-*believe* that it is so, and this causes miscellaneous problems.  You
-will need measurable additional effort because you are leaving the
-mainstream.
-
-Here are some examples of the challenges you are going to face if you
-decide for free software:
-
-- Psychological effects ("Under Windows it would work better") ranging
-  from personal reproaches for your decision to measurable
-  side-effects caused by `self-fulfilling prophecies
-  <https://en.wikipedia.org/wiki/Self-fulfilling_prophecy>`_.
-
-- Using free software means that it is more difficult to get trained
-  human resources, professional support, specialized hardware.
-
-- The end-users themselves are reluctant to change their habits
-  because they use proprietary software at home.
-
-You will need to consider these challenges and decide bravely how to
-react to them
 
 
 Misleading ethical questions
@@ -161,9 +119,11 @@ together with my answers:
 
 - Is human knowledge advanced by full and free access to all
   information, allowing engineers and developers to correct and
-  improve on already existing systems? -- **Yes. This is demonstrated
-  by the existing free software itself and and explained by many
-  authors better than I could do it.**
+  improve on already existing systems? -- **Yes. 
+  "[T]he free sharing of useful information benefits the human community.
+  This sounds so obvious as to not merit discussion, but when this point
+  is applied to real life, it seems to stir up a lot of controversy."
+  [#cook]_**
 
 - Or does a lack of strong protection for IP discourage innovation by
   removing the financial incentive for developing it? -- **Innovation
@@ -184,9 +144,11 @@ together with my answers:
 
 - Is it fair to expect software developers to create and distribute
   their intellectual product without restrictions while we do not
-  expect the same from other inventors or producers? -- **The free
-  software industry shows that commercial licensing is not the only
-  way of making money using software.  There are better methods to pay
+  expect the same from other inventors or producers? -- **Free
+  software does not mean voluntary work. There are many people who
+  earn their living for writing free software.  The free software
+  industry shows that commercial licensing is not the only way of
+  making money using software.  There are better methods to pay
   software developers for their work.**
 
 - The Vatican document “Ethics in Internet” argues that “use of the
@@ -220,6 +182,46 @@ regarding to our original question about why software must be free.
 Free software is definitively not about money, neither about the price
 of the product nor about the wage of the author.
 
+
+Why it is difficult
+===================
+
+Choosing free software is actually not difficult. But most people
+*believe* that it is so, and this causes miscellaneous problems.  You
+will need measurable additional effort because you are leaving the
+mainstream.
+
+Here are some examples of the challenges you are going to face if you
+decide for free software:
+
+- Psychological effects ("Under Windows it would work better") ranging
+  from personal reproaches for your decision to measurable
+  side-effects caused by `self-fulfilling prophecies
+  <https://en.wikipedia.org/wiki/Self-fulfilling_prophecy>`_.
+
+- Using free software means that it is more difficult to get trained
+  human resources, professional support, specialized hardware.
+
+- The end-users themselves are reluctant to change their habits
+  because they use proprietary software at home.
+
+You will need to consider these challenges and decide bravely how to
+react to them.
+
+
+Free software cannot serve as capital
+=====================================
+
+The fundamental problem with free software is that it cannot be used
+as capital. That fact makes free software uninteresting to the whole
+capitalistic system, including all kinds of companies of private law,
+including big corporations.
+
+There are big organizations dealing with free software, but none of
+them has a chance against Google, Microsoft or Apple.
+
+A classical businessman
+
 It's not about short-term freedom
 =================================
 
@@ -251,14 +253,13 @@ because they are less related to our everyday activities.
 
 Think for example about a woman who enjoys wearing clothes which make
 her more attractive to men.  There are probably not many such women in
-Afghanistan.  Most women in Afghanistan probably can't even imagine
-that they are missing some part of life's joys. If you asked one of
-them whether she would like to wear western clothes, you will probably
-get a negative answer. So they are free, aren't they?
+countries like Afghanistan.  Most women in Afghanistan probably can't
+even imagine that they are missing some part of life's joys. If you
+asked one of them whether she would like to wear western clothes, you
+will probably get a negative answer. So they are free, aren't they?
 
-If you agree that women in Afghanistan are as free as those in Belgium
-or the United states, then proprietary software is for you. Don't read
-on.
+If you agree that women in Afghanistan are free, then proprietary
+software is for you. Don't read on.
 
 But if you care about the sovereignty and liberty of your enterprise,
 then you should ask questions.
@@ -282,25 +283,9 @@ then you should ask questions.
 
 
 
-Success stories
-===============
-
-- `How Munich rejected Steve Ballmer and kicked Microsoft out of the
-  city
-  <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
-
-
-
 .. rubric:: Footnotes
 
-.. [#heinlein] `Robert A. Heinlein
-               <https://en.wikiquote.org/wiki/Robert_A._Heinlein>`_
-
-.. [#vatican] `Ethics in Internet
-              <http://www.vatican.va/roman_curia/pontifical_councils/pccs/documents/rc_pc_pccs_doc_20020228_ethics-internet_en.html>`_
-              (Pontifical Council for Social Communications, Vatican
-              City, February 22, 2002.
-
+.. [#cook] `Cody Cook: Open Source Jesus <http://www.cantus-firmus.com>`_
 
 .. [#scu_questions] `Unavoidable Ethical Questions About Open Source
                     <http://www.scu.edu/ethics/publications/submitted/open-source.html>`_

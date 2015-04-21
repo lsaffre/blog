@@ -1,0 +1,84 @@
+========================
+Thursday, April 16, 2015
+========================
+
+#133 Move use_tinymce to a plugin `lino.modlib.tinymce`
+=======================================================
+
+Finished ticket :ticket:`133`:
+
+Added a test case :ref:`lino.tested.tinymce` and fixed the regression:
+
+- When the user tries to insert a template, the combobox is still
+  empty.
+
+The following remains open because less urgent:
+
+- The :file:`/media/lino/tinymce/Ext.ux.TinyMCE.js` is currently still
+  in :file:`/lino/media`. This is a case where we should start to use
+  `Django's static files
+  <https://docs.djangoproject.com/en/1.8/howto/static-files/>`__.
+
+
+#136 Diverse Optimierungen Schuldnerberatung
+============================================
+
+Opened new :ticket:`136` with the following list of items.
+
+TODO:
+
+- Partnernummern in Klammern nur bei Klienten, nicht z.B. Anwälten
+  oder Schuldnern.
+
+- Vorschau: Alle Verpflichtungen in einer einzigen Tabelle
+  (Gruppensumme pro Partner ist nicht nötig).  
+
+- Vorschau: Neue Tabelle "Aktiva, Vermögen, Kapital"
+
+- Ausdruck: Verpflichtungen in zwei Tabellen:
+
+  - "Schulden/Zahlungsrückstände/Kredite"
+  - "Gerichtsvollzieher und Inkasso"
+
+- Vorschau und Ausdruck: Schulden nicht mehr mit jeweils einer eigenen
+  Tabelle pro Gerichtsvollzieher bzw. Inkassounternehmen.
+
+- Neue Infos im Ausdruck: national_id, civil_state und Datum
+  Erstgespräch (Datum und Autor des letzten notes.Note mit type_id=22)
+
+- Übersetzung "Yearly amount" = "Jährl. Betrag"
+
+- Im Ausdruck, Tabelle "Monatliche Ausgaben" : Kolonne "yearly amount"
+  streichen.
+
+- Bei Duplizieren von Konten wird die Seite nicht automatisch
+  aktualisiert.
+
+- Beim Duplizieren eines Budget den Cache leeren (`printed`)
+
+DONE:
+
+- Ausdruck : "Kurzbeschreibung" ersetzen durch "Zusammenfassung"
+
+#139 Auto-import ui.py file
+===========================
+
+The :mod:`lino_welfare.modlib.debts.models` module is big and
+confusing. How to remedy this? One idea is to split all tables into a
+separate file :mod:`ui.py <lino_welfare.modlib.debts.models.ui>`
+and to do `from .ui import *`.
+
+I tried to make this automatically, saying that
+
+    For every plugin, Lino checks whether the package contains a
+    module named `ui` and, if yes, imports this module. The benefit of
+    this is that all "Lino extensions" to the models can be moved out
+    of :xfile:`models.py` into a separate file :xfile:`ui.py`.
+
+But I then draw back this idea because it cannot actually do anything
+more than my `from .ui import *`. Explicit is better than implicit.
+
+In printable documents there is now a new built-in function `pgettext`
+:meth:`lino.core.site.Site.get_printable_context`. This is used
+because "Summary", in the :xfile:`Default.odt` for `debts.Budget` was
+translated to "Kurzbeschreibung" instead of "Zusammenfassung".
