@@ -1,0 +1,16 @@
+====================
+Tuesday, May 5, 2015
+====================
+
+I realized that sendchanges won't help for :ticket:`178` because the
+list of subscribers is dynamic. Which indicates that
+:mod:`lino.utils.sendchanges` was maybe a fundamentally wrong
+approach.
+
+I changed the :attr:`on_ui_updated <lino.core.signals.on_ui_updated>`
+signal: `sender` is again the database model (i.e. the class object),
+and the :class:`lino.utils.ChangeWatcher` is passed as a named
+argument `watcher`.
+
+I added a receiver to :mod:`lino_welfare.modlib.notes.models` which
+reports every change on a note to all colleagues.

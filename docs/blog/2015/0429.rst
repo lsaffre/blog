@@ -1,0 +1,76 @@
+=========================
+Wednesday, April 29, 2015
+=========================
+
+News from outside
+=================
+
+A `Gartner <https://en.wikipedia.org/wiki/Gartner>`_ market analysis
+`The State of Open-Source RDBMSs, 2015
+<http://www.gartner.com/technology/reprints.do?id=1-2DTR05J&ct=150421&st=sb>`_
+(found via `IT World Canada
+<http://www.itworldcanada.com/article/gartner-relational-open-source-databases-come-of-age/374181>`__)
+comes to a conclusion which I like (except for the vocabulary
+problem): "Open-source relational DBMSs have matured significantly and
+can be used to replace commercial RDBMSs at a considerable TCO
+saving. Information leaders, DBAs and application development
+management can now consider them as a standard choice for deploying
+applications."
+
+(The vocabulary problem is that they say "Open Source" where they
+wanted to say "Free" or "Libre". I guess that the main reason for this
+vocabulary problem is that the word "free" also means "free of charge"
+while "libre" is too new.)
+
+Shekhar was the first to speak me about `Paramiko
+<https://github.com/paramiko/paramiko>`_. I did not yet understand why
+it might be useful for me.
+
+
+Working on :ticket:`150`
+========================
+
+Working on :ref:`lf`. To (hopefully) fix the "SITE.kernel is None"
+problem.  I introduced usage of an reentrance lock for
+:meth:`lino.core.site.Site.startup`.
+
+We still need a `_startup_done` attribute because Django "somehow"
+imports the `settings` module twice. I didn't understand it
+definitively, but without this we had the startup code being run
+twice, which caused error messages about duplicate label in workflow
+setup.
+
+
+After yesterday's revert (`git rev-list -n1 --before=2015-04-25
+master | xargs git checkout`) of my repositories on :ref:`lf`, I
+didn't yet manage to tell git that now I want to go back to the
+master as default branch. When I run "git pull" (without more
+parameters), then I get::
+
+    You are not currently on a branch. Please specify which
+    branch you want to merge with. See git-pull(1) for details.
+
+        git pull <remote> <branch>
+    
+I think that the solution was simply ``git checkout master``.
+
+Changed Apache configurations so that it serves the static files. I
+hope that I can serve all static files from one place.
+
+Oops, yet another surprise: the :file:`lino.css` file had a hard-coded
+expectation that static files are served from `/static/`.  That's why
+we now have :data:`lino.core.constants.ICON_NAMES`, a protection
+against specifying unknown icon names in
+:attr:`lino.core.actions.Action.icon_name`, and these style
+definitions are now inserted into the `index.html` page. (The latter
+is a bit suboptimal: we might build a single :file:`lino.css` file at
+Site startup (like the :xfile:`linoweb.js`).
+
+And yet another surprise: I finally had to tidy up where the passport
+image read from eId cards are stored and how to access them.
+This is now done in :class:`lino.modlib.beid.mixins.BeIdCardHolder`.
+
+Here is also an interesting post which gives more examples of why
+static files should be managed specially: `Stop Using STATIC_URL in
+Templates
+<http://staticfiles.productiondjango.com/blog/stop-using-static-url-in-templates/>`_

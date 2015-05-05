@@ -1,0 +1,36 @@
+=====================
+Saturday, May 2, 2015
+=====================
+
+The current permissions system is not well documented. And there is a
+serious reason for this.  The reason is that I am not fully satisfied.
+Now I had some inspiration and see quite clearly how to do it:
+:ticket:`173` (Class-based permission control (UserRoles)).
+
+
+For example in :mod:`lino_welfare.modlib.integ`, instead of doing::
+
+  dd.add_user_group(config.app_label, config.verbose_name)
+  class Clients(dd.Table):
+      required = dd.required(user_groups='integ')
+
+
+we do::
+
+    from lino.core.permissions import UserRole
+
+    class IntegrationAgent(UserRole):
+        verbose_name = _("Integration agent")
+
+    class Clients(dd.Table):
+        required = dd.required(roles=IntegrationAgent)
+
+
+Especially `lino.modlib.users.utils.make_view_permission_handler`
+
+- What about Site.get_default_required
+
+- Can permission things go back to `lino.core.permissions`? Or leave
+  them in :mod:`lino.modlib.users`?
+
+

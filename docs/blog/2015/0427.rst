@@ -1,0 +1,37 @@
+======================
+Monday, April 27, 2015
+======================
+
+Still struggling with :ticket:`150` which caused a "surprise" which I
+actually had been expecting a bit: it turned out to be rather
+fundamental and to require a feature which my typical customers don't
+see but which is normal for a modern website: integrate a set of
+self-written public views together with Lino's ExtJS admin interface.
+
+There are some good news:
+
+- Lino now uses Django's `staticfiles plugin
+  <https://docs.djangoproject.com/en/1.7/ref/contrib/staticfiles/>`__.
+  So the repository now includes the static files of third-party
+  libraries, and the instructions on :lino:`/admin/media` or the
+  "Serving Javascript frameworks" section in :lino:`/admin/install`
+  are no longer necessary.  (TODO: update documentation.)
+
+- Another good thing is that I moved the plugin functionality from
+  :mod:`lino` to :mod:`lino.modlib.lino` (and :mod:`lino_welfare` to
+  :mod:`lino_welfare.modlib.welfare`). This was one of the
+  structural changes needed for running Lino with Django 1.7 where
+  you cannot have plugins named `foo.modlib.bar` if you also have a
+  plugin whose full name is `foo`.  They also required a change in
+  atelier: :attr:`atelier.fablib.env.locale_dir`.
+
+The bad news are that (1) these changes were not the solution for my
+problem in :ticket:`150` and (2) maybe caused some side effects and
+bugs yet to be discovered.
+
+So the :mod:`lino_noi.settings` site still somehow refuses to store
+the current user. You can log in, and the POST returns with a success
+message, but you still get the index.html for anonymous. As if the
+authenticated user somehow doesn't get stored to the session. This
+problem seems to exist only with a nonempty :attr:`site_prefix
+<lino.core.site.Site.site_prefix>`.

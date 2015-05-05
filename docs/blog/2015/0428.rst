@@ -1,0 +1,84 @@
+=======================
+Tuesday, April 28, 2015
+=======================
+
+Continued to search the reason of :ticket:`150` (public web interface
+for lino_noi).
+
+Fixed one of the side effects announced yesterday: icons were not
+properly displayed since their URLs have changed.
+
+
+Uugh! Leif Azzopardi and David Maxwell write about software
+patents. After explaining how "Netscape programmer Lou Montulli took
+the concept of a magic cookie and applied it to web communications.",
+they add "Of course, with such a great idea came a software patent -
+and you can read `US patent 5774670
+<http://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO1&Sect2=HITOFF&d=PALL&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.htm&r=1&f=G&l=50&s1=5774670.PN.&OS=PN/5774670&RS=PN/5774670>`_
+that was submitted by Montulli himself."  No, it is not "of course" at
+all. The greatest ideas in history of mankind are *not* patented.
+
+
+I noticed that my local :xfile:`djangosite_local.py` had been setting
+:setting:`SESSION_COOKIE_PATH` when
+:attr:`lino.core.site.Site.site_prefix` was something else than the
+default. Since this trick seems a general need when hosting several
+Django projects under the same hostname, I added it to 
+:meth:`lino.core.site.Site.init_before_local`.
+
+In a stackoverflow thread titled `Django (Python) problem with
+sessionid
+<http://stackoverflow.com/questions/4555956/django-python-problem-with-sessionid>`_,
+Chris2048 wrote "I had a similar problem, and I fixed it by setting
+SESSION_COOKIE_NAME to something other than the default 'sessionid'. I
+think google analytics might have been clobbering the cookie somehow."
+
+I don't use any google analytics (AFAIK), but it seems that modifying
+the :setting:`SESSION_COOKIE_NAME` from its default `sessionid` to
+`ssid` solved the problem.
+
+Then finally, Pindi Albert's story in `Migrating to cross-domain
+cookies in Django
+<http://www.pindi.us/blog/migrating-cross-domain-cookies-django>`_
+helped me to understand the reason for the problem on :ticket:`150`
+which took me several days:
+
+After changing the content of :setting:`SESSION_COOKIE_PATH`, my
+browser had two cookies for host `127.0.0.1`, both called `sessionid`,
+one with path ``/`` and the other with path ``/admin``.  And it seems
+that Django *writes* to the cookie with path ``/admin``, but the
+browser answers always with the "top-level" cookie, i.e. the old one
+with path ``/``.
+
+Now another question is how to avoid this problem in the future?
+
+Answer: stop to misuse the `site_prefix` attribute for specifing that the
+"Lino admin interface" is not at root.
+
+I released to :ref:`lf` because everything seemed to work.  But there
+is obviously yet another problem ("SITE.kernel is None") which occurs
+only in a multi-threaded environment. So I reverted to a (hopefully)
+good version::
+ 
+  git rev-list -n1 --before=2015-04-25 master | xargs git checkout
+
+The output of above command is somewhat strange::
+
+    Note: checking out '1ca11541fdcb9da85e1331e2de237c38c28860dd'.
+
+    You are in 'detached HEAD' state. You can look around, make experimental
+    changes and commit them, and you can discard any commits you make in this
+    state without impacting any branches by performing another checkout.
+
+    If you want to create a new branch to retain commits you create, you may
+    do so (now or later) by using -b with the checkout command again. Example:
+
+      git checkout -b new_branch_name
+
+    HEAD is now at 1ca1154... http://luc.lino-framework.org/blog/2015/0424.html
+
+TODO:
+
+- Fix the "SITE.kernel is None" problem
+- Change Apache configurations so that it serves the static files. I
+  hope that I can serve all static files from one place.
