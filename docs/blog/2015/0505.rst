@@ -4,13 +4,48 @@ Tuesday, May 5, 2015
 
 I realized that sendchanges won't help for :ticket:`178` because the
 list of subscribers is dynamic. Which indicates that
-:mod:`lino.utils.sendchanges` was maybe a fundamentally wrong
+:mod:`sendchanges <lino.utils.sendchanges>` was maybe a fundamentally wrong
 approach.
 
-I changed the :attr:`on_ui_updated <lino.core.signals.on_ui_updated>`
+I changed the :data:`on_ui_updated <lino.core.signals.on_ui_updated>`
 signal: `sender` is again the database model (i.e. the class object),
-and the :class:`lino.utils.ChangeWatcher` is passed as a named
-argument `watcher`.
+and the :class:`ChangeWatcher <lino.core.utils.ChangeWatcher>` is
+passed as a named argument `watcher`.
 
-I added a receiver to :mod:`lino_welfare.modlib.notes.models` which
-reports every change on a note to all colleagues.
+Instead of activating :mod:`sendchanges <lino.utils.sendchanges>`, I
+simply defined (in :mod:`lino_welfare.modlib.notes.models`) a receiver
+which reports every change on a note to all colleagues.
+
+Note: how to document an upgrade on a production site? 
+`pip freeze` reports the exact versions which were active before::
+
+    -e git+https://github.com/lsaffre/lino.git@fc7d116a02f1752dd09eb91031a2d4e79c146cbf#egg=lino-master
+    -e git+https://github.com/lsaffre/lino-welfare.git@9969d2bd31bcb9691d713574178785c565376c72#egg=lino_welfare-master
+
+.. and after::
+
+    -e git+https://github.com/lsaffre/lino.git@e9297f093febd47bb648a67daa04603ef7192839#egg=lino-master
+    -e git+https://github.com/lsaffre/lino-welfare.git@982f017c6cee763c8d00c7cc1df34781b67ef1ed#egg=lino_welfare-master
+
+
+- How can I restore the environment to the state before my git pull?
+- How can I store this information in some automated way into :mod:`lino_noi`?
+
+
+One disadvantage of `napoleon
+<https://pypi.python.org/pypi/sphinxcontrib-napoleon/0.3.3>`_ is that
+Emacs (or at least my Emacs) doesn't know about it.
+
+I started to tidy up in preparation for :ticket:`181`.
+
+After consultation with Gerd, I moved the receiver on `notes.Note`
+from :mod:`lino_welfare.modlib.notes.models` to
+:mod:`lino_welfare.projects.chatelet.modlib.pcsw.models` because in
+Eupen they don't want this feature.  Theoretically I should have
+created a new module
+:mod:`lino_welfare.projects.chatelet.modlib.notes` (which would
+inherit from :mod:`lino_welfare.modlib.notes` (which itself inherits
+from :mod:`lino.modlib.notes`)), but creating a plugin just to add a
+signal receiver seems overkill. For Django & Lino, a receiver on a
+model may be defined in another plugin.
+

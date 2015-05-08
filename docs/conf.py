@@ -22,11 +22,14 @@ templates_path = []
 
 configure(globals())
 
+from atelier.sphinxconf import interproject
+interproject.configure(globals())
+
 extensions += ['atelier.sphinxconf.blog']
-extensions += ['sphinxcontrib.taglist']
 extensions += ['atelier.sphinxconf.complex_tables']
 extensions += ['lino.sphinxcontrib.logo']
 extensions += ['lino.sphinxcontrib.actordoc']
+extensions += ['sphinxcontrib.taglist']
 extensions += ['sphinxcontrib.youtube']
 
 extensions += ['atelier.sphinxconf.sigal_image']
