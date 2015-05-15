@@ -11,13 +11,20 @@ Curriculum vitae
    :align: right
 
 ================== ====================================================================
-Date of birth      June 1st 1968 in Eupen (Belgium)
+Date of birth      June 1st 1968
 Address            Uus 1 |br| 
                    Vana-Vigala küla |br|
                    Vigala vald |br|
                    78003 Raplamaa |br|
                    Estonia
 ================== ====================================================================
+
+I was born and grew up in `Eupen
+<http://en.wikipedia.org/wiki/Eupen>`_ in Belgium.  At the age of 30 I
+met an Estonian woman, we married, I moved to Estonia and hope to die
+there (not too soon).  We have 2 daughters and live in a small
+village.  We both work for our self-owned family company `Rumma & Ko
+OÜ <http://www.saffre-rumma.net/>`_.
 
 
 

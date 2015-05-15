@@ -1,0 +1,28 @@
+===================
+Friday, May 8, 2015
+===================
+
+Continued on new ticket :ticket :`188` (printing an art61 contract).
+
+Added four fields `title`, `status`, `cv_duration` and `regime` to
+:class:`lino_welfare.modlib.art61.models.Contract`.  These fields are
+the same as in `cv.Experience` except that (1) `duration` is
+`cv_duration` because we have already another field `duration` (number
+of days) from `JobSupplyment` and (2) we must set a `related_name` for
+`regime` to avoid a name clash on `cv.Regime` caused by
+`jobs.Contract.regime`.
+
+
+Fixed an unreported bug which caused a TypeError :message:`filter()
+argument after ** must be a mapping, not NoneType`
+
+Move standard data for `cv.Regime` and `cv.Status` from
+:mod:`lino_welfare.modlib.jobs` to :mod:`lino.modlib.cv`.
+
+Worker Ouvrier
+
+Fixed an unreported bug which caused a FieldError :message:`Cannot
+resolve keyword 'success' into field.` when specifying a non-empty
+value in filter parameter "Successfully ended" (:attr:`ending_success
+<lino_welfare.modlib.isip.mixins.ContractBaseTable.ending_success>`)
+in a contract table.
