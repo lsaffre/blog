@@ -2,8 +2,8 @@
 Who rules the world?
 ====================
 
-Yes, democracy has its weaknesses.  Currently most people wouldn't
-even manage to govern a sandwich bar for more than a few years in a
+Democracy has its weaknesses.  Currently most people wouldn't even
+manage to govern a sandwich bar for more than a few years in a
 democratic way. Not to speak about a village, a country or a planet.
 Every year brings at least one sad example of a dictature which tries
 to gain power over their neighbours.

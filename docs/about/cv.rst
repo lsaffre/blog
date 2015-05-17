@@ -150,7 +150,6 @@ Personal views
 .. _Lino: http://www.lino-framework.org
 .. _TIMtools: http://code.google.com/p/timtools/
 .. _Clipper: http://en.wikipedia.org/wiki/Clipper_(programming_language)
-.. _Python: http://www.python.org/
 .. _Django: https://www.djangoproject.com/
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _atelier: http://atelier.lino-framework.org

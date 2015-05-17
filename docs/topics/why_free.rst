@@ -48,11 +48,6 @@ Success stories
   <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
 
 
-It is a choice
-==============
-
-
-
 Who controls my computers?
 ==========================
 
@@ -112,9 +107,9 @@ Misleading ethical questions
 ============================
 
 A text titled "Unavoidable Ethical Questions About Open Source"
-published by the Santa Clara Univerity in Silicon Valley is formulated
-as a series of ethical questions which express common arguments
-against free software [#scu_questions]_.  Here are these questions,
+[#scu_questions]_ published by the Santa Clara Univerity in Silicon
+Valley is formulated as a series of ethical questions which express
+common arguments against free software.  Here are these questions,
 together with my answers:
 
 - Is human knowledge advanced by full and free access to all
