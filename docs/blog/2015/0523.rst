@@ -1,0 +1,70 @@
+======================
+Saturday, May 23, 2015
+======================
+
+I continue to be excited about using :ref:`noi` for my daily work.
+First of all it is of course a good thing that I finally started to
+`eat my own dog food
+<https://en.wikipedia.org/wiki/Eating_your_own_dog_food>`_.  But
+that's not the reason why I am excited. I am excited because it helps
+me so much for managing my customer's tickets.
+
+It is not finished, though. After two phone meetings with two
+customers yesterday I had a lot of small ideas.  
+
+And a big issue is also the fact that the public (anonymous) interface
+is not yet secure enough. That's why links to tickets in my blog
+(e.g. :ticket:`270`) are currently broken. At least they now display a
+Javascript alert instead of continuing to link to our now obsolete
+trac server.
+
+The latest changes show again why :func:`inject_field
+<lino.core.inject.inject_field>` (or some analog method, see
+:ticket:`246`) is so necessary.  :mod:`lino.modlib.tickets` needs a
+field `current_project`, and :mod:`lino.modlib.clocking` needs a field
+`open_session_on_new_ticket`. These fields should be on the
+:class:`User <lino.modlib.users.models.User>` model. 
+
+How could we work around using :func:`inject_field
+<lino.core.inject.inject_field>`?
+
+First idea: instead of storing these fields directly to the `User`
+model, could I store them in their own table. For example called
+`tickets.User` and `clocking.User`. Each these models would have two
+fields: `user` (a pointer to `User` with unique=True) and the given
+field. Or even more transparent, they would be a subclass of
+`users.User`.  Multi-table inheritance and polyformy. It seems clear
+that this would have an impact on the system performance, but Guido
+tells us to not worry about performance.
+
+A second idea (which I actually had before the first): plugins would
+define their subclass of `User` as *abstract*. But we don't want to
+oblige app developers to subclass e.g. :class:`User
+<lino.modlib.users.models.User>` just because they include
+:mod:`lino.modlib.contacts`. So we need a system for generating the
+(concrete) User class dynamically.  One difficulty is the fact that
+the standard User class must "know" whether it should be abstract or
+not. If there are abstract subclasses of it somewhere, then it should
+be abstract. The `Site` object cannot discover this on its own because
+the models are not yet loaded. I might change the
+:attr:`extends_models <lino.core.plugin.Plugin.extends_models>`
+attribute again to *include* the app labels.
+
+And then (if there is any plugin which extends a model of another
+plugin), :class:`lino.core.site.Site` could use the :func:`type`
+function to generate a dynamic concrete User class object using the
+:func:`type` function (as explained by `EOL
+<http://stackoverflow.com/users/42973/eol>` in a `stackoverflow post
+<http://stackoverflow.com/questions/15247075/how-can-i-dynamically-create-derived-classes-from-a-base-class>`_)
+and all those abstract subclasses of `User` as the bases.  I am not
+yet sure *where* this generated `User` model should "live".
+
+Side note: Poor Travis CI! They are doing a trustworthy job of
+checking every of my commits and sending me an email saying that it is
+"Still failing". I know that Lino doesn't yet pass on travis (ticket
+:ticket:`269`). But I didn't yet find a way to tell them that I
+"temporarily" don't want them to test every checkin.  Or... while we
+are talking about it... maybe... by simply renaming the
+:xfile:`.travis.yml` file to e.g. :file:`.travis_disabled.yml`? Let's
+try!
+

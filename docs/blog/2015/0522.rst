@@ -1,0 +1,80 @@
+====================
+Friday, May 22, 2015
+====================
+
+Debugging Django queries
+========================
+
+Did you ever have to debug code like this?
+
+.. code-block:: python
+
+    from django.db.models import Q
+
+    def is_learning_filter(prefix, a, b):
+        if a is None:
+            flt = Q(**{prefix+'start_date__isnull': False})
+        else:
+            flt = Q(**{prefix+'start_date__lte': a})
+        if b is not None:
+            flt &= Q(**{prefix+'end_date__isnull': True}) \
+                | Q(**{prefix+'end_date__gte': b})
+        return flt
+
+    def add_filter(qs, pv):
+        p = (pv.start_date, pv.end_date)
+        flt = is_learning_filter('training__', *p)
+        flt |= is_learning_filter('study__', *p)
+        flt |= is_learning_filter('experience__', *p)
+        qs = qs.filter(flt)
+        return qs
+
+Well, my trick is to print the raw SQL using something like this::
+
+    logger.info("20150522 %s", qs.query)
+
+Another problem is then that these queries tend to become rather
+long. So I copy it to http://sqlformat.org/ where it becomes much more
+readable.
+
+
+Cannot activate textfields
+==========================
+
+In :func:`lino.core.dbtables.wildcard_data_elems` I removed the
+following test::
+
+  if not isinstance(f, fields.RichTextField):
+
+Because it is no longer needed (since wildcard columns are now hidden
+by default), and because it was the cause for :ticket:`255`
+(TextFields cannot be selected manually unless specified explicitly).
+
+This change has one side effect: tables whose :attr:`colum_names
+<lino.core.tables.AbstractTable.colum_names>` is left to the default
+value (``'*'``) will now again also show text fields among their
+columns. To make text fields hidden, there must be at least one
+explicit field specified.
+
+
+The yearly amount of a budget entry
+===================================
+
+Fixed :ticket:`258` (Das jährliche TOTAL fehlt auf den Ausdrucken
+(z.B. Steuer)).
+
+
+name '_' is not defined
+=======================
+
+In :meth:`lino.core.site.Site.get_printable_context` I had removed a
+series of names which (only!) now turned out to be used.
+
+
+Why DurationField columns had no sum
+====================================
+
+Ticket :ticket:`206` is solved. It was because :meth:`format_sum
+<lino.modlib.extjs.elems.FieldElement.format_sum>` did not do its
+job. Added demo data to :mod:`lino.modlib.clocking` and a test case to
+:mod:`lino_noi`.
