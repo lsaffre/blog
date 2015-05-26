@@ -5,7 +5,8 @@ Saturday, September 27, 2014
 Oops, the main Lino web server was offline for some hours this morning
 after an upgrade from `Squeeze
 <https://www.debian.org/releases/squeeze/>`_ to `Wheezy
-<https://www.debian.org/releases/wheezy/>`_.
+<https://www.debian.org/releases/wheezy/>`_ in order to make it resist
+to the Shellshock exploit.
 
 A good news: We have now two shortcut subdomains pointing to the most
 viewed parts of this website:
@@ -13,4 +14,76 @@ viewed parts of this website:
 - `demo.lino-framework.org <http://demo.lino-framework.org>`_
 - `blog.lino-framework.org <http://blog.lino-framework.org>`_
 
+Auf `spiegel.de
+<http://www.spiegel.de/netzwelt/web/sicherheitsluecke-shellshock-bedroht-linux-rechner-und-macs-a-993688.html>`_
+fand ich einen Artikel, der es mir erklärt.  Und in der Tat, die
+folgende Zeile meldet auf `lino-framework.org` ein "vulnerable", was
+sie z.B. auf `mylino.org` nicht tut::
 
+  env x='() { :;}; echo vulnerable' bash -c "echo this is a test" 
+
+Also mache ich ein Upgrade von Squeeze nach Wheezy, was sowieso seit
+längerem fällig war.  Voilà. Problem gelöst... 
+
+... außer, dass der Webserver danach nicht startete, denn da war noch
+  ein bisschen zu regeln.
+
+Erstens musste ich wegen eines `Bugs
+<https://bugs.launchpad.net/ubuntu/+source/python-defaults/+bug/989856>`_
+alle Virtual Environments neu generieren lassen::
+
+  $ sudo virtualenv /usr/local/pythonenv/demo
+  $ sudo virtualenv /usr/local/pythonenv/BASELINE
+
+Und dann noch eine Zeile aus der `apache.conf` löschen::
+
+  # Include httpd.conf
+
+Und ich musste alle Sites in `sites-available` umbenennen::
+
+  # cd /etc/apache2/sites-available
+  # sudo rename  's/$/.conf/' *
+
+Was aber so nicht geklappt hat, weil das ja Links sind. 
+Letzten Endes habe ich alle meine Sites manuell neu enabled.
+
+Probleme mit Mailman nach Upgrade
+=================================
+
+Und am nächsten Tag kam noch ein Problem mit mailman raus.
+
+Beim Upgrade hatte er gemeldet, dass Mailman noch Nachrichten in
+irgendwelchen Queues habe und es gefährlich sei, trotzdem mit dem
+Upgrade weiter zu machen.  Und das scheint passiert zu sein. Priit
+hatte um 12 Uhr eine Nachricht nach kakoor geschickt...
+
+Jetzt ließ sich die Nachricht von Thea, die diese auch an kakoor und
+kiitsharakad geschickt hatte und die dort manuell gelöscht werden
+musste, die liess sich jetzt nicht mehr löschen.  Das Web-Interface
+meldete keine Fehlermeldung, aber tat auch nichts.  Habe leider nicht
+gefunden, wo Mailman seine Fehler hin loggt.  
+
+Habe schließlich alle Nachrichten manuell gelöscht mit::
+
+  # cd /var/lib/mailman 
+  # python /usr/lib/mailman/bin/discard
+
+(Gefunden auf http://wiki.list.org/pages/viewpage.action?pageId=4030620)
+
+
+EDIT 20141001 : Das war aber gar nicht der Grund, sondern es lag an
+meinem "Redirect" für www::
+
+    <VirtualHost *:80>
+        ServerName lino-framework.org
+        Redirect permanent / http://www.lino-framework.org/
+    </VirtualHost>
+
+Das musste ich wieder deaktivieren, danach erst klappte es.
+
+Mailman schickte sein POST an folgende Adresse::
+
+  http://lino-framework.org/cgi-bin/mailman/admindb/kiitsharakad
+
+Und weil er darauf ein `301 Moved permanetly` bekam, kriegte er das
+nicht geschnallt.

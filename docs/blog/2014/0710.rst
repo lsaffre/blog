@@ -2,11 +2,48 @@
 Thursday, July 10, 2014
 =======================
 
-Yesterday's UnicodeEncode bug in :mod:`ml.beid` was not yet correctly
-fixed. I am shooting from the hip because my Belgian eID card contains
-only ASCII characters, so I cannot easily test this.
+Miscellaneous
+=============
+
+Yesterday's UnicodeEncode bug in :mod:`lino.modlib.beid` was not yet
+correctly fixed. I am shooting from the hip because my Belgian eID
+card contains only ASCII characters, so I cannot easily test this.
 
 Joe contributed a `bugfix <https://github.com/lsaffre/lino/pull/18>`_ 
 for :mod:`lino.modlib.export_excel`.
 
-Converted also the :ref:`davlink` Makefile to `fabfile.py`. The logic for building java classes and jars is now in :class:`atelier.fablib.JarBuilder`.
+Converted also the :ref:`davlink` Makefile to `fabfile.py`. The logic
+for building java classes and jars is now in
+:class:`atelier.fablib.JarBuilder`.
+
+
+How to use an EMT netipulk
+==========================
+
+Trying to use an "EMT netipulk". When I connect the device, I get a
+dialog box "SIM PIN unlock required", enter the PIN, and then I can
+use the connection (I must manually select it from the network menu).
+
+But sometimes the dialog box doesn't come, and the Broadcase Network
+remains disabled. dmesg says::
+
+
+    [  602.203925] usb 3-4: new high-speed USB device number 4 using xhci_hcd
+    [  602.222177] usb 3-4: New USB device found, idVendor=12d1, idProduct=1446
+    [  602.222184] usb 3-4: New USB device strings: Mfr=3, Product=2, SerialNumber=0
+    [  602.222188] usb 3-4: Product: HUAWEI Mobile
+    [  602.222192] usb 3-4: Manufacturer: HUAWEI Technology
+    [  602.224088] usb-storage 3-4:1.0: USB Mass Storage device detected
+    [  602.224232] scsi10 : usb-storage 3-4:1.0
+    [  602.224410] usb-storage 3-4:1.1: USB Mass Storage device detected
+    [  602.224557] scsi11 : usb-storage 3-4:1.1
+    [  603.227006] scsi 10:0:0:0: CD-ROM            HUAWEI   Mass Storage     2.31 PQ: 0 ANSI: 2
+    [  603.227410] scsi 11:0:0:0: Direct-Access     HUAWEI   SD Storage       2.31 PQ: 0 ANSI: 2
+    [  603.230046] sr1: scsi-1 drive
+    [  603.230281] sr 10:0:0:0: Attached scsi CD-ROM sr1
+    [  603.230418] sr 10:0:0:0: Attached scsi generic sg2 type 5
+    [  603.230842] sd 11:0:0:0: Attached scsi generic sg3 type 0
+    [  603.233475] sd 11:0:0:0: [sdb] Attached SCSI removable disk
+    [  603.258606] xhci_hcd 0000:00:14.0: WARN Event TRB for slot 3 ep 2 with no TDs queued?
+
+This is normal except for the last line.     

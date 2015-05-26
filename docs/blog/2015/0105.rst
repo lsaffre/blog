@@ -78,4 +78,78 @@ And AFAICS nothing has changed::
 Hmm... okay, without help from outside it would be suboptimal to
 continue. If you followed until here and see a possible explanation,
 then don't hesitate to drop me a mail.
+
+
+Graphiccally represent a database structure
+===========================================
     
+
+Reading http://www.graphviz.org/pdf/dotguide.pdf
+
+- The next step assigns nodes to discrete ranks or levels. In a
+  top-to-bottom drawing, ranks determine Y coordinates. 
+
+- During rank assignment, the head node of an edge is constrained to be
+  on a higher rank than the tail node. If the edge has constraint=false,
+  however, this requirement is not enforced.
+
+.. graphviz:: 
+
+   digraph foo  {
+
+       # graph [renderer="neato"]
+
+       # this is a comment
+
+       node [shape=box]
+       node [style=filled]
+           node [fontname="times bold", fillcolor=red] 
+           Product;
+           node [fontname="times" fillcolor=gold] 
+           Offer Demand
+           node [fontname="times bold", fillcolor=red] 
+           Member
+           node [fontname="times italic" fillcolor=lightblue] 
+           Place
+
+       # edge [constraint=false]
+
+       # Product -> Offer[arrowhead="inv"]
+       Product -> Offer[arrowhead=none, arrowtail="inv"]
+       # Offer -> Product [constraint=false]
+       Product -> Member[label="providers", arrowhead=none, style=dotted];
+
+       Product -> Member[label="customers", arrowhead=none, style=dotted];
+       # Product -> Demand[arrowhead="inv"]
+       Product -> Demand[arrowhead=none, arrowtail="inv"]
+       # Demand -> Product [constraint=false]
+    
+       Offer -> Member[taillabel="provider", labelangle="-90", labeldistance="2"];
+       Demand -> Member[taillabel="customer", labelangle="90", labeldistance="2"];
+       Member ->  Place;
+
+  }
+
+
+
+.. graphviz:: 
+
+   digraph foo  {
+
+       graph [renderer="neato", rankdir=LR]
+
+       node [shape=box]
+       node [style=filled]
+           node [fontname="times bold", fillcolor=red]  
+              Product Member
+           node [fontname="times" fillcolor=gold]  Offer  Demand
+           node [fontname="times italic" fillcolor=lightblue]  Place
+
+       Product -> Offer[arrowhead="inv"]
+       Product -> Demand[arrowhead="inv"]
+    
+       Offer -> Member[taillabel="provider"];
+       Demand -> Member[taillabel="customer"];
+       Member ->  Place;
+
+  }
