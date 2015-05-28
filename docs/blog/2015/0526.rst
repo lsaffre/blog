@@ -10,20 +10,69 @@ Sozialbuchhaltung
 =================
 
 I started to get concrete ideas for the upcoming project
-"Sozialbuchhaltung" (Lino Welfare).
+"Sozialbuchhaltung": :ref:`welfare.specs.ledger`.
 
-We must add two new plugins :mod:`lino_welfare.modlib.ledger` and
-:mod:`lino_welfare.modlib.finan` as extensions of
-:mod:`lino.modlib.ledger` and :mod:`lino.modlib.finan` respectively.
-
-In a first step, the important thing to add is the `recipient` concept
-(Zahlungsempfänger), i.e. inject two fields `recipient` and
-`bank_account` into the following models:
-
-- into the *ledger.AccountInvoice* model
-- into each *finan.FinancialVoucherItem*-based model
-- into the *ledger.Movement* model
-
-Since there is a lot of injection here, I start to wonder whether we
+Since there is a lot of injection there, I start to wonder whether we
 shouldn't rather do ticket :ticket:`246` (Work around inject_field)
-first...
+first.  Also e.g. to define a choosers and validation methods for
+these fields. More ideas about it in :ref:`lino.tested.dynamic`.
+
+
+Document printing slipped through the test suite
+================================================
+
+Oops, a rather urgent problem interrupted above work. We noticed that
+certain documents failed to print in Eupen after the upgrade. 
+
+This was caused by several changes (e.g. I had removed some old names
+from the default printable context returned by
+:meth:`lino.core.site.Site.get_printable_context`, or I had removed
+the :meth:`lino.modlib.beid.mixins.BeIdCardHolder.get_image_path`
+method because I believed that it was no longer used).
+
+These failures remained undetected because the test suite has never
+systematically covered the rendering of all printable templates. At
+least Lino Welfare now does this in
+:mod:`lino_welfare.modlib.welfare.fixtures.demo2`.
+creates and renders one excerpt for every ExcerptType.  
+This revealed also a series of some quite old problems.
+
+Converted all usages of the obsolete names `dtos` and `dtosl`.
+
+The picture of an eid card failed to print.  This revealed a subtle
+problem: rendering templates like `cv.odt` and `eid_content.odt`
+require the eid card picture to be available.  And if no such picture
+exists, they need the dummy image `contacts.Person.jpg`. And that file
+is a static file.  And the development server usually doesn't need
+:setting:`STATIC_ROOT` to be set.  
+
+So until now I didn't need to run a `collectstatic` command on my
+development machine because these are automatically served by the
+development server.  But now I need to.  Because of that stupid dummy
+image `contacts.Person.jpg`, needed by templates like `cv.odt` who
+include images into a LibreOffice document.  
+
+Idea after one night of sleep: I might avoid the following by reading
+the file myself and using the `content` and `formast` clauses of
+appy.pod's `document function
+<http://appyframework.org/podWritingAdvancedTemplates.html>`_.  That's
+ticket :ticket`282` (Inserting images from staticfile into an appy.pod
+template).
+
+But the `collectstatic` command collects quite some files: the ExtJS
+library, the Extensible library, two versions of the TinyMCE
+library. We don't want a developer to have one copy of all these files
+for every project.
+
+The solution is to use a common place for the staticfiles of all Lino
+projects. When :envvar:`LINO_CACHE_ROOT` is set, the default value for
+:setting:`STATIC_ROOT` is no longer a subdir named :file:`static` of
+the :attr:`cache_dir <lino.core.site.Site.cache_dir>`, but a subdir
+named :file:`collectstatic` of :envvar:`LINO_CACHE_ROOT`.
+
+Also the default value for
+:attr:`lino.core.site.Site.default_build_method` is now `appyodt`
+instead of `appypdf` because rendering about 100 pdf documents (1) was
+taking much time without bringing additional coverage and (2) even
+failed occasionally, appearently because the socket connection to the
+LibreOffice server broke.

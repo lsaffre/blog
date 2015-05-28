@@ -1,6 +1,6 @@
-====================
-Who rules the world?
-====================
+===============
+About democracy
+===============
 
 Democracy has its weaknesses.  Currently most people wouldn't even
 manage to govern a sandwich bar for more than a few years in a
@@ -21,11 +21,12 @@ method the human race has ever tried."  [#heinlein]_
 Our western civilization is based on the assumption that governments
 should be democratic.
 
-The European Union and the United Nations are not free of problems,
-but we must be immensely grateful for having them.  Governing the
-earth in a peaceful way is one of the big challenges of humanity.
-Already the Old Testament speaks about it (`Gen 1:28
-<http://www.kingjamesbibleonline.org/Genesis-1-28/>`_).
+Democratic organizations like your local town administration, your
+national government, the European Union and finally the United Nations
+are not free of problems, but we must be immensely grateful for having
+them.  Governing the earth in a peaceful way is one of the big
+challenges of humanity.  Already the Old Testament speaks about it
+(`Gen 1:28 <http://www.kingjamesbibleonline.org/Genesis-1-28/>`_).
 
 
 

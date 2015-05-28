@@ -1,0 +1,39 @@
+=======================
+Wednesday, May 27, 2015
+=======================
+
+Continued on :ticket:`143`.  First modules
+:mod:`lino_welfare.modlib.ledger` and :mod:`lino_welfare.modlib.finan`
+show that I don't need to worry about :ticket:`246` for the moment.
+
+There was a problem :ticket:`284` (ar.show() renders to console and
+not to document) which intrigued me some time.  One reaction was that
+I moved the :meth:`get_printable_context` method from
+:class:`lino.core.site.Site` to
+:class:`lino.core.requests.BaseRequest`, and the
+:class:`get_printable_context
+<lino.core.model.Model.get_printable_context>` on a model instance now
+gets the action request `ar` as mandatory positional argument.
+
+While this was nice, it did not bring a solution.
+
+The solution was to remove the following usage example from the
+docstring of :meth:`lino.core.requests.BaseRequest.show`::
+
+    do text
+    from html(ar.show('users.UsersOverview'))
+
+This example had worked once, but broke some time ago.  And I
+meanwhile think that it was not a good idea.  Rendering a table into
+an `appy.pod` template is done using the `table` function defined by
+:class:`lino.utils.appy_pod.Renderer`::
+
+    do text
+    from table(ar.spawn('users.UsersOverview'))
+
+All this should be documented somewhere below :lino:`Printing
+documents </dev/printing>`.
+
+The `ar` in an `appy.pod` template represents the action request which
+asked for building the document. This request can have either a html
+renderer or a console renderer.
