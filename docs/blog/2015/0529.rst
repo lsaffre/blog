@@ -1,0 +1,44 @@
+====================
+Friday, May 29, 2015
+====================
+
+Some time ago I asked at the sphinx-users group: "The alabaster theme
+is very beautiful, but how can I get the `previous | next |
+modules | index` links that used to be in the upper right corner?"
+
+Takayuki Shimizukawa answered: By my quick investigation,
+alabaster hide such navigation bar if browser width larger than
+860px.  You can change this behavior by using custom CSS.
+    
+Now I had a look at this and tried to change it.
+
+In :file:`.templates/layout.html`, under the line::
+
+  {% extends "!layout.html" %}
+
+added the following line::
+
+  {% set css_files = css_files + ["_static/myalabaster.css"] %}
+
+Then created a file :file:`.static/myalabaster.css` with this content::
+
+    /* override alabaster setting */
+
+    div.document {
+        width: 940px;
+        margin: 30px auto 0 auto;
+    }
+
+But after some fiddling and guessing, I abandoned! The most realistic
+way to get back my "previous" and "next" links into the upper margin
+is to switch to the class theme::
+
+  html_theme = "classic"
+  html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
+
+Voilà. Grrr... enough time wasted on purely cosmetic things!  To be
+serious, there is one concrete advantage of alabaster: it is more
+readable on a smartphone. But sorry, I am not going to ask from
+desktop users to resize their browser window in order to see the
+"previous" and "next" links.
+

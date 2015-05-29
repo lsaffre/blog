@@ -2,43 +2,52 @@
 About democracy
 ===============
 
-Democracy has its weaknesses.  Currently most people wouldn't even
-manage to govern a sandwich bar for more than a few years in a
-democratic way. Not to speak about a village, a country or a planet.
-Every year brings at least one sad example of a dictature which tries
-to gain power over their neighbours.
+Governing the earth in a peaceful way is one of the big challenges of
+humanity.  Humans felt it already thousands of years ago when they
+wrote texts like "and God said unto them, Be fruitful, and multiply,
+and replenish the earth, and subdue it: and have dominion over the
+fish of the sea, and over the fowl of the air, and over every living
+thing that moveth upon the earth." (`Gen 1:28
+<http://www.kingjamesbibleonline.org/Genesis-1-28/>`_).
 
-Yes, we might worry wether our democratic structures actually govern
-the world.  Recent years reveal a *shift of power from national states
-to transnational corporations* [#vatican]_.
-
-But history has told us that monarchies, aristocracies and dictatures
-fail to bring peace and welfare in the long run.  "Democracy is a poor
-system of government at best; the only thing that can honestly be said
-in its favor is that it is about eight times as good as any other
-method the human race has ever tried."  [#heinlein]_ 
+While most humans agree more or less with the idea that it is our
+vocation and duty to rule the world, the question on *how* to do it
+has caused quite some discussion since then.
 
 Our western civilization is based on the assumption that governments
-should be democratic.
+should be democratic.  History has told us that monarchies,
+aristocracies and dictatures fail to bring peace and welfare in the
+long run.  Every year brings at least one sad example of a dictature
+which tries to gain power over their neighbours.
+
+But democracy has its weaknesses.  Even a sandwich bar is difficult to
+govern in a democratic way.  Not to speak about a village, a country
+or a planet.
+
+"Democracy is a poor system of government at best; the only thing that
+can honestly be said in its favor is that it is about eight times as
+good as any other method the human race has ever tried."  [#heinlein]_
 
 Democratic organizations like your local town administration, your
 national government, the European Union and finally the United Nations
 are not free of problems, but we must be immensely grateful for having
-them.  Governing the earth in a peaceful way is one of the big
-challenges of humanity.  Already the Old Testament speaks about it
-(`Gen 1:28 <http://www.kingjamesbibleonline.org/Genesis-1-28/>`_).
+them.  
+
+Yet we might worry wether our democratic structures actually govern
+the world.  Recent years reveal a *shift of power from national states
+to transnational corporations* [#vatican]_.
 
 
 
 .. rubric:: Footnotes
 
 
+.. [#heinlein] `Robert A. Heinlein
+               <https://en.wikiquote.org/wiki/Robert_A._Heinlein>`_
+
 .. [#vatican] `Ethics in Internet
               <http://www.vatican.va/roman_curia/pontifical_councils/pccs/documents/rc_pc_pccs_doc_20020228_ethics-internet_en.html>`_
               (Pontifical Council for Social Communications, Vatican
               City, February 22, 2002.
 
-
-.. [#heinlein] `Robert A. Heinlein
-               <https://en.wikiquote.org/wiki/Robert_A._Heinlein>`_
 
