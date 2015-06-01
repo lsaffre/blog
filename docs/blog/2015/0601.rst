@@ -1,0 +1,44 @@
+====================
+Monday, June 1, 2015
+====================
+
+Started branch "novat"
+======================
+
+This weekend I did quite some changes for :ticket:`143`.  Most things
+are currently broken, but I'd like to commit my work of the last days
+because this project is probably going to rest for a week (two urgent
+TIM customer requests, and on Thursday I'm leaving for Rakvere until
+Sunday).
+
+The changes are mainly due to the fact that we want to integrate the
+existing accounting modules into Lino Welfare, but *without* the
+notion of VAT.  PCSWs have accounts, ledger, journals, movements,
+invoices, bank statements, payment orders like every accounting
+system, but they don't want to have three totals (total_excl,
+total_vat, and total_incl) for every operation. New module
+:mod:`lino.modlib.novat`.
+
+``git status`` reports a dozen of modified files, one deletion, one
+rename, and about 6 new files (classified as the usual "Changes to be
+committed", "Changes not staged for commit" and "Untracked files").
+
+And these changes are in two repositories `lino` and `welfare`.
+
+``git status`` also reports "On branch master" for both repos.
+
+In the Lino repo it adds "Your branch is up-to-date with
+'origin/master'." (TODO: explain this.)
+
+This is a situation where a branch is useful.  Here is how to create a
+branch from my local changes (to be done in both repos) ::
+
+    $ git checkout -b novat
+
+Now I can add my local changes and commit as usual::
+
+    $ git add <specify new files>
+    $ fab ci
+
+Later I will need to merge the `novat` branch into `master`.
+

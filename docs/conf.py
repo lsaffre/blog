@@ -231,7 +231,7 @@ extlinks.update({
         'http://code.google.com/p/lino/issues/detail?id=%s', '# '),
     'checkin': (
         'http://code.google.com/p/lino/source/detail?r=%s', 'Checkin '),
-    'srcref': (lino.srcref_url, ''),
+    'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', ''),
     'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', ''),
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
     'djangoticket': (
@@ -311,7 +311,7 @@ html_sidebars = {
    '**': ['globaltoc.html', 'searchbox.html', 'links.html'],
 }
 
-html_theme = "classic"
-html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
+# html_theme = "classic"
+# html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
 
 blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
