@@ -232,6 +232,7 @@ extlinks.update({
     'checkin': (
         'http://code.google.com/p/lino/source/detail?r=%s', 'Checkin '),
     'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', ''),
+    'linosrcref': ('https://github.com/lsaffre/lino/blob/master/%s', ''),
     'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', ''),
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
     'djangoticket': (

@@ -1,0 +1,33 @@
+=====================
+Tuesday, June 9, 2015
+=====================
+
+Fixed some documentation problems.
+
+Still working on the `novat` branch (ticket :ticket:`294`).
+Here is a funny problem over which I stumbled:
+
+- :class:`Sequenced <lino.mixins.sequenced.Sequenced>` defines a field
+  `seqno` and is abstract base for :class:`VoucherItem
+  <lino.modlib.ledger.mixins.VoucherItem>`
+
+- :class:`VoucherItem <lino.modlib.ledger.mixins.VoucherItem>` is
+  abstract base for both :class:`AccountInvoiceItem
+  <lino.modlib.ledger.mixins.AccountInvoiceItem>` and
+  :class:`VatItemBase <lino.modlib.vat.mixins.VatItemBase>` (both of
+  which are themselves abstract models).
+
+- And now :class:`InvoiceItem <lino.modlib.vat.models.InvoiceItem>`
+  inherits from :class:`AccountInvoiceItem
+  <lino.modlib.ledger.mixins.AccountInvoiceItem>` and
+  :class:`VatItemBase <lino.modlib.vat.mixins.VatItemBase>`.
+
+That should be fine, shouldn't it?
+Even Django says that it is valid (`manage.py validate`).
+
+But when I try to initialize a database which uses
+:mod:`lino.modlib.vat`, I get::
+
+  OperationalError: duplicate column name: seqno
+
+This is due to a known bug in Django: :djangoticket:`19465`.

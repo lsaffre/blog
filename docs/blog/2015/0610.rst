@@ -1,0 +1,91 @@
+========================
+Wednesday, June 10, 2015
+========================
+
+The ``novat`` branch is still not ready for getting merged to
+``master``.
+
+The following snippet shows a strange phenomen whose explanation took
+me a whole day:
+
+.. literalinclude:: 0610.py
+
+The :class:`vatless.PartnerDetailMixin
+<lino.modlib.vatless.mixins.PartnerDetailMixin>` is designed to work
+also in applications which do not have :mod:`lino.modlib.vatless`
+installed. So the :attr:`ledger
+<lino.modlib.vatless.mixins.PartnerDetailMixin.ledger>` panel (the
+only thing defined by this mixin) must be a **dummy panel** in that
+case.  I used a :class:`DummyField <lino.core.fields.DummyField>` for
+this, but forgot that the "value" of a DummyField is always `None`.
+
+Remember: When you want to define a dummy data element on a layout,
+don't use :class:`DummyField <lino.core.fields.DummyField>` but
+:class:`DummyPanel <lino.core.layouts.DummyPanel>`.
+
+A new contributor
+=================
+
+:ref:`sandeep` did his first code contribution: he fixed a bug which
+caused :manage:`initdb` to fail on a fresh Lino development
+installation because it tried to delete the SQLite database file
+:xfile:`default.db` even though no such file existed.  This
+contribution is not visible in the repository since he described it in
+an email to me (and it was just one line of code). But I am glad to
+welcome the third code contributor to Lino!
+
+merge novat to master
+=====================
+
+The `novat` branch in Lino and Lino Welfare finally passes the test
+suite. It is time to merge it into master.
+
+Verify that your working directory is clean::
+
+    $ git status
+    On branch novat
+    nothing to commit, working directory clean
+
+Switch to master::
+
+    $ git checkout master
+    Switched to branch 'master'
+    Your branch is up-to-date with 'origin/master'.    
+
+Merge `novat` into `master`::
+
+    $ git merge novat
+    Updating dcb644c..0d689c5
+    Fast-forward
+     AUTHORS.txt                                                |   4 +
+     docs/.static/myalabaster.css                               |  24 +++
+     ...
+     49 files changed, 2174 insertions(+), 1309 deletions(-)
+     create mode 100644 docs/.static/myalabaster.css
+     delete mode 100644 lino/modlib/ledger/fixtures/demo.py
+     rename lino/modlib/ledger/fixtures/{mini.py => minimal_ledger.py} (98%)
+     create mode 100644 lino/modlib/ledger/fixtures/welfare_demo.py
+      ...
+
+Delete the `novat` branch since it is no longer needed::
+    
+    $ git branch -d novat
+    Deleted branch novat (was 0d689c5).
+
+Push these manipulations to the public repo::
+
+    $ git push
+
+Upgrade on demos.lino-framework.org
+===================================
+
+I upgraded the demo applications on :ref:`lf`.
+
+
+Fixed two bugs:
+
+- :meth:`lino.core.requests.BaseRequest.get_printable_context` now
+  adds `ar` and `E`.
+
+- :meth:`lino.modlib.tickets.Ticket.full_clean` now fills project only
+  if it is not empty.
