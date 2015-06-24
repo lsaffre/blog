@@ -1,0 +1,132 @@
+=======================
+Saturday, June 20, 2015
+=======================
+
+Magics with Python fixtures
+===========================
+
+I am working on an exciting problem of data loss on a production site.
+This problem took me already 20 hours.
+
+195 partner records (of 15446) "vanished" from the database
+without letting any trace.  Unfortunately we started to discover the
+problem only more than a week after it occurred, and furthermore we
+did not have any daily snapshots.  The last known good backup was
+from 20150605.  So simply restoring a backup was not an option.
+
+This is a situation where Python dumps are a cool thing.
+
+By the way: the cause of the problem is unknown so far.  A human
+mistake in one of the two management tasks that had been done during
+this week?  A pitfall in Lino (e.g. the fact that Lino accepts setting
+a circular reference on `countries.Place.parent`)?  A technical
+problem on the server? We have had about five prime suspects so far,
+but each of them turned out to be innocent after some research. We
+don't even know for sure whether they disappeared all at once or in
+several series. Though it seems that "it" happened on 20150611.
+
+Anyway, fortunately the customer is now on vacation for three days, so
+I have a long weekend for analyzing and repairing their data.
+
+Basic strategy is as follows: find out the IDs of the lost clients and
+inject these from the 20150605 snapshot.
+
+Some clients had been re-created by reading their eID card again. This
+caused the following error messages after injecting the vanished back
+into the database::
+
+    INFO Deferred Client #200715 (u'  (200715)') : (1062, "Duplicate entry '710608 576-38' for key 'national_id'")
+    INFO Deferred Client #200717 (u'  (200717)') : (1062, "Duplicate entry '720619 037-74' for key 'national_id'")
+    INFO Deferred Client #200559 (u'  (200559)') : (1062, "Duplicate entry '801112 221-12' for key 'national_id'")
+    INFO Deferred Client #200708 (u'  (200708)') : (1062, "Duplicate entry '580515 498-14' for key 'national_id'")
+    INFO Deferred Client #200716 (u'  (200716)') : (1062, "Duplicate entry '800721 476-41' for key 'national_id'")
+    INFO Deferred Client #200714 (u'  (200714)') : (1062, "Duplicate entry '950120 575-51' for key 'national_id'")
+    INFO Deferred Client #21148 (u'  (21148)') : (1062, "Duplicate entry '710108 503-76' for key 'national_id'")
+
+By searching for the SSIN in :file:`20150605/pcsw_client.py` I could
+determine which were the original partner id of these clients::
+
+    200708  '580515 498-14'   4011
+    200714  '950120 575-51'   20737
+    200715  '710608 576-38'   20606
+    200716  '800721 476-41'   22564
+    200717  '720619 037-74'   20450
+    200559  '801112 221-12'   23093
+    
+The last message had a different reason. It seems that the
+`national_id` of client 21148 has been modified to become that of
+client 6655::
+
+    21148   '710108 503-76'   6655
+
+This modification is currently the prime suspect of being the cause of
+our problem. But to reproduce it, I'd need to write a test case in a
+MySQL database (not SQLite as usual), which might take some time.  It
+is more probable that partner 6655 had simply been deleted before the
+modification.
+
+Related objects which had been created for these clients need to get
+attributed to the real partner id.  Here is an example of the warnings
+which visualized these problems::
+
+- dupable_clients.Word {'owner': [u'Client instance with pk 21148 does not exist.']} (2 object(s) with primary key 14, 15)
+- dupable_clients.Word {'owner': [u'Client instance with pk 200717 does not exist.']} (2 object(s) with primary key 16944, 16943)
+- dupable_clients.Word {'owner': [u'Client instance with pk 200714 does not exist.']} (2 object(s) with primary key 16941, 16942)
+- dupable_clients.Word {'owner': [u'Client instance with pk 200559 does not exist.']} (2 object(s) with primary key 16934, 16933)
+- aids.RefundConfirmation {'doctor': [u'Person instance with pk 902 does not exist.']} (4 object(s) with primary key 17, 167, 301, 330)
+- pcsw.ClientContact {'client': [u'Client instance with pk 21148 does not exist.']} (1 object(s) with primary key 1738)
+
+Here is a snippet of code inserted into :file:`restore.py` in order to
+fix these duplicate clients::
+
+    DUPS = {
+        200708:  4011,  # '580515 498-14'
+        200714: 20737,  # '950120 575-51'   
+        200715: 20606,  # '710608 576-38'   
+        200716: 22564,  # '800721 476-41'   
+        200717: 20450,  # '720619 037-74'   
+        200559: 23093,  # '801112 221-12'   
+    }
+
+    def new_partner_id(old):
+        return DUPS.get(old, old)
+
+
+And the following functions needed a manual additional line of code to
+call `new_partner_id`::
+
+    create_aids_granting
+    create_aids_incomeconfirmation
+    create_notes_note
+    create_dupable_clients_word
+    create_cal_guest
+    create_cal_event
+    create_pcsw_coaching
+    create_pcsw_clientcontact
+
+There was also again a series of warnings for a yet unidentified
+problem (looks as if users sometimes change the date range of
+grantings after having issued a confirmation):
+
+- aids.IncomeConfirmation [u'Date range 1/1/15... lies outside of granted period 1/1/15...4/21/15.'] (1 object(s) with primary key 144)
+- aids.IncomeConfirmation [u'Date range 6/1/15...6/1/15 lies outside of granted period 12/1/14...5/31/15.'] (1 object(s) with primary key 383)
+- aids.IncomeConfirmation [u'Date range 1/1/02... lies outside of granted period 1/1/02...5/31/15.'] (1 object(s) with primary key 248)
+- aids.IncomeConfirmation [u'Date range 12/1/14... lies outside of granted period 12/1/14...5/31/15.'] (4 object(s) with primary key 125, 126, 127, 129)
+
+Finally, the following warnings were normal and confirm that our
+duplicate clients have been removed):
+
+- contacts.Partner {u'id': [u'Partner with this ID already exists.']} (6 object(s) with primary key 20450, 20606, 22564, 20737, 4011, 23093)
+- pcsw.Client (1062, "Duplicate entry '20737' for key 'PRIMARY'") (1 object(s) with primary key 20737)
+- pcsw.Client (1062, "Duplicate entry '23093' for key 'PRIMARY'") (1 object(s) with primary key 23093)
+- pcsw.Client (1062, "Duplicate entry '20450' for key 'PRIMARY'") (1 object(s) with primary key 20450)
+- pcsw.Client (1062, "Duplicate entry '22564' for key 'PRIMARY'") (1 object(s) with primary key 22564)
+- pcsw.Client (1062, "Duplicate entry '20606' for key 'PRIMARY'") (1 object(s) with primary key 20606)
+- pcsw.Client (1062, "Duplicate entry '4011' for key 'PRIMARY'") (1 object(s) with primary key 4011)
+
+Making a snapshot of a Lino database
+====================================
+
+I worked two more hours on setting up a system for making auotomatic
+daily snapshots of a Lino database.  Also started a documentation page
+about it: :doc:`/admin/snapshot`.

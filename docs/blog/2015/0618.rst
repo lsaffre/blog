@@ -1,0 +1,68 @@
+=======================
+Thursday, June 18, 2015
+=======================
+
+Avoiding locale warnings
+========================
+
+When working on a customer's server in an SSH terminal I often had
+warning messages like :message:`man: can't set the locale; make sure
+$LC_* and $LANG are correct`.
+
+It seems that the culprit was the following line in my
+:file:`/etc/ssh/ssh_config` file::
+
+  SendEnv LANG LC_*
+
+I fixed my problem by uncommenting this line.  Since my customers use
+different versions and configurations of Debian, they have different
+lists of locales installed.
+
+
+Making daily snapshots
+======================
+
+Here is my template of a bash script for making daily snapshots of a
+Lino database: :linosrcref:`bash/make_snapshot.sh`
+
+However, the current version is a time bomb: it creates a new zip file
+every day. I am still looking for a way of automatically tidying up
+these files using configurable rules similar to those used by
+logrotate:
+
+- create a new file every day at a specified time
+- for snapshots older than 1 week, keep only those made on Fridays
+- for snapshots older than 2 months, keep only the last of the month
+
+Oops, the answer was given `in a post by mark on serverfault.com
+<http://serverfault.com/questions/196843/logrotate-rotating-non-log-files>`_:
+I can use logrotate for it. It's only a question of
+configuration. Marks gives a comprehensive example and a short
+explanation of the options.
+
+Here is how I configured it now in Eupen::
+
+    $ cat /etc/logrotate.d/snapshot
+    /var/backups/lino/mysite/snapshot.zip {
+        rotate 50
+        nocompress
+        dateext
+        dateformat _%Y%m%d
+        extension .zip
+        missingok
+    }
+
+Here is how to test whether it seems to work::
+
+  $ sudo logrotate -d /etc/logrotate.d/snapshot
+
+I also checked the timimg: the ``make_snapshot.sh`` cron job is run
+every morning at 2:00 while ``logrotate`` runs at 6:52. That sounds
+correct.
+
+TODO: 
+
+- This is not yet 100% of what we want. It just keeps an archive of
+  the last 50 days and deletes older ones.  That's better than
+  everything else we had until now, but actually we would like to keep
+  one backup per week during a longer period, e.g. one year.

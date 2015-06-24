@@ -1,0 +1,68 @@
+======================
+Tuesday, June 23, 2015
+======================
+
+The murder bug
+==============
+
+After many hours of exciting work in order to restore the data (see
+:doc:`0620`) I am still investigating about the reason.  Excerpt from
+a mail to Gerd which explains why we call it the murder bug:
+
+    Ich kann nicht garantieren, dass meine Wiederherstellung fehlerfrei war.
+    Ich hab immerhin mehrere Stunden lang manuell in den beiden Dumps
+    (20150605 und 20150620) rumgezaubert.
+
+    Andererseits halte ich diese Zauberei trotz allem für eine
+    Glanzleistung, auf die Lino stolz sein darf.
+
+    Weniger stolz bin ich über die Tatsache, dass das überhaupt passiert
+    ist, und dass ich noch immer nicht erklären kann, woran es lag.
+
+    Immerhin habe ich jetzt eine Beobachtung gemacht, die uns beim Fangen
+    des Mörders helfen wird. Wenn man in Django ein Datenobjekt löscht, dann
+    werden alle verknüpften Objekte par défaut einfach mitgelöscht. Das
+    nennt sich "cascaded delete". Zum Beispiel sollen alle Zeilen eines
+    Budgets stillschweigend gelöscht werden, wenn man das Büdget löscht.
+    Also manchmal will man das. Das ist in Lino aber par défaut abgeschaltet
+    und muss explizit erlaubt werden. Ansonsten kommt die bekannte Meldung
+    "Kann X nicht löchen weil N Y darauf verweisen". Es ist übers
+    Web-Interface theoretisch nicht möglich, ungewollt Daten über "cascaded
+    delete" zu löschen. Beim Wiederherstellen der Daten (wenn ich
+    analysiere, was da alles verschwunden war) scheint mir jedoch klar, dass
+    genau das passiert sein muss. Ich habe jetzt auch einen Beweis, dass das
+    von Code aus möglich ist: habe ein Skript 'test_delete.py' gemacht, das
+    ich auf der Demo-Datenbank laufen lasse::
+
+      from lino.api.shell import *
+      pcsw.Client.objects.get(id=127).delete()
+      print "Poof, it's gone!"
+
+    Und anschließend ist tatsächlich Klient 127 mit allem Drum und Dran
+    (Termine, Verträge, Begleitungen etc) spurlos verschwunden.
+
+    Also wir wissen inzwischen immerhin, *wie* der Mörder vorgegangen ist.
+
+
+Trying to find the murder bug
+=============================
+
+The :meth:`Model.delete <lino.core.model.Model.delete>` method now
+
+- calls :meth:`disable_delete <lino.core.model.Model.disable_delete>`
+  again in order to verify that no data gets deleted inadvertently.
+
+- logs an info message "Deleting %d %s before deleting %s".
+
+Result: the mentioned script now fails to delete client 127 with a
+traceback :message:`Exception: Cannot delete EVERS Eberhart (127)
+because 2 Aid grantings refer to it.` I added a section in
+:ref:`welfare.tested.eupen` to verify the above.
+
+The success message of :class:`MergeAction
+<lino.core.merge.MergeAction>` is now also logged to the system
+logger.
+
+So we can assume that the murder bug (wherever it is), would now fail
+and get discovered if it occurs next time.
+

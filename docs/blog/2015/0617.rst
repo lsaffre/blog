@@ -1,0 +1,65 @@
+========================
+Wednesday, June 17, 2015
+========================
+
+Logging optimizations
+=====================
+
+While looking for the explanation of a local problem in Eupen I made a
+few optimizations about what to log into the :xfile:`system.log`
+file. Or more precisely what to *not* log there: I converted some
+calls to `logger.info` into calls to `clint.textual.puts`.
+
+This revealed the problem that
+`clint<https://github.com/kennethreitz/clint>`__ does not seem to like
+unicode strings. Here is a simple example:
+
+.. literalinclude:: 0617a.py
+
+According to the `unicode.py
+<https://github.com/kennethreitz/clint/blob/master/examples/unicode.py>`__
+example this should work.  But at least on my machine (with the latest
+released clint, version 0.4.1) it causes the following traceback::
+
+    Traceback (most recent call last):
+      File "0617a.py", line 3, in <module>
+        puts(u"Ein Blumensträußchen")
+      File "/home/luc/pythonenvs/py27/local/lib/python2.7/site-packages/clint/textui/core.py", line 58, in puts
+        s = map(str, s)
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 13: ordinal not in range(128)
+
+Aha, I am not the first one to stumble over it:
+https://github.com/kennethreitz/clint/issues/48
+
+
+- Added new function :func:`lino.utils.puts` which currently just
+  prints the string to stdout using ``print``. I prefer to use this
+  over a plain ``print`` statement because I guess that there will be
+  problems (mainly thinking about the fact that writing to stdout is
+  considered an error in a wsgi application).
+
+- In :meth:`lino.core.kernel.Kernel.kernel_startup` we had the line::
+
+    logger.info(self.welcome_text())
+
+  I first replaced it by::
+
+    puts(self.welcome_text())
+
+  But then decided to even remove it completely. Because I cannot
+  remember a single case where it has been actually useful that this
+  message appears automatically at the console. At least in order to
+  observe.
+
+Developers Guide
+================
+
+:ref:`sandeep` made suggestions about the 
+:doc:`/dev/index`.
+I worked on :doc:`/tutorials/polls/mysite/index`.
+
+
+Voice session with Sandeep
+==========================
+
+Together with :ref:`sandeep` we created :ticket:`301`.

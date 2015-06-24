@@ -1,0 +1,64 @@
+=====================
+Sunday, June 14, 2015
+=====================
+
+Takayuki Shimizukawa asked me to test whether Eric Larson's pull
+request is still okay regarding `#1061
+<https://github.com/sphinx-doc/sphinx/issues/1061>`_.  
+
+
+First challenge for me was to activate Eric's pull request.  I tried
+to configure Erics fork as a remote to my working copy, but didn't
+really advance...  Here is how I finally did it::
+
+    $ mv sphinx sphinx-main
+    $ git clone https://github.com/Eric89GXL/sphinx.git
+    Cloning into 'sphinx'...
+    remote: Counting objects: 40969, done.
+    remote: Total 40969 (delta 0), reused 0 (delta 0), pack-reused 40969
+    Receiving objects: 100% (40969/40969), 12.39 MiB | 1.12 MiB/s, done.
+    Resolving deltas: 100% (31193/31193), done.
+    Checking connectivity... done.
+    $ git checkout fix-no-members 
+    Branch fix-no-members set up to track remote branch fix-no-members from origin.
+    Switched to a new branch 'fix-no-members'
+    $
+
+
+
+The problem I needed to fix with `#1061
+<https://github.com/sphinx-doc/sphinx/issues/1061>`_ was that Sphinx
+was documenting also imported members of a module. Especially in
+modules which have the following line::
+
+  from django.db.models import Q
+
+So I re-built the Lino docs using Eric's version. Seems to work.  For
+example :mod:`lino.modlib.vat.models` does not mention any imported
+things from Django.
+
+But there was another issue which accidentally got committed together
+with this problem.
+
+So I also wrote a test case to see whether Sphinx tells me the source
+file when an error orrurs when executing the content of a
+:mod:`atelier.sphinxconf.insert_input`.  The following renders as a
+paragraph containing "1 2 3 4 5 6 7 8 9":
+
+.. py2rst::
+
+  for i in range(9):
+      print(i+1)
+  print()
+
+My manual test consists in adding a syntax error into above code
+snippet, trying to build my blog and verifying that the file name and
+line number of the syntax error are being reported correctly.
+
+Everything seems to work.
+
+Oops, I noticed only later that I have to switch to the
+`fix-no-members` branch above. But fortunately the result was the
+same.
+
+TODO: add a test case for Sphinx which tests the above automatically.

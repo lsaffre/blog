@@ -61,28 +61,26 @@ important to ask who controls these computers.
    Cathedral and the Bazaar
    <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
 
-    Imagine that you are the owner of a well-running sandwich bar in a
-    little town. And as your sandwich bar gets more and more
-    customers, you decide to engage an assistant to help you. And
-    because your assistant is trustworthy and capable, you delegate
-    more and more reponsibilities to him.  
-    
-    Then imagine that you need to move to another town and designate
-    your friend to become the manager of your sandwich bar.  The
-    manager continues to send you regular financial reports about your
-    sandwich bar.
-    
-    Now imagine that after some time you discover that the manager of
-    your sandwich bar would refuse to show the invoices he received
-    and issued, and the statements of your bank accounts, saying "My
-    financial reports are enough, I don't want you to see the
-    underlying detailed bookings because it is my privacy how I
-    realized the results."  
-    
-    How would you react? 
-    
-You would probably fire this manager, maybe even file a lawsuit
-against him.
+Imagine that you are the owner of a well-running sandwich bar in a
+little town. And as your sandwich bar gets more and more
+customers, you decide to engage an assistant to help you. And
+because your assistant is trustworthy and capable, you delegate
+more and more reponsibilities to him.  
+
+Then imagine that you need to move to another town and designate
+your friend to become the manager of your sandwich bar.  The
+manager continues to send you regular financial reports about your
+sandwich bar.
+
+Now imagine that after some time you discover that the manager of
+your sandwich bar would refuse to show the invoices he received
+and issued, and the statements of your bank accounts, saying "My
+financial reports are enough, I don't want you to see the
+underlying detailed bookings because it is my privacy how I
+realized the results."  
+
+How would you react?  You would probably fire this manager, maybe even
+file a lawsuit against him.
 
 That's how enterprises are run.  The managers do the work of ruling,
 and they write regular activity reports to the owners. The managers
@@ -99,8 +97,8 @@ The point of this story is that **while you would probably fire such a
 manager in a real-world enterprise, this is happening constantly in a
 computer which runs closed-source software.**
 
-I hope that this picture opens your eyes, and that you start to feel
-with me why it is time to wake up.
+I hope that this picture opens your eyes and that you start to feel
+with me why it is important to wake up.
 
 
 Misleading ethical questions
@@ -112,41 +110,41 @@ Valley is formulated as a series of ethical questions which express
 common arguments against free software.  Here are these questions,
 together with my answers:
 
-- Is human knowledge advanced by full and free access to all
+- **Is human knowledge advanced by full and free access to all
   information, allowing engineers and developers to correct and
-  improve on already existing systems? -- **Yes. 
-  "[T]he free sharing of useful information benefits the human community.
-  This sounds so obvious as to not merit discussion, but when this point
-  is applied to real life, it seems to stir up a lot of controversy."
-  [#cook]_**
+  improve on already existing systems?** -- Answer: Yes.  "[T]he free
+  sharing of useful information benefits the human community.  This
+  sounds so obvious as to not merit discussion, but when this point is
+  applied to real life, it seems to stir up a lot of controversy."
+  [#cook]_
 
-- Or does a lack of strong protection for IP discourage innovation by
-  removing the financial incentive for developing it? -- **Innovation
-  is done by creative humans who act primarily because they love their
-  work and not because they get money for it. Many modern slaves do
-  some job just because they are getting money in return of the
-  lifetime and energy they spend for working on some project which is
-  not their's. These are not usually the ones who bring innovation.**
+- **Or does a lack of strong protection for IP discourage innovation
+  by removing the financial incentive for developing it?** -- Answer:
+  Innovation is done by creative humans who act primarily because they
+  love their work and not because they get money for it. Many modern
+  slaves do some job just because they are getting money in return of
+  the lifetime and energy they spend for working on some project which
+  is not their's. These are not usually the ones who bring innovation.
 
-- Classically, free speech is understood as a right, but is this a
+- **Classically, free speech is understood as a right, but is this a
   useful way to think about open source software? Is there anything in
   the nature of software that would give people a right to it in the
-  same way that we have a right to speech? -- **Writing software is
+  same way that we have a right to speech?** -- Writing software is
   substantially the same activity as writing a prosa text.
   Prohibiting to share software is like prohibiting to share
   texts. Proprietary software violates the basic human right for free
-  speech.**
+  speech.
 
-- Is it fair to expect software developers to create and distribute
+- **Is it fair to expect software developers to create and distribute
   their intellectual product without restrictions while we do not
-  expect the same from other inventors or producers? -- **Free
+  expect the same from other inventors or producers?** -- Free
   software does not mean voluntary work. There are many people who
   earn their living for writing free software.  The free software
   industry shows that commercial licensing is not the only way of
   making money using software.  There are better methods to pay
-  software developers for their work.**
+  software developers for their work.
 
-- The Vatican document “Ethics in Internet” argues that “use of the
+- **The Vatican document “Ethics in Internet” argues that “use of the
   new information technology... needs to be informed and guided by a
   resolute commitment to the practice of solidarity in the service of
   the common good.” Flowing from this view, the document says that
@@ -155,20 +153,20 @@ together with my answers:
   languages. The winner in this process will be humanity as a whole
   and not just a wealthy elite that controls science, technology, and
   the planet's resources.” Is this view applicable to software as
-  well? -- **The Vatican's document takes a beautifully clear position
-  against proprietary software.  Software is stored knowledge about
-  how a given job can be done. This is information. It is
-  comprehensive only in the source code form.**
+  well?** -- Answer: Yes. The Vatican's document takes a beautifully
+  clear position against proprietary software.  Software is stored
+  knowledge about how a given job can be done. This is information. It
+  is comprehensive only in the source code form.
 
-- (...) But to others, “sharing” software is like having to consent to
-  its theft because the sharer is giving away someone’s work product,
-  which is the result of sweat and ingenuity and which has monetary
-  value, as well. Will open source inculcate the virtues of friends or
-  of thieves? -- **Yes, using proprietary software without permission
-  is theft, don't do that. Using free software is never theft because
-  the author has publicly given their permission to share their work.
-  Note that the "monetary value" is usually not owned by those who
-  gave their "sweat and ingenuity".**
+- **(...) But to others, “sharing” software is like having to consent
+  to its theft because the sharer is giving away someone’s work
+  product, which is the result of sweat and ingenuity and which has
+  monetary value, as well. Will open source inculcate the virtues of
+  friends or of thieves?** -- Answer: Yes, using proprietary software
+  without permission is theft, don't do that. Using free software is
+  never theft because the author has publicly given their permission
+  to share their work.  Note that the "monetary value" is usually not
+  owned by those who gave their "sweat and ingenuity".
 
 While my above answers --hopefully-- give satisfying answers to the
 given arguments [#jesuits]_, all these thoughts are rather misleading
