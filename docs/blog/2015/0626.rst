@@ -1,0 +1,68 @@
+=====================
+Friday, June 26, 2015
+=====================
+
+And still I continued to work on :ticket:`173` (Class-based permission
+control (UserRoles)).  The fact that this branch is getting rather big
+(and the fact that I accidentally made some changes in the master
+branch of welfare) makes me think that I would like to finish it
+before doing a release in Eupen.
+
+I found (and `reported <http://bugs.python.org/issue24515>`_) a
+documentation bug in Python: The docstring of built-in function
+`isinstance
+<https://docs.python.org/2/library/functions.html#isinstance>`__
+should explain that if the classinfo is a tuple, the object must be
+instance of *any* (not *all*) of the class objects. I had to write the
+folowing snippet in order to find the answer:
+
+.. literalinclude:: 0626.py
+  
+
+
+Leaving a trace when a partner was deleted
+==========================================
+
+The murder bug reminds us about an old customer request: Lino should
+leave a trace somewhere when a partner has been deleted.
+
+The current behaviour of :mod:`lino.modlib.changes` is that deleting
+the *master* will delete all changes as well, while deleting some
+other watched object will simply clear the `object`.
+
+There are two possibilities to solve this:
+
+- Make also the
+  :attr:`master<lino.modlib.changes.models.Change.master>` nullable (not
+  only the :attr:`object<lino.modlib.changes.models.Change.object>` as
+  it is currently)
+
+- Write a log message to :xfile:`system.log` when a partner is deleted
+  (:ticket:`310`).
+
+Since I was still undecided which way to go, I continued to work on
+:ref:`lino.tutorial.watch` in order to document the current behaviour.
+
+This made me discover a subtle bug: When deleting a *company*, Django
+will automatically delete it's MTI parent, the *partner*.  But I
+didn't know that Django, when deleting that the partner, will *not*
+call its `delete` method.  Django uses a "collector" to optimize
+deletion of related objects. The result was that the change records
+actually did *not* get deleted. Only when first removing the company
+child and then deleting the partner.
+
+The solution was to move the code from
+:meth:`lino.core.model.Model.delete` to a handler connected to
+Django's `pre_delete` signal.
+
+This change required a change in :ref:`lino.tutorial.gfks` which
+disables the `pre_delete` handler in order to produce some broken
+GFKs.
+
+All this helped me to find a decision and to opt for solution 1 above:
+I made the :attr:`master<lino.modlib.changes.models.Change.master>`
+nullable.  Because (1) it solves my customer's request in the most
+user-friendly way and (2) anyway we will need some day have a look at
+the possible problems due to dangling change records hanging around in
+our database without any master.
+
