@@ -2,7 +2,42 @@
 Wednesday, July 1, 2015
 =======================
 
+Testing the fields of form panels
+=================================
 
-Added a new chapter :ref:`welfare.specs.eupen` to the functional
+I added a new chapter :ref:`welfare.specs.eupen` to the functional
 specs.  Which required a new function :func:`lino.utils.diag.py2rst`.
+
+
+How to specify an "or" operation for `required_roles`
+=====================================================
+
+I noticed that the test for demo user Theresia (reception clerk) was
+being skipped. This made me discover a new trick: how to 
+specify an "or" operation for the
+:attr:`required_roles
+<lino.core.permissions.Permittable.required_roles>`.  
+
+The roles :class:`lino.modlib.office.roles.OfficeOperator` and
+:class:`lino.modlib.office.roles.OfficeUser` are *exclusive*: normal
+users want either one or the other, but not both. 
+
+For example, a reception clerk is an office *operator*, not
+an office *user*. Which means that she does not want to see menu
+commands like "My events" or "My visitors".
+The social agents are office *users*, not office *operators*. They
+want to see what's happening at the reception, but not everything. For
+example they don't want to see the :menuselection:`Reception -->
+Clients` command because they have their specific commands for that 
+(:menuselection:`Integration --> Clients` or
+:menuselection:`Debts --> Clients` or
+:menuselection:`PCSW --> Clients`).
+
+But then the reception module has certain commands which both
+operators and users want to have: for example the global list of
+:menuselection:`Reception --> Waiting visitors`.
+Actually all reception commands based on
+:class:`lino.modlib.reception.models.Visitors`.
+
+See also the source code of :mod:`lino_welfare.projects.std.roles`.
 
