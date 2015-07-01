@@ -1,0 +1,133 @@
+=====================
+Monday, June 29, 2015
+=====================
+
+Uff! Adapting the permissions system of Lino Welfare to the new
+class-based paradigm took me a whole day! 
+
+Nevertheless it is clear that this was a good and important step for
+Lino.  I am glad to have test cases like
+:ref:`welfare.tested.general`.
+
+
+Old content of :meth:`setup_user_profiles`::
+
+    from django.utils.translation import ugettext_lazy as _
+    from lino.modlib.users.choicelists import UserProfiles
+
+    UserProfiles.reset(
+        '* office coaching integ courses cbss newcomers debts '
+        'reception beid')
+    add = UserProfiles.add_item
+    add('000', _("Anonymous"),                   '_ _ _ _ _ _ _ _ _ _',
+        name='anonymous',
+        readonly=True,
+        authenticated=False)
+    add('100', _("Integration Agent"),           'U U U U U U _ _ _ U')
+    add('110', _("Integration Agent (Manager)"), 'U M M M M U _ _ _ U')
+    add('200', _("Newcomers consultant"),        'U U U _ _ U U _ _ U')
+    add('210', _("Reception clerk"),             'U U _ _ _ _ _ _ U U')
+    add('300', _("Debts consultant"),            'U U U _ _ _ U U _ U')
+    add('400', _("Social agent"),                'U U U _ U U _ _ _ U')
+    add('410', _("Social agent (Manager)"),      'U M M _ M U _ _ _ U')
+    add('900', _("Administrator"),               'A A A A A A A A A U',
+        name='admin')
+
+Basically this code does not change much... except that we replaced
+the system of "U M A _" strings by classes, and that we define these
+classes in a separate module :mod:`lino_welfare.modlib.welfare.roles`::
+
+    from lino.modlib.users.choicelists import UserProfiles
+    from lino_welfare.modlib.welfare.roles import *
+    
+    UserProfiles.clear()
+    add = UserProfiles.add_item
+    add('000', _("Anonymous"), Anonymous, name='anonymous',
+        readonly=True, authenticated=False)
+    add('100', _("Integration Agent"),           IntegrationAgent)
+    add('110', _("Integration Agent (Manager)"), IntegrationStaff)
+    add('200', _("Newcomers consultant"),        NewcomersAgent)
+    add('210', _("Reception clerk"),             ReceptionOperator)
+    add('300', _("Debts consultant"),            DebtsUser)
+    add('400', _("Social agent"),                SocialAgent)
+    add('410', _("Social agent (Manager)"),      SocialStaff)
+    add('900', _("Administrator"),               SiteAdmin, name='admin')
+
+
+Maybe an `inheritance-diagram
+<http://sphinx-doc.org/ext/inheritance.html>`__ can help to visualize
+the complexity:
+
+
+.. inheritance-diagram:: lino_welfare.modlib.welfare.roles
+
+
+
+
+Cannot create a consistent method resolution order
+==================================================
+
+Here is a side effect of having class-based permissions: since we use
+a rather complex form of multiple inheritance, I needed to learn how
+to analyze error messages like this one::
+
+    $ python -m lino_welfare.modlib.welfare.roles
+    Traceback (most recent call last):
+      File "/usr/lib/python2.7/runpy.py", line 162, in _run_module_as_main
+        "__main__", fname, loader, pkg_name)
+      File "/usr/lib/python2.7/runpy.py", line 72, in _run_code
+        exec code in run_globals
+      File "/home/luc/hgwork/welfare/lino_welfare/modlib/welfare/roles.py", line 29, in <module>
+        class IntegrationStaff(IntegrationAgent, IntegrationStaff):
+    TypeError: Error when calling the metaclass bases
+        Cannot create a consistent method resolution
+    order (MRO) for bases CBSSUser, OfficeOperator
+
+This error comes when I specify a "nonsense" or "illegal" inheritence
+line.  But in above case I did not see immediately where exactly the
+problem was.  So I tried to write out the full genealogic tree:
+
+|    IntegrationStaff(IntegrationAgent, SocialStaff, CareerStaff)
+|    - IntegrationAgent(SocialAgent, CareerUser)
+|      - SocialAgent(OfficeUser, CBSSUser)
+|        - OfficeUser(ContactsUser)
+|          - ContactsUser(SiteUser)
+|        - CBSSUser(ContactsUser)
+|          - ContactsUser(SiteUser)
+|      - CareerUser(SiteUser)
+|    - SocialStaff(OfficeStaff, SocialAgent)
+|      - OfficeStaff(OfficeUser, OfficeOperator, ContactsStaff)
+|        - OfficeUser(ContactsUser)
+|          - ContactsUser(SiteUser)
+|        - OfficeOperator(ContactsUser)
+|          - ContactsUser(SiteUser)
+|        - ContactsStaff(ContactsUser)
+|          - ContactsUser(SiteUser)
+|      - SocialAgent(OfficeUser, CBSSUser)
+|        - OfficeUser(ContactsUser)
+|          - ContactsUser(SiteUser)
+|        - CBSSUser(ContactsUser)
+|          - ContactsUser(SiteUser)
+|    - CareerStaff(CareerUser)
+|      - CareerUser(SiteUser)
+    
+    
+
+Thanks to `Sixty North
+<http://sixty-north.com/blog/method-resolution-order-c3-and-super-proxies>`__
+for writing a good blog entry about it.
+
+
+
+A disadvantage of the class-based permission system is (or was) the
+fact that e.g. :ref:`lino.tutorial.watch` which uses
+:mod:`lino.modlib.contacts` was now *forced* to define user
+roles. Even though the example does not care about them. Because
+otherwise even the site administrator has no access to the contacts
+menu.
+
+The new attribute :attr:`lino.core.site.Site.disable_user_roles` is a
+workaround for this, or maybe even a cool thing: setting this to
+`True` will "disable" all
+:attr:`lino.core.utils.Permittable.required_roles`.
+

@@ -4,10 +4,32 @@ Thursday, June 25, 2015
 
 I continued to work on :ticket:`173` (Class-based permission control
 (UserRoles)). I do this in a separate branch ``class_permissions``. It
-causes quite some code changes in lino.modlib and applications. Basically if you were defining an attribute `required` on a table, you must replace this by an attribute `required_roles` as shown in the following examples::
+causes quite some code changes in lino.modlib and applications.
+
+Basically if you were defining an attribute `required` on a table, you
+must replace this by an attribute `required_roles` as shown in the
+following examples::
 
   required = dd.required(user_level="admin")
 
   required_roles = dd.required(dd.SiteAdmin)
 
 
+The notions of "UserLevels" (`user_level`) and "UserGroups"
+(`user_group`) have been replaced by *user roles*.
+
+The "role" and the "profile" of a user are the same. 
+
+currently still represented
+by
+
+TODO: 
+rename :class:`UserProfile <lino.modlib.users.choicelists.UserProfile>`
+to ``UserRole``
+and
+:class:`UserProfiles <lino.modlib.users.choicelists.UserProfiles>`
+to ``UserRoles``.
+
+The :attr:`profile <lino.modlib.users.models.User.profile>` of a user
+now is an instance of some *subclass* of :class:`UserProfile
+<lino.modlib.users.choicelists.UserProfile>`.

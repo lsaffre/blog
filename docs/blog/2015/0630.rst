@@ -1,0 +1,70 @@
+======================
+Tuesday, June 30, 2015
+======================
+
+More testing and documentation after :ticket:`173` (Class-based
+permission control (UserRoles)).
+
+Analyzing some server reports after release in Eupen:
+
+
+UnicodeEncodeError at /callbacks/140565193883152/yes
+====================================================
+
+Diese Meldung ist eine Nebenwirkung der Mörderfalle. Sie kommt
+scheinbar, wenn jemand einen Auszug direkt manuell zu löschen versucht
+statt den Button "Cache löschen" des ausgedruckten Objekts zu
+verwenden. 
+
+Not sure whether the UnicodeDecodeError happens only on Python
+2.6. This would be a reason to upgrade their Python to 2.7.
+
+Or a reason for me to install Python 2.6 (thanks to `d3vid
+<http://askubuntu.com/questions/125342/how-can-i-install-python-2-6-on-12-04>`__)
+who asked about this on askubuntu.com::
+
+  $ sudo add-apt-repository ppa:fkrull/deadsnakes
+  $ sudo apt-get update
+  $ sudo apt-get install python2.6
+
+Unfortunately I still could not reproduce my customer's traceback.
+Maybe because they have Python 2.6.6 while above trick installed
+Python 2.6.9.
+
+
+Setting ForeignKeys to NULL when deleting an object
+===================================================
+
+Lino now supports ForeignKey fields with `on_delete
+<https://docs.djangoproject.com/en/1.8/ref/models/fields/#django.db.models.ForeignKey.on_delete>`_
+set to `SET_NULL`.  First use case is the :attr:`printed_by
+<lino.modlib.excerpts.mixins.Certifiable.printed_by>` field of a
+:class:`Certifiable <lino.modlib.excerpts.mixins.Certifiable>`.
+
+Until now, manually deleting a certifying excerpt failed with the
+message "Cannot delete Excerpt XYZ because 1 contract refers to it".
+Okay, the workaround was easy: just use the clear_cache action on the
+certified object.  But direct deletion should not fail just because of
+that nullable :attr:`printed_by
+<lino.modlib.excerpts.mixins.Certifiable.printed_by>` pointer.
+
+BTW :meth:`delete_veto_message
+<lino.core.model.Model.delete_veto_message>` message now includes the
+model's verbose name because the `unicode` of a database object does
+not (and should not) mention it.
+
+Three "quick wins"
+==================
+
+"Im Bereich Person, den Namen des Datenfelds "Anrede" durch "Titel" ersetzen"
+
+This would have been a quick one, but I discovered that this field was
+being rendered in an inconsistent way (sometimes before and sometimes
+after the salutation).
+
+I moved it from :class:`Person <lino.modlib.contacts.models.Person>`
+to :class:`lino.mixins.human.Human`, updated documentation and added
+some test cases in :ref:`lino.tutorial.human`.
+
+
+

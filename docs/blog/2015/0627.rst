@@ -2,6 +2,9 @@
 Saturday, June 27, 2015
 =======================
 
+Leaving change records in database when deleting master
+=======================================================
+
 I finished yesterday's changes in 
 :ref:`lino.tutorial.watch` and
 :ref:`lino.tutorial.gfks`.
@@ -13,8 +16,264 @@ For example I forgot to also remove the
 All test suites now pass, even :ref:`faggio` and :ref:`patrols`.
 Commited and pushed them all to master.
 
+Release Welfare in Eupen
+========================
+
 Increased the version number for :ref:`welfare` to 1.1.22 and wrote a
 :meth:`migrator <lino_welfare.migrate.Migrator.migrate_from_1_1_21>`
 (because the account charts model has been replaced by a choicelist
 some time ago).
 
+
+Sandeep's first Lino application
+================================
+
+Congratulations to :ref:`sandeep` who has published his first Lino
+application on GitHub! It works like a charm::
+
+    $ git clone https://github.com/sandeez/lino-book_locator.git
+    Cloning into 'lino-book_locator'...
+    remote: Counting objects: 30, done.
+    remote: Compressing objects: 100% (25/25), done.
+    remote: Total 30 (delta 3), reused 26 (delta 2), pack-reused 0
+    Unpacking objects: 100% (30/30), done.
+    Checking connectivity... done.
+    $ cd lino-book_locator/locate
+    $ python manage.py initdb_demo
+    INFO Started manage.py initdb_demo (using locate.settings.settings) --> PID 13723
+    We are going to flush your database (/home/luc/tmp/lino_cache/locate/default.db).
+    Are you sure (y/n) ?y
+    INFO `initdb std demo demo2` started on database /home/luc/tmp/lino_cache/locate/default.db.
+    Creating tables ...
+    Creating table books_floor
+    Creating table books_room
+    Creating table books_bookshelf
+    Creating table books_rack
+    Creating table books_slot
+    Creating table books_category
+    Creating table books_author
+    Creating table books_publication
+    Creating table books_book
+    Creating table books_bookinfo
+    Creating table books_booklocation
+    Installing custom SQL ...
+    Installing indexes ...
+    Installed 0 object(s) from 0 fixture(s)
+    INFO Done manage.py initdb_demo (PID 13723)
+    $ python manage.py runserver
+    Validating models...
+
+    INFO Started manage.py runserver (using locate.settings.settings) --> PID 13729
+    0 errors found
+    June 27, 2015 - 12:16:08
+    Django version 1.6.9, using settings 'locate.settings.settings'
+
+
+Your next step should be to write demo data.  Recommended reading:
+`Adding a demo fixture
+<http://lino-framework.org/tutorials/polls/mysite/index.html#adding-a-demo-fixture>`_.
+
+
+
+Invalid master key 778 for cal.TasksByController
+================================================
+
+This error came after the upgrade in Eupen. In order to understand
+what happened or whether this is serious, I added a new test case
+:ref:`invalid_requests` which reproduces some invalid AJAX requests
+which until now caused an internal server error, including a message
+to the admins, although that's actually the wrong reaction.
+
+Now they will internally raise an `ObjectDoesNotExist` exception,
+which in turn will cause an `HttpResponseBadRequest` response
+(i.e. status code 400).
+
+
+Rebasing the `class_permissions` branch
+=======================================
+
+I tried to merge my work on `class_permissions` branch into master.
+But oops::
+
+    $ git rebase master 
+    First, rewinding head to replay your work on top of it...
+    Applying: http://luc.lino-framework.org/blog/2015/0621.html
+    Using index info to reconstruct a base tree...
+    M	lino/core/actions.py
+    M	lino/core/merge.py
+    <stdin>:210: new blank line at EOF.
+    +
+    warning: 1 line adds whitespace errors.
+    Falling back to patching base and 3-way merge...
+    Auto-merging lino/core/permissions.py
+    Auto-merging lino/core/merge.py
+    CONFLICT (content): Merge conflict in lino/core/merge.py
+    Auto-merging lino/core/actions.py
+    Failed to merge in the changes.
+    Patch failed at 0001 http://luc.lino-framework.org/blog/2015/0621.html
+    The copy of the patch that failed is found in:
+       /home/luc/hgwork/lino/.git/rebase-apply/patch
+
+    When you have resolved this problem, run "git rebase --continue".
+    If you prefer to skip this patch, run "git rebase --skip" instead.
+    To check out the original branch and stop rebasing, run "git rebase --abort".
+
+What does that mean?
+
+  $ less /home/luc/hgwork/lino/.git/rebase-apply/patch 
+
+... did not help. But here::
+
+    $ git rebase --continue
+    lino/core/merge.py: needs merge
+    You must edit all merge conflicts and then
+    mark them as resolved using git add
+
+When editing `lino/core/merge.py`, I found the conflicting place
+marked by lines "<<<<" and ">>>>", edited it manually and did as
+instructed::
+
+    $ git add lino/core/merge.py
+    $ git rebase --continue
+
+
+
+Now I actually merge them::
+
+    $ git checkout master 
+    Switched to branch 'master'
+    Your branch is up-to-date with 'origin/master'.
+    
+    $ git merge class_permissions 
+    Updating 2145655..c2212b6
+    Fast-forward
+     docs/dev/choicelists.rst                          |  12 +++---
+     docs/tested/cv.rst                                |  38 ++++--------------
+     docs/tested/test_i18n.rst                         |  12 +++---
+     docs/tutorials/matrix_tutorial/settings.py        |  11 ------
+     docs/tutorials/pisa/pisa.Person-1.pdf             |   8 ++++
+     docs/tutorials/watch_tutorial/settings.py         |  11 ------
+     docs/tutorials/workflows_tutorial/settings.py     |  11 ------
+     docs/tutorials/workflows_tutorial/workflows.py    |   6 +--
+     lino/api/ad.py                                    |  18 ++++-----
+     lino/api/dd.py                                    |  11 +++---
+     lino/core/__init__.py                             |   1 +
+     lino/core/actions.py                              |  12 ++++--
+     lino/core/actors.py                               |  11 +++---
+     lino/core/boundaction.py                          |  24 +++++-------
+     lino/core/layouts.py                              |   3 +-
+     lino/core/merge.py                                |   6 +--
+     lino/core/permissions.py                          |  50 ++++++++++++++++++++++++
+     lino/core/perms.py                                |  23 -----------
+     lino/core/plugin.py                               |   8 ++--
+     lino/core/site.py                                 |  33 ++++++----------
+     lino/core/utils.py                                |   9 ++---
+     lino/core/workflows.py                            |  33 +++++++++-------
+     lino/mixins/printable.py                          |   4 +-
+     lino/modlib/about/models.py                       |   5 ++-
+     lino/modlib/accounts/choicelists.py               |   8 +++-
+     lino/modlib/accounts/models.py                    |  11 ++----
+     lino/modlib/addresses/models.py                   |   4 +-
+     lino/modlib/awesomeuploader/models.py             |   1 -
+     lino/modlib/beid/__init__.py                      |   5 +--
+     lino/modlib/beid/choicelists.py                   |  93 ++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/beid/mixins.py                        |  87 ++---------------------------------------
+     lino/modlib/boards/models.py                      |   4 +-
+     lino/modlib/cal/models.py                         |  14 ++++---
+     lino/modlib/cal/models_calendar.py                |  12 +++---
+     lino/modlib/cal/models_event.py                   |  19 ++++-----
+     lino/modlib/cal/models_guest.py                   |  16 ++++----
+     lino/modlib/cal/models_task.py                    |  15 +++----
+     lino/modlib/cal/workflows/__init__.py             |  20 ++++------
+     lino/modlib/cal/workflows/feedback.py             |  38 +++++++++++-------
+     lino/modlib/changes/models.py                     |   6 +--
+     lino/modlib/clocking/models.py                    |   2 +-
+     lino/modlib/comments/models.py                    |   6 +--
+     lino/modlib/concepts/models.py                    |   1 -
+     lino/modlib/contacts/models.py                    |  13 +++----
+     lino/modlib/contenttypes/models.py                |   4 +-
+     lino/modlib/countries/models.py                   |   8 ++--
+     lino/modlib/courses/choicelists.py                |  10 ++++-
+     lino/modlib/courses/models.py                     |  17 ++++----
+     lino/modlib/courses/workflows.py                  |   4 +-
+     lino/modlib/cv/models.py                          |  50 ++++++++++++------------
+     lino/modlib/dupable_partners/models.py            |   2 +-
+     lino/modlib/excerpts/models.py                    |  16 +++++---
+     lino/modlib/extensible/models.py                  |   8 ++--
+     lino/modlib/extjs/elems.py                        |  87 ++++++++++++++++++++++-------------------
+     lino/modlib/extjs/ext_renderer.py                 |  26 +++++++++----
+     lino/modlib/families/models.py                    |   2 +-
+     lino/modlib/households/models.py                  |  15 +++----
+     lino/modlib/humanlinks/models.py                  |   6 +--
+     lino/modlib/languages/models.py                   |   4 +-
+     lino/modlib/ledger/choicelists.py                 |   4 +-
+     lino/modlib/ledger/ui.py                          |   5 ++-
+     lino/modlib/lists/models.py                       |   6 +--
+     lino/modlib/notes/models.py                       |  13 ++++---
+     lino/modlib/office/__init__.py                    |   8 ++--
+     lino/modlib/office/choicelists.py                 |  14 +++++++
+     lino/modlib/outbox/models.py                      |  22 +++++------
+     lino/modlib/plausibility/choicelists.py           |   2 +-
+     lino/modlib/plausibility/models.py                |   2 +-
+     lino/modlib/polls/__init__.py                     |   1 +
+     lino/modlib/polls/choicelists.py                  |  15 +++++++
+     lino/modlib/polls/models.py                       |  20 +++++-----
+     lino/modlib/polls/utils.py                        |  29 ++++++--------
+     lino/modlib/postings/models.py                    |  17 ++++----
+     lino/modlib/products/models.py                    |   3 +-
+     lino/modlib/properties/models.py                  |   6 +--
+     lino/modlib/reception/__init__.py                 |   5 +++
+     lino/modlib/reception/choicelists.py              |  12 ++++++
+     lino/modlib/reception/models.py                   |  28 +++++++------
+     lino/modlib/rooms/models.py                       |   2 +-
+     lino/modlib/system/__init__.py                    |   4 +-
+     lino/modlib/system/models.py                      |   5 +--
+     lino/modlib/tickets/choicelists.py                |  10 ++---
+     lino/modlib/tickets/ui.py                         |   5 +--
+     lino/modlib/tinymce/models.py                     |   8 ++--
+     lino/modlib/uploads/models.py                     |   8 ++--
+     lino/modlib/users/choicelists.py                  | 188 +++++++++++++++-------------------------------------------------------------------------
+     lino/modlib/users/mixins.py                       |  25 ++++++------
+     lino/modlib/users/models.py                       |  17 ++++----
+     lino/modlib/users/utils.py                        | 143 ++++++-------------------------------------------------------------
+     lino/projects/belref/models.py                    |  12 ++++--
+     lino/projects/estref/models.py                    |   9 +++--
+     lino/projects/homeworkschool/settings/__init__.py |  14 -------
+     lino/projects/min1/settings/__init__.py           |  21 ++++++++++
+     lino/projects/min2/settings/__init__.py           |  29 ++++++++------
+     lino/projects/polly/settings/__init__.py          |  14 -------
+     lino/projects/presto/roles.py                     |  35 +++++++++++++++++
+     lino/projects/presto/settings/__init__.py         |  15 +------
+     lino/utils/jsgen.py                               |  27 +++++--------
+     98 files changed, 825 insertions(+), 972 deletions(-)
+     create mode 100644 lino/core/permissions.py
+     delete mode 100644 lino/core/perms.py
+     create mode 100644 lino/modlib/beid/choicelists.py
+     create mode 100644 lino/modlib/office/choicelists.py
+     create mode 100644 lino/modlib/polls/choicelists.py
+     create mode 100644 lino/modlib/reception/choicelists.py
+     create mode 100644 lino/projects/presto/roles.py
+
+    
+    $ git status
+    On branch master
+    Your branch is ahead of 'origin/master' by 2 commits.
+      (use "git push" to publish your local commits)
+
+    nothing to commit, working directory clean
+    
+    $ git push
+    Counting objects: 524, done.
+    Delta compression using up to 4 threads.
+    Compressing objects: 100% (219/219), done.
+    Writing objects: 100% (219/219), 63.09 KiB | 0 bytes/s, done.
+    Total 219 (delta 172), reused 0 (delta 0)
+    To git@github.com:lsaffre/lino.git
+       2145655..c2212b6  master -> master
+    (py27)luc@hoppel:~/hgwork/lino$ 
+    
+
+So caution: the master branch of the Lino development version now has
+the class-based permission system which is not backwards
+compatible. Applications must manually get converted as described in
+:doc:`0625`.
