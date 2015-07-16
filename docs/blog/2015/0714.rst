@@ -1,0 +1,76 @@
+======================
+Tuesday, July 14, 2015
+======================
+
+Minor changes after release in Eupen
+====================================
+
+Yesterday evening was the first release of a Lino Welfare after
+:ticket:`173` on a production site.  And of course we had some side
+effects:
+
+- A :class:`lino_welfare.projects.std.roles.ReceptionClerk` is also a :class:`lino.modlib.beid.roles.BeIdUser`.
+- The :meth:`get_create_permission
+  <no_welfare.modlib.pcsw.coaching.Coachings.get_create_permission>`
+  on :class:`pcsw.Coachings
+  <lino_welfare.modlib.pcsw.coaching.Coachings>` was not yet converted
+  after :ticket:`173`.
+- Added new role :class:`NewcomersOperator
+  <lino_welfare.modlib.newcomers.roles.NewcomersOperator>`.
+
+
+Empty Results table when printing Tx25 document
+===============================================
+
+And then we discovered a reproducible `UnicodeEncodeError`. It came
+when printing out a Tx25 document::
+
+    Error while evaluating the expression "table(self.Result(ar))" defined in the "from" part of a statement. 
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 10: ordinal not in range(128)
+    File "<string>", line 1, in <module>
+    File "/.../lino/lino/modlib/appypod/appy_renderer.py", line 234, in insert_table
+    return self.insert_table_(*args, **kw)
+    File "/.../lino/lino/modlib/appypod/appy_renderer.py", line 471, in insert_table_
+    return toxml(table)
+    File "/.../lino/lino/utils/html2odf.py", line 105, in toxml
+    node.toXml(0, buf)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 518, in toXml
+    element.toXml(level+1,f)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 518, in toXml
+    element.toXml(level+1,f)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 518, in toXml
+    element.toXml(level+1,f)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 518, in toXml
+    element.toXml(level+1,f)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 518, in toXml
+    element.toXml(level+1,f)
+    File ".../env/lib/python2.7/site-packages/odf/element.py", line 262, in toXml
+    f.write(_escape(unicode(self.data)))
+    <type 'exceptions.UnicodeEncodeError'>: 'ascii' codec can't encode character u'\xe4' in position 10: ordinal not in range(128)
+
+
+In order to reproduce this problem and to add it to the test
+suite, I converted the models of :mod:`lino_welfare.modlib.cbss`
+(:class:`IdentifyPersonRequest
+<lino_welfare.modlib.cbss.models.IdentifyPersonRequest>`,
+:class:`ManageAccessRequest
+<lino_welfare.modlib.cbss.models.ManageAccessRequest>` and
+:class:`RetrieveTIGroupsRequest
+<lino_welfare.modlib.cbss.models.RetrieveTIGroupsRequest>`) from
+`Printable` to `Certifiable`.
+
+This has the following consequences:
+
+- Tx25 printouts will now show in the client's history
+- Changed the `detail_layout` of a Tx25 because it not has a field "Printed".
+  TODO: also change the layouts of the other requests.
+- (invisble and last, but not least:) the printing of a Tx25 is now also
+  being tested.
+
+This was not the solution, but it helped me to find the explanation:
+:mod:`lino.utils.html2odf` did not collaborate with the latest odfpy
+version.  Now it uses `StringIO` instead of `cStringIO` because the
+latter cannot not handle unicode strings. The module itself also has a
+test case to reproduce the problem differently.
+
+

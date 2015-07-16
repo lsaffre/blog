@@ -1,0 +1,42 @@
+=======================
+Thursday, July 16, 2015
+=======================
+
+Yesterday I started to worked on :ticket:`340` (Reception clerk sees
+"Career" tab).
+
+This problem was rather subtle and took me quite some hours of
+investigation, mainly using the tested document
+:ref:`welfare.tested.20150715`.
+
+It was due to a bug in Lino.
+:meth:`lino.modlib.extjs.ext_renderer.ExtRenderer.write_lino_js` used
+to run a method `loosen_requirements` in the following lines::
+
+    for e in lh.main.walk():
+        e.loosen_requirements(res)
+
+This was needed because we said that for example an InsertFormPanel
+has initially the requirements of the actor who *defines* it. That
+actor may not be visible to the current user.  But the panel may be
+used by other actors which are visible because they have less
+requirements. So there are panel for which we need to generate a JS
+code definition even though the actor who defines them is not
+available.
+
+But the old approach modified the global element tree.  This caused
+the described side effect.  As long as this process didn't run,
+everything was okay. 
+
+So I replaced it by a different approach: the individual elements no
+longer inherit the `required_roles` of their actor, and we have a new
+attribute `_other_datasources` on every
+:class:`lino.core.layouts.BaseLayout` instance in order to decide
+whether the code is to be included in that profile's `lino*.js` file
+or not.
+
+Fixing this unveiled also a minor problem of plugin interdependency
+(:mod:`lino.modlib.system` needs :mod:`lino.modlib.printing` or so).
+
+
+

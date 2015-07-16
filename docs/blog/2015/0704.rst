@@ -1,0 +1,21 @@
+======================
+Saturday, July 4, 2015
+======================
+
+
+
+'NoneType' object has no attribute '__dict__'
+=============================================
+
+This occured during :class:`SubmitDetail
+lino.core.actions.SubmitDetail>`.
+
+The problem of these tracebacks during an AJAX request is that we have
+no idea about how to reproduce them. The traceback does not show the
+real problem because the real problem is that the client's javascript
+issued an invalid AJAX call.
+
+So I now made the error message more helpful by including the *method*
+and *path* of the `HttpRequest
+<https://docs.djangoproject.com/en/1.8/ref/request-response/#django.http.HttpRequest>`__
+object.  This is being tested e.g. in :ref:`cosi.tested.bel_de`.

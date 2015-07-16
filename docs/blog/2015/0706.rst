@@ -1,0 +1,44 @@
+====================
+Monday, July 6, 2015
+====================
+
+Configuring plugins
+===================
+
+I wondered why a Lino Welfare did not
+collect the raw data read by :mod:`lino.modlib.beid`, despite the fact
+that I had configured a :attr:`data_collector_dir
+<lino.modlib.beid.Plugin.data_collector_dir>`. The relevant
+:xfile:`settings.py` file was::
+
+    class Site(Site):
+        ...
+    SITE = Site(globals())
+    configure_plugin('beid',
+        data_collector_dir=join(SITE.project_dir, 'beid_collect'))
+    
+Explanation: Once the Site had been initialized,
+:func:`lino.core.site.configure_plugin` silently ignored everything.
+Correct code must be::
+    
+    class Site(Site):
+        ...
+    SITE = Site(globals())
+    SITE.plugins.beid.configure(
+        data_collector_dir=join(SITE.project_dir, 'beid_collect'))
+
+This pitfall was known and even documented. I nevertheless stepped
+into it. Tried once more to protect future system administrators from
+it by writing that :func:`lino.core.site.configure_plugin` raises
+`ImproperlyConfigured` when called after the
+:class:`lino.core.site.Site` instantiation.  But sorry, that's not
+easy because there are scenarios where you want to instantiate several
+`Site` objects.
+
+Finally a checkin
+=================
+
+
+Finally a checkin with the most important projects having their test
+suites pass after the changes of the last days (most time-consuling
+troubles were for adapting welfare to the permissions system).

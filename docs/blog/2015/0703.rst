@@ -1,0 +1,53 @@
+====================
+Friday, July 3, 2015
+====================
+
+Configuring print templates
+===========================
+
+Yesterday I worked the whole day for making the Lino documentation
+better, and still I am not satisfied!
+
+Continued to work on 
+:ref:`welfare.admin.printing`, 
+:ref:`lino.admin.printing` and
+:ref:`lino.admin.excerpts`.
+
+One "problem" when I am writing documentation about Lino is that while
+thinking about how to explain it, I usually get ideas for making the
+code better (structure, API, new features, ...). On of these ideas
+today was the new plugin :mod:`lino.modlib.printing` which regroups
+what was in :mod:`lino.mixins.printable` before.
+
+
+
+java.io.IOException: APDU response error: 27823
+===============================================
+
+Users reported some error messages by :ref:`eidreader`. I started a
+new documentation page :ref:`eidreader.issues`.
+
+
+#319 (type object 'ClientEvents' has no attribute 'created')
+============================================================
+
+This error message appeared in
+:class:`integ.<lino_welfare.modlib.integ.models.ActivityReport>` Added
+a section in `docs/tested/integ.rst` to reproduce it.  Added new
+client event
+:class:`lino_welfare.modlib.pcsw.choicelists.ClientCreated`.
+
+Trying to write a doctest unveiled another issue: A
+:class:`lino.utils.reports.Report` is not a normal table but a
+subclass :class:`EmptyTable <lino.utils.reports.EmptyTable>`.  And the
+:meth:`ses.show <lino.core.requests.BaseRequest.show>` method failed
+on this kind of actor with an error message::
+
+  `AttributeError: type object 'ActivityReport' has no attribute 'to_rst'`
+
+This was issue #320 (Lino cannot show report to console).
+Quite some changes in :mod:`lino.utils.reports` and elsewhere.
+
+
+
+

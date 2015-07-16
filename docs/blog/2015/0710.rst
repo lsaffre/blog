@@ -1,0 +1,33 @@
+=====================
+Friday, July 10, 2015
+=====================
+
+It seems that :mod:`lino.modlib.excerpts` needs another subtle
+feature.  Currently the system adminstrator can define several excerpt
+types per model. In that case one of these is marked as *primary* and
+possibly also *certifying*.  Now in Chatelet they want that the *main
+template* of an immersion contract
+(:class:`lino_welfare.modlib.immersion.models.Contract`) can *vary*
+depending on some value of some field of the excerpt's owner (the
+database object being printed).  Currently there is *one* primary
+excerpt type per database model (which defines *one* main template).
+
+Possible solutions:
+
+- create a new database model, i.e. we would have two types of
+  immersion contracts.
+
+- Add a kind of locally configurable rule, e.g. a callable property of
+  the :mod:`lino_welfare.modlib.integ` plugin::
+
+    def get_contract_template(self, obj, ar):
+        """Called when `template` field of excerpt type is empty."""
+        return "Default.odt"
+    
+  which in Chatelet would become::
+
+    def get_contract_template(self, obj, ar):
+        assert isinstance(obj, rt.modules.immersion.Contract)
+        if obj.company is None:
+            return "StageInterne.odt"
+        return "StageForem.odt"

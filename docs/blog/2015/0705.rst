@@ -1,0 +1,25 @@
+====================
+Sunday, July 5, 2015
+====================
+
+Some subtle challenges about permissions for the reception clerk
+(OfficeOperator) :
+
+-   In :mod:`lino_welfare.modlib.aids` we have the following tables:
+
+    .. currentmodule:: lino_welfare.modlib.aids.models
+
+    - :class:`Confirmations`
+      - :class:`SimpleConfirmations`
+      - :class:`IncomeConfirmations`
+      - :class:`RefundConfirmations`
+
+    - :class:``ConfirmationsByGranting` (virtual table)
+
+    A reception clerk must have them because they need to issue new
+    entries.
+
+- A reception clerk must have a detail for `pcsw.Client`, and
+  `reception.Clients` has a `detail_layout`. But the default table for
+  Client is `pcsw.Clients`, which we do *not* want to be visible for
+  reception clerks.

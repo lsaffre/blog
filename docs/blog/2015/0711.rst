@@ -1,0 +1,54 @@
+=======================
+Saturday, July 11, 2015
+=======================
+
+Bryan Lunduke invested several days to find out whether he is missing
+out on anything by not running Windows 10 as his primary operating
+system. Short answer: no. More detailed answer in `A Linux user tries
+out Windows 10
+<http://www.networkworld.com/article/2904365/opensource-subnet/a-linux-user-tries-out-windows-10.html>`_.
+
+I afterwards read his article `11 pointless but awesome Linux terminal
+tricks
+<http://www.networkworld.com/article/2926630/linux/11-pointless-but-awesome-linux-terminal-tricks.html#slide12>`_
+and installed ``sl``, ``lolcat`` and ``cmatrix``.  And I now even have
+``fortune | lolcat`` in my :file:`.bashrc`.
+
+
+Selecting the main template of a contract
+=========================================
+
+I understood that my first approach yesterday was not good and that
+there is a better one.
+
+Added a method 
+:meth:`lino.modlib.excerpts.mixins.Certifiable.get_excerpt_templates`,
+a field 
+:attr:`lino_welfare.modlib.isip.mixins.ContractTypeBase.template`
+and a method
+:meth:`lino_welfare.modlib.isip.mixins.ContractBase.get_excerpt_templates`.
+
+:class:`lino_welfare.modlib.jobs.models.ContractType` is no longer a
+:class:`lino.modlib.printing.mixins.PrintableType` (because this was
+:class:no longer needed, and because it defined a conflicting
+:class:`template` field).
+
+:class:`lino_welfare.modlib.jobs.models.Contract` has 3 fields less
+because...
+
+
+I wrote some docstrings, e.g.
+:class:`lino_welfare.modlib.immersion.models.ContractType`.
+
+There was some side effect in
+:mod:`lino_welfare.modlib.integ.fixtures.demo` which caused certain
+contracts to be of same type. Fixing this resulted in more contracts
+generated and thus caused quite some changes in the suite of tested
+documents for Lino Welfare.
+
+Excerpt types no longer need to have the "Default.odt" in their
+`template` field because that's the build method's default value.
+
+Checked in because the test suites now pass. TODO: actual content of
+the two new templates in :mod:`lino_welfare.modlib.immersion`.
+
