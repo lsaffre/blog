@@ -1,0 +1,54 @@
+=====================
+Friday, July 17, 2015
+=====================
+
+
+
+#321 (Modèles d'impression mai-juillet 2015)
+============================================
+
+I added a new field `excerpt_title` to
+:class:`lino.modlib.courses.models.Line`.  But since such a field and
+a corresponding :meth:`get_excerpt_title` method was already defined
+for :class:`lino_welfare.modlib.aids.models.AidType`, I moved this
+into a separate mixin
+:class:`lino.modlib.excerpts.mixins.ExcerptTitle`.  The following
+explains why this change was needed.
+
+J'ai travaillé sur le modèle général utilisé pour imprimer les
+"Inscriptions" aux "Ateliers" (c'est à dire les documents suivants):
+
+- Demande d’intervention psychosociale
+- Fiche d’orientation vers le service d’insertion sociale agréé
+- Fiche d’orientation vers le Cyber logement
+- Fiche d’orientation vers les ateliers « Savoirs de Base »
+
+Où configurer les titres des documents? Il faut donc un nouveau champ
+"titre des extraits" par série d'ateliers.
+
+Autres détails à voir:
+
+- "Situation familiale"
+
+
+<ParamsPanel main in ParamsLayout...> has no variables
+======================================================
+
+Oops, yesterday's subtle optimization :ticket:`340` (Reception clerk
+sees "Career" tab) is not finished. The following problem slipped
+through the test suite (but no longer, I added
+:ref:`welfare.tested.20150717`): Lino raised an exception of style
+:message:`<ParamsPanel main in ParamsLayout on cal.Subscriptions> of
+LayoutHandle for ParamsLayout on cal.Subscriptions has no variables`
+when trying to build :file:`lino_*.js` for Anonymous.
+
+I removed the user *role* named "Anonymous": we have already a *user
+profile* and a *singleton object* of that name, but a third object was
+not needed.
+
+
+Miscellaneous
+=============
+
+I added an entry about Lino on `djangopackages.com
+<https://www.djangopackages.com/packages/p/lino/>`__
