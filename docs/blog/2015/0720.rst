@@ -1,0 +1,124 @@
+=====================
+Monday, July 20, 2015
+=====================
+
+Checking log files in Eupen.
+
+ObjectDoesNotExist: Invalid master key X for Y
+==============================================
+
+Here is a traceback which occurs from time to time::
+
+    201507-20 13:06:10 ERROR ajax : Invalid master key 23306 for aids.RefundConfirmationsByGranting
+    Traceback (most recent call last):
+      File "env/lib/python2.7/site-packages/django/core/handlers/base.py", line 112, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "env/lib/python2.7/site-packages/django/views/generic/base.py", line 69, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "env/lib/python2.7/site-packages/django/views/generic/base.py", line 87, in dispatch
+        return handler(request, *args, **kwargs)
+      File "lino/modlib/extjs/views.py", line 432, in get
+        ar = ba.request(request=request)
+      File "lino/core/boundaction.py", line 85, in request
+        return self.actor.request(*args, **kw)
+      File "lino/core/dbtables.py", line 367, in request
+        return TableRequest(**kw)
+      File "lino/core/requests.py", line 1028, in __init__
+        BaseRequest.__init__(self, **kw)
+      File "lino/core/requests.py", line 178, in __init__
+        kw = self.parse_req(request, rqdata, **kw)
+      File "lino/core/tablerequest.py", line 212, in parse_req
+        pk, self.actor))
+    ObjectDoesNotExist: Invalid master key 23306 for aids.RefundConfirmationsByGranting
+
+It doesn't seem to be a true problem since I have no user complains.
+
+It is obviously a bug in the Javascript code since 23306 is
+definitively not a possible primary key for a granting. Their database
+contains currently 1253 grantings:
+
+>>> from lino.api.shell import *
+>>> aids.Granting.objects.count()
+1253
+
+The access.log shows the GET request issued by the client::
+
+  GET /api/aids/RefundConfirmationsByGranting/577?_dc=1437390393633&mt=51&mk=23306&an=detail&rp=ext-comp-1971&fmt=json
+
+The bug lives somewhere in the :xfile:`linoweb.js`.  Start to look at
+the :meth:`get_master_params` method. I guess that the client messes
+them up after closing some window. Seems harmless. Leave this sleeping
+as long as we don't have a reproducible problem report.
+
+
+
+AttributeError 'NoneType' object has no attribute '__dict__'
+============================================================
+
+And another one::
+
+    201507-20 10:27:21 INFO model : Deleting 1 Auszüge before deleting SimpleConfirmation #509 (u'Lebensmittelbank/20.07.15/7825/509')
+    201507-20 10:27:22 ERROR ajax : 'NoneType' object has no attribute '__dict__'
+    Traceback (most recent call last):
+      File "lib/python2.7/site-packages/django/core/handlers/base.py", line 112, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "lib/python2.7/site-packages/django/views/generic/base.py", line 69, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "lib/python2.7/site-packages/django/views/generic/base.py", line 87, in dispatch
+        return handler(request, *args, **kwargs)
+      File "lino/modlib/extjs/views.py", line 507, in put
+        return settings.SITE.kernel.run_action(ar)
+      File "lino/core/kernel.py", line 596, in run_action
+        a.run_from_ui(ar)
+      File "lino/core/actions.py", line 953, in run_from_ui
+        self.save_existing_instance(elem, ar)
+      File "lino/core/actions.py", line 884, in save_existing_instance
+        watcher = ChangeWatcher(elem)
+      File "lino/core/utils.py", line 679, in __init__
+        self.original_state = dict(watched.__dict__)
+    AttributeError: 'NoneType' object has no attribute '__dict__'
+    
+The HTTP request was::
+
+    PUT /api/aids/SimpleConfirmations/509
+
+Unfortunately we don't see the data received with PUT or POST
+requests.  (Which is possible e.g. using `mod_dumpio
+<http://httpd.apache.org/docs/2.2/mod/mod_dumpio.html>`__, but not
+recommended on a production site.)
+
+Code changes in :mod:`lino.utils.ajax`:
+
+- :func:`format_request <lino.utils.ajax.format_request>` now also
+  reports the POST or PUT data.
+- The middleware now *never* returns the full traceback and formatted
+  request to the client but *always* writes it to the logger.
+
+
+About stories
+=============
+
+A story is a sequence of document chunks. These can be HTML elements
+or Lino-specific things like tables or action requests.
+
+A test case in :ref:`welfare` failed because :meth:`story2rst` no
+longer removed blank lines. I changed this behaviour recently when I
+wanted to use :meth:`story2rst` for rendering a report in
+:ref:`noi.tested.tickets`.  I later decided that it is not necessary
+there. I might simply put that call to :meth:`strip` back, but that
+would not be a true solution.  It is a fact that the blank lines are
+needed if we want it to generate valid reStructuredText, but they are
+disturbing when we just want to show a story in a tested
+document. There should be an option for saying whether we want them or
+not.  
+
+Furthermore the :meth:`story2rst` method is currently defined in
+:mod:`lino.core.requests`, which is not the right place.  I started to
+tidy up that code. After two hours of work, I hope that it is now more
+consistent. 
+
+I started to write documentation about it in :ref:`ui.renderer`.  A
+side effect is that rendering a table to reStructuredText now adds a
+blank line at the end.
+
+
