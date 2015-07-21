@@ -1,0 +1,42 @@
+======================
+Tuesday, July 21, 2015
+======================
+
+Service Report for Lino Noi
+===========================
+
+I converted the Service Report (:mod:`lino.modlib.clocking`) from a
+simple Report to a database model because I want to keep a history of
+the emitted service reports and because one day I'll probably want to
+automatically send them to their recipient.
+
+Side effects: 
+
+- Discovered and fixed a bug: if a table had some numeric totals who
+  caused a line of sums to be rendered, then the id column was also
+  rendered with a sum (whose value was always "0", but which was
+  rendered).
+
+- Lino has now a `Site.kernel.html_renderer` because we don't want
+  ForeignKey fields in the pdf document to be clickable links.
+
+
+TODO: 
+
+- Make :class:`lino.modlib.clocking.models.ServiceReport` inherit from
+  `ContactRelated`, and select the tickets based on the report's
+  recipient instead of manually filling a user into the
+  `interesting_for` field.
+
+- write new test case in :ref:`noi.tested.tickets`
+
+- write documentation about stories, e.g. explain difference between::
+
+    {{ar.story2html(obj.get_story(ar))}}
+
+  and::
+
+    {{ar.show(rt.modules.clocking.ReportedTickets, obj, header_level=2)}}
+    {{ar.show(rt.modules.clocking.ReportedProjects, obj, header_level=2)}}
+
+
