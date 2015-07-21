@@ -17,18 +17,14 @@ Side effects:
   rendered with a sum (whose value was always "0", but which was
   rendered).
 
-- Lino has now a `Site.kernel.html_renderer` because we don't want
-  ForeignKey fields in the pdf document to be clickable links.
+- I didn't want ForeignKey fields in the pdf document to be clickable
+  links.
 
+- Lino has now a `Site.kernel.html_renderer` which renders "simple"
+  html instead of "bootstrap-style" html or "extjs-style" html.  The
+  most visible difference is that 
 
 TODO: 
-
-- Make :class:`lino.modlib.clocking.models.ServiceReport` inherit from
-  `ContactRelated`, and select the tickets based on the report's
-  recipient instead of manually filling a user into the
-  `interesting_for` field.
-
-- write new test case in :ref:`noi.tested.tickets`
 
 - write documentation about stories, e.g. explain difference between::
 
@@ -39,4 +35,31 @@ TODO:
     {{ar.show(rt.modules.clocking.ReportedTickets, obj, header_level=2)}}
     {{ar.show(rt.modules.clocking.ReportedProjects, obj, header_level=2)}}
 
+- (cancelled) Make :class:`lino.modlib.clocking.models.ServiceReport`
+  inherit from `ContactRelated` and select the tickets based on the
+  report's recipient instead of manually filling a user into the
+  `interesting_for` field.
 
+
+Who is interested in tickets?
+=============================
+
+I had another enlightment... Lino Noi needs another database model
+:class:`lino.modlib.tickets.models.Site`. And "interests" are not
+registered per user but per site.
+
+Side effects:
+
+- I moved code from :mod:`lino_welfare.modlib.welfare.fixtures.demo2`
+  to a new fixture :mod:`lino.modlib.excerpts.fixtures.demo2` so that
+  this fixture is now also available for :ref:`noi`.
+
+- I inverted the order of permission check in
+  :meth:`get_bound_action_permission
+  <lino.core.boundaction.BoundAction.get_bound_action_permission>`. This
+  was possibly the cause for sporadic error messages like
+  :message:`Cannot assign "<lino.modlib.users.utils.AnonymousUser
+  object at 0x7f562512f210>": "Upload.user" must be a "User"
+  instance` when called by anonymous.
+
+- Updated documentation about Lino Noi (under :ref:`noi.specs`).

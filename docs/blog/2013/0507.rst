@@ -24,7 +24,7 @@ The bug was there since :blogref:`20130320`.
 Fixing the bug is easy, but how to write a testcase for this?
 
 This is the occasion for a new style of test cases: 
-test cases that uses a `django.test.Client`, 
+test cases that use a `django.test.Client`, 
 but *on the project demo database* 
 (and *not* on a test database as the Django test runner creates it).
 The advantage is that they access the existing demo database
@@ -33,7 +33,6 @@ for each test run.
 
 One limitation of these cases is of course that they may 
 not modify the database.
-
 
 It took me some time to understand how easy it actually is: 
 I just wrote a module `lino.projects.presto.settings.doctest`, 
@@ -52,14 +51,14 @@ then wrote the following code snippet directly into my blog entry:
 To run this test, I added the following to the 
 project test suite::
 
-    class BlogTest(LinoTestCase):
+    class BlogTests(LinoTestCase):
         def test_20130507(self): 
             self.run_simple_doctests('docs/blog/2013/0507.rst')
 
 The effect is that 
 `python setup.py test`
 or 
-`python setup.py test -s tests.BlogTest.test_20130507`
+`python setup.py test -s tests.BlogTests.test_20130507`
 will test the above code.
 
 Writing this test case took me several hours 
@@ -67,7 +66,7 @@ Writing this test case took me several hours
 but then I fixed the bug in a few minutes.
 
 Because the :meth:`run_simple_doctests 
-<djangosite.utils.pythontest.run_simple_doctests>`  
+<lino.utils.pythontest.run_simple_doctests>`  
 is run in a separate subprocess, it has its own 
 Python interpreter and thus I can use it for as many Django projects 
 as I want (one project per .rst file).
@@ -86,6 +85,7 @@ Now I can remove the following item from my todo list...
 >>> print res.status_code
 200
 
+(Above test is now covered in :ref:`lino.tested.presto`)
 
   
 New version numbers
