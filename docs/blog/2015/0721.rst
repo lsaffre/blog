@@ -63,3 +63,49 @@ Side effects:
   instance` when called by anonymous.
 
 - Updated documentation about Lino Noi (under :ref:`noi.specs`).
+
+Upgrade on :ref:`lf`
+========================
+
+I upgraded the demo sites on :ref:`lf` and reinitialized the
+databases.
+
+
+Sozialbuchhaltung
+=================
+
+I continued on :ref:`welfare.specs.ledger` (:ticket:`143`).
+
+Also nach einigen Wochen Pause tauche ich jetzt endlich mal wieder ins
+Projekt "Sozialbuchhaltung" ein.  Im Reiter "Buchhaltung" eines
+*normalen* Partners haben wir `VouchersByPartner` und
+`MovementsByPartner`.  Die obere Tabelle zeigt alle *unregistrierten*
+Partnerbelege, während die untere Tabelle alle *registrierten*
+Partnerbelege.  Für *Klienten* aber interessiert uns das nicht (falls
+tatsächlich mal ein Klient auch als Lieferant fungiert und uns
+Rechnungen für andere Klienten ausstellt, ann schaltet man in die
+Ansicht als Partner oder als Person). Für Klienten muss der Reiter
+"Buchhaltung" diese beiden Tabellen *pro Projekt* zeigen.
+
+
+Side effects:
+
+- When used in a tested document or a shell, `ar.show` until now ignored
+  the fact that a slave table can have a summary panel and rendered a
+  standard table for these. Now it renders the summary panel.
+
+- The above optimization unveiled a bug in :ref:`polly` which had
+  slipped through the test suite until now but caused a failure in
+  :ref:`tested.polly` now. I'll never stop to excite about how big
+  Lino is!
+
+-   I discovered and fixed another bug which was there since
+    :doc:`0718`: :xfile:`admin_main_base.html` did not correctly
+    display the welcome text for anonymous users because it was still
+    testing on the `authenticated` attribute of :class:`UserProfiles
+    <lino.modlib.users.choicelists.UserProfiles>` (which I removed
+    :doc:`0718`).  To fix this, I restored the
+    :attr:`lino.modlib.users.model.User.authenticated` attribute on
+    the User instance itself (not on the *UserProfile*)because in a
+    template it would be difficult to test `if
+    user.profile.has_required_roles([SiteUser])`

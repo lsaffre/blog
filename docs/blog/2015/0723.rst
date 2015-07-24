@@ -1,0 +1,62 @@
+=======================
+Thursday, July 23, 2015
+=======================
+
+'NoneType' object has no attribute 'get_detail_action'
+======================================================
+
+A surprise in the morning: I wanted to start working, but my Noi told
+me above error message. The traceback showed that it came from the
+following line of code (in
+:func:`lino.modlib.stars.models.welcome_messages`)::
+
+    chunks += join_elems([ar.obj2html(obj.owner) for obj in qs])
+
+Explanation: Yesterday I had created duplicate tickets 348 and 349 due
+to bug #219.  I had already starred ticket 348 before noticing that it
+was duplicated.  Then I deleted it. Lino did not delete the
+:class:`Star <lino.modlib.stars.models.Star>` object -and did not
+refuse to delete the starred ticket- because
+:attr:`controller_is_optional
+<lino.modlib.contenttypes.mixins.Controllable.controller_is_optional>`
+on :class:`Star <lino.modlib.stars.models.Star>` was at its default
+value `True`.  Since this traceback happened while building
+:xfile:`admin_main.html`, the web interface was not usable.  Here is
+the little script which I used to repair the database and get it back
+to work::
+
+    from lino.api.shell import *
+    qs = stars.Star.objects.filter(owner_type__isnull=True)
+    print [obj.owner for obj in qs]  # []
+    qs = stars.Star.objects.all()
+    #print qs
+    #print [obj.owner_type for obj in qs]
+    print [obj.owner for obj in qs]
+    a = [obj for obj in qs if obj.owner is None]
+    assert len(a) == 1
+    a = a[0]
+    print a.owner, a.owner_type, a.owner_id
+    a.delete()
+
+The bug was not abovementioned line of text but the fact that the
+:attr:`owner <lino.modlib.stars.models.Star.owner>` field was
+optional.
+
+
+Optimizing :mod:`lino.utils.html2rst`
+=============================================================
+
+Continued with :ticket:`351`: repair test suites and 
+optimize :mod:`lino.utils.html2rst`.
+
+
+docs/tested/uploads.rst
+docs/tested/jobs.rst
+docs/tested/general.rst
+docs/tested/dupable_clients.rst
+docs/tested/debts.rst
+docs/tested/aids.rst
+docs/tested/2015/0715.rst
+/home/luc/hgwork/welfare/lino_welfare/projects/std/tests/test_beid.py
+/home/luc/hgwork/welfare/lino_welfare/projects/eupen/tests/test_broken_gfks.py
+

@@ -37,7 +37,6 @@ When a person has multiple household memberships, but only one of them
 has no end_date, `SiblingsByPerson` failed to determine the one and
 only current household. Now it works:
 
-
 >>> import os
 >>> os.environ['DJANGO_SETTINGS_MODULE'] = 'lino.projects.docs.settings.demo' 
 >>> from lino.api.shell import *
@@ -50,6 +49,13 @@ only current household. Now it works:
 >>> Member.objects.filter(person=p).count()
 2
 >>> rt.show(households.MembersByPerson, master_instance=p)
+Mr Lars Braun is
+`☐  <javascript:Lino.households.Members.set_primary(null,31,{  })>`__Head of household in *Lars & Melba Braun-Frisch*
+`☐  <javascript:Lino.households.Members.set_primary(null,17,{  })>`__Head of household in *Lars & Pascale Braun-Adam*
+<BLANKLINE>
+Create a household : **Married** / **Divorced** / **Factual household** / **Legal cohabitation** / **Isolated** / **Other**
+
+>>> rt.show(households.MembersByPerson, p, nosummary=True)
 =========================== =================== ========= ============ ==========
  Household                   Role                Primary   Start date   End date
 --------------------------- ------------------- --------- ------------ ----------
@@ -68,6 +74,7 @@ only current household. Now it works:
 ================== =================== ============ ==========
 <BLANKLINE>
 
+(Above code is now part of the Specs about in :ref:`lino.specs.households`.)
 
 
 Miscellaneous
