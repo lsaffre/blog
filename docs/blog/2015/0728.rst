@@ -13,21 +13,74 @@ DONE:
 - New ticket state :attr:`Talk
   <lino.modlib.tickets.choicelists.TicketStates.talk>`.
 
-- New field "deadline" (DateField)
-- ToDoTickets, TalkTickets
+- New field `deadline` (DateField)
+- TicketsToDo, TicketsToTalk, TicketsToTriage
   
-- Provide readonly access under public URL
+- New settings module 
   :mod:`lino_noi.settings.public`
+  provides readonly access under public URL.
 
-- add a field "priority" (integer 0...100) and then a table
-  ToDoTickets.  public todo list
+- added a field "priority" (integer 0...100)
 
-- new field :attr:`lino.modlib.tickets.models.Project.assign_to`
+- added a field
+  :attr:`lino.modlib.tickets.models.Project.assign_to`. PublicTickets
+  now shows only unassigned tickets.
 
 TODO:
 
-- Remove field "modified" because that info is irrelevant. Add a field
-  "touched" : the last time somebody worked on this ticket. This is
-  either `created` or, if at least one session exists, the `end_time`
-  of that session. And then a table RecentTickets
+- Remove field `modified` because that information is irrelevant. Add
+  a field `touched` : the last time somebody worked on this
+  ticket. This is either `created` or, if at least one session exists,
+  the `end_time` of that session. And then a table `RecentTickets`
+  makes sense.
+
+- Remove field `private` because all tickets assigned to somebody
+  become "private". Even assigned tickets should never contain private
+  data in their description because the public interface just doesn't
+  *list* them, it may still show them e.g. when they are referred to
+  by a public ticket.
+
+Releases to PyPI
+================
+
+I released :ref:`noi` for the first time on PyPI. Which requires new
+newest Lino version, so I released also Lino 1.6.18
+
+
+What the hell is a `BooleanStoreField`?
+=======================================
+
+I was notified that Tim Graham finally closed Django ticket `#15497
+<https://code.djangoproject.com/ticket/15497>`_ (BooleanField should
+work for all PostgreSQL expressions) which I opened four years ago.
+Unfortunately I did not manage to find a good formulation and to write
+a pull request quickly enough, so the docstring of
+:meth:`Field.to_python` continues to fail to mention that is limited
+to SQL expressions.  Maybe Tim is right when he says that this is
+obvious.  I adapted my docstring for
+:class:`lino.core.store.BooleanStoreField` to no longer refer to this
+ticket because it is obviously unrelated.
+
+I noticed that if ever some Django developer stumbles over this, they
+will maybe ask "What the hell is a `BooleanStoreField`?" And they
+would be right: the whole :mod:`lino.core.store` module is highly
+subtle and poorly documented code.  So I tried to change its docstring
+into something which has at least a *chance* to make sense to
+interested developers.
+
+
+Welfare test suite
+==================
+
+I repaired the Welfare test suite after several recent changes (mostly the 
+
+:ref:`welfare.specs.users`
+:ref:`welfare.specs.misc`
+:ref:`welfare.specs.clients.eupen`
+:ref:`welfare.specs.eupen`
+:ref:`welfare.specs.general`
+:ref:`welfare.specs.cv2`
+:ref:`welfare.specs.cal`
+:ref:`welfare.specs.polls`
+:ref:`welfare.specs.immersion`
 

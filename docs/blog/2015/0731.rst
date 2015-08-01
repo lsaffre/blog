@@ -1,0 +1,36 @@
+=====================
+Friday, July 31, 2015
+=====================
+
+The two text fields :attr:`motivation` and :attr:`problems` of
+:class:`lino_welfare.projects.chatelet.modlib.courses.models.Enrolment`
+did not have :attr:`lino.core.fields.RichTextField.textfield_format`
+set to `'html'`.
+
+
+Quand on inscrit une personne à un atelier via l’onglet personne
+(courses.EnrolmentsByPupil), il ne s’ajoute pas dans l’onglet O.I.
+(courses.BasicEnrolmentsByPupil or 
+courses.JobEnrolmentsByPupil)
+
+Miscellaneous changes:
+
+- Discovered and fixed a bug in :mod:`lino.core.choicelists`:
+  `ChoiceList.preferred_with`
+
+- SiteAdmin was not Supervisor
+
+- ReceptionClerk did not see the quick action button for reading eID cards
+
+
+Getting Lino to pass on Travis CI
+=================================
+
+
+Added ``alt="Foo"``to the input HTML in a doctest snippet of
+:mod:`lino.utils.html2xhtml`. It seems that my version of tidylib
+added the `alt` attribute even if the input HTML did not specify
+it. But the tidylib on Travis CI did *not* add it. Since this subtlety
+is not important for Lino, I changed the tested string.
+
+

@@ -1,0 +1,98 @@
+=======================
+Thursday, July 30, 2015
+=======================
+
+Optimizing Lino Noi
+===================
+
+I understood how to continue on :ticket:`343` (Änderungswünsche Juli
+2015).  This ticket is "just" a request for a cost estimation for a
+wish list with a dozen items. I already converted them into tickets in
+our internal :ref:`noi` database.  Some of these wishes are small
+optimizations and will be satisfied as part of the maintenance
+contract. We don't need any estimation for these, they just go to our
+:class:`lino.modlib.tickets.ui.TicketsToDo`.  Some other tickets
+should become separate (small) projects.  And then Gerd will be able
+to see them in the service report.  It needs just a small change to
+:ref:`noi` in order to make this possible: :ticket:`379` (Add
+planned_time and ticket_state to Service Report)
+
+I also understood why Lino was still failing on Travis CI (see error
+message yesterday). It was about :mod:`lino.projects.polly.settings`:
+`doctests` must inherit from `demo`. I could reproduce this error on
+my machine after deleting my :envvar:`LINO_CACHE_ROOT`.
+
+
+Getting Lino to pass on Travis CI
+=================================
+
+And Lino is *still* failing on Travis. We get yet another error message::
+
+  File "/home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/django/test/runner.py", line 144, in run_tests
+    suite = self.build_suite(test_labels, extra_tests)
+  File "/home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/django/test/runner.py", line 93, in build_suite
+    tests = self.test_loader.discover(start_dir=label, **kwargs)
+  File "/opt/python/2.7.9/lib/python2.7/unittest/loader.py", line 206, in discover
+    tests = list(self._find_tests(start_dir, pattern))
+  File "/opt/python/2.7.9/lib/python2.7/unittest/loader.py", line 267, in _find_tests
+
+    raise ImportError(msg % (mod_name, module_dir, expected_dir))
+
+  ImportError: 'tests' module incorrectly imported from '/home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages/lino/projects/belref'. 
+  Expected '/home/travis/build/lsaffre/lino/lino/projects/belref'. 
+  Is this module globally installed?
+
+Graham Klyne reported a similar problem in `Django test runner fails
+in virtualenv on Ubuntu
+<http://stackoverflow.com/questions/25775185/django-test-runner-fails-in-virtualenv-on-ubuntu>`__
+(September 2014).  Yes, this seems to be a bug in Python's test
+discovery which occurs when it is called with an explicit "." as start
+directory. And Django's ``manage.py test`` command does exactly this.
+It seems that this bug did not yet exist in Python 2.7.4 (the Python
+2.7 I have installed). But Travis are using Python 2.7.9.
+
+How to get Python 2.7.9 on an Ubuntu 14.04?
+Seems not trivial:
+http://serverfault.com/questions/669859/how-can-i-upgrade-python-to-2-7-9-on-ubuntu-14-4
+
+But then an idea to maybe work around it: a little change in
+:mod:`lino.utils.pythontest.TestCase.run_django_manage_test`.
+
+- `Job 387 <https://travis-ci.org/lsaffre/lino/jobs/73289058>`_:
+  AssertionError: python manage.py test --noinput --failfast ({'cwd':
+  'lino/projects/belref'}) returned 1:
+
+- `Job 389 <https://travis-ci.org/lsaffre/lino/builds/73297409>`_:
+  AssertionError: python manage.py test
+  /home/travis/build/lsaffre/lino/lino/projects/belref --noinput --failfast
+  ({'cwd': 'lino/projects/belref'}) returned 1:
+
+- `Job 390 <https://travis-ci.org/lsaffre/lino/jobs/73298401>`_:
+  AssertionError: python manage.py test
+  /home/travis/build/lsaffre/lino/lino/projects/belref --noinput --failfast
+  ({'cwd': 'lino/projects/belref'}) returned
+
+So unfortunately the problem persists. The unittest discoverer asks to
+import a file :file:`tests.py` in a directory under
+:file:`/home/travis/build/` and then complains because the imported
+module's path is in a directory below
+:file:`/home/travis/virtualenv/python2.7.9/`.
+
+And neither abspath nor realpath can help here because my specified
+working directory *is* the real path. It is the imported module's path
+that should get canonized.
+
+
+Miscellaneous
+=============
+
+- Added `printed` to the detail layout of `courses.Enrolments`
+
+- The :attr:`ClientDetail.newcomers_left` panel is now available also
+  for NewcomersOperator mainly because otherwise the
+  AvailableCoachesByClient panel is not high enough.
+
+- New method
+  :meth:`lino.modlib.beid.mixins.Beidcardholder.make_demo_picture` was
+  needed because after clearing my :envvar:`LINO_CACHE_ROOT` the missing
+  picture file caused create_excerpt to fail.
