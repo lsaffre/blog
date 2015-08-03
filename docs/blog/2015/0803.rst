@@ -1,0 +1,34 @@
+=================================
+20150803 (Monday, 03 August 2015)
+=================================
+
+Actually I wanted to just work on :ticket:`313` (TinyMCE accepts
+editing readonly fields), but I wanted to reproduce the problem
+somewhere in Lino and happened to chose :mod:`lino.projects.cms` for
+this.  Which made me stumble over a bundle of poorly documented
+problems, and I did a little dive in order to fix these.  One of
+theese problems is :ticket:`267` (obj2html() in Lino Noi).  It seems
+that changing :attr:`root_urlconf <lino.core.site.Site.root_urlconf>`
+is no recommended practice because when you have custom urls, then you
+also want a custom renderer.
+:meth:`lino.core.requests.BaseRequest.get_printable_context` no longer
+makes a copy of itself with modified `renderer`, but ``ar`` again
+points to the actual request.  To be observed. It seems that the known
+problems are fixed. Here be dragons.
+
+I then "fixed" :ticket:`313` by switching
+:attr:`lino.modlib.tinymce.Plugin.media_name` back from TinyMCE 3.5.11 to
+3.4.8.
+
+A few options of TinyMCE had been hard-coded until now. Now they are
+configurable:
+
+- :attr:`window_width <lino.modlib.tinymce.Plugin.window_width>`
+- :attr:`window_height <lino.modlib.tinymce.Plugin.window_height>`
+- :attr:`field_buttons <lino.modlib.tinymce.Plugin.field_buttons>`
+- :attr:`window_buttons1 <lino.modlib.tinymce.Plugin.window_buttons1>`
+
+I also changed the default values for the first two options from
+(600, 500) to (500, 400) because on a lower resolution monitor the old
+size was too big, which was quite disturbing because there was no way
+to close the window.

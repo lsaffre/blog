@@ -226,7 +226,8 @@ latex_documents = [
 #latex_use_modindex = True
 
 # extlinks.update(ticket=('http://trac.lino-framework.org/ticket/%s', '#'))
-extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
+# extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
+extlinks.update(ticket=('http://bugs.lino-framework.org/ticket/%s', '#'))
 extlinks.update({
     'issue': (
         'http://code.google.com/p/lino/issues/detail?id=%s', '# '),
