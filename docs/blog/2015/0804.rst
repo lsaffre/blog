@@ -1,0 +1,83 @@
+==================================
+20150804 (Tuesday, 04 August 2015)
+==================================
+
+Once again I could not refrain from doing yet another optimization to
+:ref:`noi`: :ticket:`391` (Assign new tickets to reporter).
+We have now a new user role :class:`lino.modlib.tickets.roles.Worker`.
+En passant I repaired the test suite :ref:`noi.specs.clocking`.
+
+Worked on :ticket:`321` (Modèles d'impression mai-juillet 2015).
+Added new method :meth:`lino.utils.addressable.Adressable.has_address`
+for usage in document templates.
+
+Updated :xfile:`excerpts/Default.odt` to use that new method.
+
+
+About LibreOffice form controls
+===============================
+
+The template of a printable document may contain `form controls
+<https://help.libreoffice.org/Common/Form_Controls>`__ when using some
+of the LibreOffice build methods defined in
+:mod:`lino.modlib.appypod.choicelists`.  Of course these controls will
+be editable only when the template is being rendered using an editable
+method (i.e. either `.odt`, `.doc` or `.rtf`, but not `.pdf`).
+
+We recommend to avoid this kind of usage since it causes data to be
+stored in a generated printable document.  Whenever a printable
+document contains semantic "formalizable" data, the preferred way is
+to define this in the underlying database models.
+
+
+'NoneType' object is not iterable
+=================================
+
+I tried once more to understand how to reproduce :ticket:`159` (ERROR:
+'NoneType' object is not iterable).  Without success. But at least the
+documentation grew a bit better, e.g. :meth:`Budget.entry_groups
+<lino_welfare.modlib.debts.models.Budget.entry_groups>` now has a
+docstring.
+
+
+
+Better documentation for Lino Welfare
+=====================================
+
+I noticed that Lino Welfare had :attr:`tolerate_sphinx_warnings
+<atelier.fablib.env.tolerate_sphinx_warnings>` set to True.
+
+One of the problems was to get the icon for external links into
+:ref:`welfare.tour.reception`.  I saw that FontAwesome includes such
+an icon http://fortawesome.github.io/Font-Awesome/icon/external-link/
+and that they use Unicode f08e for it.  Although Emacs displays ``C-x
+8 RET f08e RET`` correctly on my monitor, the character "" does not
+display correctly in the resulting html. Interesting.
+
+The :ref:`welfare.tour.reception` page is now a first example of how
+to use FontAwesome in a Sphinx tree.  TODO: move this into a Sphinx
+extension (:ticket:`392`).
+
+
+
+"My tasks" table shows tasks in far future
+==========================================
+
+Received and fixed :ticket:`393`
+("My tasks" table shows tasks in far future).
+
+In order to test this, I started a new chapter about
+:ref:`welfare.specs.tasks` in the Specs.  Which caused once more an
+avalanche of documentation changes, especially I re-united the models
+of :mod:`lino.modlib.cal` back into a single module
+:mod:`lino.modlib.cal.models`, and moved the tables to a new module
+:mod:`lino.modlib.cal.ui`.
+
+
+Nebenbuchhaltung Sozialhilfeausgaben
+====================================
+
+Unfortunately with all the above things, I did not yet manage to work
+much on :ticket:`143` (Nebenbuchhaltung Sozialhilfeausgaben) I started
+with some changes in :ref:`welfare.specs.ledger` which btw. currently
+doesn't pass.  Checkin because it is time to go to bed.
