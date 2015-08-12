@@ -1,0 +1,83 @@
+=========================
+Wednesday, August 5, 2015
+=========================
+
+Ledger for Lino Welfare
+=======================
+
+Today I finally got working on :ticket:`143` (Nebenbuchhaltung
+Sozialhilfeausgaben).  Remaining thoughts are in German.
+
+Klientenkontakte haben nichts mit Einkaufsrechnungen zu tun.  Ich war
+versucht, die beiden zu verbinden und neue Klientenkontaktarten wie
+"Vermieter" anzulegen.  Aber das geht nicht, weil jeder Partner immer
+nur *einer* Klientenkontaktart zugeordnet sein kann. Dann könnte
+z.B. ein Arzt niemals Vermieter sein. Also jeder Partner kann
+Einkaufsrechnungen für egal welchen Klienten einreichen, Lino macht da
+weder Einschränkungen noch Vorschläge.  Sogar Klienten können
+potentiell zum Lieferanten für einen anderen Klienten werden.
+
+In TIM hatten wir *Partner 1* und *Partner 2*, wobei Partner 1 immer
+der Klient ist und Partner 2 der Zahlungsempfänger.  In Lino sieht es
+momentan wie folgt aus: zwei Felder "Partner" ("Zahlungsempfänger",
+"Lieferant") und "Klient" (interner Name "project"). Der Klient ist
+theoretisch optional, wird aber in der Praxis meistens als erstes
+ausgefüllt.  Wenn man den Partner leer lässt, setzt Lino automatisch
+den Klienten dort rein.
+
+Die Zahlungsaufträge Sozialdienst (ZAS) gibt es momentan auf Papier in
+zwei Varianten: (1) für Banküberweisung und (2) für "persönliche
+Auszahlung".
+
+Gedanken zum Beispieldokument ZAS1. Man wählt also im "oberen Teil"
+den Klienten, den Haushaltsartikel (z.B. "Ausländerbeihilfe") und die
+Periode (z.B. "02/2015") aus. Und dann kommt (im unteren Teil) eine
+Liste von Zahlungsempfängern.  Die beiden ersten dieser Zahlungen sind
+30€ ans ÖSHZ Aalst und 29,25€ an Mutualia. Diese können entweder
+vorher als Rechnungen erfasst worden sein (und werden dann von Lino
+automatisch vorgeschlagen) oder auch nicht (und werden manuell im
+Zahlungsauftrag erfasst).
+
+Dann zu den 658€, die aufs Konto des Klienten überwiesen werden.
+Stimmt es, dass die für jeden einzelnen Klienten manuell errechnet
+werden?
+
+Beide Dokumente werden in Lino ein Zahlungsauftrag. `PaymentOrder`
+muss also erweitert werden, dass man im oberen Teil ein Projekt, ein
+Konto und eine Buchungsperiode eingeben kann, die dann als
+zusätzlicher Filter für Linos Vorschläge dienen.
+
+Dass manche ZAS nur durch Banküberweisung und andere nur durch Kasse
+befriedgt werden, das wird pro Journal konfiguriert.
+
+Ich habe eine neue Belegart "Klientenbelege" gemacht, die den
+"Buchungsdokumenten mit Auswahl Partner beim Erstellen" in TIM
+entspricht.  Im oberen Teil wählt man obligatorisch einen Klienten
+aus. Im unteren Teil kann man pro Buchung den Partner
+(Zahlungsempfänger) und den Artikel (Konto) angeben. Bin mir aber
+nicht sicher, ob das sinnvoll war. Ist momentan wieder deaktiviert.
+
+Beispiele von Ausgaben
+
+- Arzt- und Medikamentenkosten
+- Strom, Wasser, Gas, Miete
+- Mutualia (also Zusatzbeitrag bei einer Krankenkasse)
+- Ratenzahlungen
+
+
+Für welche davon werden tatsächlich Rechnungen erfasst? Und wie sollen
+wir diejenigen handhaben, die eine "bedingte Regelmäßigkeit" haben?
+Viele davon sind ja jeden Monat die Gleichen. Am sinnvollsten scheint
+mir, wenn Lino seine Vorschläge auch vom ZAU des Vormonats holen
+könnte.
+
+
+Hier noch ein schönes Beispiel, weshalb :func:`inject_field
+<lino.core.inject.inject_field>` so cool ist: :mod:`lino.modlib.iban`
+injiziert zwei Felder `iban` und `bic` nach `contacts.Partner`.  Und
+auch :mod:`lino.modlib.sepa` benutzt diese Felder.
+
+
+
+Lino no longer adds the `master_key` of a table to its
+`hidden_columns`.  If a slave table has a `column_names` with explicit

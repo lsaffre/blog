@@ -106,25 +106,30 @@ Computer skills
 - Text processing: Sphinx, LaTeX, Lilypond, ...
 
 
-Personal characteristics
-------------------------
+Personal preferences
+--------------------
 
 - I prefer using Free Software whenever possible.
   I encourage people around me to do the same.
 
-- I prefer using my creativity over copying solutions of other 
-  people. I prefer getting complete understanding of problems over 
+- I prefer getting complete understanding of problems over 
   finding quick solutions.
 
-- I am not only fascinated by computers but also by humans: how they
-  learn, how they organize themselves. I usually enjoy to communicate
-  with end-users in order to optimize their work methods.
+- I prefer using my creativity over copying solutions of other 
+  people.
+
+- I am more fascinated by humans than by computers: how they learn,
+  how they organize themselves. I enjoy communicating with end-users
+  in order to optimize their work methods.
+
+- I prefer doing the first 20% of a job which return `80% of the final
+  result <https://en.wikipedia.org/wiki/Pareto_principle>`__.
+
+Hobbies
+-------
 
 - I enjoy singing alone and with others. I have a more than average
   musical education but did never consider becoming a professional.
-
-- I haven't watched television (other than occasionally) since
-  about 1990.
 
 - I was a motivated Scout leader between September 1986 and July 1994. 
   After these 8 years I continued during several years to organize 
@@ -137,6 +142,9 @@ Personal views
   engaged in the local lutheran `church community
   <http://www.eelk.ee/vigala/>`_.  My faith has been influenced by the
   spirituality of the `Taizé <http://taize.fr/>`_ community.  
+
+- I haven't watched television (other than occasionally) since
+  about 1990.
 
 - I am not actively engaged in any political direction, but people
   tend to classify me as green. I believe that finding ways for global

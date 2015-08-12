@@ -1,0 +1,45 @@
+========================
+Thursday, August 6, 2015
+========================
+
+Working on :ticket:`143`.
+
+Until now we identified bank accounts using two separate fields BIC
+and IBAN.  After reading about `IBAN
+<https://de.wikipedia.org/wiki/IBAN>`_, it seems that we need a
+*single* field for storing/selecting bank accounts.
+
+Oh, and I see that `django-iban
+<https://pypi.python.org/pypi/django-iban>`_ has been deprecated.
+That was easy: Lino's :class:`BICField
+<lino.modlib.iban.fields.BICField>` and :class:`IBANField
+<lino.modlib.iban.fields.IBANField>` now use `django-localflavor
+<https://pypi.python.org/pypi/django-localflavor>`__.
+
+The best solution seems to remove the possibility of having a single
+bank account per partner. That is: we unite te modules `iban` and
+`sepa`, we don't do any inject_field, and we replace iban and bic
+fields of `Payable` by a pointer to
+:class:`lino.modlib.sepa.models.Account`
+
+And then another fundamental change: not the invoices but every item
+is ProjectRelated. Because incoming invoices are often for multiple
+clients.
+
+Commits today:
+
+- 20:27 : `lino <http://www.lino-framework.org>`__
+  `863b5f9 <https://github.com/lsaffre/lino/commit/650b6abb70ab2ecae50d4593bc7521efc863b5f9>`__
+- 20:27 : `lino_welfare <http://welfare.lino-framework.org>`__
+  `863b5f9 <https://github.com/lsaffre/lino/commit/650b6abb70ab2ecae50d4593bc7521efc863b5f9>`__
+- 20:27 : `lino_noi <http://noi.lino-framework.org>`__
+  `688998a <https://github.com/lsaffre/noi/commit/8c91668662dc336937c0aba5ef981bc94688998a>`__
+- 20:28 : `lino_cosi <http://cosi.lino-framework.org>`__
+  `b2c7cd4 <https://github.com/lsaffre/lino-cosi/commit/a967f973e9ad643ad6624dcaf6132e8cbb2c7cd4>`__
+- 22:01 : `lino_cosi <http://cosi.lino-framework.org>`__
+  `9224016 <https://github.com/lsaffre/lino-cosi/commit/993948f152431a00bca26b2fd0807749b9224016>`__
+- 22:02 : `lino <http://www.lino-framework.org>`__
+  `2a8dec9 <https://github.com/lsaffre/lino/commit/4391e9299bba20f91af8dec6e2baaa4da2a8dec9>`__
+- 22:02 : `lino_welfare <http://welfare.lino-framework.org>`__
+  `2a8dec9 <https://github.com/lsaffre/lino/commit/4391e9299bba20f91af8dec6e2baaa4da2a8dec9>`__
+

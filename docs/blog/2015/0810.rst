@@ -1,0 +1,37 @@
+=======================
+Monday, August 10, 2015
+=======================
+
+I continued on :ticket:`143`. I don't describe the details here
+because it is rather complex intuitive work about how to integrate
+ledger functionality into a Belgian PCSW.  In case of need we can
+always analyze the checkins.
+
+06:11 : Tadaa! I got the payment *instructions* to be suggested into
+payment *orders*. Checkin to celebrate this. The Welfare test suite is
+broken for minor reasons.
+
+
+10.00 Repairing the test suite.  This turned out to not be complete
+routine. It started innocently with a :message:`dump2html() got an
+unexpected keyword argument 'master_instance'` error and caused
+another inner framework optimization: I converted the module
+`lino.core.web` into a plugin :mod:`lino.modlib.jinja`. Which is
+currently needed by :mod:`lino.modlib.bootstrap3`, so currently it is
+always installed. But it now becomes theoretically possible to replace
+Jinja by some other templates engine, and (last but not least) the
+whole thing is now much less hackerish than before.
+
+A side effect: :class:`lino.modlib.appypod.appy_renderer.AppyRenderer`
+no longer automatically fills all plugin names to the context when
+rendering a template because this was a bad idea.  This "feature"
+caused the context function `jinja` to be overridden.  Existing
+templates may need update: if you get errors of style "foo.Bar :
+undefined name 'foo'", then simply replace the code ``foo.Bar`` by
+``rt.modules.foo.ar``.
+
+The body template :xfile:`clothing_bank.body.html` is one of the
+templates which needed update.  When trying to see whether it gets
+correctly generated, I noticed that the links to examples of generated
+demo documents in :mod:`lino_welfare.modlib.aids` is currently broken.
+
