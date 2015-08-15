@@ -1,0 +1,66 @@
+=======================
+Friday, August 14, 2015
+=======================
+
+How to log every database change
+================================
+
+There was an error message on a production server in Eupen:
+
+    IntegrityError: (1451, 'Cannot delete or update a parent row: a
+    foreign key constraint fails (`dbname`.`contacts_person`,
+    CONSTRAINT `city_id_refs_id_d349fc28` FOREIGN KEY (`city_id`)
+    REFERENCES `countries_place` (`id`))')
+
+Noted as :ticket:`418`.
+I am trying to find out what caused this message and whether it is
+important.  It might have to do with :ticket:`296` ("murder bug").
+
+The users reported that it happened after asking Lino to delete a
+`countries.Place` for which there were no more addresses.
+
+The Apache log confirms this::
+
+  123.11.123.12 - username [13/Aug/2015:10:44:46 +0200] "GET
+  /callbacks/8747748654413/yes?_dc=1439455593571 HTTP/1.1" 500 540
+  "http://lino.local/" "Mozilla/5.0 (X11; Linux x86_64; rv:38.0)
+  Gecko/20100101 Firefox/38.0 Iceweasel/38.1.0"
+
+
+So it seems that Lino (:mod:`lino.core.ddh`) failed to see a
+`contacts.Person` object pointing to this `countries.Place`, and
+therefore did not refuse to delete it. And when actually asking MySQL
+to delete it, MySQL discovered that person and (correctly) refused to
+delete the place.
+
+Otto pointed out that Lino should have an easy way to temporarily *log
+all database changes* to a log file. And I must admit that it is
+currently rather hard to read the logs and to make sure that you
+didn't miss something.  It would be nice to see each (modifing)
+request in Lino's log file.  :ticket:`419` should be trivial...
+
+... so I added a new option :attr:`log_each_action_request
+<lino.core.site.Site.log_each_action_request>`.  And saw that *hic
+sunt dracones*, e.g. `Exception: You cannot access body after reading
+from request's data stream`.  And after implementing it and trying it
+in a few situations, I noticed that it is far from logging every
+change, and that I should maybe rather move some of the code from
+:mod:`lino.modlib.changes` to somewhere below :mod:`lino.core` and
+then extend it so that the :func:`watch_changes` function accepts an
+option which specifies where the change should be logged (currently
+either in `changes.Change` or in `system.log`, but maybe more handlers
+in the future).  I left the :attr:`log_each_action_request
+<lino.core.site.Site.log_each_action_request>` there because I am not
+sure.
+
+
+
+Release notes and fixes
+=======================
+
+Ahaa, I got an enlightment: in Lino Noi I must replace the
+Ticket.fixed_for field by a new model
+:class:`lino.modlib.tickets.models.Deployment`. One ticket can be
+fixed on more than one site at different moments. Lino Noi does
+site-specific release notes.
+

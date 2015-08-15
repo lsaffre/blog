@@ -1,0 +1,60 @@
+=========================
+Thursday, August 13, 2015
+=========================
+
+A quick release to :ref:`lf` for :ticket:`414` (milestones, sites &
+projects) because maybe Otto and I will look at this today.
+
+There is a change in the database schema: in the `tickets.Milestone`
+model the `project` field has been removed and has a new field `site`
+has been added.  Here is an example of how to handle this using a
+manual local migration.
+
+First we make a snapshot::
+
+    $ ./make_snapshot
+    
+Then we upgrade our local copy of the source repositories::
+    
+    $ ./pull.sh
+    
+Then we try to restore our snapshot. Since there is a schema change,
+we will get an error message::
+    
+    $ python manage.py run snapshot/restore.py
+    ...
+    Traceback (most recent call last):
+      ...
+      File "snapshot/restore.py", line 682, in <module>
+      File "snapshot/restore.py", line 672, in main
+      File "tickets_milestone.py", line 4, in <module>
+        loader.save(create_tickets_milestone(1,100,u'gx-2014-12',None,None))
+      File "snapshot/restore.py", line 538, in create_tickets_milestone
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/db/models/base.py", line 417, in __init__
+        raise TypeError("'%s' is an invalid keyword argument for this function" % list(kwargs)[0])
+    TypeError: 'project_id' is an invalid keyword argument for this function
+    INFO Done manage.py run snapshot/restore.py (PID 18940)
+
+
+So we edit the file :file:`snapshot/restore.py`. In line 538 we see::
+
+    def create_tickets_milestone(id, project_id, label, expected, reached):
+        kw = dict()
+        kw.update(id=id)
+        kw.update(project_id=project_id)
+        kw.update(label=label)
+        kw.update(expected=expected)
+        kw.update(reached=reached)
+        return tickets_Milestone(**kw)
+
+In current case we just uncomment the following line of above code::
+    
+        # kw.update(project_id=project_id)
+
+And we restore our snapshot again, this time there should be no errors::
+
+    $ python manage.py run snapshot/restore.py
+    
+And finally of course::
+
+    $ restart_apache
