@@ -6,12 +6,12 @@ Why software must be free
    customized database applications.
 
 In this article I try to explain to deciders of public institutions
-and private enterprises, why software must be free, 
-why your organization should
-choose --or migrate to-- `Linux
+and private enterprises, why software must be free, why your
+organization should choose `Linux
 <https://en.wikipedia.org/wiki/Linux>`_ rather than `Windows
 <https://en.wikipedia.org/wiki/Microsoft_Windows>`_ or `OS X
-<https://en.wikipedia.org/wiki/OS_X>`_.
+<https://en.wikipedia.org/wiki/OS_X>`_ as the operating system on your
+computers.
 
 I also try to explain why this choice is currently not the mainstream
 and why you should nevertheless consider it.
@@ -21,9 +21,17 @@ This text is not finished and probably never will be.
 Vocabulary
 ==========
 
-`Free software <https://en.wikipedia.org/wiki/Free_software>`_ is when
-users have the freedom to *run* it, to *see the source code*, to *modify*
-it, and to *distribute* the original software and the adapted versions.
+The "free" in our context does not mean "free of costs" but "free of
+bondage".  `Free software
+<https://en.wikipedia.org/wiki/Free_software>`_ is when users have the
+freedom to *run* it, to *see the source code*, to *modify* it, and to
+*distribute* both the original software and the adapted versions.
+
+Free software is not to be confused with `Open-source software
+<https://en.wikipedia.org/wiki/Open-source_software>`_ (software with
+its source code publicly available) or with `Freeware
+<https://en.wikipedia.org/wiki/Freeware>`_ (software with no monetary
+cost).
 
 The world of `free software
 <https://en.wikipedia.org/wiki/Free_software>`_ and the world of
@@ -33,19 +41,45 @@ separate universes.  They communicate sometimes, but they are
 substantially different.
 
 
-Free software is not to be confused with `Open-source software
-<https://en.wikipedia.org/wiki/Open-source_software>`_ (software with
-its source code publicly available) or with `Freeware
-<https://en.wikipedia.org/wiki/Freeware>`_ (software with no monetary
-cost.
+It's not about short-term freedom
+=================================
 
+Richard Stallman's `Free Software Definition
+<https://en.wikipedia.org/wiki/The_Free_Software_Definition>`_ states
+that users of free software get the freedom to look at source code, to
+change it and to share their modifications.  
 
-Success stories
-===============
+The problem with this formulation is that normal software users don't
+want that freedom.  Normal users want to be able to phone their friend
+and ask "How do you do when you want to format this document in two
+columns instead of one?"  And they want well-written documentation and
+a series of books about their software so that they can look up
+themselves how to solve their problems.  That's the kind of freedom
+they want.  And that's the kind of freedom they are more likely to get
+when they use wide-spread software products owned by some
+international worldwide corporation.
 
-- `How Munich rejected Steve Ballmer and kicked Microsoft out of the
-  city
-  <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
+When we define freedom as "the power or right to act, speak, or think
+as one wants" [#oxford1]_, then there is no need for free software
+because proprietary software does not violate this freedom more often
+than free software.  
+
+So free software isn't about this kind of freedom.
+
+But freedom also means "absence of subjection to foreign domination or
+despotic government" or "the state of not being imprisoned or
+enslaved".  [#oxford2]_ These meanings are more difficult to grasp
+because they are less related to our everyday activities.
+
+Think for example about a woman who enjoys wearing clothes which make
+her more attractive to men.  There are probably not many such women in
+countries like Afghanistan.  Most women in Afghanistan probably can't
+even imagine that they are missing some part of life's joys. If you
+asked one of them whether she would like to wear western clothes, you
+will probably get a negative answer. So they are free, aren't they?
+
+If you agree that women in Afghanistan are free, then proprietary
+software is for you. Don't read on.
 
 
 Who controls my computers?
@@ -62,15 +96,15 @@ important to ask who controls these computers.
    <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
 
 Imagine that you are the owner of a well-running sandwich bar in a
-little town. And as your sandwich bar gets more and more
-customers, you decide to engage an assistant to help you. And
-because your assistant is trustworthy and capable, you delegate
-more and more reponsibilities to him.  
+little town.  And as your sandwich bar gets more and more customers,
+you decide to engage an assistant to help you.  And because your
+assistant is trustworthy and capable, you delegate more and more
+reponsibilities to him.
 
-Then imagine that you need to move to another town and designate
-your friend to become the manager of your sandwich bar.  The
-manager continues to send you regular financial reports about your
-sandwich bar.
+Then imagine that you need to move to another town and designate your
+assistant to become the manager of your sandwich bar.  The manager
+continues to send you regular financial reports about your sandwich
+bar.
 
 Now imagine that after some time you discover that the manager of
 your sandwich bar would refuse to show the invoices he received
@@ -84,7 +118,7 @@ file a lawsuit against him.
 
 That's how enterprises are run.  The managers do the work of ruling,
 and they write regular activity reports to the owners. The managers
-gets a salary, and the owners get the profit.  The owners continue to
+get a salary, and the owners get the profit.  The owners continue to
 control their enterprise or institution because they can fire their
 managers at any moment.
 
@@ -93,16 +127,15 @@ The computer hardware are the rooms of your sandwich bar, the
 operating system is the manager. You communicate with your manager
 using the keyboard and the monitor.
 
-The point of this story is that **while you would probably fire such a
+The point of this story is that while you would probably fire such a
 manager in a real-world enterprise, this is happening constantly in a
-computer which runs closed-source software.**
+computer which runs closed-source software.
 
 I hope that this picture opens your eyes and that you start to feel
 with me why it is important to wake up.
 
-
-Misleading ethical questions
-============================
+Opinions against free software
+==============================
 
 A text titled "Unavoidable Ethical Questions About Open Source"
 [#scu_questions]_ published by the Santa Clara Univerity in Silicon
@@ -171,18 +204,28 @@ together with my answers:
 While my above answers --hopefully-- give satisfying answers to the
 given arguments [#jesuits]_, all these thoughts are rather misleading
 regarding to our original question about why software must be free.
-
 Free software is definitively not about money, neither about the price
 of the product nor about the wage of the author.
+
+Another widely spread attitude which I use to label `Uncle Tom's
+Advice <https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop
+to make your own life complicated!  In the end we are all slaves of
+somebody.  Just let Microsoft or Google or Apple be your master and
+enjoy life!"[#eager]_.  My answer to this is yes, choosing free
+software *does* make our life more complicated, and yes, we need to
+find trustworthy partners because we cannot do everything ourselves,
+but no, our `sovereignity
+<https://en.wikipedia.org/wiki/Sovereignty>`_ at the software level
+*is* necessary and worth the effort.
 
 
 Why it is difficult
 ===================
 
-Choosing free software is actually not difficult. But most people
-*believe* that it is so, and this causes miscellaneous problems.  You
-will need measurable additional effort because you are leaving the
-mainstream.
+Choosing free software is actually *not* difficult. But most people
+*believe* that it is. Which becomes a `self-fulfilling prophecy
+<https://en.wikipedia.org/wiki/Self-fulfilling_prophecy>`_ causing
+miscellaneous problems.
 
 Here are some examples of the challenges you are going to face if you
 decide for free software:
@@ -199,60 +242,23 @@ decide for free software:
   because they use proprietary software at home.
 
 You will need to consider these challenges and decide bravely how to
-react to them.
+react to them.  You will need measurable additional effort because you
+are leaving the mainstream.
 
 
 Free software cannot serve as capital
 =====================================
 
-The fundamental problem with free software is that it cannot be used
-as capital. That fact makes free software uninteresting to the whole
-capitalistic system, including all kinds of companies of private law,
-including big corporations.
+A fundamental problem with free software is that it cannot be used as
+capital. That fact makes free software uninteresting to all kinds of
+companies of private law, including big corporations.
 
 There are big organizations dealing with free software, but none of
 them has a chance against Google, Microsoft or Apple.
 
-A classical businessman
 
-It's not about short-term freedom
-=================================
-
-Richard Stallman's `Free Software Definition
-<https://en.wikipedia.org/wiki/The_Free_Software_Definition>`_ states
-that users of free software get the freedom to look at source code, to
-change it and to share their modifications.  The problem with this
-formulation is that normal software users don't want that freedom.
-
-Normal users want to be able to phone their friend and ask "How do you
-do when you want to format this document in two columns instead of
-one?"  And they want well-written documentation and a series of books
-about their software so that they can look up themselves how to solve
-their problems.  That's the kind of freedom they want.  And that's the
-kind of freedom they are more likely to get when they use wide-spread
-software products owned by some international worldwide corporation.
-
-When we define freedom as "the power or right to act, speak, or think
-as one wants" [#oxford1]_, then there is no need for free software
-because proprietary software does not violate this freedom more often
-than free software.  
-
-So free software isn't about this kind of freedom.
-
-But freedom also means "absence of subjection to foreign domination or
-despotic government" or "the state of not being imprisoned or
-enslaved".  [#oxford2]_ These meanings are more difficult to grasp
-because they are less related to our everyday activities.
-
-Think for example about a woman who enjoys wearing clothes which make
-her more attractive to men.  There are probably not many such women in
-countries like Afghanistan.  Most women in Afghanistan probably can't
-even imagine that they are missing some part of life's joys. If you
-asked one of them whether she would like to wear western clothes, you
-will probably get a negative answer. So they are free, aren't they?
-
-If you agree that women in Afghanistan are free, then proprietary
-software is for you. Don't read on.
+Sovereignty
+===========
 
 But if you care about the sovereignty and liberty of your enterprise,
 then you should ask questions.
@@ -274,6 +280,14 @@ then you should ask questions.
   regulated by the free market?
 
 
+Success stories
+===============
+
+- `How Munich rejected Steve Ballmer and kicked Microsoft out of the
+  city
+  <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
+
+
 
 
 .. rubric:: Footnotes
@@ -293,3 +307,17 @@ then you should ask questions.
               dictionary
               <http://www.oxforddictionaries.com/definition/english/freedom>`_
 
+.. [#eager] A good example of this opinion is Michael Eager's blog
+            entry `Free Software Foundation vs Microsoft
+            <http://www.embedded.com/electronics-blogs/open-mike/4440107/Free-Software-Foundation-vs-Microsoft>`_.
+            Later (in a `closed thread on LinkedIn
+            <https://www.linkedin.com/grp/post/43875-6037641137475301379>`_)
+            he made iteven more clear: "Not sure what you (or FSF)
+            mean by "draconian".  IP [intellectual property] laws
+            apply to Microsoft, Coke, Intel, Ford, and LinkedIn, among
+            many others. What is draconian about them?  Can you trust
+            Intel to build chips correctly, Coke to bottle soda, Ford
+            to build cars, and Linked in to host messages, without
+            knowing all of the details of how this is done?  Do you
+            drink Coke, drive a car, use a computer, eat at
+            MacDonald's?"
