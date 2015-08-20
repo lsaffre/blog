@@ -1,0 +1,21 @@
+=========================
+Thursday, August 20, 2015
+=========================
+
+I continued on ticket :ticket:`38` (Make Lino run with Django 1.8).
+
+I renamed `lino.modlib.contenttypes` to :mod:`lino.modlib.gfks`, and
+this plugin now has ``django.contrib.contenttypes`` as needed
+plugin. This is because Django 1.9 will refuse to import a database
+model which is neither abstract nor actually being used::
+
+    RemovedInDjango19Warning: Model class
+    django.contrib.contenttypes.models.ContentType doesn't declare an
+    explicit app_label and either isn't in an application in
+    INSTALLED_APPS or else was imported before its application was
+    loaded. This will no longer be supported in Django 1.9.
+
+So in Django 1.9 we cannot extend plain Django plugins like
+``django.contrib.contenttypes``. That's okay, and ``contenttypes`` was
+the only case. They idea of extending it within the same name was a
+bit hackerish anyway.
