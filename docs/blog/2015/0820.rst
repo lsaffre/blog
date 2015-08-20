@@ -2,7 +2,15 @@
 Thursday, August 20, 2015
 =========================
 
-I continued on ticket :ticket:`38` (Make Lino run with Django 1.8).
+I worked 5 hours on ticket :ticket:`38` (Make Lino run with Django
+1.8).
+
+Until yesterday I believed that this is a good ticket for Mahmoud, but
+for the moment I changed my mind.  This is not for beginners since it
+requires quite some knowledge of the dragons living in Lino.  The
+challenge is Django's new application loading system. Augustin and I
+have been working on this in parallel, and of course our solutions
+differ slightly.
 
 I renamed `lino.modlib.contenttypes` to :mod:`lino.modlib.gfks`, and
 this plugin now has ``django.contrib.contenttypes`` as needed
@@ -19,3 +27,76 @@ So in Django 1.9 we cannot extend plain Django plugins like
 ``django.contrib.contenttypes``. That's okay, and ``contenttypes`` was
 the only case. They idea of extending it within the same name was a
 bit hackerish anyway.
+
+Diamond inheritance still causes problems. My workaround works only
+until Django 1.6 and I did not yet get it to work in Django > 1.6. It
+is visible in :mod:`lino.projects.min2`::
+
+    $ go min2
+    $ python manage.py initdb_demo
+    ...
+    django.core.management.base.SystemCheckError: SystemCheckError: System check identified some issues:
+
+    ERRORS:
+    contacts.Company.addr1: (models.E006) The field 'addr1' clashes with the field 'addr1' from model 'contacts.partner'.
+    contacts.Company.addr2: (models.E006) The field 'addr2' clashes with the field 'addr2' from model 'contacts.partner'.
+    contacts.Company.city: (models.E006) The field 'city' clashes with the field 'city' from model 'contacts.partner'.
+    contacts.Company.country: (models.E006) The field 'country' clashes with the field 'country' from model 'contacts.partner'.
+    contacts.Company.email: (models.E006) The field 'email' clashes with the field 'email' from model 'contacts.partner'.
+    contacts.Company.fax: (models.E006) The field 'fax' clashes with the field 'fax' from model 'contacts.partner'.
+    contacts.Company.gsm: (models.E006) The field 'gsm' clashes with the field 'gsm' from model 'contacts.partner'.
+    contacts.Company.language: (models.E006) The field 'language' clashes with the field 'language' from model 'contacts.partner'.
+    contacts.Company.name: (models.E006) The field 'name' clashes with the field 'name' from model 'contacts.partner'.
+    contacts.Company.phone: (models.E006) The field 'phone' clashes with the field 'phone' from model 'contacts.partner'.
+    contacts.Company.region: (models.E006) The field 'region' clashes with the field 'region' from model 'contacts.partner'.
+    contacts.Company.remarks: (models.E006) The field 'remarks' clashes with the field 'remarks' from model 'contacts.partner'.
+    contacts.Company.street: (models.E006) The field 'street' clashes with the field 'street' from model 'contacts.partner'.
+    contacts.Company.street_box: (models.E006) The field 'street_box' clashes with the field 'street_box' from model 'contacts.partner'.
+    contacts.Company.street_no: (models.E006) The field 'street_no' clashes with the field 'street_no' from model 'contacts.partner'.
+    contacts.Company.street_prefix: (models.E006) The field 'street_prefix' clashes with the field 'street_prefix' from model 'contacts.partner'.
+    contacts.Company.url: (models.E006) The field 'url' clashes with the field 'url' from model 'contacts.partner'.
+    contacts.Company.zip_code: (models.E006) The field 'zip_code' clashes with the field 'zip_code' from model 'contacts.partner'.
+    contacts.Person.addr1: (models.E006) The field 'addr1' clashes with the field 'addr1' from model 'contacts.partner'.
+    contacts.Person.addr2: (models.E006) The field 'addr2' clashes with the field 'addr2' from model 'contacts.partner'.
+    contacts.Person.city: (models.E006) The field 'city' clashes with the field 'city' from model 'contacts.partner'.
+    contacts.Person.country: (models.E006) The field 'country' clashes with the field 'country' from model 'contacts.partner'.
+    contacts.Person.email: (models.E006) The field 'email' clashes with the field 'email' from model 'contacts.partner'.
+    contacts.Person.fax: (models.E006) The field 'fax' clashes with the field 'fax' from model 'contacts.partner'.
+    contacts.Person.gsm: (models.E006) The field 'gsm' clashes with the field 'gsm' from model 'contacts.partner'.
+    contacts.Person.language: (models.E006) The field 'language' clashes with the field 'language' from model 'contacts.partner'.
+    contacts.Person.name: (models.E006) The field 'name' clashes with the field 'name' from model 'contacts.partner'.
+    contacts.Person.phone: (models.E006) The field 'phone' clashes with the field 'phone' from model 'contacts.partner'.
+    contacts.Person.region: (models.E006) The field 'region' clashes with the field 'region' from model 'contacts.partner'.
+    contacts.Person.remarks: (models.E006) The field 'remarks' clashes with the field 'remarks' from model 'contacts.partner'.
+    contacts.Person.street: (models.E006) The field 'street' clashes with the field 'street' from model 'contacts.partner'.
+    contacts.Person.street_box: (models.E006) The field 'street_box' clashes with the field 'street_box' from model 'contacts.partner'.
+    contacts.Person.street_no: (models.E006) The field 'street_no' clashes with the field 'street_no' from model 'contacts.partner'.
+    contacts.Person.street_prefix: (models.E006) The field 'street_prefix' clashes with the field 'street_prefix' from model 'contacts.partner'.
+    contacts.Person.url: (models.E006) The field 'url' clashes with the field 'url' from model 'contacts.partner'.
+    contacts.Person.zip_code: (models.E006) The field 'zip_code' clashes with the field 'zip_code' from model 'contacts.partner'.
+
+IOW these are the fields defined in the :class:`AddressLocation
+<lino.modlib.countries.mixins.AddressLocation>` mixin, inherited by
+the abstract :class:`Partner <lino.modlib.contacts.models.Partner>`
+and :class:`Person <lino.modlib.contacts.models.Person>` models of
+:mod:`lino.modlib.contacts`, which are then themselves inherited by
+:class:`Partner <lino.projects.min2.modlib.contacts.models.Partner>`
+and :class:`Person <lino.projects.min2.modlib.contacts.models.Person>`
+in :mod:`lino.projects.min2.modlib.contacts`.
+
+The following diagram shows the structure for `Person` (for `Company`
+it is analog):
+
+.. graphviz:: 
+
+   digraph foo  {
+
+        AddressLocation -> "modlib.Partner";
+        "modlib.Partner" -> "modlib.Person";
+        "modlib.Partner" -> "min2.Partner";
+        "min2.Partner" -> "min2.Person";
+        "modlib.Person" -> "min2.Person";
+
+  }
+
+
