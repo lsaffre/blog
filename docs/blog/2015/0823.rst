@@ -1,0 +1,31 @@
+=======================
+Sunday, August 23, 2015
+=======================
+
+I continued on ticket :ticket:`143`: added a new user profile
+:ref:`Accountant <wilfried>` (as I imagine it so far).  
+
+
+In the morning I got an alert message sent by the cron job which makes
+a daily snapshot on :ref:`lf`. The snapshot failed with this error
+message::
+
+  django.db.utils.ProgrammingError: (1146, "Table 'miolino.gfks_helptext' doesn't exist")
+
+Stupid me! That was the change on :doc:`0820` (renamed
+`lino.modlib.contenttypes` to :mod:`lino.modlib.gfks`). Which I
+released to that server yesterday. Before doing an upgrade of a Lino
+application on a producton server, always make a snapshot. Yesterday
+when doing the release I thought "No need to do a migration" because I
+had forgotten about that HelpText table. This table indeed contains no
+valuable data, and the web interface showed no problem because that
+table is almost never accessed.  But the table name was still
+`contenttypes_helptext` while Lino now calls it `gfks_helptext`, and
+:manage:`dump2py` was the first who tried to access it. Which was
+deemed to fail.  And I had been triaging tickets during at least half
+an hour. I'd prefer to not roll back my data to the state before the
+release.  How to get out of this lock?  Answer: a new option
+`--tolerate` for :manage:`dump2py`.
+
+
+

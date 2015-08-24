@@ -1,0 +1,31 @@
+=================================
+20150824 (Monday, 24 August 2015)
+=================================
+
+I fixed on :ticket:`443` (Cannot insert HTML links using TinyMCE).
+
+The problem seems to be local. Maybe I must just run `collectstatic`?
+No, that was not the reason.  But ouch, now I see the
+explanation. Javascript console says :message:`Error: Permission
+denied to access property "tinymce"` in :file:`tiny_mce_popup.js`.
+And that file has a comment::
+
+    // Uncomment and change this document.domain value if you are loading the script cross subdomains
+    // document.domain = 'moxiecode.com';
+
+And indeed on a production server it is being served from a different
+subdomain.  How to solve this? Does Django have a feature of patching
+static files before applying them?
+
+And before trying to do it automatically, I changed that line
+manually::
+
+  document.domain = 'lino-framework.org';
+
+But this was not enough.  Aha:
+- http://stackoverflow.com/questions/572025/tiny-mce-popups-blank-in-django-admin
+- http://www.tinymce.com/wiki.php/TinyMCE3x:How-to_load_TinyMCE_crossdomain
+
+So I must also change it in :file:`tinymce.js`.  And finally we have a
+new setting :attr:`lino.modlib.tinymce.Plugin.document_domain`.
+

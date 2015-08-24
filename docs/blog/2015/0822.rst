@@ -1,0 +1,59 @@
+=========================
+Saturday, August 22, 2015
+=========================
+
+Lino with Django > 1.6
+======================
+
+Still occupied by ticket :ticket:`38` (Make Lino run with Django 1.7+).
+
+Yesterday I finally managed to get :ref:`lino.tested.diamond2` to pass
+also under Django 1.7 by adapting
+:func:`lino.core.inject.django_patch`.  But unfortunately this did not
+fix our original problem.  
+
+So I now try to isolate this problem in a new test case
+:ref:`lino.tested.e006`.
+
+Django 1.7+ issued the following 
+`RemovedInDjango19Warning` when extending 
+e.g. :mod:`lino.modlib.contacts` by `lino.projects.min2.modlib.contacts`::
+
+    RemovedInDjango19Warning: Model X doesn't declare an explicit app_label and either isn't in an application in INSTALLED_APPS or else was imported before its application was loaded. This will no longer be supported in Django 1.9.
+
+So it is now recommended declare an explicit `Meta.app_label` for
+every model of an extendable library plugin::
+
+    class Partner(...):
+
+        class Meta:
+            app_label = 'contacts'  # avoid RemovedInDjango19Warning
+            abstract = dd.is_abstract_model(__name__, 'Partner')
+
+
+Finding a colleague
+===================
+
+Ticket :ticket:`38` (Make Lino run with Django 1.7+) seems a good
+ticket for finding an assistant for me.
+
+Worked on :ref:`lino.tested.e006` in that direction.
+
+Updated the job offer at `Assistant Senior Developer
+<http://www.saffre-rumma.net/jobs/seniordev.html>`_
+
+Discovered :ticket:`444` (bugs.lf.org shows no tickets):
+
+The page's source code shows a "<Element u'div' at 0xb3e2324c>" where
+the table should be. 
+Of course the :meth:`lino.core.requests.BaseRequest.show` method 
+must return `E.tostring(e)`  and not `e`. But only 
+
+
+SectionLayout on bibles.Sections has no data element 'seqno'
+============================================================
+
+Ticket :ticket:`445` was a side effect caused by a change some days
+ago as part of :ticket:`436` (Hierarchical no longer Sequenced, see
+:doc:`0818`). I also added a test case to :mod:`lino_logos`.
+

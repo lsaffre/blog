@@ -12,10 +12,12 @@ challenge is Django's new application loading system. Augustin and I
 have been working on this in parallel, and of course our solutions
 differ slightly.
 
-I renamed `lino.modlib.contenttypes` to :mod:`lino.modlib.gfks`, and
-this plugin now has ``django.contrib.contenttypes`` as needed
-plugin. This is because Django 1.9 will refuse to import a database
-model which is neither abstract nor actually being used::
+I renamed `lino.modlib.contenttypes` to :mod:`lino.modlib.gfks`. So
+this plugin no longer *extends* ``django.contrib.contenttypes``, it
+just causes depends on it
+(:attr:`lino.core.site.Site.needs_plugins`). This is because Django
+1.9 will refuse to import a database model which is neither abstract
+nor actually being used::
 
     RemovedInDjango19Warning: Model class
     django.contrib.contenttypes.models.ContentType doesn't declare an
@@ -25,8 +27,9 @@ model which is neither abstract nor actually being used::
 
 So in Django 1.9 we cannot extend plain Django plugins like
 ``django.contrib.contenttypes``. That's okay, and ``contenttypes`` was
-the only case. They idea of extending it within the same name was a
-bit hackerish anyway.
+the only case. Anyway the idea of extending it using the same name was
+a bit hackerish. You can *use* plugins designed for plain Django in
+Lino, but you cannot *extend* them.
 
 Diamond inheritance still causes problems. My workaround works only
 until Django 1.6 and I did not yet get it to work in Django > 1.6. It
