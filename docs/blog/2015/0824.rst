@@ -2,6 +2,10 @@
 20150824 (Monday, 24 August 2015)
 =================================
 
+
+TinyMCE and subdomains
+=======================
+
 I fixed on :ticket:`443` (Cannot insert HTML links using TinyMCE).
 
 The problem seems to be local. Maybe I must just run `collectstatic`?
@@ -28,4 +32,146 @@ But this was not enough.  Aha:
 
 So I must also change it in :file:`tinymce.js`.  And finally we have a
 new setting :attr:`lino.modlib.tinymce.Plugin.document_domain`.
+
+
+IntegrityError beim Löschen eines Ortes ohne Adressen
+=====================================================
+
+I did some research for :ticket:`418`.
+
+At a customer's production site, Lino sends the following server
+traceback when a user tries to delete a given place
+(:class:`countries.Place <lino.modlib.countries.models.Place>`)::
+
+    IntegrityError: (1451, 'Cannot delete or update a parent row: a foreign key constraint fails (`dbname`.`contacts_person`, CONSTRAINT `city_id_refs_id_d349fc28` FOREIGN KEY (`city_id`) REFERENCES `countries_place` (`id`))')
+
+Thanks to thread `Cannot delete or update a parent row: a foreign key
+constraint fails
+<http://stackoverflow.com/questions/3334619/cannot-delete-or-update-a-parent-row-a-foreign-key-constraint-fails>`_
+on Stackoverflow I got more details on what has happened::
+
+    mysql> show engine 'innodb' status;
+    (...)
+
+    LATEST FOREIGN KEY ERROR
+    ------------------------
+    150824  9:54:33 Transaction:
+    TRANSACTION 3A9BA6, ACTIVE 0 sec updating or deleting
+    mysql tables in use 1, locked 1
+    6 lock struct(s), heap size 1248, 4 row lock(s), undo log entries 1
+    MySQL thread id 621034, OS thread handle 0x7f46fc04c700, query id 63183278 localhost django updating
+    DELETE FROM `countries_place` WHERE `id` IN (1041)
+    Foreign key constraint fails for table `cpas_eupen`.`contacts_person`:
+    ,
+      CONSTRAINT `city_id_refs_id_d349fc28` FOREIGN KEY (`city_id`) REFERENCES `countries_place` (`id`)
+    Trying to delete or update in parent table, in index `PRIMARY` tuple:
+    DATA TUPLE: 11 fields;
+     0: len 4; hex 80000411; asc     ;;
+     1: len 6; hex 0000003a9ba6; asc    :  ;;
+     2: len 7; hex 0a000038141b4f; asc    8  O;;
+     3: len 22; hex 457570656e20286e696368742062656e75747a656e29; asc Eupen (nicht benutzen);;
+     4: len 2; hex 4245; asc BE;;
+     5: len 4; hex 34373030; asc 4700;;
+     6: len 0; hex ; asc ;;
+     7: SQL NULL;
+     8: len 0; hex ; asc ;;
+     9: len 0; hex ; asc ;;
+     10: len 0; hex ; asc ;;
+
+    But in child table `cpas_eupen`.`contacts_person`, in index `contacts_person_b376980e`, there is a record:
+    PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+     0: len 4; hex 80000411; asc     ;;
+     1: len 4; hex 800310b0; asc     ;;
+
+    (...)
+
+I wrote a script :file:`20150824.py` with this content::
+
+    from lino.api.shell import *
+    qs = contacts.Person.objects.filter(city_id=1041)
+    print qs
+    print qs.query
+
+And the output is::    
+
+    $ python manage.py run 20150824.py    
+    ...
+    []
+    SELECT `contacts_partner`.`id`, `contacts_partner`.`modified`,
+    `contacts_partner`.`created`, `contacts_partner`.`country_id`,
+    `contacts_partner`.`city_id`, `contacts_partner`.`zip_code`,
+    `contacts_partner`.`region_id`, `contacts_partner`.`addr1`,
+    `contacts_partner`.`street_prefix`, `contacts_partner`.`street`,
+    `contacts_partner`.`street_no`, `contacts_partner`.`street_box`,
+    `contacts_partner`.`addr2`, `contacts_partner`.`name`,
+    `contacts_partner`.`language`, `contacts_partner`.`email`,
+    `contacts_partner`.`url`, `contacts_partner`.`phone`,
+    `contacts_partner`.`gsm`, `contacts_partner`.`fax`,
+    `contacts_partner`.`remarks`, `contacts_partner`.`is_obsolete`,
+    `contacts_partner`.`activity_id`,
+    `contacts_partner`.`client_contact_type_id`,
+    `contacts_partner`.`iban`, `contacts_partner`.`bic`,
+    `contacts_person`.`partner_ptr_id`, `contacts_person`.`title`,
+    `contacts_person`.`first_name`, `contacts_person`.`middle_name`,
+    `contacts_person`.`last_name`, `contacts_person`.`gender`,
+    `contacts_person`.`birth_date` FROM `contacts_person` INNER JOIN
+    `contacts_partner` ON ( `contacts_person`.`partner_ptr_id` =
+    `contacts_partner`.`id` ) WHERE `contacts_partner`.`city_id` = 1041
+    ORDER BY `contacts_person`.`last_name` ASC,
+    `contacts_person`.`first_name` ASC
+
+This seems to indicate that MySQL has some index file out of sync. Is
+that true? How do such things happen?  According to `2.19.4 Rebuilding
+or Repairing Tables or Indexes
+<https://dev.mysql.com/doc/refman/5.0/en/rebuilding-tables.html>`__
+the problem might vanish by doing a dump and reloading it. If this is
+true for a Lino dump (which is possible but not sure), then the
+problem should disappear automagically after the next release.
+
+
+
+The murder bug explained
+========================
+
+Ha! It seems that I found the explanation for the "murder bug"
+(:ticket:`296`).
+
+We had another case of suddenly vanishing data.  
+
+Today it was Budget #47. They asked Lino to delete this budget because
+they did not see at that moment that it is their
+`SiteConfig.master_budget`.  In such a situation Lino simply says
+"Cannot delete Budget 47 because 1 SiteConfig refers to it". It
+*should* say. It *does* say it in a demo environment. But it obviously
+*did not* say it today at noon on a production server. And since the
+default value for `on_delete` of ForeignKey fields is ``CASCADE``, the
+database server did its duty: delete all related objects. Not only the
+SiteConfig, but also the user who had created that budget, and then
+everything authored by that user.  29 Excerpts, 250 Changes, 133
+Budgets, 3 Uploads, 44 Coachings, 239 Events/Notes...
+
+
+So there must be cases where Lino's :mod:`lino.core.ddh` fails to
+throw a veto. And then, logically, Lino lets users delete a database
+object that shouldn't get deleted because it has related objects.
+
+My first reaction is this:
+:meth:`lino.core.kernel.Kernel.kernel_startup` now does another loop
+through all the models and sets `on_delete` to ``PROTECT`` for all FK
+fields that are not listed in their model's
+:attr:`allow_cascaded_delete
+<lino.core.model.Model.allow_cascaded_delete>`.
+
+I manually repaired their data from a snapshot, and used the occation
+to also make a full database dump and restore. And yes: no more
+IntegrityError when trying to delete "Eupen (nicht benutzen)", and
+Lino now refuses to delete the budget #47.
+
+The explanation for the murder bug is that current Lino versions can
+fail to see related objects when some MySQL index tables are out of
+sync. And when then deleting such an object, the database will
+cascadedly delete all related objects.
+
+This is a reason for a quick upgrade.
+
 
