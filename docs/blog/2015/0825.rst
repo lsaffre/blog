@@ -7,4 +7,45 @@ my customer, but Lino Noi said :ticket:`453` (invalid worksheet name
 u'Deployed tickets von weleup:com'). Fixed.
 
 Continued to repair the test suite (mostly due to changes caused by
-:ticket:`143`)
+:ticket:`143`).
+
+Checkin (also changes of yesterday).
+
+I tested the new :attr:`log_each_action_request
+<lino.core.site.Site.log_each_action_request>` because we will
+probably activate it for some time in Eupen after our emotions around
+the murder bug.  I discovered that some actions did't have their
+:attr:`readonly <lino.core.action.ACtions.readonly>` attribute set to
+`False` and therefore were not logged.
+
+
+Release in Eupen
+================
+
+After the upgrade and when restoring the dump, I decided to write a
+migrator, mainly in order to make sure that no IBAN/BIC fields stored
+on Partner get lost.  Worked a bit on :ref:`lino.datamig`.
+
+
+Empty budgets
+=============
+
+Exploring :ticket:`329`.  Here is a Lino script (designed to be
+invoked with :manage:`run`) which prints all empty budgets::
+
+    from lino.api.shell import *
+    from django.db.models import Count
+    qs = debts.Budget.objects.annotate(num=Count('entry')).filter(num__gt=0)
+    for obj in qs:
+        print obj.id, obj.user.username
+
+object of type 'generator' has no len()
+=======================================
+
+Fixed a bug which occurred when printing a release report with a
+recipient in Lino Noi::
+
+  Error while evaluating expression 
+  "this.excerpt_type.print_recipient and this.has_address()". 
+  TypeError: object of type 'generator' has no len()
+

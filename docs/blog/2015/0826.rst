@@ -1,0 +1,82 @@
+==========================
+Wednesday, August 26, 2015
+==========================
+
+:ticket:`419` (Optionally log each database change to Lino logger) :
+changed the format of the log message.
+
+The first draft had been::
+
+    INFO run_action <TableRequest cal.MyEvents.wf1({'user': u'rolf'})>
+    
+Now it is::    
+    
+    INFO run_action rolf cal.MyEvents.wf1 None [Event #537 (u'Termin #537 Auswertung (22.05.2014 08:30)')]
+
+(i.e. the word "run_action" followed by the username, the action name, the master instance and the list of selected rows)
+
+Supervisor
+==========
+
+Worked on :ticket:`341` (Supervisor) : new user profile
+:class:`lino_welfare.modlib.welfare.roles.Supervisor`.
+
+About "editable" actions
+========================
+
+Discovered a bug that would have been a spoiler in Eupen: the checkin,
+receive and checkout actions (which are no longer readonly because we
+want them to get logged via :ticket:`419`) had disappeared. This is
+because we had the following
+in :meth:`attach_to_actor <lino.core.actions.Action.attach_to_actor>`::
+
+    if not actor.editable and not self.readonly:
+        return False
+
+This is possibly not the last side effect. of :ticket:`419`.  The
+:attr:`readonly<lino.core.actions.Action.readonly>` attribute is
+documented to mean "only changes *in the current object*". I don't
+remember why this subtlety was needed.
+
+
+Empfangsbeamte müssen den Reiter "Sonstiges" sehen können
+=========================================================
+
+Got an urgent ticket:
+:ticket:`455` (Empfangsbeamte müssen den Reiter "Sonstiges" sehen können).
+
+The panel's `required_roles` was indeed 
+:class:`SocialStaff <lino_welfare.modlib.pcsw.roles.SocialStaff>`::
+
+        required_roles=dd.required(SocialStaff)
+
+I solved this by making it visible to 
+:class:`ContactsStaff <lino.modlib.contacts.roles.ContactsStaff>`
+as well:
+
+    required_roles=dd.required((SocialStaff, ContactsStaff))
+
+Note the subtlety in above code. The following code would *not* have
+the expected result::
+
+    required_roles=dd.required(SocialStaff, ContactsStaff)
+
+because that would mean that *both* roles SocialStaff *and*
+ContactsStaff are required. In this case we want to say that *one of*
+either is enough.
+
+Documentation
+=============
+
+I wrote a bit about :ref:`lino.datamig` and removed the
+:attr:`tolerate_sphinx_warnings
+<atelier.fablib.env.tolerate_sphinx_warnings>` from Lino's
+:xfile:`fabfile.py`.
+
+
+NameError: global name 'when_text' is not defined
+=================================================
+
+A simple bug had slipped through the test suite.  Fixing it was easy,
+but it took me half an hour to make it reproduceable (in
+:ref:`welfare.specs.cal`).
