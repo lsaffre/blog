@@ -1,0 +1,48 @@
+=======================
+Friday, August 28, 2015
+=======================
+
+Discovered and fixed :ticket:`467`.
+
+Received and fixed :ticket:`471`.  This was simply a custom
+:meth:`on_duplicate <lino.core.model.Model.on_duplicate>` method for
+:class:`UserAuthored <lino.modlib.users.mixins.UserAuthored>`.  
+
+En passant also a little API change: The :attr:`manager_roles_required
+<lino.modlib.users.mixins.UserAuthored.manager_roles_required>` of a
+:class:`UserAuthored <lino.modlib.users.mixins.UserAuthored>` must now
+be an *iterable* of :class:`UserRole <lino.core.roles.UserRole>`
+subclasses (when not `None`). Until now it was expected to contain a
+single role, making it impossible to require several roles at once.
+
+The above API change revealed a subtle problem which took me two hours
+of research: The :mod:`lino.projects.min1` and
+:mod:`lino.projects.min2` sites had their :attr:`user_profiles_module
+<lino.core.site.Site.user_profiles_module>` set to
+:mod:`lino.modlib.users.roles` and not to
+:mod:`lino.modlib.office.roles`. Accordingly the user `robin` on these
+sites should not see e.g. :class:`cal.MyEvents
+<lino.modlib.cal.ui.MyEvents>` since this table requires
+:class:`OfficeUser <lino.modlib.office.roles.OfficeUser>`.  For some
+reason they saw it nevertheless. I guess it has to do with the fact
+that the requirement sets for actor and action are being united in
+:class:`BoundAction <lino.core.boundaction.BoundAction>` and that this
+operation got inadvertently loosened.
+
+I also wrote my first custom exception: :class:`ChangedAPI
+<lino.core.exceptions.ChangedAPI>`.
+
+
+I fixed :ticket:`465` by adding a section "Visibility of eID reader
+actions" to :ref:`welfare.specs.eupen`.  This brought some
+optimizations into :mod:`lino.utils.diag`:
+
+- Makes now usage of an analyzer object which has some more methods.
+- The list of window layouts no longer combines fields and visibility
+  but shows two separate lists.
+- The list of profiles produced by :func:`lino.utils.diag.visible_for`
+  no longer uses "all except" when there are more profiles which don't
+  see the action. And it no longer inserts commas between them. 
+
+These details in formatting make things easier to manage when a test
+case fails because something has changed.

@@ -1,0 +1,21 @@
+==========================
+Tuesday, September 1, 2015
+==========================
+
+I activated `ledger`, `finan` and `vatless` for
+:mod:`lino_welfare.projects.eupen` and released this to their
+production site. Which means that the first prototype of :ticket:`143`
+will become visible.
+
+Theoretically this change should not affect any existing user profiles
+except `SiteAdmin`. But in practice it did: most actors in these
+modules did not yet have their `required_roles` set.
+
+I used the following script to load
+:mod:`lino_welfare.modlib.ledger.fixtures.std` into their database::
+
+    from lino_welfare.modlib.ledger.fixtures.std import objects
+    for obj in objects():
+        obj.full_clean()
+        obj.save()
+

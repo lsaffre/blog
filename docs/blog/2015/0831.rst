@@ -1,0 +1,53 @@
+=======================
+Monday, August 31, 2015
+=======================
+
+This weekend an optimization in :mod:`atelier.sphinxconf.sigal_image`
+in order to produce
+http://belglane.vana-vigala.ee/s6brad/20150829.html
+
+Worked on :ticket:`469`. New module :mod:`lino_noi.projects.bs3`.  The
+first session revealed a subtle bug: actors with an empty set as
+:attr:`required_roles
+<lino.core.permissions.Permittable.required_roles>` were not visible
+to anonymous users because *actions* also required `SiteUser`.
+
+
+Murder bug for the hopefully last time
+======================================
+
+(Continued from :doc:`0824`)
+
+I found the situation where Lino's :mod:`lino.core.ddh` failed to
+throw a veto:
+
+- Deleting an MTI child did not ask vetos from their MTI parents.
+  For example when deleting a person who is being used as the
+  :attr:`partner <lino.modlib.users.models.User.partner>` of a user,
+  then Lino ran only the DDH for `Person`, not those for `Partner`.
+
+And since we now had a reproducible case, I discovered and fixed
+another bug: 
+
+- that new loop in :meth:`lino.core.kernel.Kernel.kernel_startup`
+  (through all the models which sets `on_delete` to ``PROTECT`` for
+  the FK fields which are not listed in their model's
+  :attr:`allow_cascaded_delete
+  <lino.core.model.Model.allow_cascaded_delete>`) did not work due to
+  a simple typo bug (``==`` instead of ``=``).
+
+Added three test cases and a diagnostic utility:
+
+- :ref:`welfare.specs.ddh` (in :mod:`lino_welfare.projects.std`)
+- :ref:`lino.tested.ddh` (using :mod:`lino.projects.min1`)
+- :meth:`lino.utils.diag.Analyzer.show_foreign_keys`
+- :mod:`lino_welfare.projects.std.tests.test_ddh`
+
+So :ticket:`477` was the murder bug, and :ticket:`452` was maybe even
+innocent.
+
+
+Checkin. Release in Eupen. 
+
+Last optimizations on :ticket:`363`.
+
