@@ -1,0 +1,49 @@
+===========================
+Saturday, September 5, 2015
+===========================
+
+I continued with :ticket:`469` (Public web interface needs search and
+pagination).
+
+The :attr:`required_roles
+<lino.core.permissions.Permittable.required_roles>` of
+:class:`tickets.Tickets <lino.modlib.tickets.ui.Tickets>` is now
+`set([])`, i.e. everybody would see all ticket tables.  Actually this
+is not wrong, anyway we need to check per ticket whether it is visible
+(because that depends on whether it is private or not).
+
+I moved some bootstrap-specific code from :mod:`lino.core` to
+:mod:`lino.modlib.bootstrap3`.
+
+And cool!  :mod:`lino_noi.projects.bs3` becomes usable.  On
+:class:`tickets.Tickets <lino.modlib.tickets.ui.Tickets>` I now use
+the :attr:`detail_html_template
+<lino.core.actors.Actor.detail_html_template>` attribute.  This is the
+first proof of this idea.
+
+En passant I discovered and fixed a baby bug in :meth:`disable_delete
+<lino.core.model.Model.disable_delete>` which occurred in :ref:`cosi`
+because there we have MTI without `Polymorphic`.  Also wrote a test
+case to cover this.
+
+The :xfile:`tickets/Ticket/detail.html` now filters out the
+description of private tickets for people who have no right to see
+them. That is, private tickets are actually not invisible. It is just
+their description that's invisible.  (to be observed in practice)
+
+TODO:
+
+- add a search field to
+  :func:`lino.modlib.bootstrap3.views.table2html`
+- make more information visible to anonymous (e.g. sites, milestones,
+  projects, session reports)?
+- activate it for http://bugs.lino-framework.org/
+
+Worked on :ticket:`498` (Http404: contacts.Persons has no row with
+primary key u'1674') : changes in :xfile:`linoweb.js` and
+:mod:`lino.modlib.extjs.views`.  
+
+Noticed new ticket :ticket:`504` : The JSON API is currently not well
+designed at all, it has just grown during the years with the
+needs. TODO: change it into a well-documented public API.
+

@@ -13,28 +13,28 @@ first session revealed a subtle bug: actors with an empty set as
 to anonymous users because *actions* also required `SiteUser`.
 
 
-Murder bug for the hopefully last time
-======================================
+The murder bug
+==============
 
-(Continued from :doc:`0824`)
+We finally managed to reproduce and understand what we internally
+called the murder bug. This bug had caused several cases of sudden
+data loss, hundreds of persons vanishing "overnight".  Continued from
+:doc:`0824` for the hopefully last time.
 
-I found the situation where Lino's :mod:`lino.core.ddh` failed to
-throw a veto:
-
-- Deleting an MTI child did not ask vetos from their MTI parents.
-  For example when deleting a person who is being used as the
-  :attr:`partner <lino.modlib.users.models.User.partner>` of a user,
-  then Lino ran only the DDH for `Person`, not those for `Partner`.
+The situation where Lino's :mod:`lino.core.ddh` failed to throw a veto
+was the following: when deleting an MTI child, Lino did not ask vetos
+from its MTI parents.  For example when deleting a person who is being
+used as the :attr:`partner <lino.modlib.users.models.User.partner>` of
+a user, then Lino ran only the DDH for the `Person`, not those for the
+`Partner`.
 
 And since we now had a reproducible case, I discovered and fixed
-another bug: 
-
-- that new loop in :meth:`lino.core.kernel.Kernel.kernel_startup`
-  (through all the models which sets `on_delete` to ``PROTECT`` for
-  the FK fields which are not listed in their model's
-  :attr:`allow_cascaded_delete
-  <lino.core.model.Model.allow_cascaded_delete>`) did not work due to
-  a simple typo bug (``==`` instead of ``=``).
+another bug: that new loop in :meth:`kernel_startup
+<lino.core.kernel.Kernel.kernel_startup>` (which sets `on_delete` to
+``PROTECT`` for the FK fields which are not listed in their model's
+:attr:`allow_cascaded_delete
+<lino.core.model.Model.allow_cascaded_delete>`) did not work due to a
+simple typo bug (``==`` instead of ``=``).
 
 Added three test cases and a diagnostic utility:
 
@@ -43,11 +43,19 @@ Added three test cases and a diagnostic utility:
 - :meth:`lino.utils.diag.Analyzer.show_foreign_keys`
 - :mod:`lino_welfare.projects.std.tests.test_ddh`
 
-So :ticket:`477` was the murder bug, and :ticket:`452` was maybe even
-innocent.
-
+Yes, :ticket:`477` was the murder bug, and :ticket:`452` was probably
+even innocent.  
 
 Checkin. Release in Eupen. 
-
 Last optimizations on :ticket:`363`.
 
+
+One day I should write more about how Lino manages to make deleting
+more secure.  I stumbled over Stefan Haflidason's article `Safer
+(Soft) Deletion in Django
+<http://stefan.haflidason.com/safer-soft-deletion-in-django/>`__
+how complex things are.
+
+Another thing to do is to check whether `django-reversion
+<https://github.com/etianen/django-reversion>` would be a replacement
+for :mod:`lino.modlib.changes`.

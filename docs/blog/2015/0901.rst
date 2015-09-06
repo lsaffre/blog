@@ -4,18 +4,43 @@ Tuesday, September 1, 2015
 
 I activated `ledger`, `finan` and `vatless` for
 :mod:`lino_welfare.projects.eupen` and released this to their
-production site. Which means that the first prototype of :ticket:`143`
-will become visible.
+production site.  Which means that the first prototype of
+:ticket:`143` has become visible.
 
-Theoretically this change should not affect any existing user profiles
-except `SiteAdmin`. But in practice it did: most actors in these
-modules did not yet have their `required_roles` set.
+Theoretically this change would not affect any existing user profiles
+except `SiteAdmin`.  But in practice it did: most actors in these
+modules did not yet have their `required_roles` set. Fixed.
 
-I used the following script to load
+I ran the following script to load
 :mod:`lino_welfare.modlib.ledger.fixtures.std` into their database::
 
     from lino_welfare.modlib.ledger.fixtures.std import objects
     for obj in objects():
         obj.full_clean()
         obj.save()
+
+
+During the day Gerd reported a similar detail: :ticket:`480`.
+Indeed :class:`lino.modlib.ledger.ui.DebtsByPartner` did not have 
+`required_roles` set.
+
+This made me discover and fix a subtle framework bug:
+:class:`ShowSlaveTable <lino.core.actions.ShowSlaveTable>` must
+"inherit" the :attr:`required_roles
+<lino.core.permissions.Permittable.required_roles>` of the table.
+
+Having set `required_roles` on the table, the button did not
+disappear, but clicking on it no longer opened the window with the
+table, only an error message in the JavaScript console::
+    
+  TypeError: Lino.ledger.DebtsByPartner.grid is undefined    
+    
+Explanation: the button was rendered since it did not inherit the
+requirements.
+
+I noticed that Lino still declared its development status as "beta".
+It is of course a subjective decision, but for me "beta" is
+definitively not true any more. Changed it to Stable and released the
+good news to PyPI as version 1.6.19.
+Also for :ref:`welfare`.
 

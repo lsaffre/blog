@@ -1,0 +1,141 @@
+============================
+Wednesday, September 2, 2015
+============================
+
+UnicodeError when printing a table to pdf
+=========================================
+
+Reported :ticket:`484` and tried to reproduce on my machine.
+
+When I try to print certain tables to pdf in a production site of Lino
+Noi, e.g. "Sessions von #477" (:class:`SessionsByTicket
+<lino.modlib.clocking.ui.SessionsByTicket>`), then I get::
+
+  Error while evaluating the expression "table(ar)" defined in the
+  "from" part of a statement. UnicodeDecodeError: 'ascii' codec can't
+  decode byte 0xc3 in position 12: ordinal not in range(128)
+
+It is obviously related to the data being printed since the same
+table works for most cases.
+
+The production server is running Django 1.6.10, Python 2.7.3, appy
+0.9.1 and 0.9.2
+
+I loaded a snapshot from the production site to my development machine
+(only difference I can see is Python 2.7.4 instead of 2.7.3). The same
+table prints out on my machine.
+
+I upgraded the Debian Wheezy on the production server, but this did
+not upgrade the Python version::
+
+    The following packages will be upgraded:
+      apache2 apache2-doc apache2-mpm-prefork apache2-utils apache2.2-bin 
+      apache2.2-common bind9 bind9-host bind9utils cups-bsd cups-client 
+      cups-common curl dpkg dpkg-dev dselect expat fonts-opensymbol ghostscript 
+      ldap-utils libapache2-mod-php5 libbind9-80 libcups2 libcupsimage2 
+      libcurl3 libcurl3-gnutls libdns88 libdpkg-perl libexpat1 libexpat1-dev 
+      libgd2-xpm libgdk-pixbuf2.0-0 libgdk-pixbuf2.0-common libgs9 
+      libgs9-common libicu48 libisc84 libisccc80 libisccfg82 libjs-jquery-ui 
+      libldap-2.4-2 liblwres80 libmysqlclient-dev libmysqlclient18 libnss3 
+      libnss3-1d libphp-snoopy libreoffice libreoffice-base 
+      libreoffice-base-core libreoffice-calc libreoffice-common 
+      libreoffice-core libreoffice-draw libreoffice-filter-binfilter 
+      libreoffice-filter-mobiledev libreoffice-impress libreoffice-java-common 
+      libreoffice-math libreoffice-officebean libreoffice-report-builder-bin 
+      libreoffice-style-galaxy libreoffice-writer libruby1.9.1 libsqlite3-0 
+      libssl-dev libssl1.0.0 libsvn1 libtasn1-3 libtidy-0.99-0 libtidy-dev 
+      libwmf0.2-7 libx11-6 libx11-data libx11-xcb1 libxml2 libxrender1 
+      linux-libc-dev mailman mercurial mercurial-common mysql-client-5.5 
+      mysql-common mysql-server mysql-server-5.5 mysql-server-core-5.5 
+      openjdk-6-jre openjdk-6-jre-headless openjdk-6-jre-lib openssl php5 
+      php5-cli php5-common php5-curl php5-gd php5-intl php5-mysql python3-uno 
+      ruby1.9.1 subversion uno-libs3 ure wordpress wordpress-l10n 
+    The following packages are RECOMMENDED but will NOT be installed:
+      icedtea-6-jre-cacao icedtea-6-jre-jamvm icedtea-netx 
+      libfile-fcntllock-perl libreoffice-emailmerge libsasl2-modules libssl-doc 
+    104 packages upgraded, 0 newly installed, 0 to remove and 7 not upgraded.
+
+
+It seems neither easy to upgrade the production server to 2.7.4, nor
+to install a Python 2.7.3 on my machine. So I leave that ticket open
+for the moment with the suggestion that it is due to some bug in
+Python 2.7.3 which has been fixed for 2.7.4 (these are listed `here
+<https://hg.python.org/cpython/file/9290822f2280/Misc/NEWS>`__).
+
+
+Cannot delete partner with more than one MTI children
+=====================================================
+
+We discovered a minor side effect of the changes that I made on
+:doc:`0831` when fixing the murder bug (:ticket:`477`, Accidental
+cascaded delete when deleting MTI child):
+
+When there was a Partner who was also *both* a Person and a Company
+(i.e. Person and Company are MTI siblings), then it was not possible
+to any object of the triangle.
+
+I solved this by writing a special version of :meth:`disable_delete
+<lino.mixins.polymorphic.Polymorphic.disable_delete>` for
+:class:`Polymorphic <lino.mixins.polymorphic.Polymorphic>`.
+
+This means also that application programmers should 
+
+:ref:`welfare.specs.ddh`
+:ref:`welfare.specs.eupen`
+
+
+Dynamic html actions ignore auto_save
+=====================================
+
+Mathieu reported :ticket:`491` (Dynamic html actions ignore auto_save):
+
+    Arianne a écrit quelques lignes dans le corps du texte d’une
+    observation. Avant d’enregistrer, elle a voulu joindre un document
+    (Fichiers téléchargés). Tout ce qu’elle a écrit a disparu.
+
+This is a general bug: :ticket:`492` (Dynamic html actions ignore
+auto_save).  It is the same problem for all action buttons in dynamic
+html. 
+
+It's not easy to solve, and will potentially bring bugs into the
+Javascript code. 
+
+The InserRow action theoretically knows that it should save the
+requesting panel before executing (because it has auto_save=True).
+When called from a toolbar button or the context menu, then the JS
+code builds the action handlers, wrapping `do_when_clean` around
+them. This is done on the dict returned by ext_renderer.a2btn. But in
+the case of ar2button it just renders an <a href> tag with a
+`javascript:` href. And that code knows the requesting panel only by
+its extjs name. We might add a third parameter to the
+`WindowAction.run` method:
+
+    javascript:Lino.uploads.UploadsByClient.insert.run("ext-comp-1276",{...})
+
+    javascript:Lino.uploads.UploadsByClient.insert.run("ext-comp-1276",{...}, true)
+
+But the cleaner way is to move that `do_when_clean` wrapping somewhere
+else. Into the generated actions.
+
+This is for later....
+
+Maybe a cold comfort, users can now press Ctrl+S in the text editor to
+have it saved: :ticket:`493` (Ctrl+S to save in text editor).
+
+I didn't get it to work with Ctrl-ENTER.  Ctrl-S is defined using
+`addShortcut
+<http://www.tinymce.com/wiki.php/API3:method.tinymce.Editor.addShortcut>`_
+which works only for alphanumeric keys.  I tried using `onKeyDown`
+inspired by `Steffen Bollmann
+<https://groups.google.com/forum/#!topic/zotero-dev/3H1J34ZFhYs>`_
+which works except that I cannot stop the default handler to also
+fire.  Tried also `this
+<http://stackoverflow.com/questions/18971284/event-preventdefault-vs-return-false-no-jquery>`__
+method without success.  And so Ctrl-ENTER is not usable since the
+default handler inserts a space and a newline before saving.
+
+In general you can now also press Ctrl-S anywhere in a FormPanel to
+save the record. Same as ENTER until now (and that shortcut remains,
+too).
+
+TODO: the keyboard focus unfortunately gets lost when saving.
