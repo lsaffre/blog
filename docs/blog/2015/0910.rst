@@ -1,0 +1,97 @@
+============================
+Thursday, September 10, 2015
+============================
+
+Deployment process optimization
+===============================
+
+In connection with :ticket:`510` I have been thinking and doing a
+series of little changes in Lino Noi around the deployment process.
+
+Some text which I wrote first into the :ticket:`510` is now in an
+official document: :ref:`team.enduser_testing`.
+
+My customers basically need two reports which were already almost
+possible with the current Lino Noi (but only *almost*).
+
+A first report is a list of **changes to come** with a planned
+release.  That is, the tickets that will be deployed in a
+release. This report exists (click the Print button on a Milestone),
+but it was still quite difficult to manage the deployments.
+
+The second report is a **list of known problems** for a site.  That
+is, a list of tickets matching the following conditions:
+  
+- explicitly reported for my site, **or** reported on some other site
+  but with a *product* used on my site (and not private)
+
+- not yet deployed, i.e. no deployment with a milestone whose
+  "reached" date is non-empty (and before end_date).
+
+And then we need some way for the users to easily see this list.
+Should we send weekly emails? No. In a first step we just need a table
+with these conditions preset. A first pragmatic approach was to use
+the existing table :class:`TicketsBySite
+<lino.modlib.tickets.ui.TicketsBySite>`.
+
+I also moved the :ref:`Teamwork guide <lino.team>` from *Lino* to
+*Noi*.  This was maybe a bit radical because some links which I sent
+to Mahmoud, Sandeep and Hamza during the last months are now
+broken. But I prefer it short and sweet . I started to write the
+teamwork guide long before I imagined that we would use Lino Noi as
+our central ticketing system. Now this decision seems quite
+definitive, and Lino *Noi* (not the framework itself) is where these
+topics should be documented. For example, other companies might decide
+in the future to maintain Lino using their own system and their own
+teamwork guide.
+
+
+
+Changes
+
+- A ticket which occurs on a given site may be deployed to other sites
+  as well. Removed the filter from the chooser of the :attr:`milestone
+  <lino.modlib.tickets.models.Deployment.milestone>` field of a
+  deployment.
+
+- Added a new TicketEvent "todo" which means to show only tickets that
+  are not yet deployed, i.e. have no deployment with a milestone whose
+  :attr:`reached <lino.modlib.tickets.models.Milestone.reached>` date
+  is non-empty (and before `end_date` of observed period).
+
+- :mod:`lino.modlib.tickets` now injects a new field `user_site` to
+  :class:`lino.modlib.users.models.User`. This field is typically empty
+  for developers and non-empty for customers.  If set, it points to the
+  favourite site of this user.
+
+- The new table :class:`MyKnownProblems
+  <lino.modlib.tickets.ui.MyKnownProblems>` shows known problems on
+  that site.  Users with a favourite site gat a welcome message "There
+  are X known problems on Y"
+  
+  :class:`MyKnownProblems <lino.modlib.tickets.ui.MyKnownProblems>` is
+  a bit special. Actually we would want it to be *visible* only for
+  users whose field `user_site` is not empty. But the visibility of
+  actors cannot be controlled per request, only per user profile.
+
+- Added a new field :attr:`closed
+  <lino.modlib.tickets.models.Milestone.closed>` to
+  `Milestone`. Because on some sites we now have a lot of old
+  milestones (and deployments) which we don't want to see in everyday
+  work. The `Milestones` and `Deployments` tables now have filter
+  parameters, the most important parameter being :attr:`show_closed
+  <lino.modlib.tickets.ui.Milestones.show_closed>` whose default value
+  is "no".
+
+- New field :attr:`upgrade_notes
+  <lino.modlib.tickets.models.Ticket.upgrade_notes>` of a ticket.
+
+- Changed the layout of a ticket's detail window: "Dependencies" is now
+  in second tab, "Deployments" in first tab.
+
+- New user role :class:`lino.modlib.tickets.roles.Triager`, and
+  :class:`TicketsToTriage <lino.modlib.tickets.ui.TicketsToTriage>` is
+  visible only for users with this role.  Adapted the set of user
+  profiles used by Lino Noi (defined in
+  :mod:`lino.projects.presto.roles`)
+  
