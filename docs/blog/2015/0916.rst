@@ -1,0 +1,99 @@
+=============================
+Wednesday, September 16, 2015
+=============================
+
+Ticket #525
+===========
+
+I received and analyzed ticket :ticket:`525` (FieldError: Cannot
+resolve keyword 'company' into field)
+
+That's because the `Courses` table of the `courses` module used by
+Lino Welfare à la Chatelet (which had been originally written for Lino
+Faggio) still had a parameter field `city`. This makes sense only when
+rooms are managed by external partners and thus have an address.
+
+Wrote new test case :ref:`welfare.specs.courses2` to verify the fix.
+
+The solution was to move this extended behaviour from
+:mod:`lino.modlib.courses` to :mod:`lino_faggio.lib.courses`.
+
+Which is yet another change in the master repo while Hamza is working
+on :ticket:`505`.
+
+Ticket #526
+===========
+
+In :mod:`lino_faggio.lib.courses` this extended behaviou actually does
+not yet work because it causes the following error message::
+
+  Exception: Cannot reuse detail_layout of <class 'lino.modlib.courses.models.CoursesByTeacher'> for <class 'lino.modlib.courses.models.CoursesBySlot'>
+
+How to explain this message... Imagine that you have two plugin
+libraries ``stdlib`` and ``mylib`` and that you want to extend a
+plugin ``foo`` which (among others) overrides the `detail_layout` of
+the `Foos` table.
+
+In module ``stdlib.foo.models``::
+
+    class Foos(Table):
+        detail_layout = """
+        a b c
+        d
+        """
+     
+    class FoosByA(Foos):
+       ...
+    
+    class FoosByB(Foos):
+       ...
+    
+In module ``mylib.foo.models``::
+
+    from stdlib.foo.models import *
+
+    class Foos(Table):
+        detail_layout = """
+        a b
+        d e
+        """
+    
+    class FoosByC(Foos):
+       ...
+
+    
+In your application (in ``rt.modules.foo``) you will have *four*
+usable tables:
+
+- `Foos` is defined in ``mylib``, inheriting from ``stdlib``
+- `FoosByA` and `FoosByB` are defined in ``stdlib`` (you don't
+  override them in ``mylib``)
+- `FoosByC` is defined only in ``mylib``.
+
+Now what should be the `detail_layout` of `FoosByA` and `FoosByB`?
+The natural answer is that they should also get the overridden layout
+defined for `Foos`.  This is why we have :meth:`set_detail_layout
+<lino.core.actors.Actor.set_detail_layout>`. We must write module
+``mylib.foo.models`` as follows::
+
+    from stdlib.foo.models import *
+    
+    class FoosByC(Foos):
+       ...
+   
+    @dd.receiver(dd.post_analyze)
+    def customize_courses(sender, **kw):
+        rt.modules.foo.Foos.set_detail_layout("""
+        a b
+        d e
+        """)
+
+But this trick now doesn't work in the case of
+:mod:`lino_faggio.lib.courses`.
+
+I suggest to change :meth:`set_detail_layout
+lino.core.actors.Actor.set_detail_layout>` so that it also updates all
+derived tables. Which seems a bit dangerous and is not worth the
+effort right now (since the original ticket :ticket:`525` is fixed).
+Triggered this as new :ticket:`526`.
+

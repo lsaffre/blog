@@ -1,0 +1,43 @@
+============================
+Thursday, September 17, 2015
+============================
+
+I had a --hopefully last-- fight with :ticket:`471`: the author of a
+duplicated budget was being set to the requesting user, but this
+change was not being saved automatically.  Fixed.  Adapted docstring
+of :meth:`lino.core.model.Model.on_duplicate` and
+:mod:`lino_welfare.projects.std.tests.test_debts` accordingly.
+
+The duplicate action was not being logged when
+:attr:`log_each_action_request
+<lino.core.site.Site.log_each_action_request>` was set to `True`.  I
+fixed this by setting the :attr:`readonly
+<lino.core.actions.Action.readonly>` of the :class:`Duplicate
+<lino.mixins.duplicable.Duplicate>` action to `False`.  I also removed
+the `get_action_permission` methods of both `InsertRow` and
+`Duplicate` because they are no longer needed.
+
+The `readonly` attribute of InsertRow and Duplicate was `True` for
+some historic reason. The old meaning was "whether this actions
+modifies somethiong *in the selected object*", but AFAICS this
+subtlety is no longer used. I now removed the following paragraph from
+the docstring::
+
+    This means that :class:`InsertRow` is a `readonly` action.
+    Actions like :class:`InsertRow` and :class:`Duplicable
+    <lino.mixins.duplicable.Duplicate>` which do not modify the given
+    object but *do* modify the database, must override their
+    `get_action_permission`::
+
+      def get_action_permission(self, ar, obj, state):
+          if user.profile.readonly:
+              return False
+          return super(Duplicate, self).get_action_permission(ar, obj, state)
+
+Above change might cause subtle bugs about insert actions suddenly
+missing for non-readonly user profiles on actors which have
+:attr:`editable <lino.core.actors.Actor.editable>` set to `False`. I
+could not find any such usage but did not search very carefully. TODO:
+in :mod:`lino.utils.diag` add commands to list non editable actors,
+insert actions and maybe duplicate actions (and then use this command
+in specs of production applications, i.e. welfare and noi).

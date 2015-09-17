@@ -18,6 +18,10 @@ and why you should nevertheless consider it.
 
 This text is not finished and probably never will be.
 
+.. contents::
+  :local:
+
+
 Vocabulary
 ==========
 
@@ -39,6 +43,64 @@ The world of `free software
 <https://en.wikipedia.org/wiki/Proprietary_software>`_ are two
 separate universes.  They communicate sometimes, but they are
 substantially different.
+
+
+Who controls my computers?
+==========================
+
+This section explains why it is important to ask who controls my
+computers.
+
+..  A software product is usually the result of the collaboration of
+   many humans.  Free software means democracy, proprietary software
+   means monocracy.  Eric S. Raymond describes the democratic
+   ("bazaar") and monocratic ("cathedral") models in his book `The
+   Cathedral and the Bazaar
+   <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
+
+Imagine that you are the owner of a well-running sandwich bar in a
+little town.  And as your sandwich bar gets more and more customers,
+you decide to engage an assistant to help you.  And because your
+assistant is trustworthy and capable, you delegate more and more
+reponsibilities to him.
+
+Then imagine that you need to move to another town and designate your
+assistant to become the manager of your sandwich bar.  The manager
+continues to send you regular financial reports about your sandwich
+bar.
+
+Now imagine that after some time you discover that the manager of
+your sandwich bar would refuse to show the invoices he received
+and issued, and the statements of your bank accounts, saying "My
+financial reports are enough, I don't want you to see the
+underlying detailed bookings because it is my privacy how I
+realized the results."  
+
+How would you react?  You would probably fire this manager, maybe even
+file a lawsuit against him.
+
+That's how enterprises are run.  The managers do the work of ruling,
+and they write regular activity reports to the owners. The managers
+get a salary, and the owners get the profit.  The owners continue to
+control their enterprise because they can fire their managers at any
+moment.
+
+That's how enterprises are run, and that's also how a computer works.
+The computer hardware are the rooms of your sandwich bar, the
+operating system is the manager. You communicate with your manager
+using the keyboard and the monitor.
+
+The point of this story is that if you fire such a manager in a
+real-world enterprise, why do you run a closed-source software on your
+computer?  
+
+And although this story was written for enterprises, it applies to
+public institutions as well except for some vocabulary. Replace
+"owner" by "director" and "profit" by "honour".
+
+I hope that this picture opens your eyes and that you start to feel
+with me why it is important to wake up.
+
 
 
 It's not about short-term freedom
@@ -82,60 +144,8 @@ If you agree that women in Afghanistan are free, then proprietary
 software is for you. Don't read on.
 
 
-Who controls my computers?
-==========================
-
-The more our everyday lives depend on computers, the more it is
-important to ask who controls these computers.
-
-..  A software product is usually the result of the collaboration of
-   many humans.  Free software means democracy, proprietary software
-   means monocracy.  Eric S. Raymond describes the democratic
-   ("bazaar") and monocratic ("cathedral") models in his book `The
-   Cathedral and the Bazaar
-   <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
-
-Imagine that you are the owner of a well-running sandwich bar in a
-little town.  And as your sandwich bar gets more and more customers,
-you decide to engage an assistant to help you.  And because your
-assistant is trustworthy and capable, you delegate more and more
-reponsibilities to him.
-
-Then imagine that you need to move to another town and designate your
-assistant to become the manager of your sandwich bar.  The manager
-continues to send you regular financial reports about your sandwich
-bar.
-
-Now imagine that after some time you discover that the manager of
-your sandwich bar would refuse to show the invoices he received
-and issued, and the statements of your bank accounts, saying "My
-financial reports are enough, I don't want you to see the
-underlying detailed bookings because it is my privacy how I
-realized the results."  
-
-How would you react?  You would probably fire this manager, maybe even
-file a lawsuit against him.
-
-That's how enterprises are run.  The managers do the work of ruling,
-and they write regular activity reports to the owners. The managers
-get a salary, and the owners get the profit.  The owners continue to
-control their enterprise or institution because they can fire their
-managers at any moment.
-
-That's how enterprises are run, and that's also how a computer works.
-The computer hardware are the rooms of your sandwich bar, the
-operating system is the manager. You communicate with your manager
-using the keyboard and the monitor.
-
-The point of this story is that while you would probably fire such a
-manager in a real-world enterprise, this is happening constantly in a
-computer which runs closed-source software.
-
-I hope that this picture opens your eyes and that you start to feel
-with me why it is important to wake up.
-
-Opinions against free software
-==============================
+It's not about money
+====================
 
 A text titled "Unavoidable Ethical Questions About Open Source"
 [#scu_questions]_ published by the Santa Clara Univerity in Silicon
@@ -173,8 +183,8 @@ together with my answers:
   expect the same from other inventors or producers?** -- Free
   software does not mean voluntary work. There are many people who
   earn their living for writing free software.  The free software
-  industry shows that commercial licensing is not the only way of
-  making money using software.  There are better methods to pay
+  industry shows that proprietary licensing is not the only way of
+  making money using software amd that there are better methods to pay
   software developers for their work.
 
 - **The Vatican document “Ethics in Internet” argues that “use of the
@@ -207,33 +217,70 @@ regarding to our original question about why software must be free.
 Free software is definitively not about money, neither about the price
 of the product nor about the wage of the author.
 
-Another widely spread attitude which I use to label `Uncle Tom's
-Advice <https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop
-to make your own life complicated!  In the end we are all slaves of
-somebody.  Just let Microsoft or Google or Apple be your master and
-enjoy life!"[#eager]_.  My answer to this is yes, choosing free
-software *does* make our life more complicated, and yes, we need to
-find trustworthy partners because we cannot do everything ourselves,
-but no, our `sovereignity
+It is about power
+=================
+
+If you care about the sovereignty and liberty of your enterprise, then
+you ask questions like the following:
+
+- Who will help us when something goes wrong?
+
+- Who is responsible for maintaining that software, for giving support
+  to its end-users?
+
+- How sustainable is my investment?  Who is going to decide whether to
+  switch to some newer technology?  Or to discontinue some existing
+  product and push us to migrate to a newer one?
+
+- Who is going to analyze our needs, decide how to cope with new
+  challenges, which new functionalities should be implemented and
+  which not?
+
+- How competent is that person or organization? What is their
+  motivation? How is the price-quality ratio? Do they have
+  concurrents?  Are they being regulated by the free market?
+
+Yes, it might seem dispairing to try to find partners who meet all
+criteria for maintaining the sovereignty and liberty of your
+enterprise.  
+
+It seems like a vicious circle. A fundamental property of free
+software is that it cannot serve as capital.  While this is the
+inevitable condition for remaining free, it also reduces the
+motivation of all kinds of companies of private law to invest into
+free software.  A good manager takes care of not wasting time or money
+into projects that are "useless" in regard to their primary goal,
+namely to create benefit for the owners.  And the chances of success
+of an enterprise increase with the competence of its managers.  And
+successful enterprises tend to grow in size and power. So one might
+come to the conclusion that free software projects have no chance of
+becoming big and powerful.
+
+A widely spread attitude which I use to label `Uncle Tom's Advice
+<https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop to make
+your own life complicated!  In the end we are all slaves of somebody.
+Just let Microsoft or Google or Apple be your master and enjoy
+life!"[#eager]_.
+
+My answer to this is yes, choosing free software *does* make our life
+more complicated, and yes, we need to find trustworthy *partners*
+because we cannot do everything ourselves, but no, our `sovereignity
 <https://en.wikipedia.org/wiki/Sovereignty>`_ at the software level
 *is* necessary and worth the effort.
 
 
-Why it is difficult
-===================
+For the brave
+=============
 
 Choosing free software is actually *not* difficult. But most people
 *believe* that it is. Which becomes a `self-fulfilling prophecy
 <https://en.wikipedia.org/wiki/Self-fulfilling_prophecy>`_ causing
-miscellaneous problems.
-
-Here are some examples of the challenges you are going to face if you
-decide for free software:
+miscellaneous problems.  Here are some examples of the challenges you
+are going to face if you decide for free software:
 
 - Psychological effects ("Under Windows it would work better") ranging
   from personal reproaches for your decision to measurable
-  side-effects caused by `self-fulfilling prophecies
-  <https://en.wikipedia.org/wiki/Self-fulfilling_prophecy>`_.
+  side-effects.
 
 - Using free software means that it is more difficult to get trained
   human resources, professional support, specialized hardware.
@@ -246,38 +293,12 @@ react to them.  You will need measurable additional effort because you
 are leaving the mainstream.
 
 
-Free software cannot serve as capital
-=====================================
+Conclusion
+==========
 
-A fundamental problem with free software is that it cannot be used as
-capital. That fact makes free software uninteresting to all kinds of
-companies of private law, including big corporations.
-
-There are big organizations dealing with free software, but none of
-them has a chance against Google, Microsoft or Apple.
-
-
-Sovereignty
-===========
-
-But if you care about the sovereignty and liberty of your enterprise,
-then you should ask questions.
-
-- Who will help us when something goes
-  wrong?  Who is responsible for maintaining that software, for giving
-  support to its end-users?
-
-- How sustainable is my investment?  Who is going to decide whether to
-  switch to some newer technology?  Or to discontinue some existing
-  product and push us to migrate to a newer one?
-
-- Who is going to analyze our needs, decide how to cope with new
-  challenges, which new functionalities should be implemented and
-  which not?
-
-- How competent is that person or organization? How is the
-  price-quality ratio? Do they have concurrents? Are they being
-  regulated by the free market?
+Why software must be free?  Because the more our everyday lives depend
+on computers, the more it is important to ask who controls these
+computers.
 
 
 Success stories

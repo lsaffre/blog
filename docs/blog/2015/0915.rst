@@ -1,0 +1,72 @@
+=====================================
+20150915 (Tuesday, 15 September 2015)
+=====================================
+
+I stumbled over :ticket:`523` and investigated the reason.  We must
+probably just add :attr:`param_values` to the inheritable attributes
+to be copied to the other request (in :meth:`setup_from
+<lino.core.requests.BaseRequest.setup_from>`).  I will not fix it now
+since Hamza is working on :ticket:`520`. But I can write a test case
+to reproduce it.
+
+Links to tickets
+================
+
+I noticed that links to tickets didn't work any more after
+:blogref:`20150911` because of :ticket:`469`. Fixed. That's probably
+why Hamza didn't find :ticket:`521` yesterday. TODO: Note that I only
+fixed it *quickly*, I replaced::
+
+  extlinks.update(ticket=('http://bugs.lino-framework.org/ticket/%s', '#'))
+
+by:
+
+  extlinks.update(ticket=('http://bugs.lino-framework.org/tickets/Ticket/%s', '#'))
+
+in my blog's :xfile:`conf.py` file.  A better solution would be to add
+a custom url pattern to the public UI of Lino Noi and to maintain
+existing links functional.
+
+Ticket #159
+===========
+
+Steve managed to reproduce :ticket:`159` ('NoneType' object is not
+iterable (after duplicating a budget)). It turns out that the symptom
+of this problem was the same as that of :ticket:`471` (Become the
+author after duplicating a budget): after duplicating a budget, the
+author of the new budget should be the user who asked to duplicate it,
+not the original author.
+
+I extended :mod:`test_debts
+<lino_welfare.projects.std.tests.test_debts>` to reproduce also this
+problem.
+
+A first subtle consequence for the framework: Changed the exception
+handling during :meth:`TableRequest.execute
+<lino.core.tablerequests.TableRequest.execute>`.  When an exception
+occurs during :meth:`get_data_iterator`, then we want it to be
+reported only once. This remains. But until now it was reported as a
+direct call to :func:`logger.exception`. Now it is being forwarded
+(re-risen). Because the old behaviour was hiding the real location, a
+reason why :ticket:`159` had been so hard to find.
+
+A second subtle consequence: the `known_values` attribute of a
+:class:`TableRequest <lino.core.tablerequests.TableRequest>` had a
+default value `None`, overriding the default value ``{}`` already
+defined in :class:`lino.core.requests.BaseRequest`.  I guess that this
+was not intended.
+
+I also added some explanations in the docstring of
+:meth:`lino.core.model.Model.on_duplicate`.
+
+
+Ticket #523
+===========
+
+Since anyway I did some changes to Lino today (and since I hope that
+there won't be any conflicts), I then fixed :ticket:`523`.  Most time
+went (as usual) into writing a test case (in
+:ref:`noi.specs.clocking`).  The actual bug was in
+:meth:`lino.core.requests.BaseRequest.set_selected_pks`.  *En passant*
+I also fixed the test suite (changes in :ref:`noi.specs.tickets`).
+
