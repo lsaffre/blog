@@ -1,0 +1,186 @@
+==========================
+Monday, September 21, 2015
+==========================
+
+Hamza and I are learning how to collaborate via Git. 
+
+Hamza has forked both Lino and Lino Così, has started a branch
+"New_lino_design" in Lino and another branch "New_cosi_design" in
+Così. When he had almost finished working on :ticket:`520`, he
+commited and pushed to his fork.
+
+I made a clone of both forks. To my surprise I could not see any branches::
+
+    $ git branch 
+    * master
+    
+That's because they are remote branches. I must use ``-a`` to see
+them all::
+
+    $ git branch -a
+    * master
+      remotes/origin/HEAD -> origin/master
+      remotes/origin/New_lino_design
+      remotes/origin/master
+
+How can I activate a remote tracking branch? I mean just to play
+around, review his code and try the test suite. I tried this::
+
+    $ git checkout remotes/origin/New_lino_design
+
+My next surprise was that Git now said::
+
+    Note: checking out 'remotes/origin/New_lino_design'.
+
+    You are in 'detached HEAD' state. You can look around, make experimental
+    changes and commit them, and you can discard any commits you make in this
+    state without impacting any branches by performing another checkout.
+
+    If you want to create a new branch to retain commits you create, you may
+    do so (now or later) by using -b with the checkout command again. Example:
+
+      git checkout -b new_branch_name
+
+    HEAD is now at 6e8763a... (Hamza's commit message)
+
+And ``git status`` warns me about this 'detached HEAD' state::
+
+    $ git status
+    HEAD detached at origin/New_lino_design
+    nothing to commit, working directory clean
+
+What does this mean? Answer: a remote tracking branch is read-only,
+i.e. Git will not let me do commits here.
+
+I go back to the master branch::
+
+    $ git checkout master
+
+And then I do this::
+
+    $ git merge origin/New_lino_design
+
+Now I remain in my local master branch (the only one I might use for
+commits) and merge Hamza's work into it.  Hm... but that's not what I
+want here. Actually I *want* to have a read-only state.
+
+- fetch : get all commits from remotes. Don't modify my working directory.
+- merge : change local files so that they reflect a given branch
+
+- pull : fetch followed by merge. The Git tutorial recommends to use
+  fetch and merge explicitly as the magic of pull can be confusing.
+
+More thoughts. Currently I needed to create a virtualenv for Hamza and
+to activate it. Wouldn't it be easier to just add Hamza's fork as a
+remote to my repositories? Let's try!
+
+But before trying, I'll commit two local changes which I had been
+doing (again hoping that Hamza will be able to merge them without
+problems):
+
+- a minor docstring edit in :file:`docs/dev/install.rst`
+- I removed :file:`docs/tutorials/pisa/pisa.Person-1.pdf` and added it to
+  :file:`.gitignore` (because this file is being generated each time the test
+  suite is run, see :ref:`lino.tutorial.pisa`, and thus should not be
+  included to the repository).
+
+For the first time after years of :cmd:`fab ci` I write a commit
+message myself::
+
+    $ git commit -m'two minor changes'
+    $ git push
+
+My problem with commit messages is that I often happen to do several
+things at once.  As in the above example.  Yes they recommend to avoid
+doing several things at once.  And I even agree... at some degree. But
+in real life (or at least in *my* real life) it *does* happen that
+problems are intertwined.  I find it more clear to write a single
+daily blog entry which gives a comprehensive overview of what I did
+that day...  I am open to ideas here, but will probably continue to
+use my :cmd:`fab ci` as long as nobody explains me what's bad about
+it.
+
+So I did again some changes while Hamza has the ticket. I'll now
+simulate what Hamza needs to do to get these changes.  First he must
+configure the "upstream" lino repository a remote::
+
+    $ git remote add upstream https://github.com/lsaffre/lino.git
+
+Now I imagine that he has meanwhile in his ``New_lino_design`` branch.
+For example he has modified the :file:`lino/setup_info.py`.    
+Now he asks Git to fetch changes from upstream::
+    
+    $ git fetch upstream
+    remote: Counting objects: 5, done.
+    remote: Compressing objects: 100% (1/1), done.
+    remote: Total 5 (delta 4), reused 5 (delta 4), pack-reused 0
+    Unpacking objects: 100% (5/5), done.
+    From https://github.com/lsaffre/lino
+     * [new branch]      master     -> upstream/master
+
+Then he would tell Git to merge them into his current branch::
+
+    $ git merge upstream/master
+    Removing docs/tutorials/pisa/pisa.Person-1.pdf
+    error: cannot run emacclient: No such file or directory
+    error: unable to start editor 'emacclient'
+    Not committing merge; use 'git commit' to complete the merge.
+    
+Oops, I had a typo in my `.gitconfig`. So I'd like to undo the above
+operation. Yes I want to not store this step in history::
+
+    $ git log
+    $ git reset --hard 6e8763a01f8f1a202dcc39e355af235c7a9dcdc4
+
+No Hamza would do::
+
+    $ git merge upstream/master
+    Removing docs/tutorials/pisa/pisa.Person-1.pdf
+    Waiting for Emacs...
+    Merge made by the 'recursive' strategy.
+     docs/tutorials/pisa/pisa.Person-1.pdf | 134 ----------------------------------
+     1 file changed, 134 deletions(-)
+     delete mode 100644 docs/tutorials/pisa/pisa.Person-1.pdf
+
+This would fire up his editor and let him enter a commit message::
+
+    Merge remote-tracking branch 'upstream/master'
+
+    # Please enter a commit message to explain why this merge is necessary,
+    # especially if it merges an updated upstream into a topic branch.
+    #
+    # Lines starting with '#' will be ignored, and an empty message aborts
+    # the commit.
+
+He needs to write a message because a merge *is* a commit. (Why?)
+
+
+Now I go to my Lino repository and do::
+
+    $ git remote add hamza https://github.com/HamZuS/lino.git
+    $ git fetch hamza
+    remote: Counting objects: 84, done.
+    remote: Compressing objects: 100% (31/31), done.
+    remote: Total 84 (delta 43), reused 32 (delta 32), pack-reused 21
+    Unpacking objects: 100% (84/84), done.
+    From https://github.com/HamZuS/lino
+     * [new branch]      New_lino_design -> hamza/New_lino_design
+     * [new branch]      master     -> hamza/master
+    Auto packing the repository for optimum performance. You may also
+    run "git gc" manually. See "git help gc" for more information.
+    Counting objects: 12762, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (12382/12382), done.
+    Writing objects: 100% (12762/12762), done.
+    Total 12762 (delta 7754), reused 0 (delta 0)
+    Checking connectivity: 121842, done.
+
+That seems nice. Now I can see Hamza's branch and can simply activate it::
+
+    $ git checkout New_lino_design 
+    Branch New_lino_design set up to track remote branch New_lino_design from hamza.
+    Switched to a new branch 'New_lino_design'
+    $ git status
+    On branch New_lino_design
+    Your branch is up-to-date with 'hamza/New_lino_design'.
+    nothing to commit, working directory clean

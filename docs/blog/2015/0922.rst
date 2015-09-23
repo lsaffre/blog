@@ -1,0 +1,218 @@
+===========================
+Tuesday, September 22, 2015
+===========================
+
+Should I switch to PyCharm?
+===========================
+
+After reading my yesterday's blog entry, Hamza asked: "Do you use an
+IDE when coding?  I am using Pycharm (Not an ad :p) and it helps me a
+lot to manage and deal with github repositories. For example to create
+branch and merge code."
+
+The question shows that he is a good assistent for me because he is
+not afraid of questioning my way of doing things.
+
+It is funny that the question raises now for the third time: Two years
+ago (:blogref:`20131119`) Joe asked a similar question, and after
+quite some serious trying of switching to PyCharm, I switched... from
+Scite to Emacs.  And a year later (:blogref:`20141021` inspired by
+Manuel) I did a second attempt to switch to PyCharm, again without
+success.
+
+So the answer is complex.  Summary: I am reluctant
+
+- because some inner feeling says that PyCharm is *too* complex and
+  makes me dependant of it
+- because I am happy with Emacs and see no need to invest the time it
+  takes to switch.
+
+Of course these are no rational arguments.  I started ticket
+:ticket:`520` because it is worth consideration. But I set the state
+to "Sleeping" because there are so many other urgent things to do.
+
+(from :file:`/tickets/137.rst`: Here are some of the problems which I
+could not solve during my second attempt to move from Emacs to
+PyCharm:
+
+- When I open some file, PC warns me about a problem:
+
+    Package requirements 'appy==0.8.4', 'django==1.5.1' ... [Install requirements] [Ignore requirements]
+
+  And I did not find any explanation.
+
+- It seems that I must define a "run environment" for everything I
+  want to run from PyCharm.  Seems complicated.  I prefer my
+  :ref:`fab_commands`.
+
+- I could not get any test run to execute. It looked as if Django was
+  not installed.
+
+- Does PC support multiple Django settings per project?
+
+- Is it true that PC `cannot easily wrap long lines into a paragraph
+  <http://andrewbrookins.com/tech/wrap-comments-and-text-to-column-width-in-intellij-editors/>`_?
+
+- Even with PC it is necessary to learn more about how to use Git.
+
+
+Lino Così now needs ``lxml``
+============================
+
+I had problems testing Hamza's work on :ticket:`520` Così because I
+could install `lxml`::
+
+    $ pip install lxml
+    ...
+    /usr/bin/ld: cannot find -lz
+    collect2: error: ld returned 1 exit status
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+    ----------------------------------------
+    Cleaning up...
+    
+The error message remained the same after the following::
+
+    $ sudo aptitude install liblz-dev
+    $ sudo aptitude install liblz4-dev
+    $ sudo aptitude install lzma
+
+
+According to `this thread
+<http://stackoverflow.com/questions/24455238/lxml-installation-error-ubuntu-14-04-internal-compiler-error>`_
+it is because my machine has not enough memory!?
+
+I tried Michael Plakhov's suggestion::
+
+    sudo dd if=/dev/zero of=/swapfile bs=1024 count=524288
+    sudo chmod 600 /swapfile
+    sudo mkswap /swapfile
+    sudo swapon /swapfile
+
+No success until now.
+
+7:25 : After some hours of sleep I had the glorious idea to look at
+the documentation instead of asking Google.  It says rather clearly::
+
+    $ sudo apt-get build-dep lxml
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    The following NEW packages will be installed:
+      debhelper dh-apparmor libpython-all-dbg libpython-all-dev libpython-dbg
+      libpython2.7-dbg libpython3-all-dbg libpython3-all-dev libpython3-dbg
+      libpython3-dev libpython3.4-dbg libpython3.4-dev po-debconf python-all
+      python-all-dbg python-all-dev python-dbg python-pyrex python2.7-dbg
+      python3-all python3-all-dbg python3-all-dev python3-dbg python3-dev
+      python3-setuptools python3.4-dbg python3.4-dev zlib1g-dev
+    0 upgraded, 28 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 52.3 MB of archives.
+    After this operation, 158 MB of additional disk space will be used.
+
+Which was the solution. lxml contains C code (an `extension module
+<https://docs.python.org/2/extending/building.html>`__) and needs a
+lot of header and library files to get built, and `build-dep` is the
+easiest way to get them all in once.
+
+
+Java
+====
+
+Manuel asked whether we want to continue paying for a code signing
+license.  :ticket:`531`.  Answer: No. Anyway we aren't using it
+anymore for quite some time now. My own clients don't need it, they
+just have to configure their browsers to accept my self-signed
+certificate. If some day somebody wants to provide out-of-the-box
+permission for my applets, then either sign them yourself or contact
+me.
+
+To verify above statement, I discovered that Java does not yet work on
+Doll.  Although :xfile:`/.java.policy` file is the same as on Hoppel.
+:ticket:`532`.
+
+First step: there was no JDK installed. For running the applets a RTE
+would be enough, but I'll need the JDK for building my applets
+:ref:`eidreader` and :ref:`davlink`::
+
+  $ sudo apt-get install openjdk-7-jre
+
+And then I need IcedTea to get Java into FireFox::
+
+  $ sudo apt-get install icedtea-plugin
+
+
+Finishing #520
+==============
+
+Hamza has finished working on :ticket:`520`, now I must repair the
+test suite. Three cases were broken, two trivial ones and one less
+trivial: :ref:`cosi.specs.accounting` (but also this one was actually
+just a question of import statements, and the
+:setting:`DJANGO_SETTINGS_MODULE` still pointed to `min2`).  A detail:
+he forgot to remove the module ``lino.modlib.declarations`` from Lino.
+
+And then there was yet another plugin which needs to move to Così:
+:mod:`lino_cosi.lib.courses`.  Because it depends on
+:mod:`lino_cosi.lib.sales`.  Hamza did not notice this because he did
+not try to build the docs.
+
+Building the docs revealed some more dependency problems, mostly due
+to this courses plugin. The default Lino Cosi application does not
+include this plugin. But the plugin cannot remain in Lino since it
+depends on sales. That's why we have
+:class:`lino_cosi.projects.std.settings.DocsSite` now.
+
+Changed the license of :ref:`cosi` from BSD to AGPL. This was the
+triggering reason why we did all this new design.
+
+TODO: I must still adapt `import` statements and test suites in
+:ref:`welfare` and :ref:`faggio`.
+
+A bug in atelier
+================
+
+Building the docs (:cmd:`fab bd`) failed with this traceback::
+
+    Traceback (most recent call last):
+      File "/python2.7/site-packages/fabric/main.py", line 743, in main
+        *args, **kwargs
+      File "/python2.7/site-packages/fabric/tasks.py", line 427, in execute
+        results['<local-only>'] = task.run(*args, **new_kwargs)
+      File "/python2.7/site-packages/fabric/tasks.py", line 174, in run
+        return self.wrapped(*args, **kwargs)
+      File "/work/atelier/atelier/fablib.py", line 914, in build_docs
+        write_readme()
+      File "/python2.7/site-packages/fabric/tasks.py", line 171, in __call__
+        return self.run(*args, **kwargs)
+      File "/python2.7/site-packages/fabric/tasks.py", line 174, in run
+        return self.wrapped(*args, **kwargs)
+      File "/work/atelier/atelier/fablib.py", line 1341, in write_readme
+        """ % env.current_project.SETUP_INFO
+    KeyError: 'name'
+
+This was :ticket:`533`. Had to replace `p = Path().absolute()` by `p =
+Path().resolve()`. A side effect of :ticket:`473`.
+
+Skype
+=====
+
+Skype had disappeared with my move from Hoppel to Doll.  A `thread on
+askubuntu.com <
+http://askubuntu.com/questions/151112/how-do-i-get-the-skype-status-icon-back-on-panel-tray>`__
+helped me to solve it.  It seems that indeed the name of the key in
+the GSettings configuration database
+has changed
+after Ubuntu 13. But I have no explanation why it has been working on
+Hoppel then. Anyway here is how I solved it::
+
+    $ gsettings get com.canonical.Unity.Panel systray-whitelist
+    No such schema 'com.canonical.Unity.Panel'
+
+    $ gsettings get com.canonical.indicator.messages applications
+    ['thunderbird.desktop']
+    $ gsettings set com.canonical.indicator.messages applications "['thunderbird.desktop', 'skype']"
+    $ gsettings get com.canonical.indicator.messages applications
+    ['thunderbird.desktop', 'skype']
+
+I also installed `dconf-tools` and `dconf-editor` and learned about
+the `GSettings database
+<https://wiki.ubuntuusers.de/GNOME_Konfiguration/dconf>`_

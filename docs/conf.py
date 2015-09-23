@@ -29,7 +29,7 @@ extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']
 extensions += ['lino.sphinxcontrib.logo']
 extensions += ['lino.sphinxcontrib.actordoc']
-extensions += ['sphinxcontrib.taglist']
+#extensions += ['sphinxcontrib.taglist']
 extensions += ['sphinxcontrib.youtube']
 extensions += ['sphinx.ext.inheritance_diagram']
 

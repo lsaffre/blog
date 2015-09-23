@@ -1,0 +1,62 @@
+============================
+Saturday, September 19, 2015
+============================
+
+Hello, world!
+=============
+
+This is the first blog entry which I write in my new home.  I moved
+from Hoppel to Doll (:ticket:`473`).  Hoppel is a *HP ProBook 4540s*,
+Doll is a *Dell Latitude E6430*.
+
+I can confirm a subtle problem which might cause trouble when
+:ref:`lino.dev.install`: if ``pip install -e atelier`` or ``pip
+install -e lino`` fails because the Python headers are not installed,
+then a subsequent call (after ``sudo apt-get install python-dev``)
+does *not* install the missing packages. In my case I had to manually
+do::
+
+  $ pip install pycrypto ecdsa markupsafe
+
+Here another funny problem reported by Emacs::
+
+    You are not using the same version of Elpy in Emacs Lisp
+    compared to Python. This can cause random problems. Please
+    do make sure to use compatible versions.
+
+    Elpy Emacs Lisp version: 1.2.1
+    Elpy Python version....: 1.9.0
+
+
+So I did::
+
+    $ pip uninstall elpy
+    $ pip install 'elpy==1.2.1'
+
+
+Later I also saw that I had to reinstall the `elpy package
+<https://github.com/jorgenschaefer/elpy>`__.
+
+
+And another one during `sigal`::
+
+  INFO: Processing /home/luc/dell1tb/cache/sigal_tmp/2014/04/27/img_6793.jpg
+  INFO: Failed to process: IOError('decoder jpeg not available',)
+
+Here it was `stackoverflow
+<http://stackoverflow.com/questions/8915296/python-image-library-fails-with-message-decoder-jpeg-not-available-pil>`__
+who helped::
+
+  $ sudo apt-get install libjpeg-dev
+
+And Emacs had another problem:
+
+    Flymake: Failed to launch syntax check process 'flake8' with args
+    (...): Searching for program: no such file or directory,
+    flake8. Flymake will be switched OFF
+
+This was because in my `custom.el` I had::
+
+   '(virtualenv-root "~/pythonenvs"))
+
+which was Hoppel's location of my virtualenvs.

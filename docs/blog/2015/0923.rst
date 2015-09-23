@@ -1,0 +1,54 @@
+=============================
+Wednesday, September 23, 2015
+=============================
+
+
+I am working to repair the :ref:`welfare` test suite after :ticket:`520`.
+
+Exception: Invalid endtag. Expected </b>, found <p>
+===================================================
+
+I encountered a problem :ticket:`535`, actually caused by
+:ticket:`473`.  The easisest way to reproduce it is to `cd` to
+:mod:`lino_welfare.projects.std` and to run `initdb_tmp` script there.
+Here is a traceback::
+
+    INFO Loading /lino/lino/modlib/excerpts/fixtures/demo2.py...
+    INFO appy.pod render /welfare/lino_welfare/modlib/immersion/config/immersion/Contract/StageForem.odt -> /lino_cache/welfare_std/media/userdocs/appyodt/immersion.Contract-1.odt (language='en',params={'raiseOnError': True, 'ooPort': 8100, 'pythonWithUnoPath': '/usr/bin/python3'}
+    Traceback (most recent call last):
+      ...
+      File "/lino/lino/modlib/excerpts/fixtures/demo2.py", line 31, in objects
+        rv = ses.run(obj.do_print)
+      ...
+      File "/appy/pod/actions.py", line 149, in evaluateBuffer
+        self.manageError(result, context, msg, e)
+      File "/appy/pod/actions.py", line 83, in manageError
+        raise EvaluationError(originalError, errorMessage)
+    appy.pod.actions.EvaluationError: Problem installing fixture '/lino/lino/modlib/excerpts/fixtures/demo2.py': Error while evaluating the expression "html(body)" defined in the "from" part of a statement. Exception: Invalid endtag. Expected </b>, found <p>
+
+The solution is to install HTML Tidy::
+
+  $ sudo aptitude install tidy
+
+See :mod:`lino.utils.html2xhtml`.
+
+Adapt Welfare test suite to #520
+================================
+
+The specs page in :ref:`welfare.specs.eupen` reveals that we cannot
+just show the statements and movements imported for managed client
+accounts to every :class:`ContactsUser
+<lino.modlib.contacts.roles.ContactsUser>`. This information must be
+visible to social agents only. Not e.g. for reception clerks. But a
+reception clerk must see the accounts of a partner. 
+Thus we need new user roles in :mod:`lino_cosi.lib.sepa.roles`.  And
+:mod:`lino_welfare.modlib.welfare.roles` distributes them to user
+profiles.
+
+Note that reception clerks must be able to create accounts on a
+partner.
+
+Welfare test suite passes. Commit and push at 11.24
+
+Actually they should even not see any detail page per account, but
+that's less easy and less urgent.
