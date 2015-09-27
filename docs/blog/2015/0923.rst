@@ -32,7 +32,7 @@ The solution is to install HTML Tidy::
 
 See :mod:`lino.utils.html2xhtml`.
 
-Adapt Welfare test suite to #520
+Adapt Welfare test suite to #505
 ================================
 
 The specs page in :ref:`welfare.specs.eupen` reveals that we cannot
@@ -48,7 +48,110 @@ profiles.
 Note that reception clerks must be able to create accounts on a
 partner.
 
-Welfare test suite passes. Commit and push at 11.24
+Commit and push Lino, Cosi and Welfare at 11.24 since the test suites
+now pass.
 
-Actually they should even not see any detail page per account, but
-that's less easy and less urgent.
+Manual tests revealed some problems that were not covered by the test
+suite:
+
+- Reception clerks did not see AccountsByPartner at all. Because I had
+  been setting :attr:`required_roles
+  <lino.core.permissions.Permittable.required_roles>` to::
+
+     dd.login_required(ContactsUser, SepaUser)
+
+  instead of::
+
+    dd.login_required((ContactsUser, SepaUser))
+
+- Added an :attr:`insert_layout <lino.core.actors.Actor.insert_layout>` to 
+  `Accounts` and `AccountsByPartner`.
+
+- Actually reception clerks should even not see any *detail* window
+  per account. But that's less easy.  To implement this, we must
+  extend Lino to support :attr:`required_roles
+  <lino.core.permissions.Permittable.required_roles>` on a *layout*.
+  Ticket :ticket:`539`.
+
+  As a workaround I set :attr:`stay_in_grid
+  <lino.core.tables.Table.stay_in_grid>` to `True` so that they don't
+  get it when creating an account.
+
+- Note that instead of writing::
+
+    class AccountsDetail(dd.FormLayout):
+        main = "general"
+
+        general = dd.Panel("""
+        partner:30 iban:40 bic:20 remark:15
+        sepa.StatementsByAccount
+        """, label=_("Account"))
+
+    class Accounts(dd.Table):
+        detail_layout = AccountsDetail()
+
+  it is equivalent but shorter to write::
+
+    class AccountsDetail(dd.FormLayout):
+        main = """
+        partner:30 iban:40 bic:20 remark:15
+        sepa.StatementsByAccount
+        """
+    
+    class Accounts(dd.Table):
+        detail_layout = AccountsDetail()
+
+  and even shorter::
+
+    class Accounts(dd.Table):
+        detail_layout = """
+        partner:30 iban:40 bic:20 remark:15
+        sepa.StatementsByAccount
+        """
+
+
+**Exercise for Hamza** After committing and pushing, I saw that one
+test in :ref:`cosi` (file :file:`docs/tested/general.rst`) is still
+failing. The site admin (username "rolf") no longer sees three menu
+items in Explorer menu. It is because the user profiles defined in
+:mod:`lino_cosi.lib.cosi.roles` do not yet include the new roles from
+:mod:`lino_cosi.lib.sepa.roles`.  Try to fix it and to write a pull
+request! 
+
+
+Moved `tickets` and `clocking` from Lino to Lino Noi
+====================================================
+
+As with :ticket:`520` I moved two plugins from the central Lino
+repository to :ref:`noi`: The `tickets` and `clocking` plugins are now
+in :mod:`lino_noi.lib` and no longer in :mod:`lino.modlib`.
+
+
+
+Memo markup in ticket descriptions
+==================================
+
+Just an idea that had been haunting me for a few weeks already:
+:ticket:`541`.  The :attr:`description
+<lino_noi.lib.tickets.models.Ticket.description>` of a ticket can now
+contain "memo markup".  This is a general new feature of
+:mod:`lino.modlib.bootstrap3`. To be documented.
+
+For example::
+
+    [url http://www.example.com]
+    [url http://www.example.com example]
+
+    [ticket 1]
+
+Memo markup is being "executed" when the ticket is rendered by the
+:mod:`lino.modlib.bootstrap3` user interface. 
+
+And it works :-) The description of :ticket:`541` is entered as::
+
+  Example: we can now link to [ticket 1] and to external URL 
+  [url http://luc.lino-framework.org/blog/2015/0923.html blog].
+
+To be observed. This is admittedly less intuitive than automatically
+replacing every ``#`` followed by a sequence of digits, and every
+chunk of text starting with ``http://`` by a link.
