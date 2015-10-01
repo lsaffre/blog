@@ -1,0 +1,60 @@
+============================
+Saturday, September 26, 2015
+============================
+
+Deleting polymorphic objects
+============================
+
+It took me some hours of sleep to understand :ticket:`503` (Cannot
+delete some instances of model 'Person' because they are referenced
+through a protected foreign key: 'Client.person_ptr').  
+
+The explanation is: in case of MTI, every MTI child model has a
+pointer to its MTI parent. This pointer is a foreign key with
+`on_delete` set to `CASCADE`. Lino now automatically protects all
+foreign keys that need it. But the logics for deciding whether
+protection is needed had a bug which caused Lino to also protect these
+pointers to the MTI parent. The whole thing is now encapsulated in the
+kernel's :meth:`protect_foreignkeys
+<lino.core.kernel.Kernel.protect_foreignkeys>` method.  Note that only
+subclasses of :class:`Polymorphic
+<lino.mixins.polymorphic.Polymorphic>` have this automatism.
+
+I wrote a test case :mod:`lino_welfare.projects.std.tests.test_ddh`.
+
+
+Google the Great
+================
+
+I read an interesting article about the bigness of Google and how they
+are doing with their 25000 developers to maintain their 2 billion
+lines of code.
+
+- `Google Is 2 Billion Lines of Code—And It’s All in One Place
+  <http://www.wired.com/2015/09/google-2-billion-lines-codeand-one-place>`_
+  by Cade Metz at Wired.
+
+And I am investing most of my time and money to grow Lino into a
+community.  And currently I am only at the first step, which is to
+evolve from from a *one man* team of core developers to a *two man*
+team.
+
+One might ask: Does it make sense at all?
+
+My answer is: Probably yes.  Because whether something "makes sense"
+is absolutely unrelated to "how many people are doing it".  We know
+that we don't know the meaning of Life, the Universe and Everything.
+
+And because I tend to rather observe the *inner joy* produced by some
+project.  Lino seems to increase my inner joy.  Andrew Binstock writes
+"These days, however, both the consummating surge of joy and the
+satisfaction of the preliminary work have become very infrequent
+experiences." (in `Just Let Me Code!
+<http://www.drdobbs.com/tools/just-let-me-code/240168735>`_, July 22,
+2014).
+
+And then, like as a confirmation, I open Hamza's mail who wrote: "I
+want to be more involved and take more and more responsibility in Lino
+work.  I really enjoy working with you, Luc."
+
+

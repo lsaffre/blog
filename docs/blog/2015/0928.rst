@@ -1,0 +1,176 @@
+==========================
+Monday, September 28, 2015
+==========================
+
+Fixed a bug in atelier
+======================
+
+Yet another bug in atelier: :ticket:`553`.  Congratulations to Hamza
+who stumbled over this:
+
+The :cmd:`fab bd` command failed to call :meth:`load_fabfile
+<atelier.projects.Project.load_fabfile>` when trying to write the
+`README.rst` file. This didn't disturb anybody until now because I
+have a :xfile:`~/.atelier/config.py` file (and when you have such a
+file, all projects are automatically loaded, including
+:meth:`load_fabfile <atelier.projects.Project.load_fabfile>`.
+
+Inheritance diagrams
+====================
+
+While testing above change I rediscovered the Sphinx can generate
+inheritance diagrams (see :blogref:`20150629`).
+
+Here are some diagrams that might be interesting for Sandeep:
+
+Actors:
+
+.. inheritance-diagram:: 
+   lino.core.dbtables.Table
+   lino.core.tables.VirtualTable
+   lino.core.frames.Frame
+   lino.utils.report.Report
+
+Action requests:
+
+.. inheritance-diagram:: 
+   lino.core.tablerequest.TableRequest
+
+Layouts:
+
+.. inheritance-diagram:: 
+   lino.core.layouts.InsertLayout
+   lino.core.layouts.DetailLayout
+
+The :cmd:`pp` command
+=====================
+
+I discovered that the :cmd:`pp` script (installed with :mod:`atelier`
+is not yet documented.  TODO: move `/scripts` to `/atelier/scripts`
+and add it to the API.
+
+
+Restarted tim2lino
+==================
+
+I finally continued to work on :ticket:`353`. This time we have a much
+more pleasant general structure because accounting has been moved from
+:mod:`lino.modlib` to :mod:`lino_cosi.lib`.
+
+The new plugin :mod:`lino_cosi.lib.tim2lino` defines no models, no
+actors and no menu commands, but a fixture (in
+:mod:`lino_cosi.lib.tim2lino.fixtures.tim2demo`).
+
+This fixture was in :mod:`lino_presto` until now. Next step is to
+modularize `tim2lino`. Because e.g. a simple Così customer like apc or
+fijal is not interested in importing hoursholds or calendar entries,
+but some future customers like spz or myself will want them.
+
+
+
+Release in Eupen
+================
+
+For the first time I had the situation that a customer wants to
+upgrade to the version "which they have been testing during a week"
+and not to "the latest available version".
+
+Environment "testlino" becomes the environment for their production
+site (despite the name), and I created a new environment "a" for their
+testing site (which is named "testlino").
+
+From now on I plan to name environments simply "a", "b", "c" ...
+because virtual environments cannot be renamed, and because a given
+environment is normally first used for testing and then for
+production. I can then easily switching between environments because
+Lino, Django and Apache activates them using the symbolic link
+:file:`env` in their proect directory.
+
+When upgrading their testlino env to the newest development version
+(which now requires `lxml`), the first attempt of my trick from
+:doc:`0922` failed::
+
+    $ sudo apt-get build-dep lxml
+    [sudo] password for lsaffre: 
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    E: You must put some 'source' URIs in your sources.list
+
+So I added a `deb-src` line to :file:`/etc/apt/sources.list` and did
+`sudo apt-get update`.  Now it works::
+
+    $ sudo apt-get build-dep lxml
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    The following NEW packages will be installed:
+      debhelper gettext gettext-base intltool-debian libasprintf0c2 libcroco3 libpython-all-dbg libpython-all-dev libpython-dbg libpython2.7-dbg libpython3-all-dbg
+      libpython3-all-dev libpython3-dbg libpython3-dev libpython3.4 libpython3.4-dbg libpython3.4-dev libunistring0 libxml2-dev libxslt1-dev po-debconf python-all
+      python-all-dbg python-all-dev python-dbg python-pyrex python2.7-dbg python3-all python3-all-dbg python3-all-dev python3-dbg python3-dev python3-setuptools
+      python3.4-dbg python3.4-dev
+    0 upgraded, 35 newly installed, 0 to remove and 75 not upgraded.
+    Need to get 69.4 MB of archives.
+    After this operation, 190 MB of additional disk space will be used.
+    Do you want to continue? [Y/n] 
+
+
+A cool trick: I added an alias to my `.bash_aliases`::
+
+  alias a='. env/bin/activate'
+
+I also invented the trick of having the following line in the
+:xfile:`settings.py` of all sites:
+
+  STATIC_ROOT = SITE.project_dir.child('env', 'collectstatic').resolve()
+
+I updated the :doc:`/admin/using` page of the Administrator Guide with
+today's findings.
+
+
+User's guide, Users' guide or User guide?
+=========================================
+
+The Lino documentation has three "guides":
+
+- one for application developers
+- one for system administrators
+- one for end-users
+
+English is not my native language, but here are some linguistical
+thoughts.  I discovered that the apostrophe seems to be disappearing.
+Wikipedia removes them shamelessly in articles like `User guide
+<https://en.wikipedia.org/wiki/User_guide>`_ and a `Tourist guide
+<https://en.wikipedia.org/wiki/Tour_guide>`_.
+
+But I don't agree.  An "Installation guide" would be without
+apostrophe because it is a guide **about** installation. But our three
+guides are not *about* developers, administrators and users, they are
+**written for** these people.  A linguistic evolution does not become
+good just because many people are stupid enough to follow it.  
+
+So I continue to use an apostrophe. Another question is *where* to put
+the apostrophe.  I read the discussion `User’s Guide vs Users’ Guide
+<http://english.stackexchange.com/questions/36657/user-s-guide-vs-users-guide>`__,
+and my opinion is that indeed both forms are valid.  It is true that
+the reader is always only one person (i.e.  **User's** guide), but it
+is also true that I as the author write it for many users (and thus I
+can call it a **Users'** guide).  So the place of the apostrophe is a
+question of style or taste. 
+
+I still prefer the singular form.  My main argument is that users,
+administrators and developers will *almost certainly never* read these
+documents when they are together with other users, adminstrators or
+developers. (It is difficult enough to get them to read it when they
+are alone!)
+
+`Here
+<http://english.stackexchange.com/questions/5804/apostrophe-in-beginners-guide>`__
+is another place where Jonathan Leffler calls it "probably the best
+choice".
+
+And if you have difficulties to remember this choice, then I recommend
+reading `The Hitchhiker’s Guide to the Galaxy
+<https://en.wikipedia.org/wiki/The_Hitchhiker's_Guide_to_the_Galaxy>`_
+...
+
