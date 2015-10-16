@@ -1,0 +1,61 @@
+=========================
+Thursday, October 8, 2015
+=========================
+
+Today I did :ticket:`522` in only one hour...
+
+...except that I got stuck on a stupid detail for another couple of
+hours.  In :meth:`CommentsByController.get_slave_summary
+<lino.modlib.comments.models.CommentsByController.get_slave_summary>`
+I now generate an overview of all comments. Since this includes also
+chunks of HTML text, I should theoretically use :meth:`E.raw
+<lino.utils.xmlgen.html.Namespace.raw>` to convert these to elements. Which
+causes problems if they contain HTML entities.  Here is a snippet
+which shows my problem:
+
+>>> from xml.etree import ElementTree as ET
+>>> s = """<p>&otilde;&auml;.</p>"""
+>>> from lino.utils.xmlgen import etree
+>>> ET.fromstring(s)
+Traceback (most recent call last):
+...
+ParseError: undefined entity: line 1, column 3
+
+The above was understandable: I must configure a parser who knows the
+HTML entities:
+
+>>> import htmlentitydefs
+>>> p = ET.XMLParser()
+>>> p.entity.update(htmlentitydefs.entitydefs)
+>>> p.entity['otilde']
+'\xf5'
+
+And then invoke :func:`fromstring` with that parser:
+
+>>> ET.fromstring(s, parser=p)
+
+The problem is that even this gives the same error message.  Python
+2.7.6.
+
+After quite some fiddling I finally decided to give up and to generate
+a plain string instead of using ElementTree.
+
+Which raises the question: wouldn't it be even better to use Jinja and
+a template for generating the summary?
+
+Note that I also discovered `bleach
+<http://bleach.readthedocs.org/en/latest/>`_ thanks to `this thread
+<http://stackoverflow.com/questions/1765848/remove-a-tag-using-beautifulsoup-but-keep-its-contents>`_. I
+didn't add `bleach` to the `install_requires` in
+:xfile:`setup_info.py` because it is only used by
+:mod:`lino.modlib.comments` and because it also works without bleach
+(except that we don't remove the ``<p>`` tag then).  I remove the
+``<p>`` tag because I suggest the convention to never write more than
+one paragraph in the :attr:`short_text
+<lino.modlib.comments.models.Comment.short_text>` field.
+
+The public interface (:mod:`lino_noi.projects.bs3`) now also renders
+comments.
+
+I plan to upgrade Lino Noi on our bug database tomorrow morning so
+that we will test the comments system on the field.

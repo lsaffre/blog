@@ -1,0 +1,198 @@
+=========================
+Tuesday, October 13, 2015
+=========================
+
+First test results for #505
+===========================
+
+Working on :ticket:`505` (Import SEPA statements from the bank).
+
+I tried to import a real SEPA data file in a customer's test site.  A
+file with --theoretically-- the same structure as the example file.
+
+Lino reports the following error message (in a an alert box, i.e.
+probably some exception was raised somewhere):
+
+  Data truncated for column 'ref' at row 1
+
+I added a temporary debugger line in :mod:`lino_cosi.lib.sepa.camt`::
+
+        for node in root[0][1:]:
+            dd.logger.info("20151013 parsing %s for statement", node)
+            statement = self.parse_statement(ns, node)
+
+which caused a few dozen of lines like this::
+
+    201510-13 07:32:56 INFO camt : 20151013 parsing <Element {urn:iso:std:iso:20022:tech:xsd:camt.053.001.02}Stmt at 0x7f9ded9e7908> for statement
+
+to appear in the log. So AFAICS it happens somewhere during
+CamtParser.parse_statement(), 
+
+But we don't know for which statement.  I thought that the xml file
+does not contain any newlines, that's why the error message says "at
+row 1". So I used "xmllint --format" to prettify the XML. But the
+message remains the same.  Hm...
+
+
+
+About the civil status
+======================
+
+I did more than one hour of research, analysis and documentation for
+:ticket:`536` (État civil : réduire les choix).  See
+:class:`CivilState <lino_welfare.modlib.pcsw.choicelists.CivilState>`.
+
+Commit and push.
+
+Then I increased version of :ref:`welfare` to 1.1.26 and wrote two
+migrators (because Chatelet and Eupen have different database fields
+on :class:`Client`).  Hm. This was not elegant.  This situation was an
+example where data migration à la Lino is *not* optimal.  But after
+some thinking I noticed that I can maybe avoid writing these migrators
+by overriding the :meth:`to_python
+<lino_welfare.modlib.pcsw.choicelists.CivilState.to_python>` method!
+Even though I wrote it myself, Lino happens to surprise me now and
+then!  Of course this is yet to be confirmed by reality. Before doing
+an upgrade on a production site I'll need to verify whether it works.
+
+Oops, I also noted only now that the translation of "État civil" is
+not "civil state" but either "civil stat\ *us*" or --probably even
+better-- "marital status".
+
+I read about the `International Commission on Civil Status
+<https://en.wikipedia.org/wiki/International_Commission_on_Civil_Status>`__
+
+and saw their document `Guide pratique international de l'état civil
+BELGIQUE
+<http://ciec1.org/SiteCIEC/PAGE_Principale/xBUAACan2nFzR2RWY1ZSU1V0AwA>`__
+
+
+First meeting with Märten
+=========================
+
+Today I met Märten and we had a brainstorming about the question "How
+to find Lino users in Estonia?"  And we agreed that Lino has one
+important show stopper in Estonia: :ticket:`587`.
+
+
+
+Python shell without arrow keys and history
+===========================================
+
+A disturbing issue fixed en passant: When the arrow keys don't work in
+a Python shell, then it might be simply because ``readline`` is not
+installed. To fix it::
+
+    $ pip install readline
+    
+But you will also need this::
+
+    $ sudo apt-get build-dep libreadline-dev
+    
+
+Migrating civil statuses
+========================
+    
+I tried whether abovementioned trick of overriding the
+:meth:`to_python
+<lino_welfare.modlib.pcsw.choicelists.CivilState.to_python>` method
+works.
+
+Here is a script that I used to report the distribution of clients::
+
+
+    from lino.api.shell import *
+    from django.utils import translation
+    CS = rt.modules.pcsw.CivilState
+    ses = rt.login()
+    num = 0
+    with translation.override('de'):
+      for cs in CS.objects():
+      #for k in '13 18 21 22 33'.split():
+      #  cs = CS.get_by_value(k)
+        qs = rt.modules.pcsw.Client.objects.filter(civil_state=cs)
+        print cs.value, cs, ":", qs.count(), "Klienten"
+        num += qs.count()
+      qs = rt.modules.pcsw.Client.objects.filter(civil_state='')
+      print "Ohne Angabe:", qs.count(), "Klienten"
+    
+Output of above script in the current production database::
+    
+    10 single :  301 Klienten
+    13 Ledig zusammenwohnend :  41 Klienten
+    18 Ledig mit Kind :  35 Klienten
+    20 married :  96 Klienten
+    21 Verheirated (allein lebend) :  8 Klienten
+    22 Verheirated (mit anderem Partner lebend) :  18 Klienten
+    30 widowed :  11 Klienten
+    33 Verwitwet (zusammenwohnend) :  1 Klienten
+    40 divorced :  68 Klienten
+    50 separated :  23 Klienten
+    Ohne Angabe: 5832 Klienten
+    
+Output in test database after migration::
+    
+    10 single :  336 Klienten
+    20 married :  96 Klienten
+    30 widowed :  12 Klienten
+    40 divorced :  68 Klienten
+    50 separated :  23 Klienten
+    51 separated_de_facto :  26 Klienten
+    60 cohabitating :  41 Klienten
+    Ohne Angabe: 5832 Klienten
+    
+
+This confirms that the
+:meth:`lino_welfare.modlib.pcsw.choicelists.CivilState.old2new` method
+has been applied correctly during migration.  (e.g. the 41 clients who
+had status `13` have been converted to :attr:`cohabitating
+<lino_welfare.modlib.pcsw.choicelists.CivilState.cohabitating>`).
+Lino is cool!
+
+More test results for #505
+==========================
+
+I started a Django shell in a test environment on a customer server
+and ran the following commends there::
+
+    from lino.api.shell import *
+    ses = rt.login()
+    settings.SITE.site_config.import_sepa(ses)
+    
+This produced the same error message. Which is actually good.  I
+remember that I once had problems with lxml (and even stopped to use
+it) because it simply did not work under multi-threaded mod_wsgi. But
+it seems as if that's not the problem here.
+
+Instead of continuing to try to read the real data, I added a test
+case :mod:`lino_welfare.projects.eupen.tests.test_import_sepa` and a
+fictive demo data file.
+
+The new test case fails (as predicted) because the logic for processing
+the incoming data is currently just a proof of concept. Here is the
+traceback which i get::
+
+  File "lino_cosi/lib/sepa/models.py", line 74, in run_from_ui
+    self.import_file(ar, filename)
+  File "lino_cosi/lib/sepa/models.py", line 100, in import_file
+    account = Account.objects.get(id=1)
+  File "site-packages/django/db/models/manager.py", line 151, in get
+    return self.get_queryset().get(*args, **kwargs)
+  File "site-packages/django/db/models/query.py", line 310, in get
+    self.model._meta.object_name)
+  DoesNotExist: Account matching query does not exist.
+
+I started to make changes in :mod:`lino_cosi.lib.sepa.models` to get
+the test pass.  The rule here is that there should be one Account for
+every incoming IBAN. If no Account exists, import_file() should create
+an orphaned account (with empty "partner" field since you don't know
+the partner). The Account.partner field is now to `null=True` and
+`blank=True`. (I currently imagine that the end-users will have to
+assign partners manually since real name and the bank's name can
+differ.)
+
+Here I got stuck and went to bed. Hamza, please look at my changes.
+You might have more experience than I with this CAML parser. I am
+surprised to discover that the ``local_account`` field of a
+BankStatement can be empty...
+

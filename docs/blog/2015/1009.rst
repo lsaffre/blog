@@ -1,0 +1,41 @@
+==================================
+20151009 (Friday, 09 October 2015)
+==================================
+
+Finished #552
+=============
+
+Upgrade on :ref:`lf` for :ticket:`552`. Reality will show whether this
+was the good direction.
+
+
+Continued #353
+==============
+
+I continued on :ticket:`353`.
+
+Which made me discover a side effect of the recent changes in
+:meth:`lino.core.model.Model.disable_delete` & Co: :ticket:`582`.
+
+The bug was in :func:`lino.utils.mti.delete_child` which cannot use
+:meth:`disable_delete` any more since we are not deleting the whole
+polymorphic complex object but just a specialisation of it.
+
+I wrote a new test case :mod:`lino_cosi.projects.std.tests.test_ddh`
+which reproduced this problem.
+
+Note that this is yet another example of a test case which should
+actually be in Lino because it tests a general feature. There are
+quite some other examples in :ref:`noi` and :ref:`welfare`.
+Theoretically we should write a separate test application and cover
+these cases within the Lino repository.  Currently this is not a big
+problem because there is only one Lino team.  Just keep in mind: in
+order to make sure that Lino is tested, a developer should verify also
+the test suites of these projects.
+
+The detail of partners, persons and
+companies had lost its tab panel for accounting. New module
+:mod:`lino_cosi.lib.contacts`
+
+I changed the default value of :attr:`enter_submits_form
+<lino.modlib.extjs.Plugin.enter_submits_form>` to `False`.

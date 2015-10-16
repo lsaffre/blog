@@ -324,8 +324,3 @@ inheritance_graph_attrs = dict(rankdir="TB")
 inheritance_graph_attrs.update(size='"12.0, 16.0"')
 inheritance_graph_attrs.update(fontsize=14, ratio='compress')
 
-my_font_family = "Swiss, Helvetica, 'Liberation Sans'"
-html_theme_options = {
-    "font_family": my_font_family,
-    "head_font_family": my_font_family,
-}

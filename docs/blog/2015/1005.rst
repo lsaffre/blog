@@ -1,0 +1,67 @@
+=======================
+Monday, October 5, 2015
+=======================
+
+We are having a UnicodeError (:ticket:`570`) when trying to print an
+:class:`isip.Contract <lino_welfare.modlib.isip.models.Contract>`::
+
+    Error while evaluating the expression "table(rt.modules.isip.DelegatedTasksByContract.request(obj))" defined in the "from" part of a statement. UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 1: ordinal not in range(128)
+    File "<string>", line 1, in <module>
+    File "/lino/lino/modlib/appypod/appy_renderer.py", line 245, in insert_table
+    return self.insert_table_(*args, **kw)
+    File "/lino/lino/modlib/appypod/appy_renderer.py", line 482, in insert_table_
+    return toxml(table)
+    File "/lino/lino/utils/html2odf.py", line 86, in toxml
+    return buf.getvalue()
+    File "/usr/lib/python2.7/StringIO.py", line 271, in getvalue
+    self.buf += ''.join(self.buflist)
+    <type 'exceptions.UnicodeDecodeError'>: 'ascii' codec can't decode byte 0xc3 in position 1: ordinal not in range(128)
+    
+More precisely this occurs when rendering
+:class:`DelegatedTasksByContract
+<lino_welfare.modlib.isip.models.DelegatedTasksByContract>` (and a
+similar message comes for 
+:class:`EventsByContract<lino_welfare.modlib.isip.models.EventsByContract>`)
+into the document.
+
+As a first step I would like to reproduce these. Which turns out to
+not be trivial.
+
+I cannot "just print" an ISIP contract (or any
+:class:`lino.modlib.excerpts.mixins.Certifiable`) in a tested document
+because "printing" actually creates an excerpt object, i.e. modifies
+the database.
+
+Two possible approaches: (1) generate more excerpts as part of
+:manage:`initdb_demo` and/or (2) run above test as a Django test in a
+temporary database.
+
+(1) means a subtle change in
+:mod:`lino.modlib.excerpts.fixtures.demo2` which until now generated
+one excerpt per ExcertType (and even this only when it had not yet
+been done). Now I added a global variable :data:`PRINT_THEM_ALL`: the new
+default behaviour is to print them all. 
+
+When :data:`PRINT_THEM_ALL` is `True`, the :manage:`initdb_demo` takes
+ages::
+
+    $ time fab initdb
+    ...
+    real	12m26.660s
+    user	8m14.219s
+    sys	1m4.190s
+
+But it helped to identify some minor bugs in templates that failed
+when certain fields are empty.  Before adapting the test suite to
+this, I'd like to meditate about how necessary this option is and how
+configurable it should be.
+
+A side effect: The virtual field :attr:`client
+<lino_welfare.modlib.cal.models.Guest.client>` on the :class:`Guest
+<lino_welfare.modlib.cal.models.Guest>` model for :ref:`welfare` is
+now defined on the model instead of injecting it in
+:mod:`lino_welfare.modlib.reception`.  I tend to recommend model
+subclassing over `inject_field` when possible.
+
+I started to write an introduction :doc:`virtual field
+</dev/virtual_fields>` in the Developer's Guide.

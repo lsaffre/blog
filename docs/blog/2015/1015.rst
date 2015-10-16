@@ -1,0 +1,88 @@
+==========================
+Thursday, October 15, 2015
+==========================
+
+#590 A new logo for the web sites
+=================================
+
+I worked with Ly on a new logo for the Lino website. :ticket:`590`.
+
+Committed the new logo and my yesterday's work.
+
+The logo is defined in :mod:`lino.sphinxcontrib.logo`.
+
+#593 (Write a tkinter based user interface)
+===========================================
+
+Tom Radcliffe, in his article `Python GUI Programming: wxPython
+vs. tkinter
+<http://www.activestate.com/blog/2015/10/python-gui-programming-wxpython-vs-tkinter>`_
+comes to the conclusion that tkinter is better than wxPython and PyQt
+because it is by far the quickest: "I feel like the search may be
+over, and the solution was right under my nose the whole time. I just
+never paid attention to it because of an outdated and incorrect
+attitude toward Tcl/Tk and tkinter."
+
+I never seriously considered tkinter, if I remember well, because it
+has no built-in datagrid widget.
+
+A user named *AruzV* asked this in `Grid View (Table list) in tkinter
+<http://bytes.com/topic/python/answers/882126-grid-view-table-list-tkinter>`__,
+and another user named *bvdet* posted a nice and working example.
+
+Which reminds me that I have always dreamed of having a second usable
+user interface for Lino. And a slim quick browser-less desktop
+application using Tkinter seems to be a cool thing.  I opened
+:ticket:`593` (Write a tkinter based user interface) so we can at
+least discuss about priorities.
+
+#505 : demo data
+================
+
+I discovered that the scramble script (see :doc:`0909`) had a bug
+which caused it to produce invalid output. 
+
+The bug actually was just that the ``IBAN`` list of
+:mod:`lino_cosi.lib.sepa.fixtures.sample_ibans` delivered two empty
+strings (one at the beginning, the other at the end).  I now added a
+test case to this module which verifies that all IBANs are valid.  I
+removed a few IBANs (those with an unknown country codes) which also
+triggered a ValidationError.
+
+I replaced the file used by
+:mod:`test_import_sepa <lino_welfare.projects.eupen.tests.test_import_sepa>`.
+
+So yes, I "damaged" the xml file when replacing the real data by
+fictive numbers. But unfortunately this was only a minor detail. The
+demo file contained many other statements whose IBAN is not empty. 
+
+Hamza, so it's again your turn to work on this!  The question remains:
+Why does it look as if the account number on all statements is
+missing?  
+
+The :mod:`test_import_sepa
+<lino_welfare.projects.eupen.tests.test_import_sepa>` case now passes,
+but the two following lines do not reflect what we want::
+
+        self.assertEqual(Account.objects.count(), 1)
+        self.assertEqual(Movement.objects.count(), 0)
+
+We want to see many accounts and stamtements in our database after
+importing the file.
+
+I suggest that you analyze that CAMT parser in
+:mod:`lino_cosi.lib.sepa.camt` and
+:mod:`lino_cosi.lib.sepa.parserlib`. Maybe the bug is there.  Also
+look at our demo xml file with a browser and compare its content with
+the parser.
+
+If you have not used `lxml` before, then you should also read some of
+these tutorials:
+
+- http://lxml.de/tutorial.html
+- http://www.blog.pythonlibrary.org/2010/11/20/python-parsing-xml-with-lxml/
+
+Note that the test suite of :ref:`cosi` currently has one failure in
+file "docs/tested/demo.rst", line 36.  You can ignore this for your
+work on :ticket:`505`.  It is due to my :ticket:`554`.
+

@@ -1,0 +1,87 @@
+========================
+Friday, October 16, 2015
+========================
+
+Git cheat sheet
+===============
+
+Hamza worked on :ticket:`505` and I merged his work on :ref:`cosi` and
+:ref:`welfare` to my masters. 
+
+Note about how I do this. For each of our projects, Hamza made a fork
+to `his github account <https://github.com/HamZuS>`__. I added his
+fork on my machine as a remote (for every project)::
+
+  $ git remote add hamza https://github.com/HamZuS/XXX.git
+
+And now the most simple usage is to do the following (for every
+project)::
+
+  $ git fetch hamza
+  $ git merge hamza/master
+
+
+Testing #505
+============
+
+I tried Hamza's changes on the test environment in Eupen.
+
+It turned out that they *do* have duplicate accounts. At least for the
+moment. A duplicate :class:`Account
+<lino_cosi.lib.sepa.models.Account>` object currently exists if two
+clients have a common account at the bank. Of course this is not
+correct (and I need to think with Gerd about how to solve this), but
+in order to see first results, I changed the :message:`Found more than
+one account with IBAN xxx` error issued in
+:mod:`lino_cosi.lib.sepa.models` from an Exception to a simple logger
+warning.  
+
+`Commit and push
+<https://github.com/lsaffre/lino-cosi/commit/a9337ef8214c53d3017dbc9692cb3b5f371b9660>`_.
+
+I then had to reload their database from the nightly snapshot because
+:attr:`Account.partner <lino_cosi.lib.sepa.models.Account.partner>` is
+now nullable, i.e. the database structure has changed. With plain
+Django (1.7 or later) you would run migrations to do this. But with
+Lino it is easier to restore a dump which must of course have been
+generated before (see :ref:`lino.datamig`).
+
+I then understood a bug in the database structure: the `bank_account`
+field of a `sepa.Movement` must *not* be a pointer to `sepa.Account`.
+We do not want an Account object for all possible accounts in the
+world but only for those whose partner is known to us.  I changed the
+name of that field from `bank_account` to `remote_account`.  I added a
+field `remote_bic` (which can be blank) and have it be imported in
+:meth:`import_file
+<lino_cosi.lib.sepa.models.ImportStatements.import_file>`.
+
+Next two commits and pushes in :ref:`cosi` (`2 <https://github.com/lsaffre/lino-cosi/commit/0a0339a45e7059d3adad5b2036255c5d87c0fc6f>`__ and 
+`3 <https://github.com/lsaffre/lino-cosi/commit/80f7e7bced60831c66d9ba0fb79e3c74064fe344>`__) are for this.
+Second restore of their
+database from last snapshot.
+
+Each restore takes --admittedly-- about 10 minutes. This is certainly
+much more time than a regular database migration with Django would
+need.  But for my customers (until now) it is no problem to have their
+server down during 10 minutes and to do such works only between 6pm
+and 8am. The advantage of my system (of reloading a snapshot instead
+of Django's migrations) is to be more flexible and more intuitive.
+Especially in situations like this one where I do a series of several
+quick changes in database structure. Imagine for example that I would
+discover now (during the second restore) that I have some stupid bug
+in the database structure which makes the resulting data unusable.
+With Django migrations such a bug would cause quite some work because
+I would need to manually edit the migrations. I have no experience
+with Django migrations, but until now I am satisfied with my system
+and don't feel a need to start using them. We will think about this
+more in detail when :ticket:`38` is finished and all my customers have
+upgraded...
+
+
+Yet another commit and push because I had need seen that the
+`remote_bank_bic` field of a :class:`BankTransaction
+<lino_cosi.lib.sepa.parserlib.BankTransaction>` defaults to `False` if
+the field is empty.
+
+Et voilà, finally I can invite Gerd to have a look at the imported
+data!

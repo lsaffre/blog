@@ -10,9 +10,10 @@ Sitemap
 -------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    blog/index
+   news/index
    about/index
 
 

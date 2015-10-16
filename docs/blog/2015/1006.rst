@@ -1,0 +1,130 @@
+========================
+Tuesday, October 6, 2015
+========================
+
+Continued on #570
+=================
+
+I continued on :ticket:`570`. The :data:`PRINT_THEM_ALL` option in
+:mod:`lino.modlib.excerpts.fixtures.demo2` should be converted to
+something else. Ideally the application developer should be able to
+specify this per `ExcerptType` instance. Or per model. 
+
+The solution to all this is to define a new method
+:meth:`get_printable_demo_objects
+<lino.modlib.excerpts.mixins.Certifiable.get_printable_demo_objects>`.
+
+And to override it in
+:meth:`lino_welfare.modlib.isip.mixins.ContractBase.get_printable_demo_objects`.
+
+That is, the :manage:`initdb_demo` prints each *contract* but **not**
+e.g. each *presence*.
+
+My first target was to generate a contract whose
+:class:`EventsByContract <lino_welfare.modlib.isip.models.EventsByContract>`
+contains non-ascii chars.
+
+Now I finally reached this target. In
+:ref:`welfare.specs.isip_chatelet`.  The problem was that the problem
+did not occur. At least not on my machine.
+
+Which made me suspicious and I verified the versions of Python, appy
+and odfpy on their environment. And the latter was the reason: in
+welcht they still had version0.9.2 of odfpy. Upgraded to
+1.3.1. Problem solved.  
+
+More than 4 hours for extending the test suite so that the case is
+covered, and less than 4 minutes for fixing the problem.
+
+
+
+Pre-sales information for Lino Welfare
+======================================
+
+In :doc:`/news/20151004` I wrote that there is "just some commercial
+and political stuff to handle".  I opened ticket :ticket:`572` and
+started to meditate about it.
+
+Lino Welfare needs a company who proclaims to their customers "We are
+the representant for Lino Welfare. We promise you that it works. We
+offer you a *warranty*."  And --after three years of trying to
+delegate this job to others (first IMIO and then CodeGears) I now
+agree to take this responsibility myself.  Actually I don't take it
+*myself*, but as the CEO of `Rumma & Ko
+<http:/www.saffre-rumma.net?>`__.
+
+If you want to sell something, you must have a website with
+information about prices and conditions.  Lino Welfare currently has
+three websites:
+
+- `docs` published at http://welfare.lino-framework.org/
+- `docs_de` published at http://de.welfare.lino-framework.org/
+- `docs_fr` published at http://fr.welfare.lino-framework.org/
+
+These doctrees are independent Sphinx projects with different content
+(e.g. `docs_de` is *not* a translation of `docs`), but they link to
+each other.
+
+For me a website means a doctree because I love Sphinx.  But
+non-programming people told me that the websites of Lino Welfare are
+difficult to understand for normal humans.  Should I try some other
+tool to generate them? Or is it rather the content which disturbs
+them. For the moment I'll assume that it is rather the latter.
+
+The English tree is a complete technical information including the
+API.  It doesn't need to be readable by normal humans. But the German
+and French trees might serve as "pre-sales documentation".
+
+But is it okay to "merge" Lino Welfare and Rumma & Ko? Should the
+pre-sales info not rather be below http:/www.saffre-rumma.net?  In
+that case `saffre-rumma.net` must become multilingual.  Answer:
+actually yes.  Because if some concurrent of mine once decides to do
+it better than Rumma & Ko, they will very probably use their own CMS.
+A confirmation is that the current mixture of languages (mostly
+English except one page `Tutvustus
+<http://saffre-rumma.net/et/index.html>`_) looks rather silly.
+
+
+Miscellaneous
+=============
+
+:ticket:`573` (Onglet Parcours - Module Formation) : Don't show
+:attr:`content <lino.modlib.cv.models.Training.content>` in
+:class:`TrainingsByPerson <lino.modlib.cv.models.TrainingsByPerson>`.
+Replace it by ``function``.
+Add ``remark``
+
+
+#557
+====
+
+:ticket:`557` is strange. The default behaviour has "allways" been
+that the :kbd:`ENTER` key submits the form (calls its :meth:`on_ok`
+method, with on exception: when you are in a textarea field. you must
+press :kbd:`CTRL+ENTER` to submit because :kbd:`ENTER` must insert a
+newline. Now that behaviour doesn't work anymore.  It is the first
+time that somebody complains about this. I have no idea when it
+stopped to work. See 
+`Ext.KeyMap <http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.KeyMap>`_
+for Sencha's documentation. 
+
+Current workaround is a new plugin setting :attr:`enter_submits_form
+<lino.modlib.extjs.Plugin.enter_submits_form>` which I recommend to
+set to `False` (which I do for :ref:`welfare` and :ref:`noi`).
+
+
+API source code link
+====================
+
+About :ticket:`575`.  The sentence "This module's source code is
+available here" is automatically added by :func:`autodoc_add_srcref
+<atelier.sphinxconf.base.autodoc_add_srcref>` to the docstring of
+every module. A visible problem with this sentence is that it often
+apears somewhere in the middle of the document between lots of
+text. (After the docstring and before the content generated by
+autosummary).  I tried to change it to a *note* directive which makes
+it more easy to find. But I don't yet see how to solve this
+correctly. , Maybe change some `template
+<http://sphinx-doc.org/templating.html>`_?
+
+

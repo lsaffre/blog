@@ -1,0 +1,141 @@
+=======================
+Friday, October 2, 2015
+=======================
+
+Accounting translations for Lino Welfare
+========================================
+
+There was yet another problem with the side-effect of :ticket:`520`:
+after having transferred the translations to :ref:`cosi`, they still
+did not become activated in :ref:`welfare`. 
+
+Note that for generating language files, Lino does not use Django's
+system (`Localization: how to create language files
+<https://docs.djangoproject.com/en/1.8/topics/i18n/translation/#localization-how-to-create-language-files>`_)
+but the system defined by `Babel
+<http://babel.pocoo.org/docs/setup/>`_.  It is visible in the
+:xfile:`setup_info.py` files where we define `message_extractors`.
+There were several reasons for this and I don't remember them all
+right now.  One of the principal problems with Django's system is that
+it works only for the :setting:`INSTALLED_APPS`, and there is no Lino
+application which uses all plugins at once. Even
+:mod:`lino.projects.docs` doesn't use them all, because some are
+mutually exclusive.
+
+A consequence --or feature-- is that I centralize all translations
+into one "main" plugin per software project.  The :cmd:`fab mm`
+command knows this thanks to the :attr:`locale_dir
+<atelier.fablib.env.locale_dir>` setting in :xfile:`fabfile.py`.
+
+The translations for Lino are in :mod:`lino.modlib.lino_startup`.
+Those for :ref:`welfare` are in :mod:`lino_welfare.modlib.welfare`.
+And now, the translations for :ref:`cosi` are in
+:mod:`lino_cosi.lib.cosi`.  
+
+Applications don't need to know this since it is automatic because
+:mod:`lino_cosi.lib.accounts` now has :mod:`lino_cosi.lib.cosi` in its
+:attr:`needs_plugin <lino.core.site.Site.needs_plugin>`.
+
+A side effect of above is that we now have new methods
+:meth:`setup_actions <lino.core.site.Site.setup_actions>` and
+:meth:`setup_layouts <lino.core.site.Site.setup_layouts>`. Because I
+had to move the things that were in :mod:`lino_cosi.lib.cosi.models`
+to some other place. These definitions would not have been wanted for
+Lino Welfare.
+
+Ticket #219
+===========
+
+I pushed above changes and released them to :ref:`lf`. Mainly in order
+to test Hamza's fix for :ticket:`219`.
+
+I discovered that this fix has an irritating side effect: the insert
+window, after clicking the "Create" button, is now being displayed
+once more for a short time before it closes.  
+
+I removed the fix temporarily for the next push (which is easy because
+is is just an additional call to `'panel.refresh();`` in
+:xfile:`linoweb.js`) because I also promised a release to :ref:`welcht`,
+and am afraid that they won't like the irritating side effect.
+  
+In general I hope that we can find a better solution.
+
+Release in Chatelet
+===================
+
+The release in :ref:`welcht` went without surprises (of course I had
+to add :ref:`cosi` to their repositories and to run ``$ sudo apt-get
+build-dep lxml``).
+
+
+
+no such table: django_session
+=============================
+
+I get this when I run :cmd:`fab initdb` in the :ref:`noi` repository,
+then go to the team demo database and :manage:`runserver`::
+
+  OperationalError at / no such table: django_session
+
+Hamza also had this some days ago, and only after having had it
+myself, I started to understand the reason.
+
+It is because the :xfile:`fabfile.py` of :ref:`noi` defines two demo
+projects, :mod:`lino_noi.projects.team` and
+:mod:`lino_noi.projects.bs3`, and because the second demo project uses
+the same database file as the first. So :cmd:`fab initdb` does the
+work twice.  This not yet a problem, but bs3 has :attr:`default_user
+<lino.core.site.Site.default_user>` set to 'anonymous', which causes
+it to deactivate both authentication and sessions. And especially the
+latter means that the database has no `sessions` table.
+
+To solve this, I added a new site attribute :attr:`readonly
+<lino.core.site.Site.readonly>` which causes :manage:`initdb` to do
+nothing (except issuing an info message "Skipped `initdb` on
+readonly site 'foo.settings'."
+
+And :mod:`lino_noi.projects.bs3.settings.demo` uses this.
+
+So after running :cmd:`fab initdb` in the :ref:`noi` repository, you
+can now run :manage:`runserver` in both demo projects (`team` uses the
+normal "editable" user interface and `bs3` the readonly user
+interface). The public ticket database of the Lino team at
+http://bugs.lino-framework.org/ uses a subclass of
+:mod:`lino_noi.projects.bs3`.
+
+More about #219
+===============
+
+The definition of this function (generated in :file:`lino_900_en.js`)
+is::
+
+    Lino.tickets.Tickets.wf3 = function(rp, pk, params) { 
+      var h = function() { 
+        Lino.run_row_action(rp, "/tickets/Tickets", "GET", pk, "wf3", params, null);
+      };
+      var panel = Ext.getCmp(rp);
+      if(panel) panel.do_when_clean(true, h); else h();
+    };
+    
+It is strange that this call to `Lino.run_row_action` would issue
+a `POST`...
+    
+While exploring above, I noticed the following error message in the
+Javascript console::
+
+  TypeError: opt is undefined             (in ext-all-debug.js:28435:17)
+
+This was due to a stupid bug in :meth:`Lino.FormPanel.do_when_clean`
+(when `auto_save` is `true`) which caused it to call
+:meth:`MessageBox.show` without any `config` object.
+
+And to my surprise, :ticket:`219` was gone afterwards!
+
+So Hamza's fix for :ticket:`219` was not yet the solution, but it
+inspired me to find the solution.  This is what I would call `synergy
+<https://en.wiktionary.org/wiki/synergy>`_.  Hamza, don't be sad. The
+fact that you were able *at all* to find a first solution to such a
+hidden problem shows your competence.  Really.  It would just have
+been *too* beautiful if your fix had been the final solution.  Please
+check my code change and make sure that you understand what happened.
+

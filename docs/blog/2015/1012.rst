@@ -1,0 +1,142 @@
+========================
+Monday, October 12, 2015
+========================
+
+I discovered that :ticket:`219` is actually **not** fixed. Or at least
+it seems so. But what made me believe (:doc:`1002`) that it was
+solved?  To check out.
+
+Courses in Chatelet
+===================
+
+I started to analyze :ticket:`584` and noticed some problems in
+:ref:`welfare.specs.courses2` which they did not yet report
+themselves, probably because they don't yet record presences for the
+events of their courses:
+
+- they cannot change the state of a course because it never imported
+  any workflow. Fixed. Note that we don't import the default workflow
+  (:mod:`lino_cosi.lib.courses.workflows`) but define our own (in
+  :mod:`lino_welfare.projects.chatelet.modlib.courses.models`).
+
+- The :meth:`lino.modlib.cal.mixins.Reservation.update_cal_rset` method
+  returned `None` when no room was specified. I removed this rule from the
+  default implementation (i.e. it is okay to generate events and
+  record presences even when no room is specified. The room of a
+  course is not important in Chatelet.)
+
+
+- The :meth:`Course.suggest_cal_guests
+  <lino.modlib.cal.models.Course.suggest_cal_guests>` method now works
+  a bit differently and is more easy to adapt by overriding
+  :meth:`Enrolment.is_guest_for
+  <lino.modlib.cal.models.Enrolment.is_guest_for>`.
+
+
+Adapted and extended the test in
+:mod:`lino_welfare.projects.chatelet.tests.test_chatelet`.
+
+
+Nobel peace prize to Tunisia
+============================
+
+I just read that the `Tunisian national dialogue quartet wins 2015
+Nobel peace prize
+<http://www.theguardian.com/world/2015/oct/09/tunisian-national-dialogue-quartet-wins-2015-nobel-peace-prize>`__.
+Lino can be proud to have its second core developer living in Tunisia.
+
+
+A new type of human link
+========================
+
+I added a new human link type :attr:`foster_parent
+<lino.modlib.humanlinks.choicelists.LinkTypes.foster_parent>`.
+
+This caused a little side work concerning documentation because I saw
+that it was *very* old coding style (A.D. 2014 or so). I also extended
+the test in :mod:`lino.projects.min2.tests.test_birth_date` to include
+translations to German and French.
+
+Note that this is a nice example of the **difference between database
+tables and choicelists**. As an API developer you might ask "should I
+implement the :attr:`type <lino.modlib.humanlinks.models.Link.type>`
+field of some table (1) as a *choicelist* or (2) as a ForeignKey
+field?"  Using a choicelist means that the list of possible choices is
+hard-coded, i.e. that you as developer must maintain it. Which
+includes possible discussion with users. The list becomes part of your
+application. If something changes, then it changes for everybody.
+This is indeed what we want for
+:class:`lino.modlib.humanlinks.choicelists.LinkTypes`.  But it was a
+design decision for :mod:`lino.modlib.humanlinks`.
+
+Note that the **hard-codedness is not absolute** but tendencial.  If
+you have 50 production sites and one or two of them want a different
+list, then they can have it by redefining it in their
+:meth:`lino.core.site.Site.setup_choicelists` method.
+
+New method :meth:`lino.utils.test.CommonTestCase.create_obj`.
+
+Documenting plugins that are not installed
+===========================================
+
+The link to
+:mod:`lino_welfare.projects.chatelet.modlib.courses.models` didn't
+work. This was due to a old and fundamental documentation problem: The
+API documentation is generated using Sphinx (more precisely the
+*autodoc* and *autosummary* extensions). And a Sphinx documentation
+tree is built in a **single** Python process. And Django does not
+allow to have more than one :xfile:`settings.py` module within one
+Python process. The docs for :ref:`welfare` are built using
+:mod:`lino_welfare.projects.std.settings.demo` as settings (that's
+defined in the :file:`docs/conf.py` file).  And the
+:mod:`lino_welfare.projects.chatelet.modlib.courses.models` happens to
+**not** be installed in that environment.
+
+Sphinx doesn't show the problem directly (it just says that it cannot
+import the module), but you can simulate what happens:
+
+>>> import lino
+>>> lino.startup('lino_welfare.projects.std.settings.demo')
+>>> import lino_welfare.projects.chatelet.modlib.courses.models
+Traceback (most recent call last):
+  ...
+  File ".../lino_cosi/lib/courses/models.py", line 270, in EventsByTeacher
+    master = dd.plugins.courses.teacher_model
+AttributeError: 'Plugin' object has no attribute 'teacher_model'
+
+This traceback came because the ``courses`` plugins are not designed
+to be used together. It is normal (in a Django context) that you get
+problems when you try to import both of them. We can work around this
+by providing fallback mechanisms like this one::
+
+    try:
+        teacher_model = dd.plugins.courses.teacher_model
+        pupil_model = dd.plugins.courses.pupil_model
+    except AttributeError:
+        # Happens only when Sphinx autodoc imports it and this module is
+        # not installed.
+        teacher_model = 'foo.Bar'
+        pupil_model = 'foo.Bar'
+
+
+Temporary test cases
+====================
+
+Note that above snippet is what I would call a **temporary test
+case**. It is not part of the Lino test suite, I just tested it
+manually while writing this blog entry, using::
+
+  $ python -m doctest docs/blog/2015/1012.rst
+
+And note how such temporary test cases (until Saturday) had to start
+with something like...
+
+>>> import os
+>>> os.environ['DJANGO_SETTINGS_MODULE'] = 'lino.projects.docs.settings.demo' 
+
+while now (thanks to the extended :func:`lino.startup`) it is easier
+to remember:
+
+>>> import lino
+>>> lino.startup('lino_welfare.projects.std.settings.demo')
+

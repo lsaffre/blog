@@ -1,0 +1,97 @@
+===========================
+Wednesday, October 14, 2015
+===========================
+
+Deprecated behaviour
+====================
+
+The :attr:`django_settings_module
+<lino.utils.pythontest.TestCase.django_settings_module>` attribute was
+meant to solve exactly the same problem: how to specify the
+:xfile:`settings.py` module to be used when testing a document using
+doctest. I have the feeling that we should deprecate this old-style
+and intransparent ("automagic") behaviour now that we have the new
+`settings_modeul` argument for :func:`lino.startup`
+
+I noticed that :mod:`lino.utils.pythontest` and
+:mod:`lino.utils.djangotest` were missing in the API docs.
+And yes, the :ref:`dev.testing` page is still very uncomplete.
+
+
+About communication and Lino Noi
+================================
+
+It's now almost one week (:doc:`1008`) that I released the new
+comments feature (:ticket:`522`). But we didn't yet start to use
+it. Even *I* didn't. And actually I knew it in advance.
+
+There are several good reasons why we didn't:
+
+- Lino Noi will never replace individual communication channels
+  (E-Mail, Chat)
+- I seem to stick to my habit of writing in my daily blog using Emacs
+  and Sphinx (:ref:`devblog`)
+
+What do we want Noi to be?
+
+- Lino Noi does not want to *replace* E-Mail and Chat clients, but it
+  wants to *integrate* them. E-Mail and Chat clients stop to be
+  optimal where more than two persons are involved into a discussion.
+  Lino Noi wants to be a tool which sustains and keeps track of
+  communication within a group.  
+
+- Another basic goal is to have a knowledge database. That we can ask
+  in five years "Did we have this problem already? How did we solve
+  it?".
+
+Questions to those who followed until here:
+
+- Am I missing important goals?
+- Are we reinventing the wheel with Lino Noi?
+
+Some concretely missing features are:
+
+- Notifications. Currently it is a hell because every little change
+  generates an email to the reporter and the assigned user.
+
+- Collect incoming mails and assign them to their ticket (i.e. that
+  any user can forward any mail to an address (e.g.
+  incoming@lino-framework.org), and these mails would go into our
+  database and become visible to all other users. (This is partly
+  implemented in :mod:`lino.modlib.smtpd` and
+  :mod:`lino.modlib.outbox`. Something similar for collecting chat
+  logs and interactive terminal sessions.
+
+- Add some checkboxes "Blog", "chat" and "mail" on `clocking.Session`
+  which indicate "there are traces of this session in the author's
+  Blog, Chat or Email". Add a field `devblog_url_template` to
+  `users.User` and make the public interface generate automatic links
+  to the blog entry.
+
+
+#589
+====
+
+I started to work on :ticket:`589`. It is related to the following
+message which comes each time when I register an invoice::
+
+  INFO Found 0 VAT rules for %{'date': u'09.10.15', 'country': u'BE',
+  'vat_regime': <VatRegimes.private:10>, 'vat_class': <VatClasses.normal:2>}!)
+
+Yes, of course :mod:`lino_cosi.lib.tim2lino.fixtures.tim2lino` must
+also create VAT rules.
+
+The solution was to simply add :mod:`euvatrates
+lino_cosi.lib.vat.fixtures.euvatrates>` to their :attr:`demo_fixtures
+<lino.ciore.site.Site.demo_fixtures>`
+
+So it turns out that :ticket:`589` was actually just another facet of
+:ticket:`554`.  
+
+Afterwards I continued to work on :ticket:`554`. This ticket is about
+importing data of a TIM database into a Lino Così (more precisely a
+:mod:`lino_cosi.projects.apc`).  Changes are mostly in
+:mod:`lino_cosi.lib.tim2lino`.
+
+
+En passant I updated some documentation.

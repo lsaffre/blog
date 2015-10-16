@@ -1,0 +1,117 @@
+==========================
+Saturday, October 10, 2015
+==========================
+
+Hamza is working on :ticket:`38`, and I try to have a look at where he
+is stuck.
+
+    $ virtualenv django18
+    New python executable in django18/bin/python
+    Installing setuptools, pip...done.
+    $ . django18/bin/activate
+
+    $ pip install django
+    Downloading/unpacking django
+      Downloading Django-1.8.5-py2.py3-none-any.whl (6.2MB): 6.2MB downloaded
+      Storing download in cache at ...
+    Installing collected packages: django
+    Successfully installed django
+    Cleaning up...
+
+Note: I first tried with the preview of 1.9a of Django::
+
+    $ pip install --pre django
+    Downloading/unpacking django
+      Downloading Django-1.9a1-py2.py3-none-any.whl (6.4MB): 6.4MB downloaded
+
+But this caused an `ImportError` when trying to import from
+`django.utils.importlib`. I guess that's because `importlib` is no
+longer shipped with Django since it is included in Python 2.7. But I
+am not going to fix this now since it is more urgent to get it running
+with Django 1.8. We leave 1.9 support for a later ticket.
+
+As Hamza reported earlier: :cmd:`fab initdb` works. That's already a
+cool thing.
+
+But then :cmd:`fab initdb` indeed fails with a lot of
+`AppRegistryNotReady` exceptions::
+
+    AppRegistryNotReady: The translation infrastructure cannot be
+    initialized before the apps registry is ready. Check that you
+    don't make non-lazy gettext calls at import time.
+
+Hamza, I have seen this problem before (when trying with 1.7 or 1.8)
+and it has a simple explanation: Django has become more severe about
+using the translation framework. Officially it was always documented
+that nobaody should to non-lazy gettext calls as long as models are
+not imported. But Django 1.6. did not check it seriously. So these
+problems are either because Lino actually sometimes *does* non-lazy
+gettext calls. And in these cases Django is right, we must replace
+them by lazy calls.  OTOH the same error can simply be caused by the
+fact that `django.setup()` has not been called.
+
+How to proceed. 
+
+First we pick one of the failing tests, e.g. the last one::
+
+    File "lino/utils/ssin.py", line 59, in ssin
+    Failed example:
+        is_valid_ssin('123')
+    Exception raised:
+
+If you look at :file:`tests/__init__.py`, you can deduce that you can
+run only this test by executing::
+
+  $ python setup.py test -s tests.UtilsTests.test_ssin
+
+Here is one of the two tracebacks that occur during this test::
+
+    File "lino/utils/ssin.py", line 59, in ssin
+    Failed example:
+        is_valid_ssin('123')
+    Exception raised:
+        Traceback (most recent call last):
+          File "/usr/lib/python2.7/doctest.py", line 1315, in __run
+            compileflags, 1) in test.globs
+          File "<doctest ssin[1]>", line 1, in <module>
+            is_valid_ssin('123')
+          File "lino/utils/ssin.py", line 174, in is_valid_ssin
+            ssin_validator(ssin)
+          File "lino/utils/ssin.py", line 252, in ssin_validator
+            force_unicode(_('Invalid SSIN %s : ') % ssin)
+          File "/site-packages/django/utils/functional.py", line 178, in __mod__
+            return six.text_type(self) % rhs
+          File "/site-packages/django/utils/functional.py", line 140, in __text_cast
+            return func(*self.__args, **self.__kw)
+          File "/site-packages/django/utils/translation/__init__.py", line 84, in ugettext
+            return _trans.ugettext(message)
+          File "/site-packages/django/utils/translation/trans_real.py", line 327, in ugettext
+            return do_translate(message, 'ugettext')
+          File "/site-packages/django/utils/translation/trans_real.py", line 304, in do_translate
+            _default = _default or translation(settings.LANGUAGE_CODE)
+          File "/site-packages/django/utils/translation/trans_real.py", line 206, in translation
+            _translations[language] = DjangoTranslation(language)
+          File "/site-packages/django/utils/translation/trans_real.py", line 116, in __init__
+            self._add_installed_apps_translations()
+          File "/site-packages/django/utils/translation/trans_real.py", line 164, in _add_installed_apps_translations
+            "The translation infrastructure cannot be initialized before the "
+        AppRegistryNotReady: The translation infrastructure cannot be initialized before the apps registry is ready. Check that you don't make non-lazy gettext calls at import time.
+
+If you now look at the source code of :mod:`lino.utils.ssin`, I see
+that we do correctly use a lazy call. The problem here is indeed
+"only" that `django.setup()` has not been called. And as you noted
+already earlier, you can get the test to pass by adding two lines at
+the beginning of the docstring of :mod:`lino.utils.ssin`:
+
+>>> import django
+>>> django.setup()
+
+Which confirms that we "only" need to find out how to get this called
+automatically.
+
+And yes, the solution has to do with Django's new App Registry, which
+is introduced by Andrew Pinkham's `Part III: Django 1.7's New Features
+<http://andrewsforge.com/article/upgrading-django-to-17/part-3-django-17-new-features/#app-registry>`_
+
+One commit failed on drone.io and Travis because I forgot to set
+`install_requires` becak to `'django<1.7'`.
