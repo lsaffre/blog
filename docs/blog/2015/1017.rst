@@ -1,0 +1,120 @@
+==========================
+Saturday, October 17, 2015
+==========================
+
+Should we use Skype?
+====================
+
+Jack Wallen on `linux.com
+<http://www.linux.com/news/software/applications/812894-best-voip-clients-for-linux-that-arent-skype>`_
+mentions `Ekiga <https://ekiga.im/>`_ and `Linphone
+<http://www.linphone.org/>`_ as primary alternatives for Skype.  He
+says that "the major caveat to using any of these clients is that they
+cannot make calls to Skype users (as Skype uses an undisclosed,
+proprietary protocol)".  He correctly names some reasons why even
+people like me use Skype: "Even though Skype was purchased by
+Microsoft, it still remains one of the most user-friendly VOIP clients
+available. And considering Skype’s user-base, it is often considered
+the de facto standard software for the task. That doesn’t mean Skype
+is your only choice. Yes, Skype works on Linux (and, for the most
+part, works really well); but for those who’d rather choose an option
+that’s open source (or simply not Microsoft-owned), I present to you a
+few possible options to satisfy your VOIP needs."
+
+He does not mention several reasons for *not* using Skype, like
+security concerns or a vendor-locked history of your calls.
+
+
+Using Git to fetch and merge Hamza's work
+=========================================
+
+(I continue to learn how to use Git)
+
+Hamza pushed yet another commit (`13860692
+<https://github.com/HamZuS/lino/commit/0d865925b02a8de94a57a42f797932f913860692>`_)
+to his Lino repository, and I would like to merge it to my master (and
+afterwards check whether he is correctly reported as the author of
+this commit).
+
+Here we go::
+
+    $ git fetch hamza
+    remote: Counting objects: 6, done.
+    remote: Compressing objects: 100% (6/6), done.
+    remote: Total 6 (delta 0), reused 0 (delta 0), pack-reused 0
+    Unpacking objects: 100% (6/6), done.
+    From https://github.com/HamZuS/lino
+       12259ec..0d86592  master     -> hamza/master
+
+    $ git merge hamza/master 
+    Updating d6aff39..0d86592
+    Fast-forward
+     docs/tested/diamond2/django17.rst       |  7 +++--
+     docs/tested/dynamic.rst                 |  6 +++-
+     docs/tested/e006.rst                    |  2 +-
+     docs/tutorials/addrloc/index.rst        |  6 +++-
+     docs/tutorials/de_BE/index.rst          |  6 +++-
+     docs/tutorials/polls/mysite/index.rst   |  8 +++--
+     docs/tutorials/watch_tutorial/index.rst |  6 +++-
+     lino/api/doctest.py                     |  5 ++-
+     lino/api/shell.py                       |  4 +++
+     lino/core/requests.py                   |  3 +-
+     lino/core/site.py                       | 55 ++++++++++++++++++++++++---------
+     lino/modlib/jinja/loader.py             |  6 +++-
+     12 files changed, 88 insertions(+), 26 deletions(-)
+
+Oops, that was more than one file! 
+
+Yes of course, it took all changes to Lino which Hanza has made during
+he started to work on :ticket:`38`.
+
+Some of them are indeed good changes:
+
+- Calling django.setup() in lino/api/doctest.py and lino/api/shell.py
+  seems a great idea
+
+- The change in lino/core/requests.py is good.
+
+Some are less good, but it will be more efficient that I merge them
+and then "adapt" them myself as I suggested (and then explain why):
+
+- I don't like the changes in docs/tested/dynamic.rst and
+  docs/tested/e006.rst  because AFTER17 is
+  just a temporary name (we will remove it as soon as all production
+  sites have been migrated). I'd rather suggest two methods
+  `lino.core.model.Model.meta_get_fields()` and
+  `lino.core.site.Site.get_models()` (and the latter should have a
+  shortcut rt.get_models() in lino/api/rt.py
+
+- Concerning the changes in lino/core/site.py I don't yet know whether
+  I like them.
+
+But it contains some changes which Hamza probably wanted to undo
+before I merge them:
+
+- The change in docs/tested/diamond2/django17.rst is an accidental
+  no-op.
+
+- The changes in docs/tutorials/addrloc/index.rst etc where you
+  replace initdb_demo by syncdb turned out to be wrong
+
+So for the moment I undo the whole merge::
+    
+    $ git reset --merge ORIG_HEAD
+    (py27)luc@doll:~/work/lino$ git status
+    On branch master
+    Your branch is up-to-date with 'origin/master'.
+
+    nothing to commit, working directory clean
+
+Hamza might do this (without warranty)::
+
+  $ git checkout docs/tested/diamond2/django17.rst
+  $ git checkout docs/tutorials/addrloc/index.rst
+  $ git checkout docs/tutorials/de_BE/index.rst
+  $ git checkout docs/tutorials/polls/mysite/index.rst
+  $ git checkout docs/tutorials/watch_tutorial/index.rst
+  $ git commit -m "undo changes about initdb_demo"
+  $ git push
+
+Or (maybe better) I must find out how to do this myself...

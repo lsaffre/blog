@@ -1,0 +1,59 @@
+=========================
+Tuesday, October 20, 2015
+=========================
+
+#596 : Split lino_cosi.lib.sepa into "sepa_out" and "sepa_in"
+=============================================================
+
+New :ticket:`596`.  I realized that we will need to split the
+:mod:`lino_cosi.lib.sepa` module.  One part of it is just the fact of
+maintaining a list of bank accounts of your business partners:
+`Account` and `AccountsByPartner`.  The second part is about importing
+data from the bank and having statements and movements on these
+accounts. This is used only by :ref:`welfare`. In :ref:`cosi` we do
+not want this functionality.  Another functionality (yet to write) is
+that Lino sends payment orders to the bank.
+
+
+Continued with tim2lino
+=======================
+
+Note: I have two tickets :ticket:`353` (Umstieg von TIM nach Lino) and
+:ticket:`554` (first usage of tim2lino) which are partially redundant.
+353 is declared as "depends on 554".
+
+That customer currently uses TIM since A.D. 2000. The first two years
+are still in BEF as currency before they switched to EUR. We decieded
+that we can ignore these first two years when importing data to
+Lino. Lino does not yet support multiple currencies, and for the
+moment there is no user who might be interested in that feature, so
+that task is sleeping.
+
+The :mod:`tim2lino <lino_cosi.lib.tim2lino.fixtures.tim2lino>` fixture
+now ignores everything before 2002.
+
+Still thinking about whether Matching.match should be a ForeignKey or
+a CharField. I am far from being sure whether my thoughts on
+:doc:`0929` were right. Currently I believe again that a CharField is
+better...
+
+Printing a sales invoice produced an empty document. Mainly because
+the model name has chaged (to :class:`VatProductInvoice
+<lino_cosi.lib.sales.models.VatProductInvoice>`) some long time ago,
+but I forgot to also rename the :xfile:`config` directory with the
+template.
+
+TODO:
+
+- Print a payment reminder
+
+- Two failures of the Cosi test suite (in `docs/tested/demo.rst` and
+  `docs/tested/ledger.rst`) are failing due to my changes.
+
+
+The navigation bar is back
+==========================
+
+Thanks to `Jeff McKenna who reacted to my post
+<https://groups.google.com/forum/#!topic/sphinx-users/FeXo3VUGAns/discussion>`__
+I "fixed" :ticket:`550` (though not in an elegant way).
