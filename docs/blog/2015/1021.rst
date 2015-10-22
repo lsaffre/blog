@@ -1,0 +1,166 @@
+===========================
+Wednesday, October 21, 2015
+===========================
+
+I merged more changes by Hamza for #505 into master::
+
+    $ git fetch hamza 
+    remote: Counting objects: 28, done.
+    remote: Compressing objects: 100% (28/28), done.
+    remote: Total 28 (delta 12), reused 0 (delta 0), pack-reused 0
+    Unpacking objects: 100% (28/28), done.
+    From https://github.com/HamZuS/lino-cosi
+       5ba0ba8..85501a3  master     -> hamza/master
+    
+    $ git merge hamza/master 
+    Updating a038fbb..85501a3
+    Fast-forward
+     docs/tested/demo.rst           |  8 ++++----
+     docs/tested/general.rst        |  5 +++--
+     docs/tested/ledger.rst         | 58 +++++++++++++++++++++++++++++++++++++++++-----------------
+     lino_cosi/lib/sepa/__init__.py |  8 ++------
+     lino_cosi/lib/sepa/models.py   |  6 ++++--
+     lino_cosi/lib/sepa/ui.py       |  9 +++------
+     6 files changed, 57 insertions(+), 37 deletions(-)
+
+
+    $ git push
+    Counting objects: 50, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (28/28), done.
+    Writing objects: 100% (28/28), 3.26 KiB | 0 bytes/s, done.
+    Total 28 (delta 24), reused 0 (delta 0)
+    To git@github.com:lsaffre/lino-cosi.git
+       a038fbb..85501a3  master -> master
+    
+    
+For Welfare I still had to pull down Hamza's changes after having
+confirmed and merged his pull request using the web interface, but Git
+surprised me::
+    
+    $ git pull
+    remote: Counting objects: 16, done.
+    remote: Compressing objects: 100% (9/9), done.
+    remote: Total 16 (delta 13), reused 10 (delta 7), pack-reused 0
+    Unpacking objects: 100% (16/16), done.
+    From github.com:lsaffre/lino-welfare
+       e6d739e..806f191  master     -> origin/master
+    There is no tracking information for the current branch.
+    Please specify which branch you want to merge with.
+    See git-pull(1) for details
+
+        git pull <remote> <branch>
+
+    If you wish to set tracking information for this branch you can do so with:
+
+        git branch --set-upstream-to=<remote>/<branch> master
+    
+As it seems (according to `this
+<http://stackoverflow.com/questions/10147475/git-checkout-tag-git-pull-fails-in-branch>`__),
+I somehow did not yet set my upstream master::
+    
+    $ git branch --set-upstream-to=origin/master master    
+
+
+Atelier, Noi, Welfare and Cosi now watched on Drone.io
+======================================================
+    
+I created three new projects at drone.io for :ref:`atelier`,
+:re:`noi`, :ref:`cosi` and :ref:`welfare`.  Cheat sheet for creating a
+Drone project for a Lino application:
+
+- Environment Variables::
+
+  LINO_CACHE_ROOT=/home/ubuntu/lino_cache
+
+- Commands::
+
+    pip install -e .
+    mkdir -p $LINO_CACHE_ROOT
+    fab initdb test
+
+I did this mainly because this seems the easiest way to automatically
+notify Hamza when I push a set of changes to my repos.
+    
+Maybe it won't be trivial to get Cosi and Welfare watched on Drone
+because we test them with the latest development version of Lino
+(while on Drone they will use -of course- the latest released Lino
+version). It means that I will have to release Lino more often. But
+you are right, that's actually not a big problem, and it is necessary
+to do it.
+
+
+:ref:`cosi` then failed on Drone.io::
+
+  ImportError: Problem installing fixture '/home/ubuntu/virtualenv/python2.7/lib/python2.7/site-packages/lino/modlib/countries/fixtures/eesti.py': No module named commondata.ee.places
+
+... despite the fact that I specified `commondata.ee` in the
+`tests_require` of my :xfile:`setup_info.py` file. I guess that the
+``pip install -e`` implicitly causes pip to *not* install
+dependencies. But I don't like to use a `requirements.txt` file
+because that's redundant with the :xfile:`setup_info.py`.  To be
+observed.
+
+
+Fixed some test failures in Welfare
+===================================
+
+I fixed some failures in :ref:`welfare.specs.ledger` which were caused
+by Hamza's changes. Actually he wanted to look at them. 
+
+Since ``sepa`` now needs ``ledger``, Hamza had to
+change the order of these plugins in `get_installed_apps`. 
+
+This caused :mod:`lino_welfare.modlib.ledger.fixtures.demo` to fail
+because it was now being loaded before
+:mod:`lino_cosi.lib.sepa.fixtures.demo`. But the latter creates the
+contacts with an IBAN account number needed by the former.  So I moved
+the creating of incoming demo invoices from
+:mod:`lino_welfare.modlib.ledger.fixtures.demo` to
+:mod:`lino_welfare.modlib.sepa.fixtures.demo`.
+
+Another series of failures was due to the fact that demo user
+"wilfried" now gets created *earlier* (again due to the new sequencing
+order of the plugins) so that some user id's have changed. Hamza, I
+leave this to you as an exercise!
+
+When pushing my changes, I saw yet another problem: our demo file
+`lino_welfare/projects/eupen/tests/COD_20150907_O25MMF107I.xml` (which
+I added `20151013
+<https://github.com/lsaffre/lino-welfare/commit/37c1ab60f5db9c02802e2f70529176d092603f67>`_)
+had been deleted again.  I first thought that this was also because
+Hamza was not notified about my commits and therefore did not merge
+them into his fork.  But the explanation was easier:
+:attr:`delete_imported_xml_files
+<lino_cosi.lib.sepa.Plugin.delete_imported_xml_files>` now works! And
+therefore the :mod:`test_import_sepa
+<lino_welfare.projects.eupen.tests.test_import_sepa>` test deletes our
+demo file each time when being run.  Solution was to set the default
+value of this setting to `False`.
+
+
+
+#595 (Tx25 : No handler for BurialModes)
+========================================
+
+I fixed :ticket:`595`. The problem itself was trivial (just add a
+handler in :mod:`lino_welfare.modlib.cbss.tx25`), but testing this
+type of issue is always a bit tricky because I have only confidential
+data for testing these.
+
+This time it caused some subtle bugfixes with danger of side effects:
+
+- `cbss.RetrieveTIGroupsRequest` had a forgotten manual `do_print`
+  action defined.  Thiscaused Lino to continue printing Tx25 requests
+  using `DirectPrintAction` instead of using the excerpts system.
+
+- And then the excerpt sdid not appear in the client's history because
+  there was no
+  :meth:`lino_welfare.modlib.cbss.mixins.CBSSRequest.get_excerpt_option`.
+
+- The :xfile:`certificate.body.html` template tried to extend
+  :xfile:`base.body.html` with a wrong path::
+
+    {% extends "excerpts/Excerpt/base.body.html" %}
+
+- 

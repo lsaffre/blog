@@ -1,0 +1,89 @@
+==========================
+Thursday, October 22, 2015
+==========================
+
+
+I merged Hamza's work for :ticket:`505` and tested in Eupen.
+
+201510-22 07:07:40 WARNING ajax : AjaxExceptionResponse Exception:
+Found more than one account with IBAN BE1406...83
+
+It seems that the following change which I did on 20151016 got lost:
+
+    It turned out that they do have duplicate accounts. At least for the
+    moment. A duplicate Account object currently exists if two clients
+    have a common account at the bank. Of course this is not correct (and
+    I need to think with Gerd about how to solve this), but in order to
+    see first results, I changed the Found more than one account with
+    IBAN xxx error issued in lino_cosi.lib.sepa.models from an Exception
+    to a simple logger warning.
+
+I did it again.
+
+Ant the following error was due to an accidental trailing comma after
+an assignment::
+
+
+     201510-22 07:14:01 WARNING ajax : AjaxExceptionResponse AttributeError: 'tuple' object has no attribute 'replace'
+
+     File "/testlino/env/lib/python2.7/site-packages/localflavor/generic/models.py", line 77, in to_python
+     return value.replace(' ', '').upper()
+
+Fixed.
+
+
+But now I get this error message when I import their file:
+
+  Data truncated for column 'remote_owner' at row 1
+
+No traceback. I currently guess that the XML parser raised a `Warning`
+exception. Because this is the only type of exception which gets
+catched in :meth:`lino.core.kernel.Kernel.run_action`. I manually
+deactivated this catch on the local copy of the Lino repository to get
+the traceback::
+
+    201510-22 07:44:56 WARNING ajax : AjaxExceptionResponse Warning: Data truncated for column 'remote_owner' at row 1
+
+    in request POST /api/system/SiteConfigs (data: <QueryDict: {u'an': [u'import_sepa']}>)
+    TRACEBACK:
+      File "/testlino/env/lib/python2.7/site-packages/django/core/handlers/base.py", line 112, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/testlino/env/lib/python2.7/site-packages/django/views/generic/base.py", line 69, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/testlino/env/lib/python2.7/site-packages/django/views/generic/base.py", line 87, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/pythonenvs/a/repositories/lino/lino/modlib/extjs/views.py", line 530, in post
+        return settings.SITE.kernel.run_action(ar)
+      File "/pythonenvs/a/repositories/lino/lino/core/kernel.py", line 693, in run_action
+        a.run_from_ui(ar)
+      File "/pythonenvs/a/repositories/lino-cosi/lino_cosi/lib/sepa/models.py", line 76, in run_from_ui
+        self.import_file(ar, filename)
+      File "/pythonenvs/a/repositories/lino-cosi/lino_cosi/lib/sepa/models.py", line 165, in import_file
+        m.save()
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/base.py", line 545, in save
+        force_update=force_update, update_fields=update_fields)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/base.py", line 573, in save_base
+        updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/base.py", line 654, in _save_table
+        result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/base.py", line 687, in _do_insert
+        using=using, raw=raw)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/manager.py", line 232, in _insert
+        return insert_query(self.model, objs, fields, **kwargs)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/query.py", line 1514, in insert_query
+        return query.get_compiler(using=using).execute_sql(return_id)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/models/sql/compiler.py", line 903, in execute_sql
+        cursor.execute(sql, params)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/backends/util.py", line 69, in execute
+        return super(CursorDebugWrapper, self).execute(sql, params)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/backends/util.py", line 53, in execute
+        return self.cursor.execute(sql, params)
+      File "/testlino/env/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 124, in execute
+        return self.cursor.execute(query, args)
+      File "/usr/lib/python2.7/dist-packages/MySQLdb/cursors.py", line 176, in execute
+        if not self._defer_warnings: self._warning_check()
+      File "/usr/lib/python2.7/dist-packages/MySQLdb/cursors.py", line 92, in _warning_check
+        warn(w[-1], self.Warning, 3)
+
+Currently no idea. And I must stop with this now because today I fly
+to Belgium for ten days...

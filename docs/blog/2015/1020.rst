@@ -57,3 +57,75 @@ The navigation bar is back
 Thanks to `Jeff McKenna who reacted to my post
 <https://groups.google.com/forum/#!topic/sphinx-users/FeXo3VUGAns/discussion>`__
 I "fixed" :ticket:`550` (though not in an elegant way).
+
+
+Open source as a tool of cultural change
+========================================
+
+Oh, even the US government starts to understand why software must be
+free: `Open source as a tool of cultural change
+<http://opensource.com/government/15/10/ato-interview-kaitlin-devine-18f?utm_content=buffer38af4&utm_medium=social&utm_source=linkedin.com&utm_campaign=buffer>`__
+
+It is funny that this website has a whole article which explains `What
+is open source?  <http://opensource.com/resources/what-open-source>`_,
+which completely ignores Richard Stallmann's vocabulary problem about
+`Why Open Source misses the point of Free Software
+<http://www.gnu.org/philosophy/open-source-misses-the-point.en.html>`__.
+
+
+Merging Hamza's work on #505
+=============================
+
+Hamza did not know that I had been working on :ref:`cosi` as well. And
+I thought that there would be no conflict because I was not working in
+:mod:`lino_cosi.lib.sepa`.  But it seems that I *did* some changes there::
+
+    $ git merge hamza/master 
+    Auto-merging lino_cosi/lib/sepa/ui.py
+    Auto-merging lino_cosi/lib/sepa/models.py
+    CONFLICT (content): Merge conflict in lino_cosi/lib/sepa/models.py
+    Auto-merging lino_cosi/lib/sepa/__init__.py
+    Automatic merge failed; fix conflicts and then commit the result.
+
+As instructed `here <https://help.github.com/articles/resolving-a-merge-conflict-from-the-command-line/>`_, I must now manually resolve the conflict::
+
+    $ e lino_cosi/lib/sepa/models.py
+
+I actually just removed my changes since they were irrelevant. And then::
+
+    $ git add lino_cosi/lib/sepa/models.py
+    $ git status
+    On branch master
+    Your branch is up-to-date with 'origin/master'.
+
+    All conflicts fixed but you are still merging.
+      (use "git commit" to conclude merge)
+
+    Changes to be committed:
+
+            modified:   lino_cosi/lib/sepa/__init__.py
+            modified:   lino_cosi/lib/sepa/models.py
+            modified:   lino_cosi/lib/sepa/ui.py
+    
+And now, as instructed, I use "git commit" to conclude the merge::
+
+    $ git commit -m "merged Hamza's changes to master"
+    [master a038fbb] merged Hamza's changes to master
+    
+    $ git status
+    On branch master
+    Your branch is ahead of 'origin/master' by 2 commits.
+      (use "git push" to publish your local commits)
+
+    nothing to commit, working directory clean
+    
+And then I publish everything::
+    
+    $ git push
+    Counting objects: 30, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (16/16), done.
+    Writing objects: 100% (16/16), 3.18 KiB | 0 bytes/s, done.
+    Total 16 (delta 14), reused 0 (delta 0)
+    To git@github.com:lsaffre/lino-cosi.git
+       cb6d3a0..a038fbb  master -> master
