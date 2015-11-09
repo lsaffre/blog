@@ -1,0 +1,85 @@
+==========================
+Thursday, October 29, 2015
+==========================
+
+
+Organized disinformation
+========================
+
+I read an interesting article `Wirtschaft in der
+Schule: Arbeitgeber-Lobby stoppt Unterrichtsbuch
+<http://www.spiegel.de/schulspiegel/lobby-und-schule-arbeitgeberverband-stoppt-wirtschaftsbuch-a-1059654.html>`_.
+
+My summary: The German "Federal Agency for Political Education"
+(Bundeszentrale für Politische Bildung, BPB) had published in February
+2015 a school book `Ökonomie und Gesellschaft -- Zwölf Bausteine für
+die schulische und außerschulische Bildung
+<http://www.bpb.de/shop/lernen/themen-und-materialien/200345/oekonomie-und-gesellschaft>`__.
+Six weeks later the Federal Association of Employers' Organizations
+(Bundesvereinigung der Deutschen Arbeitgeberverbände, BDA), lead by
+Peter Clever, didn't like the book because it presents liberal
+entrepreneurship in a negative light. He criticizes that the book was
+ideologically biased propaganda against economics. And asked to stop
+its distribution in that form.  (Excerpts from his letter: "Wo ist in
+dieser Veröffentlichung die konstruktive und zentrale Rolle der
+deutschen Unternehmen in der dualen Ausbildung über einen Halbsatz
+hinaus angemessen thematisiert?". Or "Die in Ihrer Publikation
+transportierten ideologischen und voreingenommenen Anschuldigungen
+kennen wir aus interessierten Kreisen schon länger. Dass sie nun aber
+durch die Bundeszentrale für politische Bildung verbreitet und
+empfohlen werden, ist skandalös und nicht hinnehmbar.")  And the
+ministry for inner affairs (Bundesministerium des Innern, BMI) indeed
+"obeyed": they instructed the BDA to stop distribution. Despite a
+series of expertises who concluded that distribution was not
+problematic and that the BDA's claim was invalid.  The German Society
+for Sociology `reports more details
+<http://www.soziologie.de/de/nc/aktuell/meldungen-archiv/einzelansicht/archive/2015/10/23/article/vorlaeufiges-vertriebsverbot-der-sammelpublikation-oekonomie-und-gesellschaft-bundeszentrale-fuer-politische-bildung-durch-das-bundesministerium-des-innern.html>`_
+
+I guess that I would like the book but didn't read it and have no
+definitive opinion. Anyway it's funny how complex things can be! The
+discussion about liberalism, capitalism, communism (which also leads
+to the question about :doc:`/topics/why_free`) is more complex than a
+human brain can handle.  IMHO this example shows that the most
+important urgent problem of humanity is neither war, nor hunger, nor
+environment, but :doc:`democracy </topics/democracy>`...
+
+Alice pointed another cool example of organized disinformation,
+this one is not about economics but about creationism: `Texas Public
+Schools Are Teaching Creationism
+<http://www.slate.com/articles/health_and_science/science/2014/01/creationism_in_texas_public_schools_undermining_the_charter_movement.html>`__
+by Zack Kopplin. It starts like this:
+
+    When public-school students enrolled in Texas’ largest charter
+    program open their biology workbooks, they will read that the
+    fossil record is “sketchy.” That evolution is “dogma” and an
+    “unproved theory” with no experimental basis. They will be told
+    that leading scientists dispute the mechanisms of evolution and
+    the age of the Earth. These are all lies.
+
+Organized disinformation is an important danger for democracy because
+it falsifies the conscience of humans in order to protect or
+strengthen some private interest.
+
+
+
+#505 : next test
+================
+
+There was another message "Warning: Data truncated for column 'message' at row 1".
+In order to avoid a new reload of the snapshot, I did the structure change manually::
+
+
+  mysql> alter table sepa_movement modify message varchar(255);
+
+And voilà: 1 xml files would have been imported.
+(BTW: I changed this message to "1 xml files have been imported."
+
+But according to :mod:`lino_cosi.lib.sepa.camt` and `this
+<http://www.hettwer-beratung.de/sepa-spezialwissen/sepa-technische-anforderungen/camt-format-camt-053/>`_,
+a VARCHAR is not enough for the`message` field because it can contain
+more than 1000 chars.  So I changed it into a TextField.
+And adapted the detail layout.
+Note that I changed `MovementDetail` into `Movements.detail_layout`.
+
+I added `blank=True` to some fields of `Movement`.
+

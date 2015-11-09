@@ -1,0 +1,145 @@
+===========================
+Wednesday, October 28, 2015
+===========================
+
+#505
+====
+
+Remember that :ticket:`505` was waiting for my diagnostics about the
+error message :message:`Data truncated for column 'remote_owner' at
+row 1`. But Hamza maybe found the reason without my help:
+
+    I thought that this is because we get a remote_owner with a length
+    more then 32 (As it was defined in the model). I edit my sample
+    file by increasing the length of <Nm> tag but unfortunately, I
+    can't reproduce the error described in the blog.  Any way, I guess
+    the remote_owner, which suppose to be a partner (or person) name,
+    should be defined with 128 as length.  I create a PR for that.
+
+I merged Hamza's pull requests for :ref:`cosi` and :ref:`welfare` and
+started testing them on testlino in Eupen.  
+
+Testing this takes some waiting time because it includes restoring a
+snapshot, and that snapshot failed twice because of the `match` field
+which is no longer a FK but a char field, so I worked in parallel on
+the following.
+
+
+#600 : Get lino-cosi to pass on drone.io
+========================================
+
+While waiting for results, I opened :ticket:`600` (Get lino-cosi to
+pass on drone.io). 
+
+Currently every commit to :ref:`cosi` and :ref:`welfare` cause a
+failure notification from drone.io. Okay we know that our main reason
+for using drone.io is to automatically notify Hamza about my commits.
+But it is of course irritating to receive a failure message.  The
+builds #7 and #8 on drone.io are part of this.
+
+Lino Così currently had a special situation on PyPI.  There was a
+release 0.0.1 but without any files.  I guess that this can happen
+when the release process was interrupted.  Anyway it caused the
+:cmd:`fab release` command to produce an :message:`IndexError: list
+index out of range`. This was a bug in :mod:`atelier.fablib`. Fixed.
+
+Now at least :ref:`Così` fails to build on drone.io for the same
+reason as the first time (:doc:`1021`), i.e. because drone does not
+install :mod:`commondata.ee` despite the fact that this is included in
+`tests_require`.
+
+#505 (continued)
+================
+
+Here is the result of the next test run. This time we get the
+followinig traceback::
+
+    201510-28 04:41:31 WARNING ajax : AjaxExceptionResponse MultipleObjectsReturned: get() returned more than one Account -- it returned 3!
+
+    in request POST /api/system/SiteConfigs (data: <QueryDict: {u'an': [u'import_sepa']}>)
+    TRACEBACK:
+      File "env/lib/python2.7/site-packages/django/core/handlers/base.py", line 112, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "env/lib/python2.7/site-packages/django/views/generic/base.py", line 69, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "env/lib/python2.7/site-packages/django/views/generic/base.py", line 87, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/repositories/lino/lino/modlib/extjs/views.py", line 530, in post
+        return settings.SITE.kernel.run_action(ar)
+      File "/repositories/lino/lino/core/kernel.py", line 693, in run_action
+        a.run_from_ui(ar)
+      File "/repositories/lino-cosi/lino_cosi/lib/sepa/models.py", line 76, in run_from_ui
+        self.import_file(ar, filename)
+      File "/repositories/lino-cosi/lino_cosi/lib/sepa/models.py", line 140, in import_file
+        _bank_account = Account.objects.get(iban=_movement.remote_account)
+      File "env/lib/python2.7/site-packages/django/db/models/manager.py", line 151, in get
+        return self.get_queryset().get(*args, **kwargs)
+      File "env/lib/python2.7/site-packages/django/db/models/query.py", line 313, in get
+        (self.model._meta.object_name, num))
+
+Hamza, the explanation seems clear to me: you try to create a new
+`sepa.Account` record for each remote account of every transaction.
+That's not what we need. The remote accounts (i.e. those of the
+recipients or senders of each transaction) must not create a new
+`sepa.Account` record, we store just their IBAN and BIC. The
+`remote_account` field (and that's correct) is just an IBANField, not
+a ForeignKey to `sepa.Account`.
+
+IOW, in :mod:`lino_cosi.lib.sepa.models`, line 138ff you have::
+
+    if _movement.remote_account:
+        try:
+            _bank_account = Account.objects.get(iban=_movement.remote_account)
+        except Account.DoesNotExist:
+            _bank_account = Account(iban=_movement.remote_account)
+            _bank_account.full_clean()
+            _bank_account.save()
+        if not Movement.objects.filter(
+                unique_import_id=_movement['unique_import_id']).exists():
+            m = Movement(statement=s,
+                         unique_import_id=_movement['unique_import_id'],
+                         movement_date=_movement['date'],
+                         amount=_movement['amount'],
+                         partner_name=_movement.remote_owner,
+                         ref=_ref,
+                         remote_account=_bank_account.iban,
+                         remote_bic = _bank_account.bic,
+
+This must become something like this (not tested)::
+
+    if not Movement.objects.filter(
+            unique_import_id=_movement['unique_import_id']).exists():
+        m = Movement(statement=s,
+                     unique_import_id=_movement['unique_import_id'],
+                     movement_date=_movement['date'],
+                     amount=_movement['amount'],
+                     partner_name=_movement.remote_owner,
+                     ref=_ref,
+                     remote_account=_movement.remote_account,
+                     remote_bic = _movement.remote_bic,
+
+                        
+Please change it (or ask questions if you don't agree or don't
+understand) and post a next PR which I will probably be able to test
+tonight.
+
+I guess that this misunderstanding comes from my sentence "The rule
+here is that there should be one Account for every incoming IBAN. If
+no Account exists, import_file() should create an orphaned account
+(with empty "partner" field since you don't know the partner)." (:doc:`1013`)
+
+Note also that I already discovered, described and fixed this problem
+on :doc:`1016`, but my changes got lost somehow.
+
+
+
+
+
+
+Timezones in Lino Noi
+=====================
+
+Hamza probably is already used to it... but I saw it now for the first
+time with my own eyes: :ticket:`601`.
+
+

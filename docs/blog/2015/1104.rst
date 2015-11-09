@@ -1,0 +1,169 @@
+===========================
+Wednesday, November 4, 2015
+===========================
+
+Working with Hamza on #38
+=========================
+
+Hamza and I had our first voice session.  We fixed several test cases
+for :ticket:`38`.  One of the problems was that a
+:class:`lino.core.choicelists.Choice` until now was `callable`:
+
+>>> import lino
+>>> lino.startup("lino.projects.min1.settings.demo")
+>>> from lino.modlib.countries.choicelists import PlaceTypes
+>>> PlaceTypes.province
+<PlaceTypes.province:21>
+>>> callable(PlaceTypes.province)
+True
+
+Above snippet was `True` until today and will be `False` from now on.
+
+This feature was used when specifying a given Choice instance as the
+`default` value of a :class:`ChoiceListField
+<lino.core.choicelists.ChoiceListField>`.  Unfortunately Django 1.9
+will deprecate callable values in a database query. So we decided to
+remove the `__call__` method on `Choice`.  And replace it by a new
+explicit method :meth:`lino.core.choicelists.Choice.as_callable` which
+is now being called each time a :class:`ChoiceListField
+<lino.core.choicelists.ChoiceListField>` has a default value.  We did
+not yet fully understand all the details of why this is necessary. It
+has to do with the fact that Django handles callable default values
+specially.
+
+We also changed the sorting order of the items of
+
+- :func:`lino.core.utils.models_by_base`
+- :attr:`lino.core.ddh.DisableDeleteHandler.fklist`
+
+Until now these lists were in a "natural" order (I guess the
+definition of their class objects). But this "natural" order is
+different between Django versions 1.6 and 1.8. Since anyway it doesn't
+seem to have a big influence, we now sort them alphabetically.
+
+Hamza continued to work on these while I slept.  In the morning I
+merged his work into master::
+
+    $ git merge hamza/master 
+    Updating db55135..72b3b4d
+    Fast-forward
+     docs/tested/ddh.rst                   | 16 ++++++++--------
+     lino/projects/min2/tests/test_min2.py |  6 +++---
+     lino/utils/instantiator.py            |  5 +----
+     3 files changed, 12 insertions(+), 15 deletions(-)
+
+
+Quitting Facebook
+=================
+
+I am going to disappear now. At least for my Facebook friends.
+
+Leaving Facebook is actually easy: `How do I permanently delete my
+account?  <https://www.facebook.com/help/224562897555674>`_
+
+Just for fun I also downloaded an archive of what they knew about me
+(or more precisely what they agreed to tell me they know).  It is
+funny that even now they seem very serious about privacy:
+
+    "Caution: Protect your archive.  Because this download may contain
+    private information, you should keep it secure and take precautions
+    when storing it, sending it or uploading it to another service."
+
+But actually the procedure was very correct and flawless. The only
+difficulty is that you must really know that you want it:
+    
+    "Your account has been deactivated from the site and will be
+    permanently deleted within 14 days. If you log into your account
+    within the next 14 days, you will have the option to cancel your
+    request."
+
+My problem with Facebook was not so much these privacy issues for
+which they got so famous.  It is rather the fact that some of my
+friends stopped to use e-mail.  Yes, I admit that Mark Zuckerberg and
+his servants have reached yet another milestone of their world
+domination project.  But at least I won't be there when they
+celebrate.  I registered as number 41082 on
+http://www.quitfacebookday.com and just hope that some of my Facebook
+friends will continue to speak with the old crazy idealist I am.
+
+I recommend to not use Facebook because
+
+- it is rather an imperium than a democratic organization
+- it tries to keep you stupid and obedient instead of trying to make
+  you learn how to move freely around
+- every Facebook user is another buttress of this imperium
+
+**Everybody who is not on Facebook is a sign of hope that the we can
+manage to rule this world together without giving up our freedom.**
+
+#38 (continued)
+===============
+
+I adapted the test suites for :ref:`welfare` and :ref:`noi` after our
+changes of last night (Welfare had 8 trivial failures, Noi one).
+
+#505 (continued)
+================
+
+I removed the field `partner` from Statement : we are not interested to
+identify the remote partner of every transaction.
+
+Our demo XML file is now being imported by the
+:mod:`lino_welfare.modlib.sepa.fixtures.demo` fixture.  I removed
+:mod:`lino_welfare.tests.test_import_sepa` because it had become
+useless.  Advantage is that we can now have a "live" look at the
+imported demo data in the Eupen demo database.
+
+
+Statement number differs depending on exchange format (SEPA or CODA)
+====================================================================
+
+I have a problem with the `statement_number`.  Our demo data XML file
+(`COD_20150907_O25MMF107I.xml
+<https://github.com/lsaffre/lino-welfare/blob/master/lino_welfare/modlib/sepa/fixtures/COD_20150907_O25MMF107I.xml>`_)
+contains the following statement (I replaced parts of it by "..." for
+clarity)::
+
+    <Stmt>
+    <Id>152500000475073/000001-000047</Id>
+    <CreDtTm>2015-09-03T00:00:00</CreDtTm>
+    <FrToDt>...</FrToDt>
+    <CpyDplctInd>DUPL</CpyDplctInd>
+    <Acct>...</Acct>
+    <Bal>...</Bal>
+    <Bal>...</Bal>
+    <TxsSummry>...</TxsSummry>
+    <Ntry>...</Ntry>
+    <Ntry>...</Ntry>
+    <Ntry>...</Ntry>
+    <Ntry>...</Ntry>
+    </Stmt>
+
+The statement ID using SEPA is "152500000475073/000001-000047". This
+is what Lino displays correctly.
+
+The same statement, when imported using CODA into TIM, has a number
+"2015/021".  But I cannot find that number anywhere in our XML file.
+The users would prefer to see that old-style "2015/021" also in Lino,
+if possible.
+
+According to the `Coded statement of account (CODA)
+<https://www.febelfin.be/sites/default/files/files/Standard-CODA-22-EN.pdf>`_
+(page 17), a CODA movement contains:
+
+- A **Continuous sequence number** which "starts at 0001 and is
+  increased by 1 for each movement record referring to another
+  movement on th e daily statement of account. If there are more than
+  9,999 transactions, the number goes up to 0000 and then 0001."
+
+- A **Detail number** which "starts at 0000 and is increased by 1 for
+  each movement record for the same continuous sequence num ber. If
+  there are more than 9,999 details relating to one single
+  transaction, the number goes up to 0000 and then 0001"
+
+- A **Reference number of the bank** which "is purely informative" and
+  has 21 characters.
+
+Does the bank really identify their statements differently depending
+on which method is being used for exchange!?  Did I miss something?
+

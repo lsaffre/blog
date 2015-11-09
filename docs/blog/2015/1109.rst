@@ -1,0 +1,206 @@
+========================
+Monday, November 9, 2015
+========================
+
+#38 continuing
+==============
+
+Hamza and I had another shared session yesterday where we fixed about
+6 of the remaining 10 failures. Hamza continued alone afterwards and
+committed our work to his fork. Now I merged his changes to Lino
+master.
+
+There were still 2 failures in the :ref:`faggio` test suite (due to
+one of our changes for :ticket:`38`)
+
+
+Multiple products per ticket?
+=============================
+
+The following thoughts are mainly for :ticket:`602`. While my first
+reaction after my meeting with Oikos (Johannes) was to write a new
+application from scratch, I later got the idea that this project is
+possibly a case for Lino Noi.
+
+The current database structure in :ref:`ref` has one product per
+ticket. I am considering to change this into a 1-to-N relation. That
+is, per ticket, instead of having a ForeignKey field which points to a
+product, we would have a list of "related products" per ticket.
+Another part of this change would be to add a list of
+"responsibilities" or "competences" per user. We could then add a
+filter to be used when assigning new tickets to a user: Lino would
+suggest only those users who have registered their compentence for the
+related products of the ticket.
+
+Discussion: 
+
+- alternatively don't do this with the producs table but add
+  a new table "competences" ("required competences" per ticket and
+  "owned competences" per user).
+
+- alternatively just add a list of competences per user and leave the
+  one product per ticket rule.
+
+Should we differentiate between "products" and "competences"?
+Products are currently the things that a given Noi community is
+"producing". IOW the software components or modules of the
+miscellaneous projects.  What would be in our (the Lino team's) list
+of "Competences" if it was separate?
+
+======================= ===================
+Competence              Users
+======================= ===================
+Local testing           Gerd, Mathieu
+Configuration           Gerd, Mathieu, Luc
+Analysis with customer  Gerd, Mathieu, Luc
+Code changes            Luc, Hamza
+Bugfix                  Luc, Hamza
+Enhancement             Luc, Hamza
+Optimization            Luc, Hamza
+Documentation           Luc
+Offer                   Luc
+======================= ===================
+
+We can observe that this list is almost identical with our current
+"ticket types".
+
+We could rename this field to "Required action".
+
+Instead of having multiple required actions, we can leave it as it is
+and get used to the fact that this field may change during the
+lifecycle of a ticket.
+
+This structure is very similar to what we have in
+:mod:`lino_welfare.modlib.newcomers` where the "products" or "ticket
+types" are called "faculties".
+
+Summary: :ticket:`602` might be absolutely implementable with minimum
+effort:
+
+- add a new plugin :mod:`lino_noi.lib.faculties` with two models
+  "Faculty" and "Competence" as in
+  :mod:`lino_welfare.modlib.newcomers`.  Also the tables are similar.
+- Change Ticket.detail_layout : remove the "Waiting for" field (a
+  plain charfield) and replace it by "Faculty required" (a pointer to
+  Faculty).
+- develop workflow and tables for managing the assignment of tickets
+  to users. E.g. a view to help answering the question "Which tickets
+  that are currently assigned to Luc (or to nobody) can be assigned to
+  Hamza?"
+- release these changes to our production site. We will manually
+  populate the faculties table with values as above.
+
+- Note that we leave the TicketType table unchanged. It might become
+  more useful in the future, e.g. the ticket type might have an
+  influence on price when invoicing.
+
+These changes would be directly interesting for the Lino team.  
+
+And later, for Oikos we might need a way to classify these faculties
+into categories because there might be many of them. (But it's too
+early to decide about this)
+
+I created a new ticket :ticket:`610` for these first changes because
+they are only a first step of the whole :ticket:`602` project, and
+because I plan to leave this first step to Hamza.
+
+#353 (Lino Così)
+================
+
+After my meeting with Danny last week I had a list of things to do for
+ticket :ticket:`353`. Finally I found some time to start working on
+these.
+
+Some trivial changes:
+
+- Lieferart kann weg. We don't need the ShippingMode, at least not in
+  a basic version. Create a new plugin "delivery" which currently just
+  contains the model and will later contains delivery notes.
+
+- No `discount` field per invoice (but only per item)
+
+- New fields `ship_date` and `ship_ref`. These are meant to be filled
+  manually in case of grouped invoices. We decided to *not* add
+  delivery notes to the database (at least not in a basic version).
+
+This one was less trivial:
+
+- After selecting the payment term of an invoice, Lino should set the
+  `due_date`
+
+Thoughts about payment terms
+----------------------------
+
+The following are fragments of my thoughts...
+
+We have two mixins 
+:class:`PartnerRelated <lino_cosi.lib.ledger.mixins.PartnerRelated>`
+and
+:class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`.
+Shouldn't be Payable a subclass of PartnerRelated?
+Or rather PartnerRelated a subclass of Payable?
+Are there PartnerRelated models which are not Payable?
+
+Should PaymentTerm work for any trade type? Or should it be reserved
+for sales? A: no, there are probably users who use it for registering
+purchase invoices.
+
+There are vouchers which have a due_date and are payable (must get
+cleared by some other transaction), but their due_date is not computed
+automatically using a PaymentTerm
+
+There are 3 :class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`
+concrete models: :class:`VatAccountInvoice
+<lino_cosi.lib.vat.models.VatAccountInvoice>`,
+:class:`VatProductInvoice
+<lino_cosi.lib.sales.models.VatProductInvoice>` and
+:class:`AccountInvoice <lino_cosi.lib.vatless.models.AccountInvoice>`.
+
+All of these are also :class:`PartnerRelated
+<lino_cosi.lib.ledger.mixins.PartnerRelated>`, but they don't inherit
+it directly:
+
+- :class:`VatDocument <lino_cosi.lib.vat.mixins.VatDocument>`
+    
+  - :class:`VatAccountInvoice <lino_cosi.lib.vat.models.VatAccountInvoice>`
+  - :class:`SalesDocument <lino_cosi.lib.sales.models.SalesDocument>`
+        
+    - :class:`VatProductInvoice <lino_cosi.lib.sales.models.VatProductInvoice>`
+    - :class:`Order <lino_cosi.lib.orders.models.Order>`
+            
+- :class:`AccountInvoice <lino_cosi.lib.vatless.models.AccountInvoice>`
+- :class:`VoucherItem <lino_welfare.modlib.client_vouchers.models.VoucherItem>`
+
+
+
+An order is a VatDocument (and thereby a PartnerRelated), but not a
+Payable.
+
+An order has a payment_term (as a sales invoice) but is not payable.
+
+Changes
+-------
+
+- :class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`
+  now inherits from 
+  :class:`PartnerRelated <lino_cosi.lib.ledger.mixins.PartnerRelated>`
+- :class:`VatDocument <lino_cosi.lib.vat.mixins.VatDocument>` is no longer PartnerRelated
+- Until now the `payment_term` field was injected by
+  :mod:`lino_cosi.lib.vat.models`, but now this is done by
+  :mod:`lino_cosi.lib.ledger.models`.  
+
+  A consequence of this is that now
+  also in :ref:`welfare` all partners have this field. Which is indeed
+  what we want (as far as I can see) : when they start to register
+  purchase invoices, then they will possibly want to give a default
+  payment term per provider. At least in TIM they had this possibility.
+
+- Moved ``orders`` from :mod:`lino.modlib` to :mod:`lino_cosi.lib`
+  (but this plugin is not yet being used)
+
+Changes en passant
+------------------
+
+- Added new :meth:`lino.utils.diag.Analyzer.show_database_structure`
+- Moved `dd.get_db_overview_rst` to
+  :meth:`lino.utils.diag.Analyzer.show_db_overview`

@@ -1,0 +1,140 @@
+=========================
+Tuesday, November 3, 2015
+=========================
+
+I merged Hamza's work on :ticket:`38` into master::
+
+    $ git status
+    On branch master
+    Your branch is up-to-date with 'origin/master'.
+
+    nothing to commit, working directory clean
+
+    $ git pull hamza 
+    remote: Counting objects: 21, done.
+    remote: Compressing objects: 100% (7/7), done.
+    remote: Total 21 (delta 13), reused 13 (delta 13), pack-reused 1
+    Unpacking objects: 100% (21/21), done.
+    From https://github.com/HamZuS/lino
+       fe9d720..957081f  master     -> hamza/master
+    You asked to pull from the remote 'hamza', but did not specify
+    a branch. Because this is not the default configured remote
+    for your current branch, you must specify a branch on the command line.
+
+    $ git merge hamza/master 
+    Updating e6be990..957081f
+    Fast-forward
+     docs/tutorials/addrloc/index.rst             | 10 +++--
+     docs/tutorials/de_BE/index.rst               | 12 ++++--
+     docs/tutorials/mldbc/index.rst               | 10 +++--
+     docs/tutorials/polls/mysite/index.rst        | 24 +++++++-----
+     docs/tutorials/sendchanges/index.rst         |  8 ++--
+     docs/tutorials/watch_tutorial/index.rst      | 11 +++---
+     lino/api/doctest.py                          |  5 ++-
+     lino/api/shell.py                            |  4 ++
+     lino/core/choicelists.py                     |  7 +++-
+     lino/core/requests.py                        |  3 +-
+     lino/core/site.py                            | 55 +++++++++++++++++++++-------
+     lino/modlib/countries/fixtures/few_cities.py | 26 +++++++++++--
+     lino/modlib/jinja/loader.py                  |  6 ++-
+     lino/utils/instantiator.py                   |  5 ++-
+     14 files changed, 133 insertions(+), 53 deletions(-)
+
+
+After merging these, I get an error when running :cmd:`fab initdb`
+under Django 1.6::
+    
+
+    ...
+    Creating table tinymce_textfieldtemplate
+    Creating table django_session
+    Installing custom SQL ...
+    Installing indexes ...
+    ...
+    INFO Loading /lino/lino/modlib/cal/fixtures/std.py...
+    Traceback (most recent call last):
+      File "/py27/bin/django-admin.py", line 5, in <module>
+        management.execute_from_command_line()
+      ...
+      File "/lino/lino/modlib/cal/fixtures/std.py", line 82, in objects
+        if not obj.update_reminders(ar):
+      File "/lino/lino/modlib/cal/mixins.py", line 295, in update_reminders
+        return self.update_auto_events(ar)
+      File "/lino/lino/modlib/cal/mixins.py", line 309, in update_auto_events
+        wanted = self.get_wanted_auto_events(ar)
+      File "/lino/lino/modlib/cal/mixins.py", line 461, in get_wanted_auto_events
+        date = rset.get_next_suggested_date(ar, date)
+      File "/lino/lino/modlib/cal/mixins.py", line 658, in get_next_suggested_date
+        date = self.every_unit.add_duration(date, self.every)
+    AttributeError: Problem installing fixture '/lino/lino/modlib/cal/fixtures/std.py': 'unicode' object has no attribute 'add_duration'
+    INFO Done /py27/bin/django-admin.py initdb_demo --noinput --traceback --settings=lino.projects.docs.settings.demo (PID 7246)
+    Fatal error: local() encountered an error (return code 1) while executing 'django-admin.py initdb_demo --noinput --traceback --settings=lino.projects.docs.settings.demo'
+    Aborting.
+
+Hm... what's going on there?  Aha, the problem is caused by two
+changes in :mod:`lino.core.choicelists`.  Hamza, in
+:meth:`ChoiceList.to_python
+<lino.core.choicelists.ChoiceList.to_python>` and
+:meth:`ChoiceListField.get_prep_value
+<lino.core.choicelists.ChoiceListField.get_prep_value>` you told Lino
+to return the :attr:`value` (i.e. a string) instead of the `Choice`
+instance.  I guess that this change is not what we want, and therefore
+undid it.  But maybe I am missing something. Please explain why you
+did it.
+
+Testing output which depends on Django version
+==============================================
+
+In :ref:`tutorials.de_BE`, Hamza found a really tricky solution to a
+doctest problem.
+
+>>> from django.core.management import call_command
+>>> call_command('initdb_demo', interactive=False)
+
+Under Django 1.6 the output of that snippet is::
+
+    Creating tables ...
+    Installing custom SQL ...
+    Installing indexes ...
+    Installed 3 object(s) from 1 fixture(s)
+
+While under Django 1.7+ it is::
+
+    Operations to perform:
+      Synchronize unmigrated apps: about, jinja, staticfiles, de_BE, lino_startup, extjs, bootstrap3
+      Apply all migrations: (none)
+    Synchronizing apps without migrations:
+      Creating tables...
+        Running deferred SQL...
+      Installing custom SQL...
+    Running migrations:
+      No migrations to apply.
+    Installed 3 object(s) from 1 fixture(s)
+
+That's a funny challenge if you want to support both Django versions!
+His hack was this:
+
+>>> call_command('initdb_demo', interactive=False, verbosity=0)
+>>> import doctest
+>>> doctest.ELLIPSIS_MARKER = '-etc-'
+>>> call_command('initdb_demo', interactive=False)  # doctest: +ELLIPSIS
+-etc-Creating tables-etc-...
+-etc-Installing custom SQL-etc-...
+-etc-
+Installed 3 object(s) from 1 fixture(s)
+
+That's a cool trick to remember, but I found an even cooler solution:
+
+>>> call_command('initdb_demo', interactive=False, verbosity=0)
+
+That is, I use the `verbosity` option so that the command does no
+output at all.  This is okay because actually the whole test case is
+*not* about the details of that output. The output is just a side
+effect.
+
+Same for :ref:`tutorials.addrloc`.
+
+I adapted some tests in :ref:`welfare` to recent changes in
+:mod:`lino_cosi.lib.sepa`.
+
+

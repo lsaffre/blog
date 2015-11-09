@@ -1,0 +1,203 @@
+==========================
+Thursday, November 5, 2015
+==========================
+
+#505 continued
+==============
+
+I continued to compare the layouts in :mod:`lino_cosi.lib.sepa.ui`
+with screenshots of real data imported by TIM.
+
+I removed the `AccountDetail` class and use a simple string for
+`detail_layout` instead.  `OrphanedAccounts` now inherits from
+`Accounts` (instead of repeating the definition of `detail_layout`.
+
+I set :attr:`editable <lino.core.actors.Actor.editable>` to `False`
+for `Movements` and `Statements` because they should never be edited
+by the users.
+
+The `detail_layout` for `Statements` is now "complex" (i.e. needs a
+class definition) because define two panels `top_left` and
+`top_right`.
+
+I read http://lxml.de/xpathxslt.html and then modified
+:mod:`lino_cosi.lib.sepa.camt` and
+:mod:`lino_cosi.lib.sepa.parserlib`: they completely ignored the
+``<Dt>`` element of opening and closing balances.  Their statement had
+a date which was the `execution_date` of the first transaction.  Now
+a statement has two date attributes `start_date` and `end_date`.
+
+I removed the `Statement.date_done` field because it contained useless
+information.
+
+Committed in lino (just a docstring), cosi (code changes) and welfare
+(adapted test suite).
+
+Lino failing on Drone and Travis
+================================
+
+That's because we currently have the :xfile:`setup_info.py` file
+without "Django<1.7" (which is more convenient for testing).
+
+
+Cannot write VirtualGetter object
+=================================
+
+Yes, there are still several tough challenges for :ticket:`38`. Let's
+look at one of them::
+
+
+    $ go min2
+    $ python manage.py test
+    INFO Started manage.py test (using lino.projects.min2.settings.demo) --> PID 32268
+    Creating test database for alias 'default'...
+    ...
+    INFO Loading /lino/lino/modlib/excerpts/fixtures/std.py...
+    WARNING Failed to save SiteConfig #1 (u'Site Parameters'):
+    E
+    ======================================================================
+    ERROR: test_02 (lino.projects.min2.tests.test_birth_date.QuickTest)
+    Was written for :ticket:`488` (Kann Person nicht mehr von
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/lino/lino/projects/min2/tests/test_birth_date.py", line 148, in test_02
+        insert_child(as_partner, Company, full_clean=True)
+      File "/lino/lino/utils/mti.py", line 203, in insert_child
+        new_obj = child_model(**attrs)
+      File "/python2.7/site-packages/django/db/models/base.py", line 470, in __init__
+        setattr(self, field.attname, val)
+      File "/lino/lino/core/fields.py", line 471, in __set__
+        return self.set_value_in_object(None, instance, value)
+      File "/lino/lino/core/fields.py", line 451, in set_value_in_object
+        (value, self))
+    NotImplementedError: Cannot write <lino.core.fields.VirtualGetter object at 0x7f95056e8790> to field VirtualField <class 'lino.modlib.households.models.Household'>.overview
+    
+    ...
+    ======================================================================
+    ERROR: setUpClass (lino.projects.min2.tests.test_min2.QuickTest)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+    ...
+    ValidationError: {u'site_calendar': [u'Calendar instance with id 1 does not exist.']}
+
+    ----------------------------------------------------------------------
+    Ran 4 tests in 1.336s
+
+    FAILED (errors=3)
+    Destroying test database for alias 'default'...
+    INFO Done manage.py test (PID 32268)
+
+
+
+:class:`lino.modlib.households.models.Household` inherits the
+`overview` field from :class:`lino.modlib.contacts.models.Partner`
+which defines it as follows::
+
+    @dd.displayfield()
+    def overview(self, ar):
+        return E.div(*self.get_overview_elems(ar))
+
+This is a normal read-only virtual field. It is correct that Lino
+complains when you try to write to it. But who is trying to write to
+this and why?
+
+The message :message:`Cannot write <lino.core.fields.VirtualGetter
+object at 0x7f95056e8790> to field VirtualField <class
+'lino.modlib.households.models.Household'>.overview` is not very
+clear. I add a `__repr__` method to :class:`VirtualGetter
+<lino.core.fields.VirtualGetter>`::
+
+    def __repr__(self):
+        return "<{1}>.{0}".format(self.vf.name, repr(self.instance))
+
+And also optimized the :meth:`__repr__` method of :class:`VirtualField
+<lino.core.fields.VirtualField>`.
+
+The message becomes::
+
+  NotImplementedError: Cannot write 
+  <Partner #101 (u'Doe John')>.overview 
+  to field 
+  VirtualField lino.modlib.households.models.Household.overview
+
+Now I start to understand what's happening.
+Look at the code of :func:`insert_child <lino.utils.mti.insert_child>`::
+
+    for field in obj._meta.fields:
+        attrs[field.name] = getattr(obj, field.name)
+    new_obj = child_model(**attrs)
+
+And in Django 1.8 (unlike 1.6) the `_meta.fields` property is a list
+of *all* fields, including virtual fields.  In Django 1.8 we have
+another property `_meta.concrete_fields` which contains only
+"concrete" fields (whatever this might be exactly, but I guess it's
+what we want).  So the solution is::
+
+    if AFTER17:
+        fields_list = obj._meta.concrete_fields
+    else:
+        fields_list = obj._meta.fields
+    for field in fields_list:
+        attrs[field.name] = getattr(obj, field.name)
+
+Tested Lino, Welfare, Cosi, Noi under Django 1.6 and then committed
+above change.
+
+
+ValidationError: {u'site_calendar': [u'Calendar instance with id 1 does not exist.']}
+=====================================================================================
+
+Fixing the `Cannot write VirtualGetter object`_ problem did not
+automatically fix the other problem. What a pity (I hoped that it
+would). So now let's have a closer look at the output::
+
+
+    $ go min2
+    $ python manage.py test
+    INFO Started manage.py test (using lino.projects.min2.settings.demo) --> PID 1829
+    Creating test database for alias 'default'...
+    INFO Loading /lino/lino/modlib/gfks/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO Loading /lino/lino/modlib/excerpts/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO Loading /lino/lino/projects/min2/modlib/contacts/fixtures/std.py...
+    INFO Loaded 22 objects
+    INFO Loading /lino/lino/modlib/cal/fixtures/std.py...
+    INFO Loaded 17 objects
+    INFO Loading /lino/lino/modlib/notes/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO Loading /lino/lino/modlib/households/fixtures/std.py...
+    INFO Loaded 6 objects
+    INFO Loading /lino/lino/modlib/pages/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO Loading /lino/lino/modlib/tinymce/fixtures/std.py...
+    INFO Loaded 2 objects
+    ..INFO Loading /lino/lino/modlib/gfks/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO Loading /lino/lino/modlib/excerpts/fixtures/std.py...
+    WARNING Failed to save SiteConfig #1 (u'Site Parameters'):
+    EINFO Building /lino_cache/min2/media/cache/js/lino_000_en.js ...
+    .INFO Loading /lino/lino/modlib/gfks/fixtures/std.py...
+    INFO Loaded 1 objects
+
+And I note the :message:`Building
+/lino_cache/min2/media/cache/js/lino_000_en.js` message. This message
+is coming too early.  My guess is that something triggers the
+generation of the :xfile:`linoweb.js` file.
+
+And I even seem to know the reason for this. It is our
+:func:`lino.startup` function. We must differentiate between *Lino*
+startup and *Django* startup.
+
+- *Django* startup imports the settings and the models. This will also
+  *instantiate* the :class:`Site <lino.core.site.Site>`.
+
+- *Lino* startup comes afterwards: it instantiates the `kernel` (which
+  analyses the models), builds the :xfile:`linoweb.js` and lots of
+  other things.
+
+I now made (and committed) the changes which should theoretically
+work. But appearently not in practice: in Django 1.6 the tests pass,
+but in Django 1.8 above process now *hangs* without any
+message. Sometimes it does not even react to :kbd:`Ctrl-C` and I have
+do kill it.

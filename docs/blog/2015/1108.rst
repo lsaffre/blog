@@ -1,0 +1,91 @@
+========================
+Sunday, November 8, 2015
+========================
+
+Synergy
+=======
+
+I try to write about this in more detail because it is at least the
+second or third time that something similar happens between Hamza and
+me.
+
+Yesterday evening Hamza and I had a voice session with shared screen
+for working on :ticket:`38`. We concentrated on the `ValidationError:
+{u'site_calendar': [u'Calendar instance with id 1 does not exist.']}`
+problem described a few days ago (:doc:`1105`). After half an hour of
+poking around, I decided to stop for today because it was time for me
+to go to bed.  Hamza still continued alone for a bit more than an
+hour.  After waking up I checked my mails where he reported his last
+observations:
+
+    In fact, Django 1.8 doesn't throw any
+    more an error when Lino loads fixture with no data as Django 1.6
+    do (By looking to you `ticket
+    <https://code.djangoproject.com/ticket/18213>`_.), but just a
+    RuntimeWarning. Actually lino.excerpts.fixtures.std.py loads no
+    data since 'rt.models_by_base(Certifiable)' returns an empty list,
+    as we saw that together.
+
+    But we still have a problem. Even if we don't have any data in our
+    fixture , min2 project should not fail when trying to save
+    settings.SITE.site_config. 
+    
+    I found also that if I remove the field injection of the field
+    site_calendar to system.SiteConfig (as we can found it in
+    lino.modlib.cal.models), we get no error and the test pass. May be
+    the lino.core.inject still have problem with django 1.8
+
+The fact that removing the `inject_field` for `site_calendar` seems to
+fix the problem was quite surely not related. When you store some
+value to an arbitrary attribute of a Django database object (i.e. some
+name which is not defined as a field), then the value simply does not
+get saved. So removing the field was not a solution but just avoiding
+the problem.
+
+I had the impression that Hamza's other observation about the
+:meth:`deserialize_module` method in :mod:`lino.utils.dpy` was also a
+wrong path. I had a look at this code with the plan to explain to
+Hamza why this was wrong, but then discovered that he was right: the
+explanation of our problem is: when
+:mod:`lino.modlib.excerpts.fixtures.std` is empty (i.e. yields no
+objects at all), this code "inserts" the :attr:`site_config
+<lino.core.site.Site.site_config>` object (which always exists) in
+order to work around `Django ticket 18213
+<https://code.djangoproject.com/ticket/18213>`_.  But in Django 1.8,
+for some reason (to be investigated), the `site_config` object
+contains a pointer to another object which, at that moment, has not
+yet been saved. And thus the SiteConfig object itself fails to get
+saved. Actually I had observed similar side effects before. They come
+when you get an empty ficture *too early*, i.e. before the SiteConfig
+object has become saveable. I just wouldn't have looked at this place
+without Hamza.
+
+And since all this happens only under Django 1.7+ where we don't need
+that hack anymore, we can just deactivate it by changing the line::
+
+    if empty_fixture:
+
+into::
+
+    if empty_fixture and not AFTER17:
+
+So Hamza was very close to the solution and just didn't have enough
+experience with Lino in order to see it.
+
+Above change is committed `here
+<https://github.com/lsaffre/lino/commit/029dbfe4560c3f336276232ed8afdbf4eca3ea35>`__.
+
+Summary: This was a perfect example of synergy: Hamza on his own, or I
+om my own, would never have fixed that problem so quickly.  Hamza is a
+great assistant for me, and the Lino project can be happy that we
+found each other!
+
+Ticket :ticket:`38` is not yet fixed (there are still about 11
+failures), but we are almost there.
+
+Continued with #38
+==================
+
+The failure in :mod:`lino.utils.format_date` was due to a missing call
+to :func:`lino.startup`.
+

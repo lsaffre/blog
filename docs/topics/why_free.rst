@@ -149,8 +149,10 @@ It's not about money
 
 A text titled "Unavoidable Ethical Questions About Open Source"
 [#scu_questions]_ published by the Santa Clara Univerity in Silicon
-Valley is formulated as a series of ethical questions which express
-common arguments against free software.  Here are these questions,
+Valley expresses common arguments against free software.  The text is
+formulated as a series of "ethical" questions. I perceive these
+questions as "wrong" because they are drifting away from the important
+point.  However we need to answer such questions, so here they are,
 together with my answers:
 
 - **Is human knowledge advanced by full and free access to all
@@ -206,10 +208,11 @@ together with my answers:
   product, which is the result of sweat and ingenuity and which has
   monetary value, as well. Will open source inculcate the virtues of
   friends or of thieves?** -- Answer: Yes, using proprietary software
-  without permission is theft, don't do that. Using free software is
-  never theft because the author has publicly given their permission
-  to share their work.  Note that the "monetary value" is usually not
-  owned by those who gave their "sweat and ingenuity".
+  without permission is theft. Don't do that. But it is "theft" only
+  because the copyright holder refuses to share. Using free software
+  is never theft because the author has publicly given their
+  permission to share their work.  Note that the "monetary value" is
+  usually not owned by those who gave their "sweat and ingenuity".
 
 While my above answers --hopefully-- give satisfying answers to the
 given arguments [#jesuits]_, all these thoughts are rather misleading
@@ -220,13 +223,20 @@ of the product nor about the wage of the author.
 It is about power
 =================
 
+The real issue with proprietary software is that its copyright holder
+inevitably tries to gain power over you.  Vendors of proprietary
+software are skillful in finding ever and ever new tricks and whole
+technologies whose single goal is to bind you to their product (an
+effect known as `vendor lock-in
+<https://en.wikipedia.org/wiki/Vendor_lock-in>`_).  They hide this
+fact more or less successfully, but it is a necessary part of the
+game.
+
 If you care about the sovereignty and liberty of your enterprise, then
 you ask questions like the following:
 
-- Who will help us when something goes wrong?
-
-- Who is responsible for maintaining that software, for giving support
-  to its end-users?
+- Who will help us when something goes wrong? Who is responsible for
+  maintaining that software, for giving support to its end-users?
 
 - How sustainable is my investment?  Who is going to decide whether to
   switch to some newer technology?  Or to discontinue some existing
@@ -236,25 +246,26 @@ you ask questions like the following:
   challenges, which new functionalities should be implemented and
   which not?
 
-- How competent is that person or organization? What is their
-  motivation? How is the price-quality ratio? Do they have
-  concurrents?  Are they being regulated by the free market?
+- How competent is that organization? What is their motivation? How is
+  the price-quality ratio? Do they have concurrents?  Are they being
+  regulated by the free market? Do I have a possibility to chose
+  another partner in case I am not satisfied?
+
 
 Yes, it might seem dispairing to try to find partners who meet all
 criteria for maintaining the sovereignty and liberty of your
-enterprise.  
+enterprise.  It seems like a vicious circle. 
 
-It seems like a vicious circle. A fundamental property of free
-software is that it cannot serve as capital.  While this is the
-inevitable condition for remaining free, it also reduces the
-motivation of all kinds of companies of private law to invest into
-free software.  A good manager takes care of not wasting time or money
-into projects that are "useless" in regard to their primary goal,
-namely to create benefit for the owners.  And the chances of success
-of an enterprise increase with the competence of its managers.  And
-successful enterprises tend to grow in size and power. So one might
-come to the conclusion that free software projects have no chance of
-becoming big and powerful.
+A fundamental property of free software is that it cannot serve as
+capital.  While this is the inevitable condition for remaining free,
+it also reduces the motivation of all kinds of companies of private
+law to invest into free software.  A good manager takes care of not
+wasting time or money into projects that are "useless" in regard to
+their primary goal, namely to create benefit for the owners.  And the
+chances of success of an enterprise increase with the competence of
+its managers.  And successful enterprises tend to grow in size and
+power. So one might come to the conclusion that free software projects
+have no chance of becoming big and powerful.
 
 A widely spread attitude which I use to label `Uncle Tom's Advice
 <https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop to make
