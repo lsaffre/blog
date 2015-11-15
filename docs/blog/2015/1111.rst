@@ -1,0 +1,206 @@
+============================
+Wednesday, November 11, 2015
+============================
+
+Avoid line breaks in formatted amounts
+======================================
+
+Gerd reported :ticket:`611`. 
+The solution was easy, I just added this
+to their :xfile:`settings.py` file::
+
+    # decimal_group_separator '.'
+    decimal_group_separator = u"\u00A0"
+
+(i.e. set the :attr:`decimal_group_separator
+<lino.core.site.Site.decimal_group_separator>` to a `non-breaking
+space
+<http://www.fileformat.info/info/unicode/char/00a0/index.htm>`_).
+
+The non-breaking space is now the new default value for
+:attr:`decimal_group_separator
+<lino.core.site.Site.decimal_group_separator>` (so after release I
+might remove above local change)
+
+It took me some time to write a test case because
+:meth:`run_simple_doctests
+<atelier.test.TestCase.run_simple_doctests>` (i.e. ``python -m doctest
+lino/core/site.py``) did **not** run the tests because it mixes up
+:mod:`lino.core.site` with the :mod:`site` module of the standard
+library.  At least in Python 2.7.6. Fixed in
+:file:`lino/tests/__init__.py`
+
+
+Rendering raw HTML strings
+==========================
+
+I have a strange problem with
+:meth:`E.raw <lino.utils.xmlgen.html.HtmlNamespace.raw>`:
+:
+
+>>> from lino import startup
+>>> startup('lino.projects.min1.settings')
+>>> from lino.utils.xmlgen.html import E
+>>> s = "<p>Ceci est un <b>beau</b> texte format&eacute;</p>"
+>>> E.tostring(E.raw(s))
+Traceback (most recent call last):
+...
+Exception: ParseError undefined entity: line 1, column 39 in <p>Ceci est un <b>beau</b> texte format&eacute;</p>
+
+The ParseError looks as if the parser does not know the `eacute` HTML
+entity. But AFAICS I have successfully updated the parser's
+`XMLParser.entity
+<http://effbot.org/elementtree/elementtree-xmlparser.htm#tag-ET.XMLParser.entity>`_
+attribute (I do this in :mod:`lino.utils.xmlgen.html`):
+
+>>> from lino.utils.xmlgen.html import CreateParser
+>>> p = CreateParser()
+>>> p.entity['eacute']
+u'\xe9'
+>>> p.entity['egrave']
+u'\xe8'
+
+I changed :meth:`lino.utils.xmlgen.Namespace.fromstring` so that it
+now uses :meth:`xml.etree.ElementTree.fromstringlist` instead of
+:meth:`xml.etree.ElementTree.fromstring` (because the latter does not
+support the `parser` keyword argument). But that doesn't change
+anything.
+
+>>> p  # doctest: +ELLIPSIS
+<xml.etree.ElementTree.XMLParser object at ...>
+>>> p.version
+'Expat 2.1.0'
+
+>>> E  # doctest: +ELLIPSIS
+<lino.utils.xmlgen.html.HtmlNamespace object at ...>
+
+Rendering raw HTML strings (continued)
+======================================
+
+Here is the same snippet without Lino:
+
+>>> from xml.etree import ElementTree as ET
+>>> from htmlentitydefs import name2codepoint
+>>> ENTITIES = {}
+>>> ENTITIES.update((x, unichr(i)) for x, i in name2codepoint.iteritems())
+>>> def CreateParser():
+...     p = ET.XMLParser()
+...     p.entity.update(ENTITIES)
+...     return p
+
+No problem for HTML without entities:
+
+>>> s = "<p>This is a <b>formatted</b> text</p>"
+>>> ET.tostring(ET.fromstringlist([s], parser=CreateParser()))
+'<p>This is a <b>formatted</b> text</p>'
+
+But when it contains an entity (of type ``&name;``), then it fails:
+
+>>> s = "<p>Ceci est un texte <b>format&eacute;</b></p>"
+>>> ET.tostring(ET.fromstringlist([s], parser=CreateParser()))
+Traceback (most recent call last):
+...
+ParseError: undefined entity: line 1, column 30
+
+The error message indicates the parser does not know the `eacute` HTML
+entity. But AFAICS I have successfully updated the parser's
+`XMLParser.entity
+<http://effbot.org/elementtree/elementtree-xmlparser.htm#tag-ET.XMLParser.entity>`_
+attribute:
+
+>>> p = CreateParser()
+>>> p.entity['eacute']
+u'\xe9'
+>>> p.version
+'Expat 2.1.0'
+
+
+Lino now requires Python 2.7
+==============================
+
+I removed support for Python 2.6 because one test case was broken
+because :meth:`E.raw <lino.utils.xmlgen.html.HtmlNamespace.raw>`: now
+reports the string where the parser error occured.
+
+
+
+More parsing
+============
+
+The following is normal because `fromstring` and `fromstringlist` must
+return *one* element:
+
+>>> s = "<p>intro:</p><ol><li>first</li><li>second</li></ol>"
+>>> ET.tostring(ET.fromstringlist([s], parser=CreateParser()))
+Traceback (most recent call last):
+...
+ParseError: junk after document element: line 1, column 13
+
+Workaround is to wrap them into a ``<div>``:
+
+>>> s = '<div>%s</div>' % s
+>>> ET.tostring(ET.fromstringlist([s], parser=CreateParser()))
+'<div><p>intro:</p><ol><li>first</li><li>second</li></ol></div>'
+
+
+Cannot reuse detail_layout
+==========================
+
+The following error came in :mod:`lino_cosi.lib.sales` when I
+
+    Exception: Cannot reuse detail_layout of <class 'lino_cosi.lib.sales.models.ItemsByInvoicePrint'> for <class 'lino_cosi.lib.sales.models.InvoiceItemsByProduct'>
+
+The explanation was probably that the `InvoiceItems` table was never
+used.  Since the table who defined the `detail_layout` was never used,
+Lino installed the layout on the first subclass thereof, and then the
+other subclasses failed to inherit from it.  Just a theoretical
+explanation which I did not investigate to the end, but the
+problem disappeared after adding a command to the explorer menu.
+
+
+Use lxml, not xml.etree for parsing HTML
+========================================
+
+Meanwhile I asked about `Rendering raw HTML strings (continued)`_ on
+``#python``, and Yhg1s suggested:
+
+  well, the simple solution is to not parse HTML as if it was XML,
+  because, in reality, it isn't. lxml.html is a *much* better idea.
+
+I consulted `Parsing XML and HTML with lxml <http://lxml.de/parsing.html>`_
+to refresh my memory, and then it was actually quite easy.
+
+>>> from lxml.etree import HTML
+>>> s = "<p>Ceci est un texte <b>format&eacute;</b></p>"
+>>> e = HTML(s)
+>>> E.tostring(e)
+'<html><body><p>Ceci est un texte <b>format&#233;</b></p></body></html>'
+>>> E.tostring(e[0][0])
+'<p>Ceci est un texte <b>format&#233;</b></p>'
+
+So Lino now *really* needs lxml (not only for
+:mod:`lino_cosi.lib.sepa`), and let's hope that the strange side
+effects I had some years ago will not occur again.
+
+
+IllegalText: The <text:section> element does not allow text
+===========================================================
+
+I had this error message and wrote a test case in
+:ref:`cosi.tested.sales` to reproduce it.
+
+The problem is in :mod:`lino.utils.html2odf`. Actually we just
+stumbled over one of the probably many situations which are not yet
+supported.  I started a section "Not yet supported" in this document. 
+
+TODO: is there really no existing library for this task? The only
+approaches I saw call libreoffice in headless mode to do the
+conversion. Which sounds inappropriate for our situation where we must
+glue together fragments from different sources. Also note that we use
+:mod:`appy.pod` to do the actual generation.
+
+
+
+
+
+

@@ -1,0 +1,157 @@
+=========================
+Friday, November 13, 2015
+=========================
+
+Importing 101 xml files
+=======================
+
+Working on :ticket:`505`.  Gerd got a new series of xml files. I tried
+to import them.  I changed
+:meth:`lino_cosi.lib.sepa.models.ImportStatements.run_from_ui` so that
+it imports both `.xml` and `.XML` files.  Basically this was just to
+change the wildcard from ``'*.xml'`` to ``'*.[Xx][Mm][Ll]'``. But I
+also did some opimizations of coding style and reporting.  these
+changes are spread over several commits because I discovered them on
+the field (running the import repeatedly on their testlino server
+using real XML files).
+
+
+Coding style by example
+=======================
+
+Before::
+
+    def run_from_ui(self, ar):
+        pth = dd.plugins.sepa.import_statements_path
+        wc = os.path.join(pth, '*.xml')
+        dd.logger.info("Importing SEPA statements from %s...", wc)
+        count = 0
+        if pth:
+            for filename in glob.iglob(wc):
+                self.import_file(ar, filename)
+                count += 1
+            msg = "{0} xml files have been imported.".format(count)
+            dd.logger.info(msg)
+            return ar.success(msg, alert=_("Success"))
+        msg = "No import_statements_path configured."
+        return ar.error(msg, alert=_("Error"))
+
+After::
+
+    def run_from_ui(self, ar):
+        pth = dd.plugins.sepa.import_statements_path
+        if not pth:
+            msg = "No import_statements_path configured."
+            return ar.error(msg, alert=_("Error"))
+        dd.logger.info("Importing XML files from %s...", pth)
+        wc = os.path.join(pth, '*.[Xx][Mm][Ll]')
+        count = 0
+        for filename in glob.iglob(wc):
+            self.import_file(ar, filename)
+            count += 1
+        msg = "{0} XML files have been imported.".format(count)
+        dd.logger.info(msg)
+        return ar.success(msg, alert=_("Success"))
+
+- avoid indentation (prefer an early return)
+- I prefer variable names like "stmt" and "mvmt" over ``_statement``
+  or ``_movement``: (1) why a leading underscore? (2) Often-used
+  variables should be as short as possible (though not *too* short so
+  that you can use search and replace on them)
+- There was a big try-except statement: keep these statements as
+  narrow as possible to avoid handling exceptions from unexpected
+  places.
+- I optimized the reporting, considering that usually there are many
+  files being imported at once.
+
+
+About payment terms
+===================
+
+Should the `payment_term` field really be on *every* partner of Lino
+Welfare? They will use it *only* when entering incoming purchase
+invoices. Yes, even a `pcsw.Client` is a potential provider, that's
+theoretically possible, but seems overkill. One more "mostly useless"
+field.
+
+One solution might be to use polymorphism instead of injecting the
+field. That is, in :mod:`lino_cos.lib.ledger.models`::
+
+  class PayableProvider(contacts.Partner):
+      payment_term = ...
+
+New ticket :ticket:`613`. This is part of the welfare.ledger project.
+
+Nouveaux tickets encodés par Mathieur et Aurélie
+================================================
+
+Je viens de découvrir que Mathieu et Aurélie ont encodé des tickets.
+
+- TODO: new module "notifier" or "notify" with a model "Message". It
+  replaces and extends the current system of "welcome messages". Main
+  purpose is to group several notifications into one mail in order to
+  avoid a inbox overflow.
+
+- Confirmed :ticket:`608` Publipostage (assigned to Pierre)
+- Confirmed :ticket:`607` Présentation des fichiers téléchargés
+
+- :ticket:`606` was a group of several tickets. @Mathieu: please avoid
+  this; it is better to write each item as a separate ticket. I
+  splitted into new tickets:
+
+- renamed 606 to "Plusieurs types de convention Art 61" (i.e. the first item)
+
+- :ticket:`614` : Onglet Intervenant : supprimer le champ
+  "Intermédiaire" (avec liste déroulante)
+ 
+- :ticket:`615` : Layout onglet RAE
+
+- :ticket:`616` : Panneau "Fichiers téléchargés"
+
+- :ticket:`617` : Ateliers automatiquement triés par date
+
+- Page d’accueil : Dans la partie « Mes rendez-vous », peut on ne voir
+  que les Rendez-vous du jour ? Duplicate of :ticket:`547`? This
+  should be done.
+
+- :ticket:`618` : modifier "Durée du contrat" en "Type de contrat"
+
+Search in description of tickets
+================================
+
+While triaging tickets, I finally decided to fix an old problem:
+:ticket:`619`.
+
+First of all, I optimized the internal handling of
+:attr:`quick_search_fields
+<lino.core.model.Model.quick_search_fields>`: Lino now resolves this a
+kernel startup and raises an Exception if the list contains an invalid
+field name.
+
+And then, :class:`lino_noi.lib.tickets.models.Ticket` now uses this
+attribute to specify that quick search should look only at the fields
+summary and description.
+
+Using Lino Noi for the "Care" project
+=====================================
+
+I added a new demo project :mod:`lino_noi.projects.care`, a first
+draft about the "approach (1)" described in :ref:`noi.specs.care`.
+This is :ticket:`621`. It is currently sleeping because I start to
+believe that approach 2 (implement it using a new application from
+scratch) will be easier and better.
+
+But :mod:`lino_noi.projects.care` is nevertheless interesting because
+it "opens" Lino Noi to other contexts. Lino Noi is definitively not
+meant only for software development teams.
+
+I reorganized the "software-specific" demo fixtures which should *not*
+get loaded by :mod:`lino_noi.projects.care`.
+
+Optimization to the Framework: I added a new rule to
+:meth:`lino.core.site.Site.init_before_local`: :mod:`team
+<lino_noi.projects.team>` now has an "application-specific" "local"
+fixtures directory, and :mod:`care <lino_noi.projects.care>` inherits
+from :mod:`team <lino_noi.projects.team>`, but we *not* want to
+inherit these fixtures from team to care.
+

@@ -22,7 +22,7 @@ reaction after my meeting with Oikos (Johannes) was to write a new
 application from scratch, I later got the idea that this project is
 possibly a case for Lino Noi.
 
-The current database structure in :ref:`ref` has one product per
+The current database structure in :ref:`noi` has one product per
 ticket. I am considering to change this into a 1-to-N relation. That
 is, per ticket, instead of having a ForeignKey field which points to a
 product, we would have a list of "related products" per ticket.
@@ -204,3 +204,29 @@ Changes en passant
 - Added new :meth:`lino.utils.diag.Analyzer.show_database_structure`
 - Moved `dd.get_db_overview_rst` to
   :meth:`lino.utils.diag.Analyzer.show_db_overview`
+
+
+tests.DumpTests (#38)
+=====================
+
+I fixed one of the remaining failures for :ticket:`38` (an easy one)::
+
+    $ python setup.py test -s tests.DumpTests
+    ...
+    test_dump2py (tests.DumpTests) ... FAIL
+
+    ======================================================================
+    FAIL: test_dump2py (tests.DumpTests)
+    ----------------------------------------------------------------------
+      File "/lino/modlib/lino_startup/management/commands/dump2py.py", line 187, in write_files
+        if not getattr(f, '_lino_babel_field', False)])))
+    AttributeError: 'ManyToOneRel' object has no attribute 'attname'
+    
+The explanation was also here that :meth:`Model.get_fields_with_model`
+contains also virtual and other special fields in Django 1.7+.  There
+were two places in
+:mod:`lino.modlib.lino_startup.management.commands.dump2py` where we
+must remove these special fields::
+
+    if AFTER17:
+        fields = [f for f in fields if f.concrete]

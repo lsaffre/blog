@@ -1,0 +1,237 @@
+===========================
+Saturday, November 14, 2015
+===========================
+
+Hamza has been working on :ticket:`601` (Add general timezone
+support).  The topic is new (at last for me) and I have to keep the
+docs about `Django Time zones
+<https://docs.djangoproject.com/en/1.6/topics/i18n/timezones/>`_ and
+the `pytz <http://pytz.sourceforge.net/>`_ package under my pillow for
+some time.
+
+Hamza did not yet file a pull request because he is not finished.  But
+I can see his changes using::
+
+  $ git fetch
+  $ git diff master hamza/master
+
+Remarks about these changes (I publish them here so that future Lino
+core developers might learn from them, too)...
+
+
+Note about copyright
+====================
+
+When you create a new file, you will have to decide about the
+copyright holder in the file header. Until now most Lino modules are
+marked "Copyright Luc Saffre".
+
+The most obvious approach is that you write your name as copyright
+holder when you created the file, and *add* your name when you
+contribute some relevant change to an existing module. An example this
+approach is the :mod:`lino.modlib.export_excel` plugin, created by Joe
+who contributed it to Lino, and later I continued to maintain it.
+
+The problem with this approach is that copyright is getting spread
+over several people.  I believe that it is better to avoid this
+situation because it makes handling copyright issues very complicated.
+Imagine for example that (some day in some fare future) we discover
+that somebody else violated the copyright by using Lino code without
+referring to Lino. In such cases, the Lino maintainer (whoever they
+may be then) would have to check with three physical persons, one
+sitting in Estonia, a second in Czechia and the third in Tunesia.
+
+The best solution is to found a "Lino Software Foundation" and to
+assign copyright to this foundation. But for the moment this would be
+overkill.
+
+A workaround as long as no official foundation exists might be that we
+change Lino's copyright to "The Lino Team". But I am not sure whether
+this is okay because "The Lino Team" has no official "definition".
+
+Or should we do it like Django: we *remove* copyright notes from the
+headers of individual files?
+
+I updated the files AUTHORS.txt file.
+
+
+Lino settings versus Django settings
+====================================
+
+In :mod:`lino.api.dd` you added::
+
+  use_tz = settings.SITE.use_tz
+
+The intention is encapsulate this setting and to make it usable in
+application code as follows::
+
+  from lino.api import dd
+  if dd.use_tz:
+     ...
+
+But it has a dangerous side effect: what happens if applicaton code
+would change this value!  The :mod:`lino.api.dd` module provides
+shortcuts to methods and functions, but should not create yet another
+copy of some attribute containing a simple value. In such a situation
+we should rather have application code use::
+
+  from django.conf import settings
+  if settings.SITE.use_tz:
+     ...
+
+But even this is useless! Since Lino does not add anything special
+about timezones, application code should directly use the plain Django
+settings :setting:`USE_TZ` and :setting:`TIME_ZONE`.
+
+So Hamza, I suggest to undo your changes in :mod:`lino.api.dd` and
+:mod:`lino.core.site`, and e.g. in:mod:`lino.modlib.users.models` you
+replace::
+
+    if dd.use_tz:
+        ...
+
+by::
+
+    if settings.USE_TZ:
+        ...
+
+
+Where to put the new TimezoneField
+==================================
+
+The :mod:`lino.utils.mldbc.fields` is not a good place for the new
+`TimezoneField` because the two features are not necessarily
+related. 
+
+The `TIMEZONE_CHOICES` variable seems not a good solution. It creates
+yet another copy of the list of available timezone strings.
+
+Some tests:
+
+>>> from pytz import all_timezones
+>>> print all_timezones  #doctest: +ELLIPSIS
+[('1', 'Africa/Accra'), ('2', 'Africa/Addis_Ababa'), ('3', 'Africa/Algiers'), ('4', 'Africa/Asmara'), ('5', 'Africa/Asmera'), ('6', 'Africa/Bamako'), ('7', 'Africa/Bangui'), ('8', 'Africa/Banjul'), ('9', 'Africa/Bissau'), ('10', 'Africa/Blantyre'), ('11', 'Africa/Brazzaville'), ('12', 'Africa/Bujumbura'), ('13', 'Africa/Cairo'), ('14', 'Africa/Casablanca'), ('15', 'Africa/Ceuta'), ('16', 'Africa/Conakry'), ('17', 'Africa/Dakar'), ('18', 'Africa/Dar_es_Salaam'), ('19', 'Africa/Djibouti'), ...]
+
+>>> TIMEZONE_CHOICES = [(str(i), all_timezones[i]) for i in range(1, len(all_timezones))]
+>>> print TIMEZONE_CHOICES
+ 
+
+It is better to define either a *callable* as the `choices` of the
+`timezone` field, or --even better:-- a `simple_values` chooser. A
+chooser has the advantage that we can return a dynamic list of choices
+depending on the country of the user.  See example below.  An example
+of a simple_values chooser is the `template` field of a
+:class:`ExcerptType <lino.modlib.excerpts.models.ExcerptType>`.
+
+So as as summary, I suggest to add a new module
+:mod:`lino.mixins.timezone` instead which basically contains only
+this::
+
+    import ...
+
+    class TimezoneHolder(Model):
+
+        class Meta:
+            abstract = True
+
+        if settings.USE_TZ:
+            timezone = models.CharField(_("Time zone"), max_lenght=15, blank=True)
+        else:
+            timezone = dd.DummyField()
+    
+
+        @dd.chooser(simple_values=True)
+        def timezone_choices(cls, partner):
+
+            if partner and partner.country:
+                return pytz.country_timezones[partner.country.isocode]
+            return pytz.common_timezones
+
+
+And then to have :class:`lino.modlib.users.models.User` inherit from
+this mixin.
+
+As for :mod:`lino.core.auth`: I (currently) think that it is not
+necessary to add a `user_timezone` variable to each incoming request
+object.  I think we must rather access the user's `timezone` field
+each time we call the :func:`datetime.datetime.now` or
+:func:`datetime.date.today` functions. For Lino Noi this happens
+e.g. in :mod:`lino_noi.lib.clocking.models`.
+
+Note also that Lino has two methods :meth:`dd.now
+<lino.core.site.Site.now>` or :meth:`dd.today
+<lino.core.site.Site.today>`. I guess that we cannot make them
+timezone-aware since they don't have access to the incoming request.
+
+And then (I have now idea yet) we must probably adapt the rendering of
+DateTime fields, maybe only in :mod:`lino.core.store`.
+
+A notification system
+=====================
+
+I had an inspiration about how to do :ticket:`559`.
+
+Lino Noi should of course send emails when needed. The first approach
+used :mod:`lino.utils.sendchanges`. But that was not exactly what we
+need because it causes an inbox overflow in many situation.  This
+experience confirms that :mod:`lino.utils.sendchanges` is probably
+useless and should be deprecated.
+
+
+What we need is a notification system that sends only one email per
+object, and which "collects" subsequent changes until the user visited
+the given object.
+
+Idea:
+
+- we are going to use the :mod:`stars <lino.modlib.stars>` plugin.
+- :mod:`stars <lino.modlib.stars>` will depend on :mod:`changes
+  <lino.modlib.changes>` and use this.
+- every starred object causes notification
+
+- add a model `stars.Notification` with these fields:
+
+  - `star` : pointer to `stars.Star` (i.e. the database object that is
+    being observed and the user who is observing)
+  - `change` : pointer to the first `changes.Change` 
+    which caused a notification email)
+  - `seen` : `None` as long as the user did not dismiss this notification,
+    otherwise the timestamp when it was seen.
+
+- Each time a changes.Change object is being created, Lino should
+  potentially create a Notification. If `self` is the Change object,
+  we would have something like this::
+
+     star = stars.Star.objects.get(user=ar.user, owner=self.owner)
+     qs = stars.Notification.objects.filter(
+         change__owner=self, star=star, seen__isnull=True)
+     if not qs.exists():
+         stars.Notification(star=star, change=self, seen=False).save()
+
+How should the "dismissing" work?  The code to run would be something
+like::
+
+    qs = stars.Notification.objects.filter(
+        change__owner=obj, star__user=ar.user, seen__isnull=True)
+    if qs.exists():
+        qs[0].seen = now()
+        qs[0].save()
+  
+But how would we trigger that code?
+
+- It should happen automatically when the detail information of that
+  object is shown to the user. Hmm... but that means that for *every*
+  (starrable) detail response Lino must do an additional database
+  query in order to see whether this object is starred by the
+  requesting user.
+
+  One problem here is that Django has no signal for "when a detail of
+  an object is being sent".  I could define yet another signal and
+  send it somewhere in :meth:`lino.core.kernel.Kernel.run_action`. But
+  that feels a bit intrusive.
+
+- Alternatively we could say that notifications are displayed to the
+  user in the welcome screen so that the user can dismiss them with
+  one click.
+
+
