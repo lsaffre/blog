@@ -1,0 +1,234 @@
+==========================
+Thursday, December 3, 2015
+==========================
+
+I finished to repair the Welfare test suite after yesterday changes.
+
+
+I added a migration rule for Eupen::
+
+    if is_seeking:
+        seeking_since = unemployed_since or settings.SITE.today()
+    else:
+        seeking_since = None
+
+They had before :
+**Arbeit suchend** (is_seeking), **eingetragen seit** (unemployed_since), **Wartezeit bis** (work_permit_suspended_until)
+
+And now they have:
+**Sucht Arbeit seit** (seeking_since), **Arbeitslos seit** (unemployed_since), **Wartezeit bis** (work_permit_suspended_until)
+
+Upgrade and migration to testlino in Eupen
+
+And I fixed a regression caused by :ticket:`38`: it was not possible
+to manually add a virtual fields as column to a grid, even when that
+grid had a ``*`` in its :attr:`column_names
+<lino.core.tables.AbstractTable.column_names>`.
+
+
+Installing letsencrypt client
+=============================
+
+- https://letsencrypt.org/2015/11/12/public-beta-timing.html
+- http://letsencrypt.readthedocs.org/en/latest/intro.html
+- https://letsencrypt.readthedocs.org/en/latest/using.html#plugins
+
+::
+
+    $ ./letsencrypt-auto --apache
+    The apache plugin is not working; there may be problems with your existing configuration.
+    The error was: PluginError('Unable to parse runtime variables',)
+
+
+
+Upgrading to Django 1.9
+=======================
+
+Oho, they released Django 1.9. I got to know it because builds on
+Travis CI were failing. The best solution is to not wait and to start
+converting right now.
+
+The first surprise was this::
+
+    $ pip install -U django
+    Downloading/unpacking django from https://pypi.python.org/packages/py2.py3/D/Django/Django-1.9-py2.py3-none-any.whl#md5=f98b94b9911b397ea3794a05079cbc78
+      Downloading Django-1.9-py2.py3-none-any.whl (6.6MB): 6.6MB downloaded
+      Storing download in cache at /home/luc/.cache/pip/https%3A%2F%2Fpypi.python.org%2Fpackages%2Fpy2.py3%2FD%2FDjango%2FDjango-1.9-py2.py3-none-any.whl
+    Installing collected packages: django
+      Found existing installation: Django 1.8.6
+        Uninstalling Django:
+          Successfully uninstalled Django
+    Compiling /media/dell1tb/virtualenvs/py27/build/django/django/conf/app_template/apps.py ...
+      File "/media/dell1tb/virtualenvs/py27/build/django/django/conf/app_template/apps.py", line 4
+        class {{ camel_case_app_name }}Config(AppConfig):
+              ^
+    SyntaxError: invalid syntax
+
+    Compiling /media/dell1tb/virtualenvs/py27/build/django/django/conf/app_template/models.py ...
+      File "/media/dell1tb/virtualenvs/py27/build/django/django/conf/app_template/models.py", line 1
+        {{ unicode_literals }}from django.db import models
+                                 ^
+    SyntaxError: invalid syntax
+
+    Successfully installed django
+    Cleaning up...
+
+But it was just due to my old pip version.  As explained in the
+`release notes <https://docs.djangoproject.com/en/1.9/releases/1.9/>`_
+
+
+TODO: I changed some imports in :mod:`lino.modlib.extjs.elems`, so we
+must reflect these changes to :mod:`lino_extjs6`.
+
+
+
+In :mod:`lino.utils.dpy` there was a::
+
+  from django.utils.module_loading import import_by_path
+
+I replaced `import_by_path` by `import_string` as they instructed.
+
+Then we have this one::
+
+    Traceback (most recent call last):
+      File "/py27/bin/django-admin.py", line 5, in <module>
+        management.execute_from_command_line()
+      File "/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 350, in execute_from_command_line
+        utility.execute()
+      File "/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 324, in execute
+        django.setup()
+      File "/py27/local/lib/python2.7/site-packages/django/__init__.py", line 18, in setup
+        apps.populate(settings.INSTALLED_APPS)
+      File "/py27/local/lib/python2.7/site-packages/django/apps/registry.py", line 108, in populate
+        app_config.import_models(all_models)
+      File "/py27/local/lib/python2.7/site-packages/django/apps/config.py", line 202, in import_models
+        self.models_module = import_module(models_module_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/lino/lino/modlib/about/models.py", line 26, in <module>
+        from lino.utils.report import EmptyTable
+      File "/lino/lino/utils/report.py", line 22, in <module>
+        from lino.mixins.printable import (Printable, DirectPrintAction)
+      File "/lino/lino/mixins/__init__.py", line 291, in <module>
+        from lino.modlib.printing.mixins import (
+      File "/lino/lino/modlib/printing/mixins.py", line 349, in <module>
+        class PrintableType(Model):
+      File "/lino/lino/modlib/printing/mixins.py", line 379, in PrintableType
+        build_method = BuildMethods.field(blank=True, null=True)
+      File "/lino/lino/core/choicelists.py", line 390, in field
+        fld = ChoiceListField(cls, *args, **kw)
+      File "/lino/lino/core/choicelists.py", line 636, in __init__
+        models.CharField.__init__(self, verbose_name, **defaults)
+      File "/py27/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py", line 1072, in __init__
+        super(CharField, self).__init__(*args, **kwargs)
+      File "/py27/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py", line 162, in __init__
+        self.choices = choices or []
+    AttributeError: can't set attribute
+
+This was because I define `choices` as a propoerty for ChoiceListField.
+Okay, let's give it a setter, to so that Django belives it has stored.
+
+
+Another problem was::
+
+  AttributeError: 'module' object has no attribute 'post_syncdb'
+
+I guess that was because 'post_syncdb' is replaced by 'post_migrate'
+
+
+And another problem::
+
+
+    Traceback (most recent call last):
+      ...
+      File "/media/dell1tb/luc/work/lino/lino/core/site.py", line 1928, in do_site_startup
+        self.kernel = Kernel(self)
+      File "/media/dell1tb/luc/work/lino/lino/core/kernel.py", line 188, in __init__
+        self.kernel_startup(site)
+      File "/media/dell1tb/luc/work/lino/lino/core/kernel.py", line 478, in kernel_startup
+        a.after_site_setup(self)
+      File "/media/dell1tb/luc/work/lino/lino/core/actors.py", line 1146, in after_site_setup
+        actions.setup_params_choosers(self)
+      File "/media/dell1tb/luc/work/lino/lino/core/actions.py", line 133, in setup_params_choosers
+        fld.rel.to = resolve_model(fld.rel.to)
+    AttributeError: can't set attribute
+    
+That's because::
+
+    @property
+    def to(self):
+        warnings.warn(
+            "Usage of ForeignObjectRel.to attribute has been deprecated. "
+            "Use the model attribute instead.",
+            RemovedInDjango20Warning, 2)
+        return self.model
+
+
+
+The next problem was that all `initdb` commands failed with a
+OperationalError similar to this:
+
+    Problem installing fixture '...fixtures/std.py': Could not load
+    contacts.CompanyType(pk=None): no such table: contacts_companytype
+
+That was because "Automatic syncing of apps without migrations is
+removed. Migrations are compulsory for all apps unless you pass
+the --run-syncdb option to migrate."
+
+And the docs about `--run-syncdb
+<https://docs.djangoproject.com/en/1.9/ref/django-admin/#django-admin-option---run-syncdb>`_
+reveal that
+
+    The `--run-syncdb` option allows creating tables for apps without
+    migrations. While this isn’t recommended, the migrations framework
+    is sometimes too slow on large projects with hundreds of models.
+
+Yes, we go the way which is not recommended.
+
+Yet another problem was that Django has gone very allergic against
+importing a model from a plugin that isn't installed::
+
+    RuntimeError: Model class
+    django.contrib.contenttypes.models.ContentType doesn't declare an
+    explicit app_label and either isn't in an application in
+    INSTALLED_APPS or else was imported before its application was
+    loaded.
+
+I fixed this by defining dummy replacements for ContentType and
+GenericForeignKey in :mod:`lino.core.utils`.
+
+NB: I started to remove support for Django 1.6, i.e. all tests for
+`AFTER17` (which actually meant `AFTER16`) can be considered `True`.
+
+And the SystemCheckError  identified some issues of style::
+
+    events.Type.events_column_names: (fields.E121) 'max_length' must be a positive integer.
+
+Yes, Django was right, these fields were declared like this::
+
+    events_column_names = models.CharField(
+        max_length="100",
+        default="when:30 what:40 where:30")
+
+
+
+It sems that Django no longer resolves the `Field.rel.model` of
+ForeignKey fields on abstract models. That's why we had a failure when
+trying to add a ChangeWatcher to `integ.ContractBase`. I solved this
+by adding a test in :meth:`Model.get_data_elem`.
+
+It sems that Django 1.9 imports the :setting:`ROOT_URLCONF` much
+earlier. The problem for us was that Lino used the late importing of
+this module to send our `database_ready` signal. This signal is needed
+to fill e.g. dynamic columns of a ventilated table.  I added a
+:mod:`lino.modlib.database_ready` plugin in the hope to... , but
+`post_migrate` is not what we need. We rather need `database_connect`,
+but we must wait until migrations have been run. And *then* send
+`database_ready`. No, I don't see for the moment how we could get a
+read database_ready signal. But fortunately I found a workaround: in
+:func:`tables.setup_ventilated_columns` I catch any OperationalError
+and ignore it. That seems to do it.
+
+The test suites seem to pass (maybe except for some minor
+trivialities). Checkin, and now I hope that Lino keep quiet until
+tomorrow.

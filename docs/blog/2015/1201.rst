@@ -1,0 +1,71 @@
+=========================
+Tuesday, December 1, 2015
+=========================
+
+Today I finally took some time to work on "real" tickets, i.e. tickets
+which have been asked by customers.  They are mostly quite
+application-specific, and the biggest challenge here is analysis: to
+find out what the customer really wants, to check with them whether
+what they *want* is also what they *need*. It requires of course a
+detailed knowledge about Lino Welfare.
+
+:ticket:`571` : changed the :meth:`setup_auto_event
+<lino_welfare.modlib.isip.mixins.ContractBase.setup_auto_event>`
+method for all contracts: when the contract's author is still coaching
+the client, then he or she remains the responsible user of evaluation
+event. The existing rule applies only when the contract's author no
+longer coaches that client.
+
+:ticket:`339`: 
+- "Plausibility" = "Vérification de données"
+
+:ticket:`617`
+:ticket:`618`
+:ticket:`606`
+:ticket:`579`
+
+One of them requires a (simple) database migration.
+
+:ticket:`615` : Added a new field `seeking_since` (to :class:`Client
+<lino_welfare.modlib.pcsw.models.Client>`) Changed label of
+`unemployed_since` from "Seeking work since" to "Unemployed since".
+
+Optimization *en pasant*: :ticket:`641` and
+:attr:`lino.core.sote.Site.obj2text_template`.
+
+:ticket:`603` : the meaning of `date_ended` has slightly changed.
+:meth:`lino_welfare.modlib.isip.ContractBase.full_clean` now sets
+`date_ended` to `applies_until` when empty.
+
+:ticket:`556` and :ticket:`543`
+
+:ticket:`261` : In :mod:`lino.modlib.cv` all three tables Studies,
+Experiences and Trainings now have default filtering on the period.
+
+For :ticket:`225` I just had to add two lines of code to
+:mod:`lino_welfare.projects.chatelet.modlib.pcsw.models`::
+
+    notes = dd.resolve_app('notes')
+    notes.Note.hidden_elements = dd.fields_list(
+        notes.Note, 'company contact_person contact_role')
+
+
+About :ticket:`229`: :class:`AppointmentsByPartner
+<lino.modlib.reception.models.AppointmentsByPartner>` is on
+:class:`cal.Guest <lino.modlib.cal.models.Guest>`, not on
+:class:`cal.Event <lino.modlib.cal.models.Event>`. I was not aware of
+this when talking with the customer. I reset this ticket state to
+"Talk" because I need to explain them the difference and the
+possibilities.
+
+And :ticket:`640` : in
+:meth:`lino.modlib.cal.mixins.EventGenerator.get_wanted_auto_events` I
+changed ``ar.debug("No event_type")`` into ``ar.info("No
+event_type")`` because that was the main reason why there wasn't even
+a message in the JavaScript console.  But actually these messages
+should get directly reported to the user.  The methods `info`,
+`debug`, `warning` and `append_message` on
+:class:`lino.core.requests.BaseRequest` are probably to be deprecated.
+The `get_wanted_auto_events` method is almost the only one wwho uses
+these methods, and we should rather return a HTML message with a
+expandable "Show details" button.

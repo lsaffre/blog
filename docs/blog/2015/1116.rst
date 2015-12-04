@@ -1,0 +1,109 @@
+=========================
+Monday, November 16, 2015
+=========================
+
+Deleting XML files after import
+===============================
+
+:ticket:`505` : weleup reports that their xml have not been deleted by
+the cron job. Although they should have been. I added another logger
+message. When trying with the new version, I got an OSError which
+indicated that maybe it was just a permissions problem.
+
+Handling the overwhelming flow of tickets
+=========================================
+
+Do you know that situation when there is so much to do that managing
+your to-do list becomes the most important and time-consuming
+activity?  This is my main challenge for the moment.  This is why my
+customers are perceiving slow evolution regarding to their own tickets
+(which they submitted).
+
+But don't panic. It has a good side. Lino finally started to be
+maintained by a *team* and no longer by a single person. After years
+of just dreaming about it.
+
+An urgent problem is therefore to optimize Lino Noi for helping us
+with this task.  That's why I invested yet another day into
+:ticket:`559`.  
+
+I generalized the notification system and moved it out of
+:mod:`lino.modlib.stars` into a new plugin
+:mod:`lino.modlib.notifier`.
+
+- :mod:`stars <lino.modlib.stars>` requires :mod:`changes <lino.modlib.changes>`
+- :mod:`changes <lino.modlib.changes>` requires :mod:`notifier <lino.modlib.notifier>`
+- :mod:`notifier <lino.modlib.notifier>` requires gfks, users
+
+
+I worked on the email's body template so that the content starts to be
+helpful. On topic was the following.
+
+
+The server URL
+==============
+
+One problem was that we need to include the address of the server in a
+change notification mail:
+
+    Please visit http://lino/api/stars/Notification/1234 in order to
+    view all subsequent changes on this object.
+
+But the server process itself does not know how it is being served to
+their users. We usually know it by inspecting the incoming http
+request.  But since the `send_email` method is being called from a
+Django `post_save` signal, we don't know that incoming http request.
+
+So do we need a field `server_url` per `User`? Even this would fail if
+a given users happens to use Lino on different machines using
+different URIs.
+
+So maybe as a first approach we could simply add a new field
+:attr:`lino.core.site.Site.server_url` with the "canonical" or "most
+often used" URI. And users who access Lino from a different location
+using an alternative URI must adapt the link themselves.
+
+And since :class:`lino.core.site.Site` somehow replaces Django's
+`sites
+<https://docs.djangoproject.com/en/dev/ref/contrib/sites/#getting-the-current-domain-for-full-urls>`_
+framework, we might name it `domain` and remove the leading
+``"http://"``.  (No, I won't go *that* far because I don't see why it
+should be useful)
+
+
+Rendering the notification message
+==================================
+
+I am still fiddling with how to render the notification message.  Okay
+for the momennt it seems to work.  But I had to write a new method
+:meth:`lino.core.renderer.TextRenderer.obj2html` which indicates that
+the API is not yet optimal...
+
+
+Documentation
+=============
+
+I added a new section to the Developer's Guide :ref:`lino.dev.install`:
+
+http://lino-framework.org/dev/install.html#updating-your-copy-of-the-lino-sources
+
+
+
+count() takes exactly one argument (0 given)
+============================================
+
+This TypeError occurred in :mod:`lino.projects.polly` when displaying
+the detail of a Poll.
+
+
+Deployed to lf.org with Hamza
+=============================
+
+
+
+Fixed ticket #38 with Hamza
+===========================
+
+Hamza and I fixed the last remaining failures for :ticket:`38`: the
+Lino test suite now passes in both Django 1.6 and 1.8. 
+

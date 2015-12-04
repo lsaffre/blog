@@ -1,0 +1,97 @@
+===================================
+20151127 (Friday, 27 November 2015)
+===================================
+
+I fixed :ticket:`623` which was intersting because it revealed a
+conceptual problem: I added :class:`lino.modlib.comments.mixins.RFC`.
+
+I added a field :attr:`lino_noi.lib.clocking.models.Session.faculty`.
+
+I defined a slave summary for SessionsByTicket: 
+:attr:`lino_noi.lib.clocking.ui.SessionsByTicket.slave_summary`
+
+StartTicketSession no longer shows in the workflow
+buttons (show_in_workflow is now False).
+
+
+About demo databases
+====================
+
+Hamza, I realized that you were right: :cmd:`fab initdb` *should* have
+worked. Your problem was because `mysite` is not declared as a *demo
+project* in the :xfile:`fabfile.py`. I now created :ticket:`637`
+because your pitfall was caused by this.  in order to fix it, you must
+add a call to :func:`add_demo_project
+<atelier.fablib.add_demo_project>` in the :xfile:`fabfile.py` of
+:mod:`lino_extjs6`.  But since :func:`add_demo_project
+<atelier.fablib.add_demo_project>` requires a Python module name (not
+a path), you must move the "mysite" directory somewhere below
+`lino_extjs/` (I suggest e.g. `lino_extjs6.projects.demo`).
+
+
+
+Durations of more than 24 hours
+===============================
+
+The :mod:`lino.utils.quantities` module did not yet support duations
+of more than 24 hours. Now it does. The problem was that it used `str`
+on a :class:`datetime.datetime` instance without checking for its
+value of days.
+
+>>> x = datetime.timedelta(days=128)
+>>> print repr(x), isinstance(x, basestring)
+>>> str(x)
+'128 days, 0:00:00'
+
+
+Working late in the night
+=========================
+
+The :class:`WorkedHours <lino_noi.lib.clocking.ui.WorkedHours>` had a
+subtle bug: when a session had been across midnight (starting before
+midnight and ending the next day), then it was being computed on both
+days.
+
+
+Better usage of `memo_parse`
+============================
+
+Memo commands in the :attr:`description
+<lino_noi.lib.tickets.models.Ticket.description>` of a ticket (e.g. a
+text like "See [ticket 37]") were interpreted only by the *bootstrap3*
+interface (i.e. when watching them on http://bugs.lino-framework.org/)
+and not by the *extjs* interface. Now also there.
+
+Memo commands in a :class:`Comment
+<lino.modlib.comments.models.Comment>` did not yet work at all. Now
+they work in both user interfaces.
+
+
+Repaired test suites
+====================
+
+There were several cases failing in the test suites of :ref:`welfare`
+and :ref:`noi` after my changes of last days.
+
+
+Interest from Québec
+====================
+
+Lino received congratulations from Dario Gomez-Tafur, the author of
+`django-softmachine <https://github.com/certae/django-softmachine>`_.
+There are chances that we will collaborate in the one or another way.
+I joined the `ring <https://ring.cx>`_, my ringID is
+fa8a41081c6794f9e93e036b38ad9cac058a907a and I added this to my
+:doc:`contact page </about/index>`.
+
+About pull requests
+===================
+
+Note that my `last commit to lino_extjs6
+<https://github.com/lsaffre/lino_extjs6/commit/08a6e75d3252ce7f8b3b968861ffa28a9447a0d8>`_
+was not mine at all, it is Hamza's work. But he does not show up as
+contributor on GitHub.  According to `GitHub Help
+<https://help.github.com/articles/why-are-my-contributions-not-showing-up-on-my-profile/>`_
+it might be because I was too eager to pull his changes and merge them
+to my master, I must rather let Hamza do a pull request and then
+accept pull request. We'll try the next time.

@@ -1,0 +1,102 @@
+============================
+Wednesday, November 25, 2015
+============================
+
+
+I investigated about :ticket:`624` (Ctrl-S triggers ComboBox to open).
+
+Note that::
+
+  Lino.ComboBox = Ext.extend(Ext.form.ComboBox,{
+
+By looking at the code of `Ext.form.ComboBox`
+(:file:`ext-all-debug.js` somewhere below your collectstatic
+directory) you can see that the `Ext.form.ComboBox.onLoad` method is
+defined as follows::
+
+    onLoad : function(){
+        if(!this.hasFocus){
+            return;
+        }
+        if(this.store.getCount() > 0 || this.listEmptyText){
+            this.expand();
+
+This indicates that a ComboBox field has the built-in behaviour that
+it expands when it has focus during onLoad.
+
+Ctrl-S submits the current records, and that AJAX request also returns
+a `data_record`, which causes the Lino.FormPanel to get "loaded" and
+the "load" event is sent to all fields. So I guess that this method is
+somehow being called when the FormPanel got loaded.
+
+I see no solution yet...
+
+Shortcuts to starred tickets in welcome message
+===============================================
+
+Ticket :ticket:`629` was a quick idea (I was missing list of
+often-used ticket in the welcome screen and remembered the problem
+that it is probably good to give them a nickname)
+
+
+French translations for transfer types
+======================================
+
+Patrick from `febelfin.be` sent me links the `CODA specification
+<https://www.febelfin.be/sites/default/files/files/standard-coda-2-5-fr.pdf>`_
+which contain the "official" French translations of the "Bank
+transaction codes" used in Belgium.
+
+It seems that "BBA" is a historic name, and that now "febelfin" is a
+better choice.
+
+I replaced :mod:`lino_cosi.lib.b2c.bba` (which was a first draft after
+copying the texts from their document) by
+:mod:`lino_cosi.lib.b2c.febelfin` which uses translatable strings.
+Actually I used `bba` to generate `febelfin` (or at least the big dict
+which it contains.
+
+I translated some of the descriptions, but more than 200 still need to
+be done.
+
+I added the `txcd_issuer <lino_cosi.lib.b2c.models.Movement.txcd_issuer`
+
+I changed the model name "Movement" to :class:`Transaction
+<lino_cosi.lib.b2c.models.Transaction>` because that's how the SEPA
+standard calls them.
+
+
+Ticket #37
+==========
+
+Hamza and I started to work on :ticket:`37`.
+
+Download ExtJS 6 GPL version from https://www.sencha.com/legal/GPL/
+
+Note: why do they say the following:
+
+  "If you start with a GPL license, you cannot convert to a commercial
+  license simply by purchasing one."
+
+
+Created new project on GitHub: 
+https://github.com/lsaffre/lino_extjs6
+
+Okay, the general Python stuff is there and functional.  Now the
+actual work can start : fire up a runserver in mysite, open the
+browser on it and analyze the Javascript error messages.
+
+- names of include files have changed (see the methods defined in
+  :class:`lino_extjs6.extjs.Plugin`.
+
+- The ExtJS API changed a lot between 3 and 4. For example
+  `Ext.BoxComponent` must become `Ext.Component`. And also:
+
+  - Ext.FormPanel --> Ext.form.Panel
+
+I guess that we would want to download that Migration pack mentioned at
+https://www.sencha.com/blog/ext-js-3-to-4-migration/
+but the link is broken. We might contact Sencha and ask for it.
+
+Here are some interesting hints:
+https://www.leonrenkema.nl/2012/08/12/whats-new-in-extjs-4/

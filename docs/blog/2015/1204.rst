@@ -1,0 +1,159 @@
+===================================
+20151204 (Friday, 04 December 2015)
+===================================
+
+Selecting photos from Shotwell using their date
+===============================================
+
+Annely asked me to send all my 2015 photos about our folk dance group
+to Hillar. Since this is my second year with them and I don't want to
+manually fiddle with photo files, I added two options `--after` and
+`--before` to `shotwell2blog
+<https://github.com/lsaffre/shotwell2blog>`_
+
+
+
+Learning by doing: logrotate
+============================
+
+I saw that :ticket:`647` is still not solved. Let's see what's wrong::
+
+    $ sudo logrotate -v /etc/logrotate.d/lino 
+    reading config file /etc/logrotate.d/lino
+
+    Handling 1 logs
+
+    rotating pattern: /var/log/lino/prod/system.log  weekly (52 rotations)
+    empty log files are not rotated, old logs are removed
+    considering log /var/log/lino/prod/system.log
+    
+    error: skipping "/var/log/lino/prod/system.log" because parent
+    directory has insecure permissions (It's world writable or
+    writable by group which is not "root") Set "su" directive in
+    config file to tell logrotate which user/group should be used for
+    rotation.
+
+So I added this line to the config file::
+
+        su root www-data
+
+Yes, now it looks better::
+
+    $ sudo logrotate -v /etc/logrotate.d/lino
+    reading config file /etc/logrotate.d/lino
+
+    Handling 1 logs
+
+    rotating pattern: /var/log/lino/prod/system.log  weekly (52 rotations)
+    empty log files are not rotated, old logs are removed
+    switching euid to 0 and egid to 33
+    considering log /var/log/lino/prod/system.log
+      log does not need rotating
+    switching euid to 0 and egid to 0
+    
+And finally I ask to force the first rotation (otherwise I'd have
+to wait again one week before seeing whether it really works)::
+
+    $ sudo logrotate -f /etc/logrotate.d/lino 
+
+Basically keep in mind: `logrotate FILENAME` simply executes the
+rotation(s) specified by the given config file FILENAME.  The daily
+cron job does exactly this every morning for every config file.  The
+`-v` option adds verbosity. The `-f` option means "rotate the file
+even if you think it is not necessary".
+
+
+Wildcard in column_names
+========================
+
+There is still one subtle problem, I think it was already before
+yesterday (thus not caused by :ticket:`650`)::
+
+    File "docs/specs/users.rst", line 79, in users.rst
+    Failed example:
+        rt.show(users.Authorities)
+    Expected:
+        ==== ================= =================
+         ID   Author            User
+        ---- ----------------- -----------------
+         1    Hubert Huppertz   Theresia Thelen
+         2    Alicia Allmanns   Theresia Thelen
+         3    Mélanie Mélard    Theresia Thelen
+        ==== ================= =================
+        <BLANKLINE>
+    Got:
+        ==== ================= ================= ========== ====================
+         ID   Author            User              Workflow   Description
+        ---- ----------------- ----------------- ---------- --------------------
+         1    Hubert Huppertz   Theresia Thelen              *Authority object*
+         2    Alicia Allmanns   Theresia Thelen              *Authority object*
+         3    Mélanie Mélard    Theresia Thelen              *Authority object*
+        ==== ================= ================= ========== ====================
+        <BLANKLINE>
+
+The `column_names` of `users.Authorities` has a wildcard.
+    
+The two standard virtual fields "Workflow" and "Description" should be
+visible only when explicitly specified. But it should be possible to
+add them manually.
+    
+    
+Welfare test suite
+==================
+
+The Welfare test suite still has a few failures after :ticket:`650`.
+
+
+Endbenutzer können keine SEPA-Konten sehen
+==========================================
+
+Gerd reported that they cannot see any imported account. This was due
+to a bug introduced by renaming field `last_movement` to
+`last_transaction`::
+
+    TRACEBACK:
+      File "/python2.7/site-packages/django/core/handlers/base.py", line 132, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/python2.7/site-packages/django/views/generic/base.py", line 71, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/python2.7/site-packages/django/views/generic/base.py", line 89, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/lino/lino/modlib/extjs/views.py", line 543, in get
+        for row in ar.sliced_data_iterator]
+      File "/lino/lino/core/store.py", line 1094, in row2list
+        v = fld.full_value_from_object(row, request)
+      File "/lino/lino/core/store.py", line 364, in full_value_from_object
+        return self.vf.value_from_object(obj, ar)
+      File "/lino/lino/core/fields.py", line 476, in value_from_object
+        return m(obj, ar)
+      File "/lino-cosi/lino_cosi/lib/sepa/models.py", line 121, in statements
+        return ar.obj2html(b2c, dd.fds(b2c.last_movement))
+
+    201512-04 11:02:47 WARNING ajax : AjaxExceptionResponse AttributeError: 'Account' object has no attribute 'last_movement'
+
+
+
+:mod:`lino_cosi.lib.b2c.fixtures.demo` now connects the important
+accounts to some random partner.
+
+New tested document :ref:`welfare.specs.b2c`.
+
+
+
+Rumma & Ko is going into the right direction
+============================================
+
+
+Nice: Susan Ward, Canadian Small Business Expert, writes in `The
+Advantages of Being a Contractor
+<http://sbinfocanada.about.com/od/startingadvice/ss/The-Advantages-of-Being-a-Contractor.htm>`_
+that *Self-Employment is the Future* and that "according to a `study
+by Intuit <http://http-download.intuit.com/http.intuit/CMO/intuit/futureofsmallbusiness/intuit_2020_report.pdf>`_
+more than 80 percent of large corporations plan to substantially
+increase their use of a "flexible" workforce. The study predicts that
+by 2020 "contingent" workers will exceed 40 percent of the
+U.S. workforce."
+
+Which seems to indicate that my visions for `Rumma & Ko
+<http://saffre-rumma.net/>`_ with Lino are aiming the right direction.
+

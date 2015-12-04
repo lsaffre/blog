@@ -1,0 +1,152 @@
+===========================
+Wednesday, December 2, 2015
+===========================
+
+About :ticket:`644`
+===================
+
+This problem occurs because `TextRenderer` now implements its own
+:meth:`obj2html` method. Here is the relevat excerpt from
+:mod:`lino.core.renderer`:
+
+    class Renderer(object):
+        ...
+
+    class HtmlRenderer(Renderer):
+        def obj2html(self, ar, obj, text=None, **kwargs):
+            if text is None:
+                text = (force_unicode(obj),)
+            elif isinstance(text, basestring):
+                text = (text,)
+            url = self.instance_handler(ar, obj)
+            if url is not None:
+                return E.a(*text, href=url, **kwargs)
+            return E.em(*text)
+
+    class TextRenderer(HtmlRenderer):
+        def obj2html(self, ar, obj, text=None, **kwargs):
+            if text is None:
+                text = force_unicode(obj)
+            # return "**{0}**".format(text)
+            return settings.SITE.obj2text_template.format(text)
+
+
+The problem disappears when I remove the `obj2html` method from
+TextRenderer (so that it uses the inherited version which returns
+etree elements).  I now "invented" yet another method
+:meth:`ar.obj2str <lino.core.requests.BaseRequest.obj2str>` although
+this is just a workaround, not a long-term solution.
+
+The name `obj2html` is misleading.  It should be rather something like
+:meth:`render_object` or :meth:`objpointer`.  When user code calls
+`ar.obj2html()` then it actually means to render a pointer to the
+given object according to the request's renderer. Actually a
+TextRenderer should not return any HTML. But it seems that I sometimes
+misused it myself instead of creating a subrequest with a
+HtmlRenderer.
+
+
+More user docs
+==============
+
+Phew! I accidentally invested almost four hours into end-user
+documentation.  Not really for actually *writing content* but for
+*making it easier to write content*: new Sphinx directive
+:rst:directive:`fields_list` and text role :rst:role:`menupath`.
+
+I tried them in :ref:`welfare.de.clients`
+and :ref:`welfare.fr.clients`.
+
+
+Evaluating Sencha Cmd
+=====================
+
+I installed `Sencha Cmd
+<https://www.sencha.com/products/sencha-cmd/>`_ and tried to follow
+`Create great looking Enterprise Dashboards using Sencha Ext JS 6
+<http://blogs.walkingtree.in/2015/04/28/create-great-looking-enterprise-dashboards-using-sencha-ext-js-6/>`_.
+
+Tiens, `here
+<https://www.sencha.com/legal/sencha-software-license-agreement/>`_ it
+is again: they insist on saying "You cannot commence development of an
+application under GPLv3 license and later convert to a commercial
+license."  Yes, it is good to make things clear, but I'd wish that
+they'd also write something like "We are glad if you write free
+software licensed under the GPL and use our free version... please be
+aware that the GPL means...".  Otherwise these sentences sound as if
+they want to discourage us from writing free software.
+
+So I am still sceptical. If I remember well the installer said that
+Sencha Cmd is not libre but we may use it free of charge. I cannot
+find any license information in the installed software.
+
+But okay, let's not worry too much for the moment.  Here is where I
+reached::
+
+    $ /home/luc/bin/Sencha/Cmd/sencha -sdk ~/dell1tb/extjs6/ext-6.0.0 generate app AppsBoard aboard
+    Sencha Cmd v6.0.2.14
+    [INF] Copying framework to /media/dell1tb/tmp/aboard/ext
+    [INF] Processing Build Descriptor : classic
+    [INF] Using GPL Version of Ext JS version 6.0.0.640 from /media/dell1tb/tmp/aboard/ext.
+    [INF] The implications of using GPL version can be found here (http://www.sencha.com/products/extjs/licensing).
+    [INF] Starting server on port : 1841
+    [INF] Mapping http://localhost:1841/~cmd to /home/luc/bin/Sencha/Cmd/6.0.2.14...
+    [INF] Mapping http://localhost:1841/ to /media/dell1tb/tmp/aboard...
+    [INF] Application available at http://localhost:1841
+    [INF] Loading app json manifest...
+    [INF] Appending content to /media/dell1tb/tmp/aboard/bootstrap.js
+    [INF] Writing content to /media/dell1tb/tmp/aboard/classic.json
+    [INF] merging 248 input resources into /media/dell1tb/tmp/aboard/build/development/AppsBoard/classic/resources
+    [INF] merged 248 resources into /media/dell1tb/tmp/aboard/build/development/AppsBoard/classic/resources
+    [INF] merging 12 input resources into /media/dell1tb/tmp/aboard/build/development/AppsBoard
+    [INF] merged 11 resources into /media/dell1tb/tmp/aboard/build/development/AppsBoard
+    [INF] Writing content to /media/dell1tb/tmp/aboard/sass/example/bootstrap.json
+    [INF] Writing content to /media/dell1tb/tmp/aboard/sass/example/bootstrap.js
+    [ERR] 
+    [ERR] BUILD FAILED
+    [ERR] com.sencha.exceptions.ExProcess: Failed creating background process
+    [ERR] 	at 
+    [ERR] com.sencha.cli.Commands.dispatch(Commands.java:64)
+    [ERR] 
+    [ERR] Total time: 5 seconds
+    [ERR] 
+    [ERR] BUILD FAILED
+    [ERR] com.sencha.exceptions.BasicException: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/build-impl.xml:286: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:7: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:18: com.sencha.exceptions.ExProcess: Failed creating background process
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/build-impl.xml:286: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:7: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:18: com.sencha.exceptions.ExProcess: Failed creating background process
+    [ERR] 	at sun.reflect.
+    [ERR] DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:7: The following error occurred while executing this line:
+    [ERR] /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:18: com.sencha.exceptions.ExProcess: Failed creating background process
+    [ERR] 
+    [ERR] Total time: 8 seconds
+    [ERR] The following error occurred while executing this line:
+    /home/luc/bin/Sencha/Cmd/6.0.2.14/plugins/ext/current/plugin.xml:155: com.sencha.exceptions.BasicException: The following error occurred while executing this line:
+    /media/dell1tb/tmp/aboard/.sencha/app/build-impl.xml:286: The following error occurred while executing this line:
+    /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:7: The following error occurred while executing this line:
+    /media/dell1tb/tmp/aboard/.sencha/app/slice-impl.xml:18: com.sencha.exceptions.ExProcess: Failed creating background process
+
+Hmm... wat nu?
+
+
+More screenshots
+================
+
+I couldn't refrain from adding a screenshot and trying to get a
+picture of a single element (which unfortunately doesn't seem to work).
+
+In general I like the idea of writing "screenshot tours" like
+:ref:`welfare.fr.tour` and :ref:`welfare.de.tour`. Each of these
+documents is a series of screenshots, and for each screenshot there is
+a short explanation which may link when appropriate to more detailed
+information.
+
+Currently it is not yet very well automated, I must manually do::
+
+  $ cd docs_de ; python make_screenshots.py ; cd ..
+  $ cd docs_fr ; python make_screenshots.py ; cd ..
+  $ fab bd pd

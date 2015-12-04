@@ -1,0 +1,139 @@
+===========================
+Thursday, November 26, 2015
+===========================
+
+Fixed #624!
+===========
+
+Yesterday we decided to leave :ticket:`624` (Ctrl-S in a ComboBox)
+open because it seems quite hard to solve and because anyway it might
+vanish after :ticket:`37`, but now I tried a last time to fix it,
+because it will discourage users from using :kbd:`Ctrl-S`. And at
+least in Chatelet they will have to start using :kbd:`Ctrl-S` after
+the next release if they want to have :ticket:`557` fixed.  In order
+to solve :ticket:`557`, :attr:`enter_submits_form
+<lino.modlib.extjs.Plugin.enter_submits_form>` must become `False`.
+It is possible that in Eupen (not Chatelet) I will have to locally set
+it to the old value `True` because in Eupen they don't have any plain
+textarea and therefore won't want to change their habit.
+
+I noticed that it happens only in comboboxes whose store has at least
+one value to choose from.
+
+It seems that the `onLoad` was not guilty at all, but after renaming
+:meth:`ComboBox.onKeyUp` to deactivate it, the problem disappeared. Of
+course I cannot simply remove this method because it is important::
+
+    onKeyUp : function(e){
+        var k = e.getKey();
+        if(this.editable !== false && this.readOnly !== true && (k == e.BACKSPACE || !e.isSpecialKey())){
+
+            this.lastKey = k;
+            this.dqTask.delay(this.queryDelay);
+        }
+        Ext.form.ComboBox.superclass.onKeyUp.call(this, e);
+    },
+
+Actually this code is correct, but the problem is that the
+`isSpecialKey()` of the :kbd:`Ctrl-S` event returned `false`.  So the
+comboxbox treated :kbd:`Ctrl-S` as if it was a normal text entry and
+accordingly triggered a delayed query of its store.
+
+So I now wrote a hack (see the `change
+<https://github.com/lsaffre/lino/commit/352906ee111870f366d62a2bdd6551f4405c71f7>`__
+in :xfile:`linoweb.js`) which makes it return `true` also for "keyup"
+events. Hoping that this doesn't cause any side effect.
+
+Released everything to `lino-framework.org` so that we can test it on
+the field.
+
+AltGr key selects the whole field
+=================================
+
+I finally discovered :ticket:`631` which had been nagging me already
+since the last release on :ref:`lf` because I cannot enter a `@` sign
+into a Lino application using my Estonian keyboard (I must use
+:kbd:`S-C-u` and type "40" followed by :kbd:`ENTER`).
+
+
+
+About Continuous Delivery
+=========================
+
+I was fascinated to stumble over the article `Why every development
+team needs continuous delivery
+<https://blogs.atlassian.com/2015/10/why-continuous-delivery-for-every-development-team/>`_. Here
+is an excerpt:
+
+    We already know that continuous *integration* is the practice of
+    building and running a battery of automated tests after each code
+    change is made or at frequent intervals throughout the day. In
+    other words, continuously (more or less). **Continuous delivery
+    adds another step**: each time a build passes all your tests, it’s
+    automatically deployed out to a test or staging environment where
+    it can undergo further testing such as load tests, manual
+    exploratory testing, etc. That process may happen just once before
+    changes are released to customers, or you might repeat it for days
+    (or weeks), building up a critical mass of features and fixes,
+    until finally you decide it’s time to ship. (...)  Continuous
+    delivery involves human decision-making around what to release to
+    customers, and when. (...)  A continuous deployment system
+    automates the entire process from code to customer, allowing you
+    to ship changes several times a day.  It’s fabulous in many ways,
+    but it’s just not a good fit for every piece of software. Mobile
+    app users, for example, would go ballistic if they were prompted
+    to download updates every few hours.
+
+Yes, my more than 20 years of experience on the field confirm that
+frequent deployment is important.
+
+This article was actually an advertisment for `JIRA
+<https://www.atlassian.com/software/jira/features>`_ which
+unfortunately is not free software. But it seems to be good, so Lino
+Noi might learn from them. 
+
+Oh, and how funny: Atlassian are doing the same thing as I have been
+doing on the `Rumma & Ko homepage
+<http://www.saffre-rumma.net/fr/welfare_services/>`_ : they `publish
+their prices <https://www.atlassian.com/software/jira/pricing>`_ for
+everybody.
+
+And `Wikpedia <https://en.wikipedia.org/wiki/Atlassian>`_ confirms:
+
+    Atlassian does not have a traditional sales team. Instead, it
+    lists all prices, information about products, documentation,
+    support requests, and training materials on its website. The
+    company does not offer discounts, with the exception of open
+    source projects, academic and charity organizations. Most of their
+    products are available as hosted or installed versions, starting
+    at $10 for 10 licenses (pricing does not scale up linearly).
+
+Which actually just confirms that we are on the right way.
+
+About automated cross-browser layout testing
+============================================
+
+
+I also read a blog post `Is Automated Cross Browser Testing Possible?
+<http://www.browseemall.com/Blog/index.php/2015/11/25/is-automated-cross-browser-testing-possible/>`_. It
+seems that with `Selenium <https://github.com/seleniumhq/selenium>`_
+it should be possible to write an automated process which takes a list
+or URLs (I imagine a long list of permalinks to different locations
+below the online `Lino demo applications
+<http://www.lino-framework.org/demos.html>`_.  The `TakesScreenshot
+<https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/TakesScreenshot.java>`_
+class's (API doc `here
+<https://selenium.googlecode.com/git/docs/api/java/org/openqa/selenium/TakesScreenshot.html>`_)
+docstring has this snippet::
+
+    import static openqa.selenium.OutputType.*;
+
+    File screenshotFile = ((Screenshot)driver).getScreenshotAs(file);
+    String screenshotBase64 = ((Screenshot)driver).getScreenshotAs(base64);
+
+Okay this looks promising, but I am not going to use a Java software
+right now. Actually these things should be done by competent
+professional partners, IOW services like `browserstack.com
+<https://www.browserstack.com/screenshots>`_. So that's for later.
+
+

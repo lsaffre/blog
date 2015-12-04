@@ -1,0 +1,131 @@
+==========================
+Tuesday, November 17, 2015
+==========================
+
+More about :ticket:`38`
+=======================
+
+Now that :ticket:`38` is done, I upgraded the Django in my default
+environment from 1.6.1 to 1.8.6 and then ran the test suites of my
+other projects, and --of course-- there were some more failures.
+
+Some of them were trivial, but at least one was not trivial at all. It
+occurred for example during :manage:`initdb_demo` in
+:mod:`lino_cosi.projects.std`::
+
+  django.db.utils.IntegrityError: Problem installing fixture
+  '/cosi/lino_cosi/lib/ledger/fixtures/demo_bookings.py': NOT NULL
+  constraint failed: finan_bankstatementitem.amount
+
+A debug message tells me that the BankStatementItem *does* have an amount::
+
+  INFO 20151117 gonna save BankStatementItem(match=Movement #9 (u'PRC#3.3'),\
+  amount=Decimal('40.00'),account=2,partner=100,voucher=9)
+
+Why then does it say "NOT NULL constraint failed:
+finan_bankstatementitem.amount"?
+
+The :attr:`amount
+<lino_cosi.lib.finan.mixins.FinancialVoucherItem.amount>` is defined
+as follows::
+
+    class FinancialVoucherItem(VoucherItem, SequencedVoucherItem,
+                               ProjectRelated, Matching):
+        class Meta:
+            abstract = True
+            verbose_name = _("Item")
+            verbose_name_plural = _("Items")
+        ...
+        amount = dd.PriceField(default=0)
+
+And :class:`PriceField <lino.core.fields.PriceField>` is just a thin
+wrapper around Django's `DecimalField
+<https://docs.djangoproject.com/en/1.8/ref/models/fields/#decimalfield>`_::
+
+    class PriceField(models.DecimalField):
+        def __init__(self, *args, **kwargs):
+            defaults = dict(
+                max_length=10,
+                max_digits=10,
+                decimal_places=2,
+            )
+            defaults.update(kwargs)
+            super(PriceField, self).__init__(*args, **defaults)
+    
+The explanation was because Django now also calls the new
+:meth:`clean` on virtual fields. And a BankStatementItem has two
+virtual fields `debit` and `credit` which have a rather special type
+`DcAmountField <lino_cosi.lib.ledger.fields.DcAmountField>`.
+
+
+Summary of the changes:
+
+- We no longer use a `VirtualGetter` object. Virtual fields must now
+  support the case of getting called with ``ar`` being `None` (and
+  return an empty value in that case)
+
+- We no longer care about supporting Django 1.6, Lino now requires
+  Django 1.8 and basta.
+
+TODO:
+- welfare test suite still failing
+- building the Lino docs is failing
+
+
+
+
+
+More about importing Bank statements
+====================================
+
+I spoke with Gerd about :ticket:`505`. 
+
+On page 27 of the Febelfin Implementation guidelines `XML message for
+statement.
+<https://www.febelfin.be/sites/default/files/files/Standard-XML-Statement-v1-en_0.pdf>`_
+(version 1.0) there is a picture. And the ISO 20022 standard
+`camt.053.001.02
+<https://www.iso20022.org/standardsrepository/public/wqt/Description/mx/camt.053.001.02>`_
+describes them fully:
+
+- The `ElectronicSequenceNumber
+  <https://www.iso20022.org/standardsrepository/public/wqt/Content/mx/camt.053.001.02#mx/camt.053.001.02/Statement/ElectronicSequenceNumber>`_
+  (`<ElctrncSeqNb>`) is the "Sequential number of the statement, as
+  assigned by the account servicer. Usage: The sequential number is
+  increased incrementally for each statement sent electronically."
+
+- The `LegalSequenceNumber
+  <https://www.iso20022.org/standardsrepository/public/wqt/Content/mx/camt.053.001.02#mx/camt.053.001.02/Statement/LegalSequenceNumber>`_
+  (`<LglSeqNb>`) is the "Legal sequential number of the statement, as
+  assigned by the account servicer. It is increased incrementally for
+  each statement sent. Usage: Where a paper statement is a legal
+  requirement, it may have a number different from the electronic
+  sequential number. Paper statements could for instance only be sent
+  if movement on the account has taken place, whereas electronic
+  statements could be sent at the end of each reporting period,
+  regardless of whether movements have taken place or not."
+
+These two data elements were absolutely present in our demo file, but
+the Dutch CAMT library (:mod:`lino_cosi.lib.sepa.parserlib` and
+:mod:`lino_cosi.lib.sepa.camt`) simply didn't care about them.  I
+adapted them (and :mod:`lino_cosi.lib.sepa.models`) accordingly.
+
+Note: For me these :mod:`parserlib <lino_cosi.lib.sepa.parserlib>`,
+:mod:`camt <lino_cosi.lib.sepa.camt>` modules are very ugly because
+there is a lot of redundant code. As if they had been written by a
+Java programmer. One day I will rewrite them completely...
+
+I think that we can safely ignore the *electronic* sequence number and
+import only the *legal* sequence number.
+
+
+Miscellaneous
+=============
+    
+I created :ticket:`625` because the whole topic of payables and their
+payments is going to cause quite some more work. It is required for
+both :ticket:`143` and :ticket:`353`. The problem was caused by
+:ticket:`143` and therefore is part of the `welfare.ledger` project.
+    
+
+

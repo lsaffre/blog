@@ -1,0 +1,131 @@
+=========================
+Friday, November 20, 2015
+=========================
+
+Duplicate sequence numbers
+==========================
+
+I wrote a little :manage:`run` script which reproduces my problem::
+
+    from django.conf import settings
+    from lino.api import rt
+    ses = rt.login()
+    
+    # part 1
+    settings.SITE.site_config.import_b2c(ses)
+    
+    # part 2
+    Account = rt.modules.b2c.Account
+    obj = Account.objects.get(iban='...')
+    ses.show(rt.modules.b2c.StatementsByAccount, obj)
+
+The output of this script, part 1 is::
+
+  INFO 371 XML files with 357 new and 14 updated statements have been imported.
+
+And part 2 for a given IBAN::
+
+    ================= ================ ============ =============== ========== ==========
+     Sequence number   Initial amount   Start date   Final amount    End date   Currency
+    ----------------- ---------------- ------------ --------------- ---------- ----------
+     74                2 441,59         06.11.15     2 361,59        09.11.15   EUR
+     74                2 361,59         09.11.15     2 251,59        13.11.15   EUR
+     74                2 361,59         09.11.15     2 251,59        13.11.15   EUR
+     74                2 251,59         13.11.15     2 181,59        16.11.15   EUR
+     74                2 251,59         13.11.15     2 181,59        16.11.15   EUR
+     74                2 181,59         16.11.15     2 154,94        17.11.15   EUR
+     **444**           **13 849,54**                 **13 382,89**
+    ================= ================ ============ =============== ========== ==========
+
+It is a pity that Hamza cannot work on this (because it requires
+access to a collection of confidential XML files and it seems
+difficult to get a legal agreement about this). So I must do it
+myself.
+
+Tonight I started by tidying up the code. I almost refactored the code
+in :mod:`lino_cosi.lib.b2c.camt` and :mod:`lino_cosi.lib.b2c.models`:
+I completely removed parserlib and now work without getters and
+setters.  I thought it just insane to have so many different names for
+every data element. I also changed parts of Hamza's code, trying to
+make it more secure against bugs. I also changed some database field
+names, e.g. replaced `execution_date` by `booking_date` (because the
+XML tag is `BookgDt`).  :mod:`lino_cosi.lib.b2c.camt` itself seems
+well done, it was mostly that additional layer of field names
+introduced by `parserlib` which disturbed me. It also contained
+several hacks (e.g. for isolating the partner name?) which I removed
+because I did not understand their necessity and they were not
+documented.  
+
+My refactoring did not directly bring any change. I had to dive deeper
+yet.  The problem was about how to identify statements which had been
+downloaded twice. See below.  The current version implements it using
+my suggestion below. Now the output of my script seems more correct::
+
+    ==================== ================ ============ ============== ========== ==========
+     Statement number     Initial amount   Start date   Final amount   End date   Currency
+    -------------------- ---------------- ------------ -------------- ---------- ----------
+     2015/0074            2 361,59         09.11.15     2 251,59       13.11.15   EUR
+     **Total (1 rows)**   **2 361,59**                  **2 251,59**
+    ==================== ================ ============ ============== ========== ==========
+
+
+Only later I discovered that this `parserlib` file was part of the
+bigger picture: it is maintained by the `Odoo Community Association
+<https://github.com/OCA>`_, and the original source file imports it
+directly from `openerp`.  So yes, we moved away from the openerp
+parserlib because it would have taken me weeks of work to fully
+understand all those hacks and details which may occur in different
+banks.  Is it worth to undo my refactoring and to integrate back with
+OpenERP? But it I say in advance that it won't be easy because we
+would need to extend that parserlib definition...
+
+
+Identifying incoming bank statements
+====================================
+
+A question to bank experts:
+
+I am writing an import module for importing CAMT 053 into our
+database.
+
+There are 2 files dated 20151113 which contain a statement for the
+observed account.  Both files are almost identical. It is normal to
+have such duplicates because these XML files arrive to our incoming
+folder by several ways, they are manually downloaded using the bank's
+web interface and authorisation check. Different users may do this
+action at different times, and therefore we cannot exclude this to
+happen.  And now the interesting part: the value of `XYZ` in
+`<Stmd><Id>XYZ<Id>` is *not* identical, despite the fact that it's
+documentation is "Unique identification, as assigned by the account
+servicer, to unambiguously identify the account statement". In
+:file:`COD_20151113_OW1L3FY13K.XML` it is::
+
+    <Stmt><Id>153170000121620/000001-000001</Id><ElctrncSeqNb>132</ElctrncSeqNb><LglSeqNb>74</LglSeqNb>
+
+while in :file:`COD_20151113_OP3L3FY13K.XML` it is::
+
+    <Stmt><Id>153170000120519/000001-000001</Id><ElctrncSeqNb>132</ElctrncSeqNb><LglSeqNb>74</LglSeqNb>
+
+
+Question: how can I reliably identify individual statements from
+duplicate XML files which have been downloaded by possibly different
+users?
+
+My suggestion is to use a combination of the year and the
+`LegalSequenceNumber` (the `LegalSequenceNumber` itself seems to
+restart every calendar year, I don't believe that above account had
+only 74 statements since its creation).
+
+
+Triaging tickets for Aurélie and Mathieu
+========================================
+
+:ticket:`607` was possibly just because of a wrong `icon_name`. I
+replaced it by a unicode character "south east arrow to corner", so
+now it looks like this: ⇲.
+
+:ticket:`577` was simply because the MIME type for docs files is
+longer than 64 characters. I changed the max_length of 
+:attr:`lino.mixins.uploadable.Uploadable.mimetype` from 64 to 255.
+See also `this thread 
+<http://stackoverflow.com/questions/643690/maximum-mimetype-length-when-storing-type-in-db>`_ about length of MIME type field.

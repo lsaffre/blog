@@ -1,0 +1,89 @@
+============================
+Wednesday, November 18, 2015
+============================
+
+Finishing #38
+=============
+
+I finished repairing the test suites of welfare and faggio after
+:ticket:`38`. These were trivial (but time-consuming) problems.
+
+Also building the docs for lino and welfare failed::
+
+    RuntimeError: Conflicting 'partner' models in application
+    'contacts': <class 'lino.modlib.contacts.models.Partner'> and
+    <class 'lino.projects.min2.modlib.contacts.models.Partner'>.
+
+This was because Django 1.8 has become more severe about importing
+duplicate models. When autodoc tries to import the models of
+:mod:`lino.projects.min2` and :mod:`lino.modlib.statbel.countries`,
+above problem rose. I worked around this by removing the
+:xfile:`models.py` modules from the autodoc tree (which is a pity
+because e.g. the :class:`lino.modlib.statbel.countries.models.Country`
+class is no longer documented in the API).
+
+Built all the docs and checked in all changes. Done!
+
+Of course we must expect surprises with the next deployments to
+production servers. I plan to try it on testlino in Eupen first, and
+then on lf.org
+
+There are a few `RemovedInDjango19Warning` warnings left. To get rid
+of them when working, I can do::
+
+  export PYTHONWARNINGS=ignore
+
+Continued with #505
+===================
+
+Before deploying to testlino in Eupen (planned for tonight around 20h
+GMT), I also did :ticket:`622` and :ticket:`596` (subtickets of
+:ticket:`505` ) for which I saw the solution now:
+
+- :mod:`lino_cosi.lib.sepa` is again as it was before :ticket:`505` :
+  it has just one model :class:`Account
+  <lino_cosi.lib.sepa.models.Account>`. This is used for applications
+  where users want to record in their database one or several bank
+  account numbers of their partners.
+
+- All the stuff of :ticket:`505` about importing statements from the
+  bank has gone to a new module :mod:`lino_cosi.lib.b2c` with
+  :class:`Account <lino_cosi.lib.b2c.models.Account>`
+  :class:`Statements <lino_cosi.lib.b2c.models.Statment>`
+  :class:`Movement <lino_cosi.lib.b2c.models.Movement>`.
+
+- So we have now two types of bank accounts in our database: we
+  differentiate between simply "Bank accounts" (`sepa.Account`) and
+  "Imported bank accounts" (`b2c.Accounts`).
+
+- A (simple) bank account is always *linked to a partner*, it is
+  *entered manually*. Several partners may share a bank account (one
+  IBAN number), and in that case there are ar simply several accounts
+  with the same IBAN (but different partners).
+
+- A `b2c.Account` is *not linked* to any partner, it *cannot be
+  edited* manually, and the IBAN number is unique. It groups the
+  information imported from a B2C XML file.
+
+  Lino helps the users to switch between these two types of bank
+  accounts:
+
+  In :class:`AccountsByClient
+  <lino_welfare.modlib.sepa.models.AccountsByClient>` we have the
+  :attr:`statements <lino_cosi.lib.sepa.models.Account.statements>`
+  field which links to the imported information for a given
+  `sepa.Account`.
+
+  And in :class:`lino_cosi.lib.b2c.ui.Accounts` we have the
+  :attr:`partners <lino_cosi.lib.b2c.model.Account.partners>` virtual
+  field which shows all partners assigned to this account.
+
+Cool! Things are getting clearer! Ticket :ticket:`505` reaches its
+end!
+
+ReceptionClerk also SepaUser
+============================
+
+Gerd reported that a :class:`ReceptionClerk
+<lino_welfare.modlib.welfare.roles.ReceptionClerk>` must have
+permission to see the imported statements.

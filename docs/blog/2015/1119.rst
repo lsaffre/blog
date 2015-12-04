@@ -1,0 +1,443 @@
+===========================
+Thursday, November 19, 2015
+===========================
+
+Working at night
+================
+
+Tonight Hamza and I had a three hour common voice session with shared
+screen. We wanted to deploy the newest version to testlino (a test
+site of a customer). I expected a routine session with possibly some
+surprises due to the fact that we are now in Django 1.8.  But it
+turned out to be *much* more complicated than expected.
+
+The problem was that :manage:`initdb` fails on MySQL. This did not
+occur in any test suite because all tests currently use SQLite.  (TODO
+once when we have time: add a test case which reproduces the problem)
+
+While doing the following::
+
+  $ python manage.py run ../cpas_eupen/snapshot/restore.py 
+
+We get the following output::
+
+    INFO `initdb ` started on database test_dsbe.
+    Operations to perform:
+      Synchronize unmigrated apps: addresses, office, cbss, sales, cosi, ledger, accounts, newcomers, welfare, aids, excerpts, cv, export_excel, bootstrap3, households, art61, appypod, jinja, contacts, debts, tinymce, system, extjs, languages, humanize, vatless, davlink, extensible, beid, gfks, jobs, users, staticfiles, plausibility, pcsw, dupable_clients, lino_startup, outbox, b2c, properties, about, boards, countries, sepa, notes, isip, integ, courses, printing, humanlinks, uploads, reception, cal, finan, changes, notifier
+      Apply all migrations: (none)
+    Synchronizing apps without migrations:
+      Creating tables...
+        Creating table system_siteconfig
+        Creating table gfks_helptext
+        Creating table users_authority
+        Creating table users_user
+        Creating table notifier_notification
+        Creating table changes_change
+        Creating table countries_country
+        Creating table countries_place
+        Creating table properties_proptype
+        Creating table properties_propchoice
+        Creating table properties_propgroup
+        Creating table properties_property
+        Creating table properties_personproperty
+        Creating table contacts_companytype
+        Creating table contacts_roletype
+        Creating table contacts_role
+        Creating table contacts_partner
+        Creating table contacts_person
+        Creating table contacts_company
+        Creating table addresses_address
+        Creating table uploads_uploadtype
+        Creating table uploads_upload
+        Creating table outbox_recipient
+        Creating table outbox_mail
+        Creating table outbox_attachment
+        Creating table excerpts_excerpttype
+        Creating table excerpts_excerpt
+        Creating table cal_remotecalendar
+        Creating table cal_room
+        Creating table cal_priority
+        Creating table cal_guestrole
+        Creating table cal_calendar
+        Creating table cal_subscription
+        Creating table cal_recurrentevent
+        Creating table cal_eventtype
+        Creating table cal_event
+        Creating table cal_guest
+        Creating table cal_task
+        Creating table accounts_group
+        Creating table accounts_account
+        Creating table boards_board
+        Creating table boards_member
+        Creating table pcsw_coachingtype
+        Creating table pcsw_coachingending
+        Creating table pcsw_coaching
+        Creating table pcsw_persongroup
+        Creating table pcsw_activity
+        Creating table pcsw_dispensereason
+        Creating table pcsw_dispense
+        Creating table pcsw_exclusiontype
+        Creating table pcsw_exclusion
+        Creating table pcsw_conviction
+        Creating table pcsw_aidtype
+        Creating table pcsw_clientcontacttype
+        Creating table pcsw_clientcontact
+        Creating table pcsw_client
+        Creating table ledger_journal
+        Creating table ledger_paymentterm
+        Creating table ledger_voucher
+        Creating table ledger_movement
+        Creating table ledger_matchrule
+        Creating table sepa_account
+        Creating table b2c_account
+        Creating table b2c_statement
+        Creating table b2c_movement
+        Creating table vatless_accountinvoice
+        Creating table vatless_invoiceitem
+        Creating table finan_grouper
+        Creating table finan_journalentry
+        Creating table finan_paymentorder
+        Creating table finan_bankstatement
+        Creating table finan_grouperitem
+        Creating table finan_journalentryitem
+        Creating table finan_bankstatementitem
+        Creating table finan_paymentorderitem
+        Creating table languages_language
+        Creating table cv_languageknowledge
+        Creating table cv_educationlevel
+        Creating table cv_studytype
+        Creating table cv_training
+        Creating table cv_study
+        Creating table cv_status
+        Creating table cv_regime
+        Creating table cv_duration
+        Creating table cv_sector
+        Creating table cv_function
+        Creating table cv_experience
+        Creating table isip_contracttype
+        Creating table isip_exampolicy
+        Creating table isip_contractending
+        Creating table isip_contractpartner
+        Creating table isip_contract
+        Creating table jobs_schedule
+        Creating table jobs_jobprovider
+        Creating table jobs_contracttype
+        Creating table jobs_contract
+        Creating table jobs_offer
+        Creating table jobs_job
+        Creating table jobs_candidature
+        Creating table jobs_jobtype
+        Creating table art61_contracttype
+        Creating table art61_contract
+        Creating table courses_courseprovider
+        Creating table courses_coursecontent
+        Creating table courses_courseoffer
+        Creating table courses_course
+        Creating table courses_courserequest
+        Creating table newcomers_broker
+        Creating table newcomers_faculty
+        Creating table newcomers_competence
+        Creating table cbss_sector
+        Creating table cbss_purpose
+        Creating table cbss_identifypersonrequest
+        Creating table cbss_manageaccessrequest
+        Creating table cbss_retrievetigroupsrequest
+        Creating table households_type
+        Creating table households_household
+        Creating table households_member
+        Creating table humanlinks_link
+        Creating table debts_budget
+        Creating table debts_actor
+        Creating table debts_entry
+        Creating table notes_notetype
+        Creating table notes_eventtype
+        Creating table notes_note
+        Creating table aids_category
+        Creating table aids_aidtype
+        Creating table aids_granting
+        Creating table aids_simpleconfirmation
+        Creating table aids_incomeconfirmation
+        Creating table aids_refundconfirmation
+        Creating table dupable_clients_word
+        Creating table plausibility_problem
+        Creating table tinymce_textfieldtemplate
+        Running deferred SQL...
+    Traceback (most recent call last):
+      File "manage.py", line 7, in <module>
+        execute_from_command_line(sys.argv)
+      File "/python2.7/site-packages/django/core/management/__init__.py", line 354, in execute_from_command_line
+        utility.execute()
+      File "/python2.7/site-packages/django/core/management/__init__.py", line 346, in execute
+        self.fetch_command(subcommand).run_from_argv(self.argv)
+      File "/python2.7/site-packages/django/core/management/base.py", line 394, in run_from_argv
+        self.execute(*args, **cmd_options)
+      File "/python2.7/site-packages/django/core/management/base.py", line 445, in execute
+        output = self.handle(*args, **options)
+      File "/lino/lino/modlib/lino_startup/management/commands/run.py", line 59, in handle
+        execfile(fn, globals())
+      File "../cpas_eupen/snapshot/restore.py", line 1900, in <module>
+        main()
+      File "../cpas_eupen/snapshot/restore.py", line 1761, in main
+        call_command('initdb')
+      File "/python2.7/site-packages/django/core/management/__init__.py", line 120, in call_command
+        return command.execute(*args, **defaults)
+      File "/python2.7/site-packages/django/core/management/base.py", line 445, in execute
+        output = self.handle(*args, **options)
+      File "/lino/lino/modlib/lino_startup/management/commands/initdb.py", line 202, in handle
+        call_command('migrate', **options)
+      File "/python2.7/site-packages/django/core/management/__init__.py", line 120, in call_command
+        return command.execute(*args, **defaults)
+      File "/python2.7/site-packages/django/core/management/base.py", line 445, in execute
+        output = self.handle(*args, **options)
+      File "/python2.7/site-packages/django/core/management/commands/migrate.py", line 179, in handle
+        created_models = self.sync_apps(connection, executor.loader.unmigrated_apps)
+      File "/python2.7/site-packages/django/core/management/commands/migrate.py", line 318, in sync_apps
+        cursor.execute(statement)
+      File "/python2.7/site-packages/django/db/backends/utils.py", line 79, in execute
+        return super(CursorDebugWrapper, self).execute(sql, params)
+      File "/python2.7/site-packages/django/db/backends/utils.py", line 64, in execute
+        return self.cursor.execute(sql, params)
+      File "/python2.7/site-packages/django/db/utils.py", line 98, in __exit__
+        six.reraise(dj_exc_type, dj_exc_value, traceback)
+      File "/python2.7/site-packages/django/db/backends/utils.py", line 62, in execute
+        return self.cursor.execute(sql)
+      File "/python2.7/site-packages/django/db/backends/mysql/base.py", line 124, in execute
+        return self.cursor.execute(query, args)
+      File "/python2.7/site-packages/MySQLdb/cursors.py", line 205, in execute
+        self.errorhandler(self, exc, value)
+      File "/python2.7/site-packages/MySQLdb/connections.py", line 36, in defaulterrorhandler
+        raise errorclass, errorvalue
+    django.db.utils.OperationalError: (1005, "Can't create table 'test_dsbe.#sql-307_b798d' (errno: 150)")
+    INFO Done manage.py run ../cpas_eupen/snapshot/restore.py (PID 24652)
+
+
+On `InnoDB Error Codes
+<http://dev.mysql.com/doc/refman/5.0/en/innodb-error-codes.html>`__ we
+can see what 1005 means:
+
+- 1005 (ER_CANT_CREATE_TABLE)
+
+  Cannot create table. If the error message refers to error 150, table
+  creation failed because a foreign key constraint was not correctly
+  formed. If the error message refers to error −1, table creation
+  probably failed because the table includes a column name that
+  matched the name of an internal InnoDB table.
+
+
+Do we need migrations? And if yes: what must we do to use them?  We
+did not find a quick answer to that question.
+
+
+The next morning
+================
+
+On stackoverflow I saw this thread: `Django's syncdb fails with MySQL
+errno: 150
+<http://stackoverflow.com/questions/7366528/djangos-syncdb-fails-with-mysql-errno-150>`_.
+It suggests to use MyISAM as database engine instead of the more sever
+InnoDB, and it reveals a simply method for doing this without changing
+the system default engine.  
+
+And it worked.  Sounds like a reasonable workaround at least for
+testlino. TODO: Dive more into this. Why Django migrations system
+fails to simply create a stupid virgin database under InnoDB?
+
+Before it worked, I had another little surprise while saving the
+:class:`Guest <lino.modlib.cal.models.Guest>` objects::
+
+    ERROR 'NoneType' object has no attribute 'find'
+    Traceback (most recent call last):
+      File "/lino/lino/utils/dpy.py", line 436, in try_save
+        obj.full_clean()
+      File "/lino-welfare/lino_welfare/modlib/cal/models.py", line 185, in full_clean
+        super(Event, self).full_clean()
+      File "/lino/lino/modlib/printing/mixins.py", line 498, in full_clean
+        super(CachedPrintable, self).full_clean(*args, **kwargs)
+      File "/python2.7/site-packages/django/db/models/base.py", line 1149, in full_clean
+        self.clean_fields(exclude=exclude)
+      File "/python2.7/site-packages/django/db/models/base.py", line 1187, in clean_fields
+        raw_value = getattr(self, f.attname)
+      File "/lino/lino/core/fields.py", line 481, in __get__
+        return self.value_from_object(instance, None)
+      File "/lino/lino/core/fields.py", line 476, in value_from_object
+        return m(obj, ar)
+      File "/lino/lino/modlib/cal/models.py", line 691, in linked_date
+        txt = when_text(self.start_date, self.start_time)
+      File "/lino/lino/modlib/cal/utils.py", line 113, in when_text
+        txt = format_date(d, 'EE ')
+      File "/lino/lino/modlib/cal/utils.py", line 51, in format_date
+        d, fmt, locale=to_locale(translation.get_language()))
+      File "/lino/lino/core/site.py", line 73, in to_locale
+        p = language.find('-')
+    AttributeError: 'NoneType' object has no attribute 'find'
+
+To get above traceback, I had to do a little optimization of error
+reporting to :mod:`lino.utils.dpy`. Note that there were thousands of
+objects causing that error, so it is important to report it only at
+the first occurence.
+
+Was this caused by our nightly cheat of removing the `default`
+attribute of choicelist fields (by adding a line
+``kwargs.pop('default', None)`` in the :meth:`deconstruct
+<lino.core.choicelists.ChoiceListField.deconstruct>` method? I removed
+that line (which anyway was dangerous). No, that was not the reason.
+
+No, it was caused by :func:`format_date
+<lino.utils.format_date.format_date>` which under Django 1.7+ gets
+called also during :manage:`initdb` (I guess because Django now also
+sets all virtual fields of virgin objects, don't ask me why).  The
+:attr:`linked_date <lino_welfare.modlib.cal.models.Event.linked_date>`
+virtual field of an :class:`cal.Event
+<lino_welfare.modlib.cal.models.Event>` object for example calls
+:func:`format_date`.  And in :manage:`initdb` there is no "current
+Django language".
+
+Working with lazy translation
+=============================
+
+When the data migration (to be more precise or the restore of the
+snapshot) finally had passed, I still could not watch at the new Lino
+on their server because accessing it caused yet another surpsie, an
+error message in the Apache error log::
+
+    Traceback (most recent call last):
+      File "/site-packages/django/core/handlers/wsgi.py", line 170, in __call__
+        self.load_middleware()
+      File "/site-packages/django/core/handlers/base.py", line 52, in load_middleware
+        mw_instance = mw_class()
+      File "/site-packages/django/middleware/locale.py", line 24, in __init__
+        for url_pattern in get_resolver(None).url_patterns:
+      File "/site-packages/django/core/urlresolvers.py", line 401, in url_patterns
+        patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+      File "/site-packages/django/core/urlresolvers.py", line 395, in urlconf_module
+        self._urlconf_module = import_module(self.urlconf_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/lino/lino/core/urls.py", line 20, in <module>
+        site.startup()
+      File "/lino/lino/core/site.py", line 1615, in startup
+        app_config.import_models(apps.all_models[app_config.label])
+      File "/site-packages/django/apps/config.py", line 198, in import_models
+        self.models_module = import_module(models_module_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/lino-welfare/lino_welfare/modlib/reception/models.py", line 43, in <module>
+        pcsw = dd.resolve_app('pcsw')
+      File "/lino/lino/core/utils.py", line 406, in resolve_app
+        return import_module('.models', app_name)
+      File "/site-packages/django/utils/importlib.py", line 45, in import_module
+        __import__(name)
+      File "/lino-welfare/lino_welfare/projects/eupen/modlib/pcsw/models.py", line 33, in <module>
+        from lino_welfare.modlib.pcsw.models import *
+      File "/lino-welfare/lino_welfare/modlib/pcsw/models.py", line 68, in <module>
+        from .coaching import *
+      File "/lino-welfare/lino_welfare/modlib/pcsw/coaching.py", line 53, in <module>
+        class CoachingType(mixins.BabelNamed):
+      File "/lino-welfare/lino_welfare/modlib/pcsw/coaching.py", line 70, in CoachingType
+        help_text=_("Whether this coaching type does %s.") % INTEG_LABEL)
+      File "/site-packages/django/utils/functional.py", line 178, in __mod__
+        return six.text_type(self) % rhs
+      File "/site-packages/django/utils/functional.py", line 140, in __text_cast
+        return func(*self.__args, **self.__kw)
+      File "/site-packages/django/utils/translation/__init__.py", line 84, in ugettext
+        return _trans.ugettext(message)
+      File "/site-packages/django/utils/translation/trans_real.py", line 327, in ugettext
+        return do_translate(message, 'ugettext')
+      File "/site-packages/django/utils/translation/trans_real.py", line 304, in do_translate
+        _default = _default or translation(settings.LANGUAGE_CODE)
+      File "/site-packages/django/utils/translation/trans_real.py", line 206, in translation
+        _translations[language] = DjangoTranslation(language)
+      File "/site-packages/django/utils/translation/trans_real.py", line 116, in __init__
+        self._add_installed_apps_translations()
+      File "/site-packages/django/utils/translation/trans_real.py", line 164, in _add_installed_apps_translations
+        "The translation infrastructure cannot be initialized before the "
+    AppRegistryNotReady: The translation infrastructure cannot be initialized before the apps registry is ready. Check that you don't make non-lazy gettext calls at import time.
+
+    The explanation for above traceback is the following piece of
+    code::
+    
+    does_integ = models.BooleanField(
+        INTEG_LABEL, default=True,
+        help_text=_("Whether this coaching type does %s.") % INTEG_LABEL)
+
+Although `_` in above code is lazy (`from django.utils.translation
+import ugettext_lazy as _`), it causes the translation to get
+triggered already when the models are being imported because it is at
+module level. More details in `Working with lazy translation objects
+    <https://docs.djangoproject.com/en/1.8/topics/i18n/translation/#working-with-lazy-translation-objects>`_.
+
+There were several similar problems. I don't know why they occured
+only on their server (maybe multi-threaded operation?). I solved them
+using quick cycles of "edit, commit, pull, restart and retry"::
+
+  @local$ fab ci
+  remote$ ./pull.sh
+  remote$ sudo service apache2 graceful
+
+Multithreaded startup
+=====================
+
+Yet another surprise was this::
+
+    mod_wsgi (pid=19447): Exception occurred processing WSGI script '/usr/local/django/testlino/wsgi.py'.
+    Traceback (most recent call last):
+      File "/site-packages/django/core/handlers/wsgi.py", line 170, in __call__
+        self.load_middleware()
+      File "/site-packages/django/core/handlers/base.py", line 52, in load_middleware
+        mw_instance = mw_class()
+      File "/site-packages/django/middleware/locale.py", line 24, in __init__
+        for url_pattern in get_resolver(None).url_patterns:
+      File "/site-packages/django/core/urlresolvers.py", line 401, in url_patterns
+        patterns = getattr(self.urlconf_module, "urlpatterns", self.urlconf_module)
+      File "/site-packages/django/core/urlresolvers.py", line 395, in urlconf_module
+        self._urlconf_module = import_module(self.urlconf_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/lino/lino/core/urls.py", line 20, in <module>
+        site.startup()
+      File "/lino/lino/core/site.py", line 1631, in startup
+        self.do_site_startup()
+      File "/lino-welfare/lino_welfare/projects/eupen/settings/__init__.py", line 64, in do_site_startup
+        super(Site, self).do_site_startup()
+      File "/lino/lino/core/site.py", line 1921, in do_site_startup
+        self.kernel = Kernel(self)
+      File "/lino/lino/core/kernel.py", line 187, in __init__
+        self.kernel_startup(site)
+      File "/lino/lino/core/kernel.py", line 279, in kernel_startup
+        models_list = get_models(include_auto_created=True)
+      File "/site-packages/django/utils/lru_cache.py", line 101, in wrapper
+        result = user_function(*args, **kwds)
+      File "/site-packages/django/apps/registry.py", line 168, in get_models
+        self.check_models_ready()
+      File "/site-packages/django/apps/registry.py", line 131, in check_models_ready
+        raise AppRegistryNotReady("Models aren't loaded yet.")
+    AppRegistryNotReady: Models aren't loaded yet.
+
+The problem occurred only under mod_wsgi (don't ask me why), thus yet
+another series of "edit, commit, pull, restart and retry" cycles.  In
+the beginning I suspected it to be related to the `threading.RLock`,
+but it turned out that when I explicitly call :func:`django.setup`
+from :mod:`lino.core.urls`, the problem vanished.  I gues that when
+running under mod_wsgi this is not done automatically as with
+runserver.
+
+Miscellaneous
+=============
+
+TravisCI started to report `build failures
+<https://travis-ci.org/lsaffre/lino/jobs/91996162>`_ caused by a
+SyntaxError in a Django source file under Python 2.6.  And yes, they
+`say it themselves
+<https://docs.djangoproject.com/en/1.8/faq/install/#what-python-version-can-i-use-with-django>`_,
+Django no longer runs on Python 2.6. So I removed it from Lino's
+:xfile:`.travis.xml`. (I just don't understand why these failures
+started only now and not immediately when I removed the ``<1.7``
+condition from :xfile:`setup_info.py`).
+
+Duplicate sequence numbers
+==========================
+
+Now that their testlino runs with the newest version and I had
+imported their incoming SEPA XML files, I see that most statement
+numbers are duplicated. But that's for later. Now I must stop working.
+

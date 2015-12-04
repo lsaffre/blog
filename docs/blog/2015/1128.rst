@@ -1,0 +1,71 @@
+===========================
+Saturday, November 28, 2015
+===========================
+
+Added timezone support (step 1)
+===============================
+
+Hamza's work on :ticket:`601` has been waiting because we found more
+urgent things to do, but I now would like to advance with this because
+(1) it is disturbing to us and (2) I hope that more new developers
+will join the Lino Team soon.
+
+So I now looked again at `Hamza's commit
+<https://github.com/khchine5/lino/commit/5cf3c7e49b9f7118f019f27762ce5732a05b63e4>`_
+and my observations (:doc:`1114`) and integrated them.
+
+
+TODO: The simple_value combobox for the timezone field does not behave
+correctly.
+
+
+Release on :ref:`lf`
+====================
+
+No serious problems, but 
+
+- starting a session still gives the wrong time. That's probably
+  because I use some
+  :class:`lino.modlib.cal.mixins.StartedEnded`
+
+- The hack for Ctrl-S in comboboxes seems to fail again. Did it work
+  before?  Maybe never on the production site?  Maybe it is when DEBUG
+  is False because then the minimized `ext-all.js` is being used where
+  the class names are scrambled?
+
+
+
+Old syntax::
+
+    Lino.Viewport = Ext.extend(Ext.Viewport, Lino.MainPanel);
+    Lino.Viewport = Ext.extend(Lino.Viewport, {
+      layout : "fit"
+      ,is_home_page : true
+      ,initComponent : function(){
+        Lino.Viewport.superclass.initComponent.call(this);
+        ...
+      }
+      ,refresh : function() {
+        ...
+      }
+    });
+
+
+New syntax::
+    
+
+    Ext.define('Lino.Viewport', 
+      mixins: [Ext.Viewport, Lino.MainPanel]
+      ,layout : "fit"
+      ,is_home_page : true
+      ,initComponent : function(){
+        this.callParent();
+        ...
+      }
+      ,refresh : function() {
+        ...
+      }
+    });
+
+
+

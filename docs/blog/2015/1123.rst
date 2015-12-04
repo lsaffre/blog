@@ -1,0 +1,108 @@
+=========================
+Monday, November 23, 2015
+=========================
+
+I committed a a docstring change in Lino.
+
+More optimizations for :ticket:`505`
+====================================
+
+I continued on :ticket:`626`.  With Gerd I inspected the statements
+imported last Friday.  While before there were too *many* statements,
+now there were *not enough* of them.  Trying with the
+`electronic_sequence_number` instead of the
+`legal_sequence_number`. Voilà, this yields more realistic data.
+
+Here is a nice trick which I tried for the first time (because when I
+want to reset all tables of the :mod:`lino_cosi.lib.b2c` plugin,
+reloading a full dump just seems like overkiill::
+
+    $ python manage.py sqlclear b2c > b2c_clear.sql
+    $ python manage.py sql b2c >> b2c_clear.sql
+    $ mysql -u USERNAME -p DATABASENAME < b2c_clear.sql
+
+
+Don't misuse width specifiers when defining layouts
+====================================================
+
+A style hint for Hamza: when you write layouts, then don't worry about
+the field widths.  For example, I saw that you wrote something like
+this (in :class:`lino_cosi.lib.b2c.ui.Movements`)::
+
+    detail_layout = """
+    statement:30 seqno:10 booking_date:20 amount:20
+    remote_account:20 remote_bic:10 eref:10
+    remote_owner:20 remote_owner_address:20 remote_owner_city:20 remote_owner_postalcode:20
+    remote_owner_country_code:20 transfer_type:20 value_date:20
+    message
+    """
+    
+It is easier to just write::    
+
+    detail_layout = """
+    statement seqno booking_date amount
+    remote_account remote_bic eref
+    remote_owner remote_owner_address remote_owner_city remote_owner_postalcode
+    remote_owner_country_code transfer_type value_date
+    message
+    """
+    
+Usually the default width should yield a reasonable result. You add
+explicit widths in a layout only when there is a problem with the
+default behaviour. And even then it might be better to use
+:meth:`set_widget_options <lino.core.model.Model.set_widget_options>`,
+i.e. specify an alternate width for every usage of that field in a
+layout.
+
+
+Miscellaneous
+=============
+
+I noted that :meth:`lino.core.requests.BaseRequest.confirm` does not
+work in a :manage:`run` script.
+
+
+Fixed ticket #219
+=================
+
+Yet another example of synergy: Hamza and I fixed ticket :ticket:`219`
+during an extreme programming session with shared screens. This part
+of Lino is really complex and difficult to understand.
+
+
+About the BankTransactionCode (`<BkTxCd>`)
+==========================================
+
+In :class:`lino_cosi.lib.b2c.models.Movement` I renamed
+`transfer_type` to `txcd`.
+
+The Lino Welfare end users want to see the textual meaning (not the
+numeric code) of this field.
+
+It is documented at page 62 of the `febelfin specs
+<https://www.febelfin.be/sites/default/files/files/Standard-XML-Statement-v1-en_0.pdf>`_
+
+The original camt module just imported the proprietary code, but not
+the issuer.
+
+- Proprietary <Prtry>: Proprietary identification of the bank
+  transaction code, as defined by the issuer.
+
+  - Code <Cd> : Proprietary bank transaction code to identify the
+    underlying transaction. Max 35 characters.
+
+  - Issuer <Issr> : Identification of the issuer of the proprietary
+    bank transaction code.
+
+For a Belgian PCSW the issuer will probably always by "BBA", so for
+the moment I just created a simple new module
+:mod:`lino_cosi.lib.b2c.bba` which contains the descriptions of all
+their possible codes.  It was about two hours of work to copy these
+from the febelfin specs and to convert them to Python code.
+
+And then a new virtual field 
+:attr:`lino_cosi.lib.b2c.models.Movement.txcd_text`.
+
+TODO: the users will want to see them in French and German, but not in
+English.
+

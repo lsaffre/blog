@@ -1,0 +1,85 @@
+===========================
+Saturday, November 21, 2015
+===========================
+
+Sandeep reported a `UnicodeDecodeError` during the Lino test suite::
+
+    $ fab test
+    [localhost] local: python setup.py -q test
+    ............................................................F...........
+    ======================================================================
+    ...
+    File "lino/utils/html2odf.py", line 89, in html2odf
+    Failed example:
+        print toxml(html2odf(u"Ein schöner Text"))
+        #doctest: +NORMALIZE_WHITESPACE
+    Exception raised:
+        Traceback (most recent call last):
+          File "/2.7/lib/python2.7/doctest.py", line 1254, in __run
+            compileflags, 1) in test.globs
+          File "<doctest html2odf[9]>", line 1, in <module>
+            print toxml(html2odf(u"Ein schöner Text"))
+          File "lino/utils/html2odf.py", line 118, in toxml
+            return buf.getvalue()
+          File "/2.7/lib/python2.7/StringIO.py", line 270, in getvalue
+            self.buf += ''.join(self.buflist)
+        UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 7: ordinal not in range(128)
+
+I also had this on :blogref:`20150714`. He was using an old version of
+OdfPy. I updated Lino's :xfile:`setup_info.py` so that `pip`
+automatically does this when installing a new Lino into an old
+environment.
+
+I started a new documentation page :ref:`dev.setup_info`.
+
+About ticket #219
+=================
+
+I believe that the problem is already earlier: the structure returned
+from the POST request is expected to contain the content of the new
+record. This is important because it would be a waste of resources to
+send two requests where one is enough. But this returned content is
+invalid in our case because the workflow buttons have been generated
+incorrectly.
+
+The return value to the POST request is a JSON structure with the
+elements defined in :class:`lino.core.requests.ValidActionResponses`
+(I wrote a bit of documentation there).
+
+The data element `workflow_buttons` contains the html to display in
+the :guilabel:`Workflow` panel of the new record.
+
+Here is the raw text copied from Firebug:
+
+>>> html = """<span><b>New</b> &#8594; <a href="javascript:Lino.tickets.Tickets.wf1(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Sticky">Sticky</a> <a href="javascript:Lino.tickets.Tickets.wf2(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Talk">Talk</a> <a href="javascript:Lino.tickets.Tickets.wf3(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Confirmed">Confirmed</a> <a href="javascript:Lino.tickets.Tickets.wf4(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Sleeping">Sleeping</a> <a href="javascript:Lino.tickets.Tickets.wf5(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Done">Done</a> <a href="javascript:Lino.tickets.Tickets.wf6(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Mark this as Refused">Refused</a> <a href="javascript:Lino.tickets.Tickets.start_session(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Start a session on this ticket.">&#8599;</a> <a href="javascript:Lino.tickets.Tickets.star_object(&quot;ext-comp-1253&quot;,17,{  })" style="text-decoration:none" title="Star this database object.">&#9734;</a></span>"""
+
+>>> from bs4 import BeautifulSoup
+>>> soup = BeautifulSoup(html, 'lxml')
+>>> print(soup)
+<html><body><span><b>New</b> → <a href='javascript:Lino.tickets.Tickets.wf1("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Sticky">Sticky</a> <a href='javascript:Lino.tickets.Tickets.wf2("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Talk">Talk</a> <a href='javascript:Lino.tickets.Tickets.wf3("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Confirmed">Confirmed</a> <a href='javascript:Lino.tickets.Tickets.wf4("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Sleeping">Sleeping</a> <a href='javascript:Lino.tickets.Tickets.wf5("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Done">Done</a> <a href='javascript:Lino.tickets.Tickets.wf6("ext-comp-1253",17,{  })' style="text-decoration:none" title="Mark this as Refused">Refused</a> <a href='javascript:Lino.tickets.Tickets.start_session("ext-comp-1253",17,{  })' style="text-decoration:none" title="Start a session on this ticket.">↗</a> <a href='javascript:Lino.tickets.Tickets.star_object("ext-comp-1253",17,{  })' style="text-decoration:none" title="Star this database object.">☆</a></span></body></html>
+
+>>> for link in soup.find_all('a'):
+...     print(link.get('href'))
+javascript:Lino.tickets.Tickets.wf1("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.wf2("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.wf3("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.wf4("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.wf5("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.wf6("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.start_session("ext-comp-1253",17,{  })
+javascript:Lino.tickets.Tickets.star_object("ext-comp-1253",17,{  })
+
+
+These links seem okay. The example shows that I was **wrong**. The
+problem is **not** there.  I now believe that we must investigate
+these `Lino.tickets.Tickets.wf1()` actions (they are generated in the
+:xfile:`linoweb.js`. Clicking on these links will send a HTTP request,
+but the problem is that they are using POST method instead of GET. We
+must find the code that is being executed and check how it specifies
+the ``method`` parameter of the `Ext.Ajax.request()` method.  The
+`ExtJS documentation
+<http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.Ajax-method-request>`
+says: "The HTTP method to use for the request. Defaults to the
+configured method, or if no method was configured, "GET" if no
+parameters are being sent, and "POST" if parameters are being sent."
+
