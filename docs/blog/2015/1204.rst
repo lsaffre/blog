@@ -157,3 +157,112 @@ U.S. workforce."
 Which seems to indicate that my visions for `Rumma & Ko
 <http://saffre-rumma.net/>`_ with Lino are aiming the right direction.
 
+Released Atelier 0.0.16
+=======================
+
+This was necessary because Lino was `failing
+<https://drone.io/github.com/lsaffre/lino/130>`_ with Atelier 0.0.15
+which still tried to import the importlib coming with Django. See
+:ref:`atelier.changes`.
+
+
+Cannot delete a Place although it is not used
+=============================================
+
+There is another occurence of :ticket:`418` in Eupen. It says:
+
+    IntegrityError (1451, 'Cannot delete or update a parent row: a
+    foreign key constraint fails (`dbname`.`contacts_person`,
+    CONSTRAINT `city_id_refs_id_d349fc28` FOREIGN KEY (`city_id`)
+    REFERENCES `countries_place` (`id`))')
+    
+Last time (:doc:`0824`) I 
+
+The :xfile:`system.log` file shows that Mélanie was tidying up to
+remove duplicates. Before deleting place 1062 she had changed a few
+address rows to point to the other instance. After the error message
+she changed the name of place 1062 to "obsolet". Which is okay for
+them. But why do Lino and MySQL disagree about whether there are still
+other rows referring to place 1062?
+
+I tried to create a new place (1063) and then to merge the place 1062
+into it. Also here Lino does not see "anything related" to that place:
+
+    Sind Sie sicher, dass Sie obsolet nach test fusionieren wollen?
+
+        obsolet wird gelöscht
+
+Here is again their MySQL engine status::
+
+    mysql> show engine 'innodb' status;
+    ...
+    ------------------------
+    LATEST FOREIGN KEY ERROR
+    ------------------------
+    151204  9:56:43 Transaction:
+    TRANSACTION 116B0C9, ACTIVE 0 sec updating or deleting
+    mysql tables in use 1, locked 1
+    15 lock struct(s), heap size 3112, 8 row lock(s), undo log entries 1
+    MySQL thread id 1062531, OS thread handle 0x7f34f0212700, query id 111621549 localhost django updating
+    DELETE FROM `countries_place` WHERE `id` IN (1062)
+    Foreign key constraint fails for table `dbname`.`contacts_person`:
+    ,
+      CONSTRAINT `city_id_refs_id_d349fc28` FOREIGN KEY (`city_id`) REFERENCES `countries_place` (`id`)
+    Trying to delete or update in parent table, in index `PRIMARY` tuple:
+    DATA TUPLE: 11 fields;
+     0: len 4; hex 80000426; asc    &;;
+     1: len 6; hex 00000116b0c9; asc       ;;
+     2: len 7; hex 52000052691801; asc R  Ri  ;;
+     3: len 6; hex 20457570656e; asc  Eupen;;
+     4: len 2; hex 4245; asc BE;;
+     5: len 0; hex ; asc ;;
+     6: len 0; hex ; asc ;;
+     7: SQL NULL;
+     8: len 0; hex ; asc ;;
+     9: len 0; hex ; asc ;;
+     10: len 0; hex ; asc ;;
+
+    But in child table `dbname`.`contacts_person`, in index `contacts_person_b376980e`, there is a record:
+    PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+     0: len 4; hex 80000426; asc    &;;
+     1: len 4; hex 800311ce; asc     ;;
+
+
+I tried the following in a Django shell::
+
+    from lino.api.shell import *
+    for p in contacts.Person.objects.filter(city_id=1062):
+        print p
+    print "Done"
+
+The output is simply "Done". No persons refer to that place.
+
+Okay there other types of database objects that might refer to a city
+(see:ref:`welfare.specs.ddh`), but obviously Lino would not see them,
+otherwise it would have told so before asking to delete the record).
+
+Hm...
+
+.. _faggio:
+
+Renamed "Lino Faggio" to "Lino Voga"
+====================================
+
+When choosing "Faggio" as name I did not know that there are real
+persons living in Italy whose name is Lino Faggio.  I prefer to change
+the name before the product gets more widely known...
+
+- https://help.github.com/articles/renaming-a-repository/
+
+
+  $ git remote set-url origin git@github.com:lsaffre/voga.git
+
+
+Upgrade with surprises
+======================
+
+The online demos were broken for about 1 hour because I had some
+surprises after upgrading. :ticket:`60`had caused a number of bugs
+that had sneaked across our test suite.
+
+And BTW the polls demo is still broken.

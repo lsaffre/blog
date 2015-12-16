@@ -1,0 +1,69 @@
+=========================
+Friday, December 11, 2015
+=========================
+
+Finally a new series of changes for :ticket:`143`.
+
+In :mod:`lino_welfare.modlib.sepa.fixtures.demo` generiere ich jetzt
+erstmals auch monatliche Zahlungsanweisungen mit Beihilfen. Es scheint
+letzten Endes viel einfacher zu sein als ich in den letzten Tagen
+gedacht habe.
+
+Ich versuche, das alles in :ref:`welfare.specs.ledger` so zu zu
+dokumentieren, dass es wenigstens schon mal *für mich* (oder einen
+anderen Programmierer) klar ist.
+
+:class:`VoucherTypes <lino_cosi.lib.ledger.choicelists.VoucherTypes>`
+no longer uses the model name as value but the table name.  This was
+necessary because we have a new voucher type "Payment instructions"
+which is stored using the PaymentOrder model but uses its own table.
+
+:class:`Supervisor` now also is :class:`SepaUser`. Quick release to
+testlino on weleup so they can evaluate :ticket:`505`.  
+
+The release revealed a possible blocking situation: I did not do any
+database migration for the new :class:`VoucherTypes
+<lino_cosi.lib.ledger.choicelists.VoucherTypes>`, and since their
+database now contains "invalid" values on `Journal.voucher_type`,
+their site was broken.
+Even a Django shell could not easily access the journals table.
+
+To have a chance of solving it, I added the new Site attribute
+:attr:`strict_choicelist_values
+<lino.core.site.Site.strict_choicelist_values>` which really makes
+sense only in situations like this one.
+
+Cannot assign AnonymousUser object at : "Comment.user" must be a "User" instance
+================================================================================
+
+:ticket:`665` revealed a bug in the permission API.
+
+The `get_slave_summary` method of
+:class:`lino.modlib.comments.ui.CommentsByRFC` has this code::
+
+    @classmethod
+    def get_slave_summary(self, obj, ar):
+        html = ...
+        sar = self.insert_action.request_from(sar)
+        if ar.renderer.is_interactive and sar.get_permission():
+            btn = sar.ar2button(None, _("Write comment"), icon_name=None)
+            html += "<p>" + E.tostring(btn) + "</p>"
+        return u"""<div class="htmlText">{0}</div>""".format(html)
+
+But that was not what we reely want. Actually we want::
+
+    @classmethod
+    def get_slave_summary(self, obj, ar):
+        html = ...
+        sar = self.insert_action.request_from(sar)
+        if sar.get_permission():
+            btn = sar.ar2button(None, _("Write comment"), icon_name=None)
+            html += "<p>" + E.tostring(btn) + "</p>"
+        return u"""<div class="htmlText">{0}</div>""".format(html)
+
+
+IOW : whether the button to write a comment should be displayed, does
+not depend on the renderer. Even in a non-interactive renderer
+(e.g. doctests) we want to see them. The problem was that the
+expression `sar.get_permission` returned always `True` if no `obj` was
+specified. And InsertRow has now ``readonly = False``.

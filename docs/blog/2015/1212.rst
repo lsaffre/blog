@@ -1,0 +1,39 @@
+===========================
+Saturday, December 12, 2015
+===========================
+
+Ticket :ticket:`143` is advancing at full speed and seems to be
+reaching an end.  We now have collective purchase invoices (SREG and
+REG), :class:`lino_cosi.lib.ledger.ui.MovementsByProject` shows the
+new virtual field :attr:`voucher_partner
+<lino_cosi.lib.ledger.models.Movement.voucher_partner>` on a ledger
+movement.  I worked on :ref:`welfare.specs.ledger`.
+
+TODO:
+
+- AAW aus den REG und SREG generieren.
+
+I discovered and fixed a bug in
+:meth:`lino.mixins.Registrable.get_row_permission`: the method is
+supposed to refuse any non-readonly action on a registered object::
+
+
+    def get_row_permission(self, ar, state, ba):
+        if state and not state.editable:
+            # BEFORE:
+            # if not ar.bound_action.action.readonly:
+            # AFTER:
+            if not ba.action.readonly:  
+                return False
+        return super(Registrable, self).get_row_permission(ar, state, ba)
+
+
+But fixing this bug revealed another, more subtle problem: The
+"Deregister" action also is non-readonly. But we want to permit it on
+registered objects. So we had to add yet another condition in above
+code::
+
+        if state and not state.editable and not isinstance(
+                ba.action, ChangeStateAction):
+
+

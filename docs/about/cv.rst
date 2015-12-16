@@ -45,9 +45,10 @@ Other projects:
   under the BSD instead of LGPL.
 
 - `Lino Welfare <http://welfare.lino-framework.org>`__,
+  `Lino Noi <http://noi.lino-framework.org>`__,
   `Lino Patrols <http://patrols.lino-framework.org>`__,
-  `Lino Faggio <http://faggio.lino-framework.org>`__ and
-  `Lino Cosi <http://cosi.lino-framework.org>`__
+  `Lino Voga <http://voga.lino-framework.org>`__ and
+  `Lino Così <http://cosi.lino-framework.org>`__
   are Lino *applications*, released as free software. 
 
 - TIMtools_ -- A suite of win32 command-line tools for TIM_.
