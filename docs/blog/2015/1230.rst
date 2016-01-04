@@ -1,0 +1,48 @@
+============================
+Wednesday, December 30, 2015
+============================
+
+Final sprint for :ticket:`143`
+==============================
+
+I continued to work on a few remaining "little things to do" which
+Gerd and I observed on :doc:`1223` for for :ticket:`143`:
+
+DONE:
+
+- German translation for "Married" must be "Verheiratet", not
+  "Ehepartner". This was because :mod:`lino.modlib.humanlinks` used
+  the label in a different context. I fixed the clash by changing
+  "Married" to "Married couple" and "Divorced" to "Divorced couple" in 
+  :mod:`lino.modlib.humanlinks`.
+- Lino fragt jetzt eine Bestätigung vor dem Registrieren eines Buchhaltungsbelegs.
+- Entregistrieren ist jetzt nur noch für :class:`LedgerStaff
+  <lino_cosi.lib.ledger.roles.LedgerStaff>` (d.h. den Systemverwalter)
+  erlaubt.
+
+I then deployed these changes to their testlino so that they can test
+it.  The following items will probably wait now until next year
+because tomorrow I will run manual tests.
+
+TODO:
+
+- "Ihr Zeichen" --> "Referenz", "Beschreibung" --> "Interne Beschreibung".
+- Bug: Zeile duplizieren, Betrag ändern, und dann auf move_up klicken.
+  Funktioniert erst beim zweiten Klick.
+- Eingabe Gesamtbetrag schon beim Erstellen? Funktioniert dann die Eingabe?
+- Anweisungen mit HH-Artikel im Header (:ticket:`678`)
+
+- Filterparameter im Fenster Buchungsvorschläge:
+     - Handelsart raus
+     - "Journal" umbenennen nach "Für Journal" und dort raus
+     - neuer Parameter "von Journal" (d.h. nur Buchungen aus einem
+       bestimmten Journal)
+
+- Offene Buchungen Buchhaltung : Saldo fehlt
+
+Adding a confirmation before registering a voucher was not trivial and
+required a subtle framework optimization:
+:meth:`lino.core.requests.Request.confirm` now runs the function
+*directly* (i.e. skips the confirmation and acts as confirmation had
+been given) when running in a non-interactive renderer.
+

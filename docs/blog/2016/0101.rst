@@ -1,0 +1,54 @@
+=======================
+Friday, January 1, 2016
+=======================
+
+I merged `PR16 <https://github.com/lsaffre/lino_extjs6/pull/16>`_ with
+Hamza's work on :ticket:`37` into :mod:`lino_extjs6`.
+
+I worked on :ticket:`643`, trying to document the general process in a
+separate document :ref:`team.deploy`.  The following are the specific
+notes for this time.
+
+About comparing the :xfile:`settings.py` files:
+
+- The following option must be added::
+
+          'OPTIONS': {
+             "init_command": "SET storage_engine=MyISAM",
+          }
+
+  And then I had to move the following from test to prod::
+
+    configure_plugin('b2c',
+      delete_imported_xml_files=True,
+      import_statements_path="/mnt/oeshz_home_server/ANWPROG/Lino/sepa_incoming")
+
+
+- Switch the project directories to their new environments.
+  For historical reasons the environment names in this case are
+  `testlino`, `a`, `b`.
+
+  Before::
+
+        prod/env -> /home/luc/pythonenvs/testlino
+        testlino/env -> /home/luc/pythonenvs/a
+
+  After::
+
+        prod/env -> /home/luc/pythonenvs/a
+        testlino/env -> /home/luc/pythonenvs/b
+
+
+- Restore production data from snapshot (nothing special). 
+
+- Tests:
+
+  - Lounch :menuselection:`Accounting --> Import SEPA statements`. Seems okay:
+
+        4615 XML files with 1410 new and 4800 updated statements have
+        been imported.
+
+
+- Moved :file:`import_sepa.py` and :file:`import_sepa.sh` from testing
+  to prod. Adapted the cron job.
+

@@ -1,0 +1,86 @@
+=========================
+Monday, December 28, 2015
+=========================
+
+Here is a list of the "little things to do" which Gerd and I observed
+on :doc:`1223` for for :ticket:`143`:
+
+TODO:
+
+- "Ihr Zeichen" -> "Referenz", "Beschreibung" --> "Interne Beschreibung".
+- Bug: Zeile duplizieren, Betrag ändern, und dann auf move_up klicken.
+  Funktioniert erst beim zweiten Klick.
+- Eingabe Gesamtbetrag schon beim Erstellen? Funktioniert dann die Eingabe?
+- Anweisungen mit HH-Artikel im Header (:ticket:`678`)
+
+- Filterparameter im Fenster Buchungsvorschläge:
+     - Handelsart raus
+     - "Journal" umbenennen nach "Für Journal" und dort raus
+     - neuer Parameter "von Journal" (d.h. nur Buchungen aus einem
+       bestimmten Journal)
+
+- Offene Buchungen Buchhaltung : der Saldo fehlt
+- Entregistrieren : nur für LedgerStaff
+- Bestätigung vor dem Registrieren
+
+DONE:
+
+- Account in zwei eigene Tabellen. AccountChart kann dann weg.
+  :ticket:`677`. 
+- Auch *Journal* REG umbenennen von Einkaufsrechnungen nach
+  Rechnungseingang.
+
+- Bankkontonummer formatiert darstellen (Note that I use a dummy
+  `localflavor.generic.forms.IBANFormField
+  <https://django-localflavor.readthedocs.org/en/latest/generic/>`_
+  for this). The general system of writing custom widgets for Lino
+  would be worth more analysis and documentation.
+
+- Zahlungsziel : Defaultwert lt. Zahlart (die pro Partner konfiguriert ist)
+
+- "Datum" -> "Belegsdatum" bzw "Rechnungsdatum"
+- Buchungsdatum?
+- beide Felder Voucher.narration und Voucher.your_ref im ersten Tab.
+- default_match : 4REG --> REG4
+
+- Gesamtbetrag : sollte nicht manuell änderbar sein.
+- Tabellenansicht REG :
+
+  - Buchungsdatum fehlt
+
+  - nicht sortiert nach number, sondern nach id (die "number" wird
+    erst später wichtig)
+
+- insert AAW : Autor nicht auswählen
+
+- AAW registrieren : Gegenbuchung muss ebenfalls pro Partner sein.
+- Registrierte AAW: in Buchungen fehlt der Klient
+
+- Die monatlichen Buchungen in den Haushaltsartikel 832/330/01
+  (Beihilfen) standen als offen da. Auf dem Klienten sah man jede
+  Beihilfe also zweimal. Neue Regeln:
+
+  - Buchungen in ein Konto, dessen `clearable` False ist, kriegen
+    schon beim Registrieren des Belegs `satisfied=True` und einen
+    leeren `match`.
+
+  - Buchungen ohne Match werden ignoriert beim
+    Befriedigungsalgorithmus: kommen als Basis für Buchungsvorschläge
+    (:func:`get_due_movements`) gar nicht erst in Frage und werden
+    auch in :func:`check_clearings` nicht überprüft.
+
+  - Buchungen eines Finanzbelegs, die in ein lettrierendes Konto gehen
+    und keinen expliziten Match haben, kriegen einen Mtch generiert in
+    der Form ``JNL#1234:56``
+
+- Pro Zeile Zahlungsanweisung muss Bankkonto sichtbar sein
+- Fenster Buchungsvorschläge ist zu klein (muss breiter sein)
+- Der Match einer Buchung sollte anklickbar sein und dann alle
+  Buchungen pro Match anzeigen
+
+Some items remain TODO and the test suites are not yet adapted, but I
+checked in both :ref:`cosi` and :ref:`welfare` and deployed them to
+the testlino in Eupen so Gerd can inspect them.
+
+
+

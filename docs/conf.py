@@ -311,7 +311,7 @@ if False:
 
 
 html_sidebars = {
-   '**': ['globaltoc.html', 'searchbox.html', 'links.html'],
+    '**': ['globaltoc.html', 'searchbox.html', 'links.html'],
 }
 
 # html_theme = "classic"

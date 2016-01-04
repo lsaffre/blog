@@ -1,0 +1,40 @@
+============================
+Wednesday, December 23, 2015
+============================
+
+Ticket :ticket:`676` was an example of the following subtlety: A
+:class:`lino.core.boundaction.BoundAction` has two methods
+:meth:`get_bound_action_permission
+<lino.core.boundaction.BoundAction.get_bound_action_permission>` and
+:meth:`get_row_permission
+<lino.core.boundaction.BoundAction.get_row_permission>`.  The
+difference is that the former will bypass any custom permission
+handler defined on the model.  TODO: analyze what's missing there: is
+it just lacking documentation?  Or an API design flaw?
+
+
+New feedback for :ticket:`143`
+==============================
+
+I had a 90 minutes voice session with Gerd about :ticket:`143`.  Lots
+of "little" things to do.  See :doc:`1228`.  I will work on them
+occasionnaly during the Christmas days.  For most of them I don't
+create a new ticket because this is rapid prototyping where too much
+administrative tasks would disturb.
+
+Specifying windows with relative width
+======================================
+
+I added a new feature (:ticket:`680`); applications can now specify
+the width of a window in percent.  I adapted the docstring of
+:attr:`window_size <lino.core.actors.Actor.window_size>`
+accordingly. The first usage for this feature is
+:class:`lino_cosi.lib.finan.models.SuggestionsByVoucher` which
+requests a width of "90%".  This table should be in a window "as large
+as possible but not full-screen".
+
+Hamza, you will have to port this to extjs6.  See changes in
+:xfile:`linoweb.js` and :mod:`lino.modlib.extjs.ext_renderer` (in
+commit `705839c0
+<https://github.com/lsaffre/lino/commit/9b08c347d9e3f9fb68897672b38a99fb705839c0>`_).
+

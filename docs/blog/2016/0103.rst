@@ -1,0 +1,19 @@
+=======================
+Sunday, January 3, 2016
+=======================
+
+One little surprise after the release. The following code caused a
+:message:`TypeError: 'unicode' object is not callable`::
+
+    @dd.displayfield(_('Printed'))
+    def printed(self, obj, ar):
+        return obj.printed(ar)
+
+
+I added a section to :ref:`welfare.specs.aids` which reproduces the
+problem, then fixed it. Also checked in and puiled to weleup.
+
+Note that this table :class:`ConfirmationsByGranting
+<lino_welfare.modlib.aids.models.ConfirmationsByGranting>` is quite
+hackerish and not very elegant. But I don't see any easier solution
+for this situation. One day I should explain this to Hamza.

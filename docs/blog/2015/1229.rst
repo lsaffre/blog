@@ -1,0 +1,100 @@
+==========================
+Tuesday, December 29, 2015
+==========================
+
+Although Lino Noi was of important help for planning the following
+list of changes, we will continue to write customized release notes
+for end-users as long as Lino applications are individually taylored
+for every customer. That's why I wrote the following section.
+
+
+Release-Notizen
+===============
+
+Hier eine manuell auf Lesbarkeit optimierte Liste der Änderungen im
+für das am 03.01.2016 in Eupen geplante Release:
+
+**Importierte Kontoauszüge** sind jetzt in Lino sichtbar (:ticket:`505`)
+
+Im Feld **Zivilstand** haben wir die Auswahlliste überdacht und
+vereinfacht.  Bitte vor dem Release einige Stichproben machen und
+prüfen, ob der Zivilstand korrekt übernommen wurde.
+Konvertierungsregeln sind dokumentiert utner :class:`CivilState
+<lino_welfare.modlib.pcsw.choicelists.CivilState>`.  (:ticket:`536`)
+
+**Die ENTER-Taste speichert jetzt nicht mehr** An verschiedenen
+Stellen bewirkte :kbd:`ENTER` ein Speichern des Bildschirmes. Diese
+Sonderfunktion der Taste :kbd:`ENTER` widersprach dem allgemeinen
+Trend für Benutzerschnittstellen.  Das tut es jetzt nicht
+mehr. Stattdessen sollte man sich angewöhnen, :kbd:`Ctrl+S` zu
+benutzen wenn man Speichern will.  (:ticket:`557`)
+
+Im **Reiter "Arbeitssuche"** hattet ihr bisher zwei Felder: **Arbeit
+suchend** (is_seeking), und **eingetragen seit** (unemployed_since).
+Das erstere ist jetzt keine Checkbox mehr, sondern ein Datum (und heisst
+"Sucht Arbeit seit", intern :attr:`seeking_since
+<lino_welfare.modlib.pcsw.models.Client.seeking_since>`). Das zweite
+(:attr:`unemployed_since
+<lino_welfare.modlib.pcsw.models.Client.unemployed_since>`) habe ich
+von "eingetragen seit" nach "Arbeitslos seit" umbenannt.
+
+Daten wurden wie folgt migriert: wer *Arbeit suchend* angekreuzt
+hatte, hat jetzt im Feld *Sucht Arbeit seit* ein Datum stehen, und
+zwar (1) entweder das Datum aus *Arbeitslos seit* oder (2) das
+Tagesdatum der Migration (voraussichtlich 03.01.2016).
+(:ticket:`615`)
+
+
+**Bescheinigungen AMK in Französisch** kam mit deutschen Fragmenten
+raus.  :ticket:`669`
+
+**Ausdruck Tx25** funktionierte nicht in zwei Fällen: :ticket:`639` (No handler
+for PostalAddressAbroad (PostalAddressAbroad)) und :ticket:`595` (Tx25 : No
+handler for BurialModes)
+
+Man kann jetzt **Dateien mit Endung .docx und .xlsx hochladen.**
+:ticket:`577`
+
+**Neue Regel beim Erstellen von automatischen Terminen** für
+Auswertungen eines Vertrags: solange der ursprüngliche Autor des
+Vertrags ein Begleiter des Klienten ist, werden Termine immer mit ihm
+gemacht. Das ist wichtig wenn ein Klient mehrere Begleiter im gleichen
+Dienst hat.  (:ticket:`571`)
+
+**Neue Beziehungsart "Pflegemutter / Pflegevater"** in der Liste
+der familiären Beziehungen (:ticket:`586`)
+
+**Neues Icon für das Öffnen einer hochgeladenen Datei**
+(:ticket:`607`)
+
+:menuselection:`Explorer --> DSBE --> Art60§7-Konventionen` hat
+jetzt par défaut ein sinnvolleres Kolonnenlayout.
+(:ticket:`579`)
+
+.. 
+    **Cannot delete some instances of model 'Person'** because they are
+    referenced through a protected foreign key: 'Client.person_ptr')
+    Occurs when you try to delete a person which is also a client (and
+    there are no vetos).
+    (:ticket:`503`) 
+
+    
+Die **Tabellen im Reiter "Lebenslauf" haben jetzt Filterparameter**.
+Also z.B. in :menuselection:`Explorer --> Lebenslauf -->
+Berufserfahrungen` kann man sich jetzt alle Klienten ansehen, die an
+einem bestimmten Datum irgendwo am arbeiten waren. Idem für Studien
+und Ausbildungen.  (:ticket:`261`)
+
+**Zwei neue Subsidierungsarten für Art-61-Konventionen** Zu
+"Activa", "Tutorat" und "Région Wallonne" kommen hinzu SINE und PTP.
+(:ticket:`606`)
+
+Lino läuft jetzt unter **Django 1.9 statt bisher unter Django
+1.6**. Davon merkt ihr nichts, aber aber strategisch war das wichtig.
+(:ticket:`38`, :ticket:`650`)
+ 
+**Ein erster Prototyp für die Nebenbuchhaltung Sozialhilfeausgaben**
+ist jetzt aktiviert und kann in der Testphase nur durch den Einnehmer
+gesehen werden. (:ticket:`143`)
+
+

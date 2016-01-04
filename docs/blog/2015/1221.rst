@@ -1,0 +1,99 @@
+=========================
+Monday, December 21, 2015
+=========================
+
+Continued on :ticket:`143`.
+
+Release to testlino in Eupen
+============================
+
+I deployed the newest version to testlino in Eupen because I plan a
+next analysis session for the welfare ledger module
+(:ref:`welfare.specs.ledger`) which is almost ready now.
+
+I added a line to the Welfare migrator so that ignores old journal
+definitions and installs the default list of demo journals defined in
+:mod:`lino_welfare.modlib.ledger.fixtures.std_journals`.
+
+This also caused the following optimization.
+
+type object 'AccountChart' has no attribute 'DoesNotExist'
+==========================================================
+
+This traceback occurred in :class:`GroupsByChart
+<lino_cosi.lib.accounts.models.GroupsByChart>` whose
+`lino.core.actors.Actor.master` is not a `Model` but a `ChoiceList`.
+In that case the actor must define a
+:meth:`lino.core.actors.Actor.get_master_instance` method. I tried to
+avoid this requirement because I thought that Lino might be smart
+enough to handle also :class:`ChoiceListField
+<lino.core.choicelists.ChoiceListField>` masters automatically. But
+that turned out to not be really trivial (because the `master`, in
+that case, can simply be a `Choice` class object which is not linked
+to any concrete ChoiceList)
+
+
+Kleinvieh macht auch Mist
+=========================
+
+I simulated, in testlino, a session with WB (i.e. imagined that we
+would have a look at the new features and record some real documents)
+and discovered some more little things to do.  For example when
+registering an REG there were two fields labelled "Konto", one for the
+provider's bank account and the other for the cost account (budgetary
+article) to use.
+
+Changes done:    
+    
+- Changed `verbose_name` of `bank_account` field (i.e. of the
+  :class:`sepa.Account <lino_cosi.lib.sepa.models.Account>` model)
+  from "Account" to "Bank account"
+
+- Addded buttons to the items of an invoice: mainly for duplicating,
+  but also for moving them up & down.
+  :class:`lino_cosi.lib.vatless.ui.ItemsByInvoice` and
+  vatless.ItemsByProjectInvoice now have a :attr:`move_buttons
+  <lino.mixins.sequenced.Sequenced.move_buttons>` column.
+
+- The :attr:`move_buttons <lino.mixins.sequenced.Sequenced.move_buttons>` field now
+  includes the `duplicate` action.
+
+- New symbols for actions duplicate, move_up and move_down.
+
+- About the designation of an :class:`accounts.Account
+  <lino_cosi.lib.accounts.models.Account>`.  TIM users are used to
+  have this field labelled "Haushaltsartikel" (and not "Konto").  The
+  official name is `Articles budgétaires
+  <http://www.pouvoirslocaux.irisnet.be/fr/theme/finances/docfin/la-structure-dun-article-budgetaire>`_. And
+  as far as I can see these budgetary articles are in social sector
+  accounting exactly what general accounts are in private sector
+  accounting.  So shouldn't we change, in Lino Welfare, their
+  `verbose_name` from "Account" to "Article"?
+
+  I guess that debt mediation would not agree with this new
+  designation.  Can we introduce two new fields `verbose_name` and
+  `verbose_name_plural` per `AccountChart` object?  That would be the
+  first time that a model has a kind of "dynamic" designation. I think
+  that this wouldn't be a good idea.  So I think that the best
+  solution is to use :func:`field_update` in
+  :mod:`lino_welfare.modlib.welfare`.
+
+  Actually the mere fact that I have to *ask* this question is
+  suspect.  Debt mediation (:mod:`lino_welfare.modlib.debts`) has
+  rather *nothing* to do with social accounting
+  (:mod:`lino_welfare.modlib.ledger`). So maybe it is a design mistake
+  to try using :mod:`lino_cosi.lib.accounts` for them both.  To be
+  observed.
+
+- Fixed some missing German translations:
+
+    - Journal group(s)
+    - Printed document designation
+    - Force chronological sequence
+    - Check clearing
+
+TODO: 
+    
+- The `move_buttons` are active even on registered
+  vouchers. That's not what we want (:ticket:`676`).
+    

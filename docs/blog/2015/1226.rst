@@ -1,0 +1,34 @@
+===========================
+Saturday, December 26, 2015
+===========================
+
+Clickable match fields
+======================
+
+Users can now click at the match string of a movement. Clicking it
+will open a table with all movements having that match.
+
+To implement this, I added a new virtual field
+:attr:`lino_cosi.lib.ledger.model.Movement.match_link` which uses the
+new table :class:`lino_cosi.lib.ledger.ui.MovementsByMatch`.
+
+This table was the first example of a slave table whose master is a
+simple string.  This usage was not yet supported and required some
+minor changes to the framework (ticket:`681`).
+
+Hamza, note that this change includes another little code change in
+:mod:`lino.modlib.extjs.ext_renderer` which you should port to the
+extjs6 renderer::
+
+    --- a/lino/modlib/extjs/ext_renderer.py
+    +++ b/lino/modlib/extjs/ext_renderer.py
+    @@ -181,7 +181,7 @@ class ExtRenderer(HtmlRenderer):
+                     apv = ba.action.action_param_defaults(ar, obj)
+                 ps = ba.action.params_layout.params_store
+                 kw.update(field_values=ps.pv2dict(apv))
+    -        if obj is not None:
+    +        if isinstance(obj, models.Model):
+                 kw.update(record_id=obj.pk)
+
+             return kw
+
