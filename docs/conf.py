@@ -60,7 +60,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = 'Lucs Website'
-copyright = '2001-2015 Luc Saffre'
+copyright = '2001-2016 Luc Saffre'
 
 
 # The version info for the project you're documenting, acts as replacement for
