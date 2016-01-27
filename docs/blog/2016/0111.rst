@@ -1,0 +1,59 @@
+========================
+Monday, January 11, 2016
+========================
+
+The Eiche project (:ticket:`701`) is waking up after a year or so.  I
+took it out of the attic and first I had to remove a thick layer of
+dust: some fixtures were at places where Lino no longer finds them.
+New package :mod:`lino_voga.lib.voga` groups things that were hanging
+around below :mod:`lino_voga` and :mod:`lino_voga.projects.roger`.
+
+I started to code for :ticket:`584` (Statistiques FSE).  Le "Niveau
+diplôme" d'un "Dossier FSE" doit permettre les valeurs suivantes: Sans
+diplôme - CEB - CE1D - CESI - CESS-CQ6-CE6P-7P - Bachelier-graduat -
+Master-licence - Enseignement secondaire complémentaire - Non reconnu
+– inconnu.  Est-ce qu'il y a un rapport avec
+:class:`lino.modlib.cv.models.EducationLevel`
+
+
+Gerd reported a subtle problem :ticket:`710`. The generated HTML for
+the `overview` virtual field of a pcsw.Client was a bit *too* much of
+a patchwork of ``<div>``, ``<p>`` and ``<br>``. The HTML was something
+like this::
+
+    <div>
+    <div style="font-size:18px;font-weigth:bold;vertical-align:bottom;text-align:middle">
+    <p style="font-size:8px;text-align:right;padding:3pt;">Ansicht als 
+    <a href="...">Partner</a>, 
+    <a href="...">Person</a>, 
+    <b>Klient</b></p>
+    Herr <br />
+    Laurent <b>Bastiaensen</b><br />Am Berg<br />4700 Eupen
+    </div>
+
+    <p><a href="..." style="text-decoration:none">Adressen verwalten</a></p>
+
+    <br />
+
+    <div class="lino-info-red">
+    <a href="..." style="text-decoration:none">Muss eID-Karte einlesen!</a>
+    </div>
+
+    <br /><b class="lino-info-red">
+    <a href="">Important one</a></b>
+    <br />
+    <b class="lino-info-red">
+    <a href="...">Important two</a></b>
+    </div>
+
+And the browser did not render it correctly when there was more
+than one `important` note.
+
+I committed my work although the Welfare test suite is currently
+broken (trivial failures due to :ticket:`584`, but I prefer to
+continue on the ticket before adapting the test suite).
+
+I merged Hamza's work on :ticket:`700` into master of :ref:`cosi`. I
+am not sure whether we understood the question correctly. The ticket
+is set to Talk so that I will talk with Mathieu and Aurélie about it,
+probably next Monday.

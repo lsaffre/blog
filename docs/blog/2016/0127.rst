@@ -1,0 +1,45 @@
+===========================
+Wednesday, January 27, 2016
+===========================
+
+A (hopefully) last thing for :ticket:`745`: One test in
+:ref:`lino.specs.holidays` passed only yesterday because it mentioned
+the upper date limit
+which depends on the current system date at server startup.
+
+To fix this, the default value of :attr:`ignore_dates_after
+<lino.modlib.cal.Plugin.ignore_dates_after>` is no longer
+"approcimately 5 years after server startup" but "(exactly) 5 years
+after :meth:`today <lino.core.site.Site.today>`.
+
+While I was there, I moved the configuration settings
+:attr:`ignore_dates_before
+<lino.modlib.cal.Plugin.ignore_dates_before>` and
+:attr:`ignore_dates_after <lino.modlib.cal.Plugin.ignore_dates_after>`
+from :class:`lino.core.site.Site` to :class:`lino.modlib.cal.Plugin`.
+Because this setting is rather specific and therefore should be in the
+:mod:`lino.modlib.cal` plugin.
+
+In :mod:`lino.core.auth` I changed a subtle rule: when no "user
+language" is set, or for anonymous requests, it no longer forces the
+site's default language but relies on the language set by Django's
+`django.middleware.locale.LocaleMiddleware`.
+
+And then -- instead of working on :ticket:`584` -- I invested some
+more time into :ticket:`632` and started to write a function
+:func:`lino.api.doctest.screenshot`. I also optimized the
+:mod:`lino.api.selenium` API (runserver now automatically starts and
+stops the firefox driver).
+
+I received ticket :ticket:`751`.  Tried to reproduce it (in
+:mod:`lino.utils.xmlgen.html` and :mod:`lino.utils.html2odf`) without
+success. The problem is in :mod:`lino.modlib.appypod` which raises an
+exception because it sees an unknown type name.
+
+
+A little optimization to the :cmd:`pp` command
+(:file:`atelier/scripts/per_project`). When I invoke e.g. ``pp fab
+initdb test bd`` in order to run a complete test suite, and if some
+failure occurs, then it can be difficult to guess in which project it
+occured.
+

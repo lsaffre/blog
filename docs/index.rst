@@ -21,7 +21,6 @@ Sitemap
    :hidden:
 
    topics/index
-   howto/index
    tickets/index
    glossary
    ref/index

@@ -1,0 +1,98 @@
+==========================
+Thursday, January 21, 2016
+==========================
+
+Yesterday (while assisting an information event for :ticket:`734`) I
+fixed :ticket:`700`.
+
+I merged Hamza's work on :mod:`atelier` (Add coverage, Py3 support).
+
+There was a line "from builtings import str" in the
+:xfile:`setup_info.py` file which caused it to `break on TravisCI
+<https://travis-ci.org/lsaffre/atelier/builds/103758211>`_.  I removed
+that line and the usage of `str` (which was not necessary there).
+
+I also added the :xfile:`.coverage` file (which contains local
+coverage results) to :xfile:`.gitignore`.
+
+There are some problems with :cmd:`fab bd` caused by the
+changes. These are not covered by the test suite. Needs more
+investigation. For example when trying to build the docs for atelier::
+
+    Traceback (most recent call last):ier.sphinxconf.insert_input                                                                                                             
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 134, in run
+        output = self.get_rst()
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 207, in get_rst
+        return self.output_from_exec(code)
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 223, in output_from_exec
+        raise Exception("%s in code:\n%s" % (err, code))
+    Exception: unicode argument expected, got 'str' in code:
+    self.shell_block(["echo", "Hello", "world!"])
+
+
+Or when trying to build my blog::
+
+    Traceback (most recent call last):
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/cmdline.py", line 244, in main
+        opts.warningiserror, opts.tags, opts.verbosity, opts.jobs)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 143, in __init__
+        self.setup_extension(extension)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 440, in setup_extension
+        ext_meta = mod.setup(self)
+      File "/work/atelier/atelier/sphinxconf/base.py", line 330, in setup
+        indextemplate='pair: %s; management command')
+      File "/work/atelier/atelier/sphinxconf/base.py", line 326, in add
+        app.add_object_type(**skw)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 649, in add_object_type
+        'doc_field_types': doc_field_types})
+    TypeError: type() argument 1 must be string, not newstr
+
+Or another when trying to build my blog::
+
+    Traceback (most recent call last):
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/cmdline.py", line 244, in main
+        opts.warningiserror, opts.tags, opts.verbosity, opts.jobs)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 188, in __init__
+        self._init_builder(buildername)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 249, in _init_builder
+        self.builder = builderclass(self)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 88, in __init__
+        self.init()
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/builders/html.py", line 106, in init
+        self.init_templates()
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/builders/html.py", line 143, in init_templates
+        self.create_template_bridge()
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 101, in create_template_bridge
+        self.config.template_bridge, 'template_bridge setting')()
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/application.py", line 461, in import_object
+        return import_object(objname, source=None)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/sphinx/util/__init__.py", line 517, in import_object
+        return getattr(__import__(module, None, None, [name]), name)
+    TypeError: Item in ``from list'' not a string
+
+I "fixed" them by removing the "from builtings import str" line in
+some more files. Not yet sure how to solve this.
+
+
+Atelier `invoke` commands don't read the user config file
+=========================================================
+
+I noticed that there is still a problem with the migration from
+`fabric` to `invoke`. Our current system does not install the
+miscellaneous `configuration files
+<http://docs.pyinvoke.org/en/0.12.0/concepts/configuration.html>`_,
+especially the user's :file:`~/.invoke.py` which corresponds to the
+:xfile:`.fabricrc` file of Fabric.
+
+So e.g. when I run :cmd:`invoke blog` then I get::
+
+  atelier.tasks.MissingConfig: Must set `env.editor_command` in `tasks.py`!
+
+And I don't want to set `editor_command` in the :xfile:`tasks.py` file
+of every project, I want to define the default editor only once in my
+:file:`~/.invoke.py`.
+
+The problem is probably because in :mod:`atelier.tasks` I am cheating:
+I create a variable `env` which is an :class:`AttrDict`.  I think that
+we need to convert this to a `namespace
+<http://docs.pyinvoke.org/en/0.12.0/concepts/namespaces.html>`_.

@@ -1,0 +1,23 @@
+========================
+Friday, January 22, 2016
+========================
+
+I did an upgrade on demo@lf
+
+
+I removed :mod:`lino_cosi.lib.declarations` from the installed apps of
+:ref:`cosi`.  This is a first step for :ticket:`711`, knowing that I
+will reimplement VAT declarations when :ticket:`736` is done.
+
+I started the new plugin :mod:`lino.modlib.summaries`. It is a plugin
+because it adds at least one menu command "Update all summary tables".
+I would like to have this general functionality defined there. Note
+that we can have more than one Summary models in an single application
+(e.g. fse.Dossier and vat.Declaration). 
+
+One question is how to define and handle the periods.  This is general
+business logic, but needs to be customizable at least by the
+application developer.  Every concrete model which inherits from
+`Summary` needs a class attribute for selecting "monthly", "yearly" or
+even some other user-defined periodic system.
+

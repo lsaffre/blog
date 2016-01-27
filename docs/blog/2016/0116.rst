@@ -1,0 +1,59 @@
+==========================
+Saturday, January 16, 2016
+==========================
+
+EU Catalogue of ICT standards
+=============================
+
+Yesterday I missed a JoinUp webinar by Benoit Abeloos about their work
+on a European catalogue if ICT standards.  But I read the
+`https://joinup.ec.europa.eu/sites/default/files/ckeditor_files/files/2016Jan15%20EU%20Catalogue%20PwC%20webinar_Benoit_Abeloos.pdf
+<slides>`__ afterwards.
+
+- "Member States have created national catalogues of ICT standards and
+  interoperability specifications to guide public procurers and
+  accelerate standards adoption on national markets. Integrating these
+  catalogues into European catalogues would avoid market fragmentation
+  at EU level."
+
+- The `CAMSS <https://joinup.ec.europa.eu/community/camss/home>`_
+  project (Common Assessment Method for Standards and Specifications
+  for eGovernment solutions) has produced a `List of standards
+  <https://joinup.ec.europa.eu/community/camss/og_page/list-standards>`_
+  which lists 415 standards which are mandatory or recommended in at
+  least one of 13 Member States.
+
+I joined the CAMSS community (but plan to be a passive member).
+
+
+Printing sales invoices
+=======================
+
+Hamza pointed out correctly that for :ticket:`692` we should not use
+`wkhtmltopdf <https://pypi.python.org/pypi/wkhtmltopdf/0.1>`__ but
+`django-wkhtmltopdf <https://github.com/incuna/django-wkhtmltopdf>`__.
+
+How to integrate this into Lino?  The basic answer is to write a new
+plugin :mod:`lino.modlib.wkhtmltopdf` which defines a
+:class:`BuildMethod <lino.modlib.printing.choicelists.BuildMethod>`.
+
+One special thing is that this build method potentially needs *three*
+templates (body, header and footer) which will be rendered separately
+into temporary files.
+
+A thing to note is that Lino's build methods are based on the fact
+that every combination of `(database object, build method)` has at
+most *one* printable file to be generated in the cache directory which
+we call the "target". Actually Lino is doing its own caching system
+there. This "pseudo caching" is not only for CachedPrintable but also
+for DirectPrintable.  DirectPrintable just rebuilds that file for each
+request, while CachedPrintable adds a DateTimeField in the database to
+keep track of the fact that this object has been printed. One reason
+for this is that "certified" documents should not get generated again
+and again for every request which wants to see the printed document.
+
+
+:class:`lino.core.site.Site` now creates the new `TEMPLATES setting
+<https://docs.djangoproject.com/en/1.9/ref/templates/upgrading/#the-templates-settings>`_
+
+https://docs.djangoproject.com/en/1.9/topics/templates

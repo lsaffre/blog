@@ -1,0 +1,215 @@
+========================
+Monday, January 25, 2016
+========================
+
+Ticket :ticket:`741`: today Gerd and I decided to make a minor release
+in Eupen, actually only for :ticket:`730`. As a preparative step I
+wanted to have the test suites pass, including build of the Sphinx
+document trees.  This turned out to be quite some pain, mostly caused
+by ticket :ticket:`36`.
+
+
+The futurize script and the damage done
+=======================================
+
+While building the Welfare docs
+(:file:`/welfare/docs_de/aids.rst:174:`) there was a problem.  The
+Sphinx build says::
+
+    Exception: unicode argument expected, got 'str' in code:
+    from django.utils import translation
+    from lino.utils.xmlgen.html import E
+    ses = rt.login('alicia')
+    translation.activate('de')
+    for msg in settings.SITE.get_welcome_messages(ses):
+        print(E.tostring(msg))
+
+I tried to reproduce this problem here in the blog (and testing it
+with ``python -m doctest docs/blog/2016/0125.rst)``.
+
+First attempt:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.demo')
+>>> from django.conf import settings
+>>> from django.utils import translation
+>>> from lino.api import rt
+>>> from lino.utils.xmlgen.html import E
+>>> ses = rt.login('alicia')
+>>> translation.activate('de')
+>>> for msg in settings.SITE.get_welcome_messages(ses):
+...     print(E.tostring(msg))
+<span>Du bist besch&#228;ftigt in <em>Consultation mit COLLARD Charlotte (118)</em> (<b>Versammlung beenden</b>). </span>
+<span>Du hast 2 Eintr&#228;ge in <b>Zu best&#228;tigende Hilfebeschl&#252;sse</b>.</span>
+<b>Du hast 3 offene Datenkontrollen.</b>
+
+But that code passes. The problem is not easily reproducible. Next
+attempt:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.demo')
+>>> from django.conf import settings
+>>> from lino.api import rt
+>>> context = dict()
+>>> context.update(globals())
+>>> code = """\
+... from django.utils import translation
+... from lino.utils.xmlgen.html import E
+... ses = rt.login('alicia')
+... translation.activate('de')
+... for msg in settings.SITE.get_welcome_messages(ses):
+...     print(E.tostring(msg))
+... """
+>>> exec(code, context)
+<span>Du bist besch&#228;ftigt in <em>Consultation mit COLLARD Charlotte (118)</em> (<b>Versammlung beenden</b>). </span>
+<span>Du hast 2 Eintr&#228;ge in <b>Zu best&#228;tigende Hilfebeschl&#252;sse</b>.</span>
+<b>Du hast 3 offene Datenkontrollen.</b>
+
+That code also passes. And here comes a third (passing) snippet.  I
+don't remember having wanted a test to *fail* as much as today.
+
+>>> from builtins import str
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.demo')
+>>> from django.conf import settings
+>>> from lino.api import rt
+>>> context = dict()
+>>> context.update(settings=settings)
+>>> context.update(rt=rt)
+>>> code = """\
+... from django.utils import translation
+... from lino.utils.xmlgen.html import E
+... with translation.override('en'):
+...     ses = rt.login('alicia')
+...     translation.activate('de')
+...     for msg in settings.SITE.get_welcome_messages(ses):
+...         print(E.tostring(msg))
+... """
+>>> code = str(code)
+>>> exec(code, context)
+<span>Du bist besch&#228;ftigt in <em>Consultation mit COLLARD Charlotte (118)</em> (<b>Versammlung beenden</b>). </span>
+<span>Du hast 2 Eintr&#228;ge in <b>Zu best&#228;tigende Hilfebeschl&#252;sse</b>.</span>
+<b>Du hast 3 offene Datenkontrollen.</b>
+
+But here it is finally::
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.demo')
+>>> from django.conf import settings
+>>> from lino.api import rt
+>>> context = dict()
+>>> context.update(settings=settings)
+>>> context.update(rt=rt)
+>>> code = """\
+... from django.utils import translation
+... from lino.utils.xmlgen.html import E
+... with translation.override('en'):
+...     ses = rt.login('alicia')
+...     translation.activate('de')
+...     for msg in settings.SITE.get_welcome_messages(ses):
+...         ln = E.tostring(msg)
+...         print(ln)  # this is line 8 of the string
+... """
+>>> import sys
+>>> from io import StringIO
+>>> old = sys.stdout
+>>> buffer = StringIO()
+>>> sys.stdout = buffer
+>>> exec(code, context)
+>>> sys.stdout = old
+
+Testing above snippet reports a failure::
+
+    Failed example:
+        exec(code, context)
+    Exception raised:
+        Traceback (most recent call last):
+          File "/usr/lib/python2.7/doctest.py", line 1316, in __run
+            compileflags, 1) in test.globs
+          File "<doctest 0125.rst[41]>", line 1, in <module>
+            exec(code, context)
+          File "<string>", line 8, in <module>
+        TypeError: unicode argument expected, got 'str'
+
+But what does it mean? 
+
+Above code comes from :class:`Py2rstDirective
+<atelier.utils.sphinxconf.insert_input.Py2rstDirective>` which uses
+`StringIO
+<https://docs.python.org/2.7/library/stringio.html#module-StringIO>`_
+class.
+
+I can simplify above snippet and reproduce the error by running the
+following script directly:
+
+.. literalinclude::  0125a.py
+
+The explanation is that we cannot simply convert::
+
+  from StringIO import StringIO
+
+into::
+
+  from io import StringIO
+
+And here a working version:
+
+.. literalinclude::  0125b.py
+
+This turns out to be another example of the damage caused by the
+`futurize <http://python-future.org/futurize_cheatsheet.html>`_
+script.
+
+BTW there was another bug in :func:`atelier.utils.confirm`::
+
+         ln = raw_input(prompt)
+
+Had become::
+
+         ln = eval(input(prompt))
+
+This was probably also introduced by `futurize
+<http://python-future.org/futurize_cheatsheet.html>`_.  Though
+actually git shows that it was first changed (correctly) to::
+
+         ln = input(prompt)
+
+and only in the next commit it was wrapped into `eval`.
+
+Actually the title is wrong: it is not `futurize
+<http://python-future.org/futurize_cheatsheet.html>`_ the guilty, but
+our uncomplete test suite.
+
+
+A new user's guide for Lino Welfare in French
+=============================================
+
+Thanks to Mathieu who contributed a second pdf user guide in French
+(see for :ref:`welfare.fr`).
+
+
+
+Duplicate log messages
+======================
+
+During the last weeks I often observed that logger messages were
+duplicated or even tripled.  Actually this had started after our
+upgrade to Django 1.8 and 1.9. Now I had a closer look at this.
+
+It is probably related to the fact that Django imports our
+:xfile:`settings.py` module twice, sometimes even three times.  The
+:func:`lino.utils.log.configure` function always had the following
+lines::
+
+     if len(logging.getLogger().handlers) != 0:
+         msg = "Not changing the existing logging configuration."
+         logging.info(msg)
+         return
+
+And it seems that this test no longer works correctly.  After reading
+`this
+<http://stackoverflow.com/questions/342434/python-logging-in-django>`_
+I tried the trick of setting an attribute of the logger module itself
+as described there.
+Hmm.
+

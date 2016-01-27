@@ -1,0 +1,21 @@
+========================
+Sunday, January 24, 2016
+========================
+
+I worked on :ticket:`718`.
+
+One noteworthy problem was this message in the Apache error log::
+
+  AH01630: client denied by server configuration: /home/user/.../mysite/apache/wsgi.py
+
+That was because mylino.net runs Apache 2.4 which has changed concepts
+about security on the default config. I must specify permissions
+explicitly::
+
+    <Directory /home/user/mypy/mysite/apache>
+        <Files wsgi.py>
+            Require all granted
+        </Files>
+    </Directory>
+
+

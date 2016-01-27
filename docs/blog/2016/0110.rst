@@ -1,0 +1,81 @@
+========================
+Sunday, January 10, 2016
+========================
+
+Miscellaneous
+=============
+
+The trick of saying ``python -m lino.hello`` to get the Lino version
+no longer fails when a :envvar:`LINO_CACHE_ROOT` is set but the cache
+directory was used by another application.
+
+I made an upgrade on :ref:`lf` in order to test yesterday's changes
+(:envvar:`LINO_SITE_MODULE`).  Which tought me that the `activate`
+script of a virtualenv is *not* being executed by the wsgi process.
+So :ticket:`707` itself is not yet a solution for defining site-wide
+configuration files on an Apache host, this remains artwork of system
+managers. But at least it is a solution for the problem reported by
+Sandeep, and it makes Lino more flexible.
+
+Difference between ``fab test`` and per-project tests
+=====================================================
+
+Sandeep asked: To run belref test setup, do I need to run fab test
+under repositories/lino or is there a different command for belref?
+
+Answer: Neither yes nor no.
+
+:cmd:`fab test` calls the full test suite of the whole Lino project.
+It does so even when you invoke it from a subdirectory (because
+`Fabric <http://docs.fabfile.org/en/1.10/tutorial.html>`_ searches
+parent directories to find its configuration file :xfile:`fabfile.py`).
+
+The full test suite is defined in the :linosrcref:`tests/__init__.py`
+file. If you look at this file, you can see (among others)::
+
+    class ProjectsTests(LinoTestCase):
+
+        def test_belref(self):
+            self.run_django_manage_test("lino/projects/belref")
+
+Which means that one part of the Lino test suite is to cd to
+:linosrcref:`lino/projects/belref` and to run ``python manage.py
+test`` there.
+
+When you are working on an issue which causes the Lino test suite to
+fail in above part, then you won't want to run the whole test suite
+again and again. It is more efficient to run::
+
+    python setup.py test -s tests.ProjectsTests.test_belref
+
+Above command is equivalent to this one::
+
+    $ cd lino/projects/belref
+    $ python manage.py test
+
+
+But that's not all. You might want to run a local runserver in the
+belref project, point your browser to it and manually play around::
+
+    $ cd lino/projects/belref
+    $ python manage.py runserver
+
+But note that you might need to initialize the demo database before it
+works. Here again, if you call :cmd:`fab initdb`, then Fabric will
+initialize the databases of *all* the demo projects. You can save time
+by doing it only for belref::
+
+    $ cd lino/projects/belref
+    $ python manage.py initdb_demo
+
+Note also that there is also another test case which uses the belref
+project::
+
+    class DocsTests(LinoTestCase):
+    
+        def test_belref(self):
+            self.run_django_manage_test("docs/tutorials/belref")
+
+The general recommendation is that you first get the specific test
+case running, and when it passes, then you run the whole suite in
+order to see whether some other tests got broken.

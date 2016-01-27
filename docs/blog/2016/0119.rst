@@ -1,0 +1,39 @@
+=========================
+Tuesday, January 19, 2016
+=========================
+
+I continued on :ticket:`584`: the training report ("fiche stagiaire")
+is now printable. And by the way it uses our new build method
+wkhtmltopdf (it's a first fireproof for :ticket:`692`).  The Welfare
+test suite is still broken, but for the moment I don't care, because
+it is more efficient to wait with that work until the new features are
+more or less stable.
+
+
+I fixed the first part of :ticket:`728` and released it to our Lino
+Noi.  (new table StarsByController in "Changes" tab). We can now have
+discussions with more than two participants.
+
+The link "Write comment" is now at the *top* of the description (and
+no longer at the bottom). That's important when there are more
+comments than those which fit to the panel.
+
+The release caused a side effect of :ticket:`692` to occur.  I
+received a few dozen of error mails "Internal Server Error:
+/favicon.ico".  That was because of the upgrade to the new
+:setting:`TEMPLATES` setting.  When rendering a template (like the
+`500.html`), names `ar` and `now` were no longer added to the context
+because of the new templateing configuration.
+
+Note that this side effect had slipped through the test suite, and in
+order to catch it, we would have to run tests using settings where
+:setting:`DEBUG` is set to `False`. For the moment this seems
+overkill...
+
+I fixed :ticket:`730` : :class:`LedgerStaff
+<lino_welfare.modlib.welfare.roles.LedgerStaff>` did not yet see
+accounts and account groups in their configuraton menu.  Because these
+tables are defined in :mod:`lino_cosi.lib.accounts`.  We plan to merge
+:mod:`lino_cosi.lib.accounts` into :mod:`lino_cosi.lib.ledger` one
+day.
+

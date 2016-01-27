@@ -1,0 +1,94 @@
+========================
+Friday, January 15, 2016
+========================
+
+A new place for hosting lino sites
+==================================
+
+I got my first virtual private server at ovh.com instantiated::
+
+
+                  `.-:/mmmmmm/:.`    
+              `./shmmmmmmmmmmmmmhs/.` 
+            .+hmmmmmmmmmmmmmmmmmmmmmh+`       
+          `odmmmmmmmmmmmmymmmmmmmmmmmmd+`    
+         /dmmmmmmmmmmmmmo`ommmmmmmmmmmmmh:   
+       `+mmmmmmmmmmmmmms` `ommmmmmmmmmmmmm/  
+       /mmmmmmmmmmmmmmy`   `ymmmmmmmmmmmmmm/ 
+      .mmmmmmmmmmmmmmy.     .hmmmmmmmmmmmmmd. 
+      +mmmmmmmmmmmmmd.       .dmmmmmmmmmmmmm+    
+      ymmmmmmmmmmmmd-     dmmmmmmmmmmmmmmmmms   
+      ymmmmmmmmmmmm:      dmmmmmmmmmmmmmmmmms  
+      ommmmmmmmmmm/       dmmmmmmmmmmmmmmmmm+   
+      .mmmmmmmmmm+`             .ommmmmmmmmd.
+       +mmmmmmmmo`               `ommmmmmmm/  
+       `+mmmmmmy-.................-hmmmmmm/` 
+         /dmmmmmmmmmmmmmmmmmmmmmmmmmmmmmd:  
+          .odmmmmmmmmmmmmmmmmmmmmmmmmmdo.  
+            ..:-:+++/::/sss/::++++:-:..   
+              ```-::/+++///+++/::-.``    
+                `---:///:::///:---`     
+                    -:::++/:::.     
+                    `..-///-..`    
+                       `:::`      
+                       ```` 
+    admin@serveur-1:~$
+    
+Installing Lino to this. Nice to see that their Debian still has
+Python 2 as default.  A first observation is that it event doesn't
+have pip installed, so here we go::
+
+    $ sudo apt-get install python-pip
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    The following extra packages will be installed:
+      binutils build-essential cpp cpp-4.9 dpkg-dev fakeroot g++ g++-4.9 gcc gcc-4.9 libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan1
+      libatomic1 libc-dev-bin libc6-dev libcilkrts5 libcloog-isl4 libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-4.9-dev libgomp1 libisl10 libitm1 liblsan0 libmpc3
+      libmpfr4 libquadmath0 libstdc++-4.9-dev libtimedate-perl libtsan0 libubsan0 linux-libc-dev make manpages-dev patch python-colorama python-distlib python-html5lib
+      python-wheel
+    Suggested packages:
+      binutils-doc cpp-doc gcc-4.9-locales debian-keyring g++-multilib g++-4.9-multilib gcc-4.9-doc libstdc++6-4.9-dbg gcc-multilib autoconf automake libtool flex bison gdb
+      gcc-doc gcc-4.9-multilib libgcc1-dbg libgomp1-dbg libitm1-dbg libatomic1-dbg libasan1-dbg liblsan0-dbg libtsan0-dbg libubsan0-dbg libcilkrts5-dbg libquadmath0-dbg
+      glibc-doc libstdc++-4.9-doc make-doc ed diffutils-doc python-genshi
+    Recommended packages:
+      python-dev-all
+    The following NEW packages will be installed:
+      binutils build-essential cpp cpp-4.9 dpkg-dev fakeroot g++ g++-4.9 gcc gcc-4.9 libalgorithm-diff-perl libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan1
+      libatomic1 libc-dev-bin libc6-dev libcilkrts5 libcloog-isl4 libdpkg-perl libfakeroot libfile-fcntllock-perl libgcc-4.9-dev libgomp1 libisl10 libitm1 liblsan0 libmpc3
+      libmpfr4 libquadmath0 libstdc++-4.9-dev libtimedate-perl libtsan0 libubsan0 linux-libc-dev make manpages-dev patch python-colorama python-distlib python-html5lib
+      python-pip python-wheel
+    0 upgraded, 43 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 49.4 MB of archives.
+    After this operation, 144 MB of additional disk space will be used.
+
+Note that this is maybe a reason to start making Lino available using
+easier system.
+
+
+
+Printing sales invoices
+=======================
+
+There are still some subtle problems when printing sales invoices with
+multi-line descriptions.
+
+One problem is that it is currently not possible to edit a multi-line
+text field in a *rich* (HTML) text editor.  For the first pilot user
+this is not a problem, they will probably even prefer to have some
+simple markup. This is *because* they want to edit their descriptions
+in a grid.
+
+Other users might prefer to have a rich description, but those users
+will probably not want to edit that in the grid. Because there is not
+enough room. They will prefer to have a detail_layout per line.  Soe
+it should be locally changeable by setting :attr:`textfield_format
+<lino.core.site.Site.textfield_format>`.
+
+Another more subtle and more serious problem is when injecting the
+HTML (either from the rich editor or generated from markup) into the
+LibreOffice template to be used by `appy.pod`.  This will always be
+limited by the limitations in :mod:`lino.utils.html2odt`
+
+So I started to think about trying :ticket:`692`, and had a look at
+`wkhtmltopdf <https://pypi.python.org/pypi/wkhtmltopdf/0.1>`_.

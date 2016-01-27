@@ -1,0 +1,36 @@
+=========================
+Saturday, January 9, 2016
+=========================
+
+I started a tutorial about :ref:`belref`.
+
+Sandeep reported two problems which I noted as tickets.
+
+The first is a disturbing warning: :ticket:`706`. I invited Sandeep to
+fix it, that would be his first ticket fix.
+
+I discovered and fixed a series of failures in the Welfare test suite
+which caused by ticket :ticket:`698`.
+
+
+The :envvar:`LINO_SITE_MODULE` environment variable
+===================================================
+
+The other problem was indirectly caused by :ticket:`707` (which I
+fixed myself because it needs experience with setting up production
+hosts ). The problem was::
+
+    $ python manage.py runserver
+    INFO Started manage.py runserver (using
+    lino.projects.belref.settings.demo) --> PID 2327
+    CommandError: You must set settings.ALLOWED_HOSTS if DEBUG is False.
+    INFO Done manage.py runserver (PID 2327)
+
+Sandeep reported correctly that setting :setting:`DEBUG` to `True` in
+:file:`belref/settings/demo.py` was the fix.  The problem passed
+*inaperçu* on my machine because I have a :ref:`djangosite_local`
+module in my :envvar:`PYTHONPATH`.  Solution was to replace the
+hard-coded name :xfile:`djangosite_local.py` by an environment
+variable :envvar:`LINO_SITE_MODULE`.
+
+
