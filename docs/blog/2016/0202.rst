@@ -1,0 +1,53 @@
+=========================
+Tuesday, February 2, 2016
+=========================
+
+Exploring the failure introduced yesterday by Sandeep's changes for
+:ticket:`706`. This ticket turned out to me much more tricky than
+expected.
+
+Here is one of the tracebacks::
+
+    Traceback (most recent call last):
+      File "/lino/lino/projects/min2/tests/test_birth_date.py", line 60, in test_this
+        birth_date='2009-02-30')
+      File "/lino/lino/projects/min2/tests/test_birth_date.py", line 35, in create
+        obj.full_clean()
+      File "/lino/lino/modlib/contacts/models.py", line 275, in full_clean
+        super(Person, self).full_clean(*args, **kw)
+      File "/lino/lino/modlib/countries/mixins.py", line 103, in full_clean
+        super(CountryCity, self).full_clean(*args, **kw)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 1114, in full_clean
+        self.clean_fields(exclude=exclude)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 1152, in clean_fields
+        raw_value = getattr(self, f.attname)
+      File "/lino/lino/core/fields.py", line 476, in __get__
+        return self.value_from_object(instance, None)
+      File "/lino/lino/core/fields.py", line 471, in value_from_object
+        return m(obj, ar)
+      File "/lino/lino/mixins/human.py", line 336, in age
+        a = self.get_exact_age(today)
+      File "/lino/lino/mixins/human.py", line 326, in get_exact_age
+        if self.birth_date and self.birth_date.year:
+    AttributeError: 'unicode' object has no attribute 'year'
+
+The problem happens only when we try to instantiate an object instance
+using a string value with an invalid date for the IncompleteDateField.
+Note that it happens during the ``__get__`` method of *another* field
+(the virtual field `age`).
+
+Django's deprecated `SubfieldBase` class caused our field to modify
+its model so that setting a value for `birth_date` would call
+`to_python` automagically.  Without `SubfieldBase` that call to
+`to_python` is done a bit later.  A side effect of this happens when
+we initialize `birth_date` with an invalid date on a database object.
+This of course raises a `ValidationError`. But the question is: when
+exactly.  If the model also has a virtual field (like `age` in our
+example) which reads the `birth_date` field.
+
+Checkin with one failure fixed. The other failure is still there::
+
+  $ cd lino/docs/tutorials/pisa
+  $ python manage.py test
+
+

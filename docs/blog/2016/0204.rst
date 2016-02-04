@@ -1,0 +1,150 @@
+==========================
+Thursday, February 4, 2016
+==========================
+
+I tried a release on testlino at weleup for :ticket:`143`. 
+But when importing latest data I got
+an error similar to the one which happens in the test suite after
+:ticket:`706`.
+
+Sandeep did not yet find any fix (which is understandable because it
+is not trivial), so I dived into this and fixed it. The error of the
+test suite was reproducible as follows::
+
+    $ cd docs/tutorials/pisa
+    $ python manage.py test
+
+Here is the traceback::
+
+
+    Traceback (most recent call last):
+      File "/usr/lib/python2.7/doctest.py", line 1316, in __run
+        compileflags, 1) in test.globs
+      File "<doctest index.rst[3]>", line 1, in <module>
+        settings.SITE.site_config.update(default_build_method='pisa')
+      File "/lino/modlib/system/models.py", line 91, in update
+        self.save()
+      File "/lino/modlib/system/models.py", line 95, in save
+        super(SiteConfig, self).save(*args, **kw)
+      File "/django/db/models/base.py", line 700, in save
+        force_update=force_update, update_fields=update_fields)
+      File "/django/db/models/base.py", line 728, in save_base
+        updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+      File "/django/db/models/base.py", line 793, in _save_table
+        forced_update)
+      File "/django/db/models/base.py", line 843, in _do_update
+        return filtered._update(values) > 0
+      File "/django/db/models/query.py", line 645, in _update
+        return query.get_compiler(self.db).execute_sql(CURSOR)
+      File "/django/db/models/sql/compiler.py", line 1149, in execute_sql
+        cursor = super(SQLUpdateCompiler, self).execute_sql(result_type)
+      File "/django/db/models/sql/compiler.py", line 837, in execute_sql
+        sql, params = self.as_sql()
+      File "/django/db/models/sql/compiler.py", line 1117, in as_sql
+        val = field.get_db_prep_save(val, connection=self.connection)
+      File "/django/db/models/fields/__init__.py", line 728, in get_db_prep_save
+        prepared=False)
+      File "/django/db/models/fields/__init__.py", line 720, in get_db_prep_value
+        value = self.get_prep_value(value)
+      File "/lino/core/choicelists.py", line 711, in get_prep_value
+        return value.value
+    AttributeError: 'str' object has no attribute 'value'
+
+Above error happens at the following line of :ref:`lino.tutorial.pisa`::
+
+   settings.SITE.site_config.update(default_build_method='pisa')
+
+Yes, the :meth:`lino.modlib.system.models.SiteConfig.update` method
+now should also call :meth:`full_clean` before saving the
+object. Done.
+
+Unfortunately this change did not yet solve the error which occured
+when importing data. This error came because the :xfile:`restore.py`
+script created by :manage:`dump2py` also initialized the choicelist
+fields of database objects using strings instead of their
+:class:`Choice` instances. 
+
+To be able to load dumps which have been created by running versions,
+the :meth:`get_prep_value
+<lino.core.choicelists.ChoiceListField.get_prep_value>` of a
+:class:`ChoiceListField <lino.core.choicelists.ChoiceListField>` now
+calls :meth:`to_python`.
+
+Checkin and test. Problem is fixed.
+
+I also converted :manage:`dump2py` so that it now explicitly resolves
+these strings (by calling the choicelist's :meth:`get_by_value
+<lino.core.choicelists.ChoicelList.get_by_value>`).
+
+This revealed a theoretical bug in :manage:`dump2py`: the
+:func:`new_content_type_id` function was called for `ForeignKey`
+fields only if they were defined on the child model.
+
+I also removed the usage of :meth:`get_fields_with_model` (which will
+be removed in Django 1.10) from that module.
+
+After these changes I observed for the first time that the
+:xfile:`restore.py` takes rather long to run. For example in `min2`::
+
+  $ cd lino/projects/min2
+  $ python manage.py initdb_demo
+  $ python manage.py dump2py a
+  $ python manage.py run a/restore.py
+
+While the `initdb_demo` takes 12s on my machine, the `run
+a/restore.py` takes 1m31s. 
+
+It is possible that (1) this problem existed already before my
+changes, and (2) that it occurs only under sqlite. To explore this, I
+measued the time taken to load the weleup database into their
+testlino.
+
+*Before* the dump2py optimizations it took::
+
+    real  18m52.292s
+    user  16m41.148s
+    sys   0m23.908s
+
+*After* the optimizations it took::
+
+    real 19m6.751s
+    user 16m55.956s
+    sys	 0m23.784s
+
+Which shows at least that the problem is not caused by today's
+optimizations.
+
+
+In Lino Welfare there was another problem caused by :ticket:`706`::
+
+    [2016-02-04 08:46:48.162518] Traceback (most recent call last):
+    File "/lino_welfare/modlib/cbss/mixins.py", line 256, in execute_request
+        retval = self.execute_request_(now, simulate_response)  
+    File "/lino_welfare/modlib/cbss/mixins.py", line 560, in execute_request_
+        return self.execute_newstyle(client, info, simulate_response)  
+    File "/lino_welfare/modlib/cbss/models.py", line 857, in execute_newstyle
+        si.language = self.language.value
+    AttributeError: 'str' object has no attribute 'value'"
+    
+
+Note that above traceback was hidden in the database because CBSS
+requests capture any exception which occurs during the request. The
+traceback occured during initdb but bekame visible only because the
+Tx25 object had no result.
+    
+>>> obj = cbss.RetrieveTIGroupsRequest.objects.get(pk=1)
+>>> print(obj.debug_messages)
+   
+The bug was in :meth:`RetrieveTIGroupsRequest.fill_from_person
+<lino_welfare.modlib.cbss.models.RetrieveTIGroupsRequest.fill_from_person>`
+and in the :mod:`lino_welfare.modlib.cbss.fixtures.cbss_demo` fixture.
+
+This case confirms the general rule: SubfieldBase added some magic to
+the model so that assigning something to that field would
+automatically invoke the field's `to_python` method. But they removed
+that magic. So we must find the places which relied on it, and simply
+have them do the lookup themselves.
+
+While I was there, I removed another usage of SubfieldBase (from
+:class:`lino_cosi.lib.sepa.fields.UppercaseTextField`).
+
