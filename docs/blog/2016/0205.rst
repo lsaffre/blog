@@ -1,0 +1,66 @@
+========================
+Friday, February 5, 2016
+========================
+
+I am writing a new import fixture for :ref:`eiche`. Ticket :ticket:`771`.
+
+They have some fields on ``courses.Pupil`` and ``courses.Enrolment``
+which are definitively limited to their concrete case.
+
+So I created the new plugin 
+:mod:`lino_voga.projects.roger.lib.courses`,
+which extends :mod:`lino_voga.lib.courses`,
+which in turn extends :mod:`lino_cosi.lib.courses`.
+
+- :mod:`lino_cosi.lib.courses` defines the `Enrolment` model with
+  fields like course, pupil, request_date, state, ...
+
+- :mod:`lino_voga.lib.courses` does not change anything on the
+  `Enrolment` model
+
+- :mod:`lino_voga.projects.roger.lib.courses` extends the `Enrolment`
+  model with (currently) one field.
+
+I "activate" this plugin using the following definition on the
+:class:`lino_voga.projects.roger.settings.Site` class::
+
+    def get_apps_modifiers(self, **kw):
+        kw = super(Site, self).get_apps_modifiers(**kw)
+        kw.update(courses='lino_voga.projects.roger.lib.courses')
+        return kw
+
+
+A surprise
+==========
+
+But now I get the following runtime error::
+
+  RuntimeError: Conflicting 'enrolment' models in application 'courses': 
+  <class 'lino_cosi.lib.courses.models.Enrolment'> and
+  <class 'lino_voga.projects.roger.lib.courses.models.Enrolment'>.
+
+
+Both model definitions correctly have defined the following `Meta`
+class::
+
+    class Meta:
+        app_label = 'courses'
+        abstract = dd.is_abstract_model(__name__, 'Enrolment')
+
+
+Where `app_label` is required by recent Django versions for some
+reason which don't yet fully understand.
+
+And indeed, :meth:`is_abstract_model
+<lino.core.site.Site.is_abstract_model>` returns `False` for both
+`Enrolment` models. But the one in :mod:`lino_cosi.lib.courses` should
+be abstract.  That was a bug in Lino, more precisely in the logic
+responsible for automatically filling :attr:`override_modlib_models
+<lino.core.site.Site.override_modlib_models>` at startup. Fixed.
+
+
+Importing participants to Lino Voga
+===================================
+
+we have now an admin command :manage:`eiche2lino` which can run as
+often as we want.

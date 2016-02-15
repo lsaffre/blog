@@ -1,0 +1,91 @@
+==========================
+Saturday, February 6, 2016
+==========================
+
+Advancing with Lino Voga
+========================
+
+**Continuous courses** are a new concept in :ref:`voga`. It is another
+way of managing enrolments to a course. While a classical course has a
+fixed and previously known series of calendar events, a continuous
+course is running all the time. Participants pay a fee which gives
+them permission to assist in a number of events, and then they come
+and go.
+
+I removed the rule that the :attr:`enrolments_until
+<lino_cosi.lib.courses.models.Course.enrolments_until>` of a course is
+set to its 
+:attr:`start_date <lino_cosi.lib.courses.models.Course.start_date>`.
+Because there are continuous courses
+
+The Roger variant of :ref:`voga` has referrable courses. Last year
+they introduced a "reference number" for every single course. TODO:
+what will happen next year with these numbers? I suggest to change the
+`ref` of the 2016 courses with "2016" so that the known references can
+be reused for the corresponding 2017 course.
+
+TODO: where should the new `Course.ref` appear? 
+
+
+The :class:`lino.modlib.about.models.About` window now shows the
+:attr:`languages <lino.core.site.Site.languages>` of that site.
+
+
+
+ValueError: dictionary update sequence element #0 has length NN; 2 is required
+==============================================================================
+
+This comes because wkhtmltopdf needs a manual patch in 
+:file:`site-packages/wkhtmltopdf/utils.py`::
+
+    def render_to_temporary_file(template, context, mode='w+b', bufsize=-1,
+                                     suffix='.html', prefix='tmp', dir=None,
+                                     delete=True):
+        # deactivated by Luc Saffre 20160206
+        # make sure the context is a context object
+        # if not isinstance(context, (Context, RequestContext)):
+        #     context = Context(context)
+
+        content = smart_text(template.render(context))
+        content = make_absolute_paths(content)
+
+
+
+And then I still had the following error:
+
+  CalledProcessError: Command '['wkhtmltopdf', '--encoding', u'utf8',
+  '--quiet', '/tmp/wkhtmltopdfQW_4es.html', '-']' returned non-zero
+  exit status -6
+
+
+This was because the wkhtmltopdf system package (not python) is 
+0.12.1 instead of 0.9.9.
+
+It's a `known bug
+<http://unix.stackexchange.com/questions/192642/wkhtmltopdf-qxcbconnection-could-not-connect-to-display>`_. Here
+is how to demonstrate it::
+
+    $ wkhtmltopdf --encoding utf8 --quiet test.html -
+    QXcbConnection: Could not connect to display 
+    Aborted
+
+Solution was to 
+
+- install `xvfb
+  <https://packages.debian.org/fr/wheezy/xvfb<`_ (``sudo apt-get
+  install xvfb`` 
+
+- and to add to my :xfile:`settings.py` file::
+
+    WKHTMLTOPDF_CMD = 'xvfb-run wkhtmltopdf'
+
+
+Lino goes Wikipedia
+===================
+
+Oh cool, Hamza started a Wikipedia article about Lino:
+
+  `Lino (web framework)
+  <https://en.wikipedia.org/wiki/Draft:Lino_%28web_framework%29>`__
+
+Contributions and ideas are welcome! I'll try to stay in background...
