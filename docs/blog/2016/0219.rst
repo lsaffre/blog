@@ -1,0 +1,89 @@
+=========================
+Friday, February 19, 2016
+=========================
+
+I discovered `Atom <https://atom.io/>`_. There are chances that this
+is going to replace Emacs for me. It took me just a minute to get
+:kbd:`Alt-Q` configured to do what I want. (This was one of the things
+which made me not switch to PyCharm when I last tried it).
+
+Alexa discovered that `eiche2lino` did not correctly import all
+fields.  The reason was rather difficult to believe: `xlrd
+<https://secure.simplistix.co.uk/svn/xlrd/trunk/xlrd/doc/xlrd.html?p=4966#sheet.Sheet.row-method>`_
+has appearently problems when reading cells which contain formulas of
+style ``[=TRUE()]`` and ``[=FALSE()]``. These display correctly as 0
+or 1 (or FALSE or TRUE depending on the application which views them),
+and `xlrd` converts them to `0.0` or `1.0` float values, but
+``[=TRUE()]`` does not always give 1.0, and ``[=FALSE()]`` not always
+`0.0`.  I worked around this by modifying my input file: Select the
+concerned fields, :kbd:`Ctrl-C`, and then use "Paste Special" to copy
+only values, not formulas. About 90 minutes of work!
+
+
+The number of participants
+==========================
+
+Ticket :ticket:`788` starts to disturb.  I moved the `.odt` templates
+from :mod:`lino.modlib.lino_startup` to :mod:`lino.modlib.appypod`.
+Then I discovered that this is just another instance of our good old
+friend :ticket:`620`.  I'd like to talk with somebody about this
+:ticket:`620` because I am undecided whether it is worth working on
+it.
+
+Meanwhile, as a workaround for Alexa, I started to make a new
+printable "Overview" document of a course.  A new template
+:xfile:`overview.wk.html` in the :xfile:`config` of
+:mod:`lino_voga.projects.roger.lib.courses` is a first draft for this
+document.
+
+In order to get the sums in this document, I added
+:class:`lino.utils.SumCollector` to the default context of a Jinja
+template in :mod:`lino.modlib.jinja.renderer`, and I optimzed a bit on
+the API of that helper class.
+
+
+Lino XL, the Lino Extension Library
+===================================
+
+About :ticket:`356` (Split Lino into "Core" and "Enterprise").
+
+In a short brainstorming session with Hamza we found the name for the
+that new Lino repository. 
+
+Hamza pointed out that lino_erp or "Enterprise" is wrong, because
+:ref:`cosi` , :ref:`voga` and others are and will always be part of
+Lino's Enmterprise functionality.
+
+It should rather be "Lino Extensions".  For example
+:mod:`lino.modlib.contacts` and :mod:`lino.modlib.cal` should
+certainly go into this new Lino Extensions.  Because if somebody wants
+to write her own implementation for contact management, then they
+should be free to do it.  They would use just Lino Core and not Lino
+extensions.  Only the “System plugins”, “User interfaces” and
+"Utilities" (http://lino-framework.org/api/lino.modlib.html) should
+remain in the core Lino repo.
+
+So the name will be Lino XL ("Extension Library"), Python name
+`lino_xl`.
+
+
+Another question was: A clone of the Lino repo is currently 120 MB,
+most of which is "useless" history. Should we use the occasion and
+create two completely new repositories? This would remove history from
+the working codebase without removing it completely from GitHub.  Pro:
+an efficient and quick solution.  Contra: Makes project history less
+transparent and statistics more difficult. Actually the size problem
+should be solved by providing source releases.
+
+And actually, when the XL will be moved out of the core, this code
+will indeed become rather stable and it makes sense to use officially
+released versions on production sites.
+
+
+Tolerating Sphinx warnings
+==========================
+
+I also continued with the long-term project of eliminating all Sphinx
+warnings from my blog.  For this I tempoerarily change the
+`tolerate_sphinx_warnings` from True to False.  But it is too early to
+see the end...

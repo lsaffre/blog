@@ -1,0 +1,263 @@
+===========================
+Thursday, February 18, 2016
+===========================
+
+Lino Voga prototype final sprint
+================================
+
+I added a new action
+:class:`lino_voga.lib.courses.models.CreateInvoicesForCourse` (a first
+item of yesterday's to-do list).
+
+
+docstring of django.db.models.Q causes warning when building Sphinx docs
+========================================================================
+
+In order to build the Sphinx docs for :ref:`voga` I had to patch my
+copy of Django: edit the docstring of the `Q` class in
+:file:`site-packages/django/db/models/query_utils.py` because it
+causes a Sphinx warning, and I don't want to tolerate those.
+
+Wrong::
+
+    Encapsulates filters as objects that can then be combined logically (using
+    & and |).
+
+Correct::
+
+    Encapsulates filters as objects that can then be combined logically (using
+    `&` and `|`).
+
+
+I submitted `Django ticket #26233
+<https://code.djangoproject.com/ticket/26233>`_ for this.
+
+
+'unicode' does not have the buffer interface
+============================================
+
+I merged Hamza's work for :ticket:`357` into :mod:`atelier`. The test
+suite passes on all projects, but I cannot build the docs for atelier
+after having called :cmd:`fab clean`. Here is the session::
+
+    $ fab bd
+    Invoking Sphinx in in directory /work/atelier/docs...
+    [localhost] local: sphinx-build -b html -W . .build
+    Running Sphinx v1.3.5
+    ...
+    Traceback (most recent call last):ier.sphinxconf.insert_input                                                                                                             
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 136, in run
+        output = self.get_rst()
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 209, in get_rst
+        return self.output_from_exec(code)
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 225, in output_from_exec
+        raise Exception("%s in code:\n%s" % (err, code))
+    Exception: 'unicode' does not have the buffer interface in code:
+    url = 'http://planet.python.org/'
+    print("`This <%s>`_ is my *favourite* planet." % url)
+    Traceback (most recent call last):
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 136, in run
+        output = self.get_rst()
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 209, in get_rst
+        return self.output_from_exec(code)
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 225, in output_from_exec
+        raise Exception("%s in code:\n%s" % (err, code))
+    Exception: 'unicode' does not have the buffer interface in code:
+    self.shell_block(["echo", "Hello", "world!"])
+    Traceback (most recent call last):                                                                                                                                        
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 136, in run
+        output = self.get_rst()
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 209, in get_rst
+        return self.output_from_exec(code)
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 225, in output_from_exec
+        raise Exception("%s in code:\n%s" % (err, code))
+    Exception: 'unicode' does not have the buffer interface in code:
+    import atelier
+    print(atelier.SETUP_INFO['long_description'])
+    reading sources... [100%] textimage/index                                                                                                                                 
+    Warning, treated as error:
+    /work/atelier/docs/api/atelier.sphinxconf.insert_input.rst:29: WARNING: 'unicode' does not have the buffer interface in code:
+    url = 'http://planet.python.org/'
+    print("`This <%s>`_ is my *favourite* planet." % url)
+    Fatal error: local() encountered an error (return code 1) while executing 'sphinx-build -b html -W . .build'
+    Aborting.
+
+Hamza, can you reproduce this problem?
+
+To debug
+this, I chose one occurence of the problem, e.g.  in
+:file:`docs/dev/install.rst` and added the ``:debug:`` option to the
+:rst:dir:`py2rst` directive there. Then I set
+:attr:`tolerate_sphinx_warnings
+<atelier.fablib.env.tolerate_sphinx_warnings>` to `True` in Lino's
+:xfile:`fablib.py` so that the *real* traceback becomes visible::
+
+    Traceback (most recent call last):all                                                                                                                                     
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 136, in run
+        output = self.get_rst()
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 209, in get_rst
+        return self.output_from_exec(code)
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 218, in output_from_exec
+        exec(code, context)
+      File "<string>", line 1, in <module>
+      File "/work/atelier/atelier/sphinxconf/insert_input.py", line 256, in shell_block
+        print(str(".. code-block:: bash"))
+    TypeError: 'newstr' does not have the buffer interface
+
+Since the error occurs only when Sphinx tries to build the file, you
+must ``touch docs/dev/install.rst`` each time before :cmd:`fab bd`.
+
+It is caused by `your change in insert_input.py
+<https://github.com/lsaffre/atelier/pull/12/files#diff-1>`_. Looks as
+if `BytesIO` does not want any `unicode` or `newstr` input, only
+encoded text. Which sounds obvious and correct. For Python 2 it works
+when I do this::
+
+    try:
+        from StringIO import StringIO
+    except ImportError:
+        from io import StringIO
+
+
+
+Lino #36 : Porting Lino to Python3
+==================================
+
+Hamza started to port Lino framework to Python3 (:ticket:`36`) in a
+new branch `lino_future
+<https://github.com/khchine5/lino/tree/lino_future>`_.  Where he
+started to run futurize script over the Lino code base and fixing
+manually some errors which may appear, with the help of Django's
+`Porting to Python 3
+<https://docs.djangoproject.com/en/1.9/topics/python3/>` guide.
+
+I tried his work and (as expected) it fails quickly under Python 2::
+
+    $ git st
+    On branch master
+    Your branch is up-to-date with 'origin/master'.
+    nothing to commit, working directory clean
+    $ git fetch hamza
+    $ git checkout hamza/lino_future
+    $ fab initdb test
+    --------------------------------------------------------------------------------
+    In demo project lino.projects.docs.settings.demo:
+    Traceback (most recent call last):
+      File "/python2.7/site-packages/fabric/main.py", line 743, in main
+        *args, **kwargs
+      File "/python2.7/site-packages/fabric/tasks.py", line 427, in execute
+        results['<local-only>'] = task.run(*args, **new_kwargs)
+      File "/python2.7/site-packages/fabric/tasks.py", line 174, in run
+        return self.wrapped(*args, **kwargs)
+      File "/work/atelier/atelier/fablib.py", line 1067, in initdb_demo
+        run_in_demo_projects('initdb_demo', "--noinput", '--traceback')
+      File "/work/atelier/atelier/fablib.py", line 1039, in run_in_demo_projects
+        m = import_module(mod)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/work/lino/lino/projects/docs/settings/demo.py", line 3, in <module>
+        SITE = Site(globals())
+      File "/work/lino/lino/core/site.py", line 1054, in __init__
+        self.install_settings()
+      File "/work/lino/lino/core/site.py", line 1448, in install_settings
+        collect_settings_subdirs(fixture_dirs, 'fixtures', 1)
+      File "/work/lino/lino/core/site.py", line 1411, in collect_settings_subdirs
+        for p in self.get_settings_subdirs(name):
+      File "/work/lino/lino/core/site.py", line 1730, in get_settings_subdirs
+        pth = join(dirname(inspect.getfile(cl)), subdir_name)
+      File "/usr/lib/python2.7/inspect.py", line 408, in getfile
+        raise TypeError('{!r} is a built-in class'.format(object))
+    TypeError: <module '__builtin__' (built-in)> is a built-in class
+
+I will leave this to Hamza and simply switch back to my master::
+
+  $ git checkout master
+
+
+Removing the "Reference" field from products
+============================================
+
+Instead of stupidly hiding the :attr:`ref
+<lino.mixins.Referrable.ref>` field of a product in :ref:`voga` (as
+asked by the user), I decided to remove it completely from the
+standard library model (:mod:`lino.modlib.products.models.Product`).
+By simply removing :class:`lino.mixins.Referrable` from the list of
+base classes.  This caused of course some (trivial and not many)
+changes in :ref:`cosi` (which also doesn't actually want a reference
+field on products) and :ref:`noi` (which continues to want them, so
+the :class:`lino_noi.lib.products.models.Product` model must now
+inherit explicitly from :class:`Referrable <lino.mixins.Referrable>`).
+
+But it is better library design because extending a simple library
+model is more elegant than removing features from a too complext
+library model.
+
+I created a new package :mod:`lino_voga.lib.products` which extends
+:mod:`lino.modlib.products` and renames "Products" to "Tariffs".
+
+Before doing above, I also changed the file headers in Lino Voga and
+the file :file:`COPYING` from BSD to AGPL. This was necessary because
+:ref:`voga` extends :ref:`cosi` which is AGPL (mainly because of
+:mod:`lino_voga.lib.b2c.camt` which is based on AGPL-licensed
+code). 
+
+This is an example of what some people call "viral effect" of the GPL:
+you cannot fork an AGPL project and publish your derived work under
+the BSD because that would undermine the requirements of the AGPL.
+For example, the AGPL forbids to extend :ref:`cosi` or :ref:`voga` and
+then run run your *derivated work* as a public service *without also
+publishing* your derivated work. The BSD does allow this, i.e. you can
+do this with plain Lino applications.
+
+
+Sphinx autosummary and imported classes
+=======================================
+
+I had this problem before, and I solved it somehow, but cannot remeber
+how, and I ignore why and when it started again. There was some hassle
+because I had submitted a single patch for two issues.
+
+Yes, it is this problem: `sphinx autosummary with toctree also lists
+imported members
+<http://stackoverflow.com/questions/25405110/sphinx-autosummary-with-toctree-also-lists-imported-members>`_.
+
+I pulled the latest development version of Sphinx and tried to fix it
+again, inspired by the solution given in above SO discussion.  I
+submitted my patch in a new `Sphinx ticket
+<https://github.com/sphinx-doc/sphinx/issues/2336>`_
+
+The new Sphinx version gave me this error::
+
+  WARNING: The config value `html_last_updated_fmt' has type `unicode', defaults to `NoneType.'
+
+
+Lino Voga prototype final sprint
+================================
+
+Continued to work on :ticket:`701`. A series of quick releases. A new
+(updating) run of
+:mod:`lino_voga.projects.roger.lib.courses.fixtures.eiche2lino`.
+
+
+Lino accepts a place which is its own parent
+============================================
+
+Fixed. :class:`lino.modlib.countries.models.Place` is now
+:class:`lino.mixins.sequenced.Hierarchical`.
+
+
+Trying Ekiga
+============
+
+First invocation said:
+
+    Ekiga did not manage to configure your network settings
+    automatically. You can still use it, but you need to configure
+    your network settings manually.  Please see
+    http://wiki.ekiga.org/index.php/Enable_port_forwarding_manually
+    for instructions
+
+
+    
+    
+    

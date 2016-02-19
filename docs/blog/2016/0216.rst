@@ -1,0 +1,87 @@
+==========================
+Tuesday, February 16, 2016
+==========================
+
+I fixed the last failures in the Welfare and Voga test suites.
+
+Replace fabric by invoke
+========================
+
+I merged Hamza's work on :ticket:`357` into master.  (`PR 10
+<https://github.com/lsaffre/atelier/pull/10>`_) and ran :cmd:`pp` with
+:cmd:`fab initdb` and :cmd:`fab test`.  Hamza, note that ``from
+__future__`` imports must come *after* the module docstring, otherwise
+Sphinx autodoc doesn't see them.
+
+Yes, it seems that we must maintain two documentation strings for
+every :cmd:`inv` command. The full documentation in the module's
+docstring is integrated in Sphinx, while the task's docstring must be
+a single line and without Sphinx markup.  I took :cmd:`inv clean` as
+example and adapted the docstring of the task. Compare the description
+of :cmd:`inv clean` with the output of :cmd:`inv -l`.  One is the full
+user manual, the other is just a summary for the command-line user::
+
+    $ inv -l
+    Available tasks:
+
+      blog     Edit today's blog entry, create an empty file if it doesn't yet
+               exist.
+      ci       Checkin and push to repository, using today's blog entry as commit
+      clean    Remove temporary and generated files.
+      cov      Run all tests, creating coverage report
+      initdb   Run `manage.py initdb_demo` on every demo project.
+      mm       Extract messages, then initialize and update all catalogs.
+      pd       Publish docs. Upload docs to public web server.
+      readme   Generate or update `README.txt` or `README.rst` file from
+      reg      Register this project (and its current version) to PyPI.
+      test     Run the test suite of this project.
+
+
+TODO: I have the feeling that the :file:`tasks.py` file can have a
+cleaner syntax.
+
+
+How Lino Voga generates invoices
+================================
+
+I started a new tested document :ref:`voga.specs.sales`.
+
+I noticed that enrolments were already invoiceables in
+:mod:`lino_cosi.lib.courses`.  This was a disturbing design bug since
+it introduced a useless field `amount` into the enrolments of Lino
+Welfare, and a useless dependency to the 
+:mod:`lino_cosi.lib.auto.sales`
+plugin.
+
+You might think that the :mod:`lino_cosi.lib.courses` module can now
+move back to :mod:`lino.modlib` (because it no longer depends on
+sales). That's true, but I don't do this now because after
+:ticket:`356` it will move to the new "enterprise" or "extended" Lino
+library (or however we will call it).
+
+Lots of changes... and finally it seems to work. Checkin.  Short
+summary:
+
+I removed the FK field `invoice` on Invoiceable because anyway it was
+not used consistently. One invoiceable definitively can create more
+than one invoice.
+
+The new subscription courses are actually not subscription *courses*
+but enrolment tariffs, i.e. products.
+We now have two new fields on Product, `number_of_events` and
+`min_asset`.
+
+If `number_of_events` is 0, then it is a "classical" enrolment (one
+single invoicing), otherwise it is a "subscription course".  Typical
+values are 12 for `number_of_events` and 4 for `min_asset`, which
+means that every invoice will pay 12 course events, and after 8 events
+the pupil gets a new invoice for the next 12 events.
+
+
+Printing invoices
+=================
+
+And then it was time to work on the template used to print invoices.
+Lots of optimizations.
+Default build method for Lino Voga is now `wkhtmltopdf`.
+
