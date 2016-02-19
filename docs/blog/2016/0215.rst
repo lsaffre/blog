@@ -13,6 +13,91 @@ idea of mine and irritating magic.
 Repaired several tests which were failing with UnicodeErrors caused by
 Hamza's `recent changes
 <https://github.com/lsaffre/atelier/commit/5e108861bffaafb09efb54cdee469dcc13f685f2>`__
-in :mod:`atelier`.
-Most notably the :mod:`atelier.test.TestCase.test_simple_doctests` method now must use
+in :mod:`atelier`.  Most notably the :meth:`test_simple_doctests
+<atelier.test.TestCase.test_simple_doctests>` method now must use
 :mod:`atelier.doctest_utf8` again.
+
+After committing everything, the Lino test suite still broke on
+`Travis <https://travis-ci.org/lsaffre/lino/builds/109336279>`_. Yes
+of course, I must release atelier to PyPI so that the new
+:meth:`test_simple_doctests
+<atelier.test.TestCase.test_simple_doctests>` method gets used.  
+
+But before doing this, I did yet another subtle change in
+:mod:`atelier` about :attr:`docs_rsync_dest
+<atelier.fablib.env.docs_rsync_dest>`. Because I guess that James will
+soon stumble over this "design flaw": until now it was not possible to
+specify a template as the on in the example on 
+https://github.com/lsaffre/dblog 
+
+
+:ticket:`777`. Cannot reproduce it on my machine. I guess it is
+related to the fact that on their site we use
+:setting:`WKHTMLTOPDF_CMD` to run it within `xvfb-run`.  Maybe I must
+set the html encoding in my generated temporay html file
+(:file:`presence_sheet.html`).
+
+
+Coverage
+========
+
+I had a voice session with Sandeep to introduce him to :ticket:`463`.
+Current output (in :mod:`atelier`) is::
+
+    $ inv invlib.cov
+    Running tests for 'atelier' within coverage...
+    .......
+    ----------------------------------------------------------------------
+    Ran 7 tests in 1.346s
+
+    OK
+    Name                                                             Stmts   Miss  Cover
+    ------------------------------------------------------------------------------------
+    atelier/invlib.py                                                  336    332     1%
+    atelier/projects.py                                                118    116     2%
+    /virtualenvs/py27/lib/python2.7/site-packages/invoke/config.py     223    217     3%
+    ------------------------------------------------------------------------------------
+    TOTAL                                                
+
+But these numbers are wrong, the percentage is not *that* low. It is
+because coverage does not "see" the tests which are being run in a
+subprocess. I seem to set the :envvar:`COVERAGE_PROCESS_START`
+variable, but for some reason this has no effect.
+
+
+How Lino Voga generates invoices
+================================
+
+The general functionality for automatically generating invoices is in
+:mod:`lino_cosi.lib.auto.sales` which extends
+:mod:`lino_cosi.lib.sales`.
+
+On the user-visible level it adds a :class:`CreateInvoice
+<lino_cosi.lib.auto.sales.models.CreateInvoice>` action per partner, a
+table :class:`InvoicesToCreate
+<lino_cosi.lib.auto.sales.models.InvoicesToCreate>` to the main menu,
+and a field :attr:`invoiceable` per invoice item.
+
+On the API level it defines the :class:`Invoiceable
+<lino_cosi.lib.auto.sales.mixins.Invoiceable>` mixin.
+
+It also defines two utility functions :func:`get_invoiceables_for
+<lino_cosi.lib.auto.sales.models.get_invoiceables_for>` and
+:func:`create_invoice_for
+<lino_cosi.lib.auto.sales.models.create_invoice_for>`.
+
+Lino Voga uses this functionality by extending :class:`Enrolment
+<lino_cosi.lib.courses.models.Enrolment>` so that it inherits from
+:class:`Invoiceable <lino_cosi.lib.auto.sales.mixins.Invoiceable>`. In
+Lino Voga, enrolments are the things for which they write invoices.
+
+An important new challenge appeared when I was in Belgium: they
+recently started to have a new invoicing method which they name
+"Abo-Kurse" ("Subscription courses"). :ticket:`766` is to implement a
+first proof of concept. A subscription course does not end and start
+at a given date, the course itself is continously being
+given. Participants can start on any time of the year. They usually
+pay for 12 sessions in advance (the first invoice for that enrolment),
+and Lino must write a new invoice every 12 weeks.
+
+

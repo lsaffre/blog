@@ -11,7 +11,7 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-from __future__ import unicode_literals
+# from __future__ import unicode_literals
 
 import lino
 from atelier.sphinxconf import configure
@@ -323,4 +323,3 @@ blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
 inheritance_graph_attrs = dict(rankdir="TB")
 inheritance_graph_attrs.update(size='"12.0, 16.0"')
 inheritance_graph_attrs.update(fontsize=14, ratio='compress')
-
