@@ -1,0 +1,76 @@
+=========================
+Monday, February 29, 2016
+=========================
+
+This week I plan to continue more intensively with :ticket:`143` and
+to finally work on the to-do list developed by talking with Wilfried
+in Eupen.
+
+
+Accounting periods
+==================
+
+I understood that :mod:`lino_cosi.lib.declarations` is definitively
+deprecated.  We rather need a database table of "accounting periods"
+(Buchungsperioden) as we had in TIM.  An accounting period usually
+lasts one month. Except for some small companies which declare per
+quarter.  For each period it must be possible to specify the exact
+dates during which it is allowed to register vouchers into this
+period, and also its "state": whether it is "closed" or not.
+
+New model :class:`AccountingPeriod
+<lino_cosi.lib.ledger.models.AccountingPeriod>`.
+
+Thanks to `stackoverflow.com
+<http://stackoverflow.com/questions/42950/get-last-day-of-the-month-in-python>`_,
+which made me notice a bug in my way of getting the last day of the
+month.  I do this now in :func:`atelier.utils.last_day_of_month`.
+
+When committing this change, I also included a not yet working change
+in :mod:`atelier.invlib` for :cmd:`inv cov` which I had started after
+a voice meeting with Sandeep last weekend. Because I didn't want to
+throw away that work.
+
+I removed :mod:`lino_cosi.lib.auto` from the documented API.
+
+How to initialize a date to "today + N years"
+=============================================
+
+Here is a snippet of code which breaks once every four years on
+February 29::
+
+    tod = datetime.date.today()
+    self.ignore_dates_after = tod.replace(year=tod.year+5)
+
+A quick fix is to say::
+    
+    self.ignore_dates_after = tod.replace(year=tod.year+5, day=28)
+
+A better solution is::
+
+    from dateutil.relativedelta import relativedelta
+    self.ignore_dates_after = tod + relativedelta(years=5, day=tod.day)
+
+Above bug in :mod:`lino_xl.lib.cal` caused a downtime on two
+production sites today.
+
+
+
+Repair test suites and demo data
+================================
+
+Before really starting I had to tidy up and finish last week's work by
+adapting the test suites.  New fixture
+:mod:`lino_cosi.lib.invoicing.fixtures.demo2`.  A little new feature
+is the :meth:`lino.core.roles.UserRole.get_user_profiles`
+method. Usage example:
+
+>>> from lino import startup
+>>> startup("lino_cosi.projects.apc.settings.demo")
+>>> from lino_cosi.lib.ledger.roles import LedgerStaff
+>>> print(list(LedgerStaff.get_user_profiles()))
+[users.UserProfiles.admin:900]
+
+I also updated the Voga specs about :ref:`voga.specs.invoicing`.
+
+

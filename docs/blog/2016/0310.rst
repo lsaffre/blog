@@ -1,0 +1,48 @@
+==================================
+20160310 (Thursday, 10 March 2016)
+==================================
+
+Measuring test coverage
+=======================
+
+Sandeep suggested to undo my change about the `test_suite` in
+:cmd:`inv cov`.  But that doesn't seem to solve the problem.
+
+:cmd:`inv cov` in says "No data collected" and does not run any tests.
+When I run :meth:`TestLoader().discover` from the project's `root_dir`
+as it was before, then it just runs two tests
+(:class:`lino.utils.test.DocTest` and
+:class:`lino.utils.test.DocTest`, which fail because that's not the
+way they are designed to get called).
+
+Sandeep, do you understand why I did this? The standard way to run a
+project's test suite is to invoke `python setup.py test
+<http://pythonhosted.org/setuptools/setuptools.html#test-build-package-and-run-a-unittest-suite>`__. The
+"inv test" command is just a shortcut for this. And "inv cov" should
+also run that same command. Currently it builds its own test
+collector, but actually we should try to find out whether we can
+invoke "python setup.py test" without spawning a subprocess.
+
+Or even if the "perfect" solution is not possible, currently :cmd:`inv
+cov` works just for Atelier but not for Lino.  I created :ticket:`824`
+for this.
+
+
+UnicodeError in Voga and Welfare caused by #36
+==============================================
+
+:ticket:`822` and :ticket:`825` seem similar. I now found a fix (or at
+least a temporary workaround) for :ticket:`825` : it gets fixed by
+renaming the :meth:`__str__` of :class:`lino.modlib.users.models.User`
+back to :meth:`__unicode__`. I did a checkin with that change.
+
+Hamza, please check whether :ticket:`822` also gets fixed by `this
+change
+<https://github.com/lsaffre/lino/commit/ea1a068add34fe9200afe5fbabdda9a22faca8c0>`__. And
+please look for other models whose :meth:`__unicode__` has been
+renamed to :meth:`__str__`. I guess that the future script did
+this. And please investigate whether it is a good solution (I fear
+that my current workround will cause failures in Py3). And even if it
+works under Py3, then I'd like to understand why the future script
+wants to do that change.
+

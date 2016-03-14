@@ -1,0 +1,334 @@
+======================
+Tuesday, March 8, 2016
+======================
+
+Lino supports Python 3
+======================
+
+Good news from the base: Lino no longer requires Python 2!  Hamza is
+about to finish :ticket:`36`.  I merged his `PR for atelier
+<https://github.com/lsaffre/atelier/pull/15>`_.  He updated himself
+the test suite of `Lino XL
+<https://github.com/lino-framework/xl/pull/5>`_ (he can do this
+himself because XL is owned by the `lino-framework` organization on
+GitHub).  I merged Hamza's `lino_future
+<https://github.com/khchine5/lino/tree/lino_future>`__ branch into the
+Lino master::
+
+    $ git status
+    On branch master
+    Your branch is up-to-date with 'origin/master'.
+    nothing to commit, working directory clean
+    $ git merge hamza/lino_future
+    Updating 355b8b5..c9c9b53
+    Fast-forward
+     docs/dev/actors1.py                                             |   4 +-
+     docs/dev/choicelists.rst                                        |  10 +-
+     docs/dev/languages.rst                                          |   7 +-
+     docs/dev/site.rst                                               |  15 +-
+     docs/dev/translate/index.rst                                    |   4 +-
+     docs/tested/polly.rst                                           |   6 +-
+     docs/tutorials/actions/index.rst                                |  40 ++---
+     docs/tutorials/auto_create/index.rst                            |   4 +-
+     docs/tutorials/belref/index.rst                                 |   2 +-
+     docs/tutorials/gfktest/index.rst                                |   4 +-
+     docs/tutorials/gfktest/{test.py => test_gfk.py}                 |   0
+     docs/tutorials/mti/index.rst                                    |  28 +--
+     docs/tutorials/mti/models.py                                    |  18 +-
+     docs/tutorials/pisa/pisa.Person-1.pdf                           |   4 +-
+     fabfile.py                                                      |   2 -
+     lino/api/doctest.py                                             |   3 +-
+     lino/api/selenium.py                                            |   1 +
+     lino/core/actions.py                                            |  24 +--
+     lino/core/actors.py                                             |  29 +--
+     lino/core/auth.py                                               |   4 +-
+     lino/core/boundaction.py                                        |   1 +
+     lino/core/choicelists.py                                        |  77 ++++----
+     lino/core/constants.py                                          |   3 +-
+     lino/core/dbtables.py                                           |  15 +-
+     lino/core/ddh.py                                                |   7 +-
+     lino/core/fields.py                                             |   5 +-
+     lino/core/frames.py                                             |   1 +
+     lino/core/inject.py                                             |   6 +-
+     lino/core/kernel.py                                             |  11 +-
+     lino/core/keyboard.py                                           |   5 +-
+     lino/core/layouts.py                                            |  11 +-
+     lino/core/menus.py                                              |   8 +-
+     lino/core/merge.py                                              |   4 +-
+     lino/core/model.py                                              |  15 +-
+     lino/core/permissions.py                                        |   2 +
+     lino/core/plugin.py                                             |   7 +-
+     lino/core/renderer.py                                           |  27 +--
+     lino/core/requests.py                                           |  30 ++--
+     lino/core/roles.py                                              |   1 +
+     lino/core/site.py                                               | 126 +++++++------
+     lino/core/store.py                                              |  26 +--
+     lino/core/tablerequest.py                                       |  24 ++-
+     lino/core/tables.py                                             |   9 +-
+     lino/core/utils.py                                              |  40 +++--
+     lino/core/workflows.py                                          |   4 +-
+     lino/hello.py                                                   |   3 +-
+     lino/mixins/__init__.py                                         |  16 +-
+     lino/mixins/dupable.py                                          |  11 +-
+     lino/mixins/duplicable.py                                       |   3 +-
+     lino/mixins/human.py                                            |  12 +-
+     lino/mixins/periods.py                                          |   3 +-
+     lino/mixins/polymorphic.py                                      |   8 +-
+     lino/mixins/sequenced.py                                        |   8 +-
+     lino/mixins/uploadable.py                                       |   3 +-
+     lino/modlib/about/models.py                                     |  31 ++--
+     lino/modlib/addresses/mixins.py                                 | 165 +++++++++++++++++
+     lino/modlib/addresses/models.py                                 | 143 +++++++++++++++
+     lino/modlib/appypod/appy_renderer.py                            | 491 ++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/appypod/choicelists.py                              | 101 +++++++++++
+     lino/modlib/appypod/mixins.py                                   | 140 +++++++++++++++
+     lino/modlib/beid/mixins.py                                      | 606 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/blogs/models.py                                     | 132 ++++++++++++++
+     lino/modlib/boards/mixins.py                                    |  39 ++++
+     lino/modlib/boards/models.py                                    |  96 ++++++++++
+     lino/modlib/bootstrap3/renderer.py                              |   1 +
+     lino/modlib/bootstrap3/views.py                                 |   6 +-
+     lino/modlib/cal/mixins.py                                       | 844 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/cal/models.py                                       | 967 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/cal/ui.py                                           | 893 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/cal/utils.py                                        | 182 +++++++++++++++++++
+     lino/modlib/changes/models.py                                   |   6 +-
+     lino/modlib/comments/mixins.py                                  |   3 +-
+     lino/modlib/comments/models.py                                  |   6 +-
+     lino/modlib/concepts/models.py                                  |   5 +-
+     lino/modlib/contacts/dummy.py                                   |   1 +
+     lino/modlib/contacts/fixtures/demo.py                           |   1 +
+     lino/modlib/contacts/fixtures/demo_fr.py                        |   1 +
+     lino/modlib/contacts/fixtures/std.py                            |   9 +-
+     lino/modlib/contacts/mixins.py                                  |   7 +-
+     lino/modlib/contacts/models.py                                  |  22 +--
+     lino/modlib/countries/choicelists.py                            |   3 +-
+     lino/modlib/countries/mixins.py                                 |  10 +-
+     lino/modlib/countries/models.py                                 |  12 +-
+     lino/modlib/countries/utils.py                                  |   4 +-
+     lino/modlib/cv/mixins.py                                        | 130 ++++++++++++++
+     lino/modlib/cv/models.py                                        | 625 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/dupable_partners/mixins.py                          |  59 ++++++
+     lino/modlib/dupable_partners/models.py                          |  32 ++++
+     lino/modlib/events/models.py                                    |   9 +-
+     lino/modlib/events/tests/vor_tests.py                           |   2 +-
+     lino/modlib/excerpts/mixins.py                                  | 224 +++++++++++++++++++++++
+     lino/modlib/excerpts/models.py                                  | 902 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/export_excel/models.py                              |   2 +
+     lino/modlib/extensible/models.py                                | 243 +++++++++++++++++++++++++
+     lino/modlib/extjs/elems.py                                      |  27 +--
+     lino/modlib/extjs/ext_renderer.py                               |  43 ++---
+     lino/modlib/extjs/views.py                                      |  25 +--
+     lino/modlib/families/models.py                                  | 151 ++++++++++++++++
+     lino/modlib/gfks/fields.py                                      |   3 +-
+     lino/modlib/gfks/mixins.py                                      |   3 +-
+     lino/modlib/gfks/models.py                                      |  16 +-
+     lino/modlib/households/models.py                                | 480 +++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/humanlinks/models.py                                | 243 +++++++++++++++++++++++++
+     lino/modlib/importfilters/models.py                             |   8 +-
+     lino/modlib/jinja/loader.py                                     |   3 +-
+     lino/modlib/jinja/renderer.py                                   |   2 +-
+     lino/modlib/languages/models.py                                 |   3 +-
+     lino/modlib/lino_startup/__init__.py                            |   3 +-
+     lino/modlib/lino_startup/management/commands/dump2py.py         |   7 +-
+     lino/modlib/lino_startup/management/commands/initdb_demo.py     |   1 +
+     lino/modlib/lino_startup/management/commands/makedocs.py        |  17 +-
+     lino/modlib/lino_startup/management/commands/makescreenshots.py |   9 +-
+     lino/modlib/lino_startup/management/commands/makeui.py          |   7 +-
+     lino/modlib/lino_startup/management/commands/monitor.py         |   8 +-
+     lino/modlib/lino_startup/management/commands/run.py             |   1 +
+     lino/modlib/lists/models.py                                     | 110 ++++++++++++
+     lino/modlib/notes/models.py                                     | 271 ++++++++++++++++++++++++++++
+     lino/modlib/notifier/models.py                                  |   8 +-
+     lino/modlib/outbox/dummy.py                                     |  26 +++
+     lino/modlib/outbox/mixins.py                                    | 169 +++++++++++++++++
+     lino/modlib/outbox/models.py                                    | 397 ++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/pages/builder.py                                    |  69 +++++++
+     lino/modlib/pages/dummy.py                                      |  88 +++++++++
+     lino/modlib/pages/models.py                                     | 198 ++++++++++++++++++++
+     lino/modlib/plausibility/choicelists.py                         |   6 +-
+     lino/modlib/plausibility/models.py                              |   5 +-
+     lino/modlib/polls/models.py                                     |  54 +++---
+     lino/modlib/postings/dummy.py                                   |  16 ++
+     lino/modlib/postings/mixins.py                                  |  88 +++++++++
+     lino/modlib/postings/models.py                                  | 166 +++++++++++++++++
+     lino/modlib/print_pisa/models.py                                |   8 +-
+     lino/modlib/printing/choicelists.py                             |  15 +-
+     lino/modlib/printing/mixins.py                                  |   8 +-
+     lino/modlib/products/models.py                                  |  86 +++++++++
+     lino/modlib/projects/models.py                                  |  77 ++++++++
+     lino/modlib/reception/models.py                                 | 506 +++++++++++++++++++++++++++++++++++++++++++++++++++
+     lino/modlib/rooms/models.py                                     | 209 +++++++++++++++++++++
+     lino/modlib/stars/models.py                                     | 172 ++++++++++++++++++
+     lino/modlib/summaries/mixins.py                                 |   4 +-
+     lino/modlib/summaries/models.py                                 |   4 +-
+     lino/modlib/system/models.py                                    |   9 +-
+     lino/modlib/system/tests/lino_ui_tests.py                       |   2 +-
+     lino/modlib/thirds/models.py                                    |  46 +++++
+     lino/modlib/tinymce/models.py                                   |   3 +-
+     lino/modlib/tinymce/views.py                                    |   5 +-
+     lino/modlib/uploads/choicelists.py                              |   2 +-
+     lino/modlib/uploads/models.py                                   |  16 +-
+     lino/modlib/users/choicelists.py                                |   5 +-
+     lino/modlib/users/mixins.py                                     |   5 +-
+     lino/modlib/users/models.py                                     |  18 +-
+     lino/modlib/users/utils.py                                      |   3 +-
+     lino/modlib/vocbook/base.py                                     |  16 +-
+     lino/modlib/vocbook/models.py                                   |   2 +-
+     lino/modlib/wkhtmltopdf/choicelists.py                          |   1 +
+     lino/modlib/workflows/models.py                                 | 200 +++++++++++++++++++++
+     lino/projects/babel_tutorial/models.py                          |   3 +-
+     lino/projects/homeworkschool/models.py                          | 163 +++++++++++++++++
+     lino/setup_info.py                                              |   6 +-
+     lino/sphinxcontrib/actordoc.py                                  |  22 +--
+     lino/utils/__init__.py                                          |  84 +++++----
+     lino/utils/addressable.py                                       |   1 +
+     lino/utils/ajax.py                                              |   3 +-
+     lino/utils/choosers.py                                          |  12 +-
+     lino/utils/code.py                                              |   4 +-
+     lino/utils/config.py                                            |  13 +-
+     lino/utils/cycler.py                                            |   3 +-
+     lino/utils/dataserializer.py                                    |   8 +-
+     lino/utils/dbfreader.py                                         |  34 ++--
+     lino/utils/diag.py                                              |  20 ++-
+     lino/utils/dpy.py                                               |  46 ++---
+     lino/utils/editing.py                                           |   5 +-
+     lino/utils/html2odf.py                                          |   6 +-
+     lino/utils/html2text.py                                         |  59 +++---
+     lino/utils/html2xhtml.py                                        |   4 +-
+     lino/utils/htmlgen.py                                           |  10 +-
+     lino/utils/instantiator.py                                      |   9 +-
+     lino/utils/jinja.py                                             |   1 +
+     lino/utils/jscompressor.py                                      |  13 +-
+     lino/utils/jsgen.py                                             |  22 +--
+     lino/utils/latex.py                                             |   5 +-
+     lino/utils/log.py                                               |   1 +
+     lino/utils/mdbtools.py                                          |  10 +-
+     lino/utils/media.py                                             |   2 +
+     lino/utils/memo.py                                              |   8 +-
+     lino/utils/mldbc/mixins.py                                      |   8 +-
+     lino/utils/mti.py                                               |   5 +-
+     lino/utils/mytidylib.py                                         |  10 +-
+     lino/utils/odsreader.py                                         |  18 +-
+     lino/utils/pyuca.py                                             |   9 +-
+     lino/utils/quantities.py                                        |  10 +-
+     lino/utils/report.py                                            |   7 +-
+     lino/utils/requests.py                                          |   4 +-
+     lino/utils/restify.py                                           |   7 +-
+     lino/utils/screenshots.py                                       |   2 +
+     lino/utils/sendchanges.py                                       |   1 +
+     lino/utils/sqllog.py                                            |  12 +-
+     lino/utils/ssin.py                                              |  29 +--
+     lino/utils/textfields.py                                        |   5 +-
+     lino/utils/ucsv.py                                              |  22 ++-
+     lino/utils/weekly.py                                            |   1 +
+     lino/utils/xmlgen/__init__.py                                   |  11 +-
+     lino/utils/xmlgen/etree1.py                                     |   5 +-
+     lino/utils/xmlgen/html.py                                       |   6 +-
+     tasks.py                                                        |   4 -
+     204 files changed, 12029 insertions(+), 773 deletions(-)
+     rename docs/tutorials/gfktest/{test.py => test_gfk.py} (100%)
+     create mode 100644 lino/modlib/addresses/mixins.py
+     create mode 100644 lino/modlib/addresses/models.py
+     create mode 100644 lino/modlib/appypod/appy_renderer.py
+     create mode 100644 lino/modlib/appypod/choicelists.py
+     create mode 100644 lino/modlib/appypod/mixins.py
+     create mode 100644 lino/modlib/beid/mixins.py
+     create mode 100644 lino/modlib/blogs/models.py
+     create mode 100644 lino/modlib/boards/mixins.py
+     create mode 100644 lino/modlib/boards/models.py
+     create mode 100644 lino/modlib/cal/mixins.py
+     create mode 100644 lino/modlib/cal/models.py
+     create mode 100644 lino/modlib/cal/ui.py
+     create mode 100644 lino/modlib/cal/utils.py
+     create mode 100644 lino/modlib/cv/mixins.py
+     create mode 100644 lino/modlib/cv/models.py
+     create mode 100644 lino/modlib/dupable_partners/mixins.py
+     create mode 100644 lino/modlib/dupable_partners/models.py
+     create mode 100644 lino/modlib/excerpts/mixins.py
+     create mode 100644 lino/modlib/excerpts/models.py
+     create mode 100644 lino/modlib/extensible/models.py
+     create mode 100644 lino/modlib/families/models.py
+     create mode 100644 lino/modlib/households/models.py
+     create mode 100644 lino/modlib/humanlinks/models.py
+     create mode 100644 lino/modlib/lists/models.py
+     create mode 100644 lino/modlib/notes/models.py
+     create mode 100644 lino/modlib/outbox/dummy.py
+     create mode 100644 lino/modlib/outbox/mixins.py
+     create mode 100644 lino/modlib/outbox/models.py
+     create mode 100644 lino/modlib/pages/builder.py
+     create mode 100644 lino/modlib/pages/dummy.py
+     create mode 100644 lino/modlib/pages/models.py
+     create mode 100644 lino/modlib/postings/dummy.py
+     create mode 100644 lino/modlib/postings/mixins.py
+     create mode 100644 lino/modlib/postings/models.py
+     create mode 100644 lino/modlib/products/models.py
+     create mode 100644 lino/modlib/projects/models.py
+     create mode 100644 lino/modlib/reception/models.py
+     create mode 100644 lino/modlib/rooms/models.py
+     create mode 100644 lino/modlib/stars/models.py
+     create mode 100644 lino/modlib/thirds/models.py
+     create mode 100644 lino/modlib/workflows/models.py
+     create mode 100644 lino/projects/homeworkschool/models.py
+
+
+Afterwards I had a minor failure in the Lino test suite::
+
+    $ fab test
+    [localhost] local: python setup.py -q test
+    ...................F..............................................
+    ======================================================================
+    FAIL: test_gfktest (tests.DocsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/luc/work/lino/tests/__init__.py", line 147, in test_gfktest
+        self.run_django_manage_test('docs/tutorials/gfktest')
+      ...
+    AssertionError: python manage.py test --top-level-directory=/media/dell1tb/luc/work/lino/docs/tutorials/gfktest --noinput --failfast ({'cwd': 'docs/tutorials/gfktest'}) returned 1:
+    -----
+    Traceback (most recent call last):
+      ...
+      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/conf/__init__.py", line 120, in __init__
+        raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+    django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty.
+    ...
+
+This was because I had a dangling file :file:`test.pyc` in my working
+copy. (One of Hamza's changes had been to rename the module
+:file:`test.py` in the :file:`docs/tutorials/gfktest` directory
+because this name caused a wrong module import.)
+
+
+A failure while building the docs was probably not noticed by Hamza
+because it occurs only with the newest Sphinx version.
+
+I then updated the :xfile:`.travis.yml` file and did the last steps
+for releasing Lino 1.7 to PyPI.  Before actually releasing it, I
+committed and waited for the results from Travis and Drone.
+
+They are unfortunately still failing, saying that 
+`Reportlab Version 2.1+ is needed!
+<https://travis-ci.org/lsaffre/lino/jobs/114406227#L1114>`__.
+This is something I can delegate to you, Hamza :-)
+:ticket:`820`.
+
+
+
+I adapted the test suite of :ref:`cosi` to recent changes (partly
+:ticket:`36` but mostly :ticket:`147`)
+
+
+
+UnicodeError in Voga after #36
+==============================
+
+I reported :ticket:`822`.
+
+Another ticket for Hamza because it is caused by :ticket:`36`.  How to
+reproduce it (in development version of Voga)::
+
+    $ cd lino_voga/projects/edmund
+    $ ./initdb_tmp
+    ...
+    UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 1: ordinal not in range(128)
+

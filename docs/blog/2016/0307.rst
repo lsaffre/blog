@@ -1,0 +1,32 @@
+=====================
+Monday, March 7, 2016
+=====================
+
+I continued to work on on data import (:manage:`cpas2lino`) for
+:ticket:`147`.
+
+
+Since deleting the objects takes a considerable time, I tried the
+following. I create a :file:`delete_ledger.sql` with this content (a
+manual selection from the output of :manage:`sqlflush`)::
+
+    BEGIN;
+    DELETE FROM "ledger_voucher";
+    DELETE FROM "vatless_accountinvoice";
+    DELETE FROM "finan_bankstatement";
+    DELETE FROM "finan_journalentryitem";
+    DELETE FROM "finan_bankstatementitem";
+    DELETE FROM "ledger_movement";
+    DELETE FROM "vatless_invoiceitem";
+    DELETE FROM "finan_paymentorder";
+    DELETE FROM "finan_journalentry";
+    DELETE FROM "finan_paymentorderitem";
+    COMMIT;
+
+And then I run the following command before doing :manage:`cpas2lino`::
+
+    $ cat delete_ledger.sql | python manage.py dbshell
+    
+But note that the output of `sqlfluh` depends on the database
+engine. For MySQL it is different.
+

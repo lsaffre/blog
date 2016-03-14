@@ -1,0 +1,101 @@
+=====================
+Friday, March 4, 2016
+=====================
+
+I am continuing to work on cpas2lino (i.e. importing legacy data from
+their TIM database to Lino). This is part of :ticket:`143`.
+
+When you know the the voucher model, how to find out the model of the
+items of that voucher type?
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.doctests')
+>>> from lino.api.doctest import *
+>>> vatless.AccountInvoice.items.rel.related_model
+<class 'lino_cosi.lib.vatless.models.InvoiceItem'>
+
+I added a new method
+:meth:`VoucherType.get_items_model<lino_cosi.lib.ledger.choicelists.VoucherType.get_items_model>`.
+
+:mod:`lino.utils.dbfreader` fails to loop through big database files
+which contained long sequences of *deleted* records. Workaround is to
+open it with `deleted=True` and to filter yourself all deleted
+records.
+
+:mod:`lino.utils.dbfreader` also had some problems with date fields.
+
+
+"Interne Referenz" ("Gegenstand") und "Externe Referenz"
+========================================================
+
+I changed the label of
+:attr:`lino_cosi.lib.finan.mixins.FinancialVoucherItem.remark` from
+"Remark" to "External reference". The internal name of this field
+"remark" is suboptimal.
+
+Einiges an Aufwand verursachten mir die Überlegungen, wie ich die
+beiden Felder `NB1` und `NB2` (die es in TIM jeweils pro IMP und pro
+IML gibt) nach Lino importiere.
+
+========= ========== ============
+TIM       invoice    financial
+========= ========== ============
+IMP->NB1  narration  narration
+--------- ---------- ------------
+IMP->NB2  your_ref   item_remark
+--------- ---------- ------------
+IML->NB1  --         --
+--------- ---------- ------------
+IML->NB2  title      remark
+========= ========== ============
+
+
+Beide Felder sind Beschreibungen einer Transaktion. NB1 ist "für
+internen Gebrauch2 und NB2 "für externen Gebrauch".
+
+Macht die NB1 pro IML Sinn? Wird das benutzt in TIM? Ich kann mir
+momentan kein Beispiel vorstellen.
+
+Released Atelier 0.0.18
+=======================
+
+I did an official release of :mod:`atelier` (version 0.0.18) because
+the new function :func:`atelier.utils.last_day_of_month` is needed by
+:ref:`xl`.
+
+It was mabye a bad idea to add this function to atelier. Maybe we
+should rather move all `dateutil` utility functions (also
+e.g. :func:`i2d <atelier.utils.i2d>`) from Atelier to Lino. To be
+continued.
+
+
+Deleting all rows of a table
+============================
+
+INFO:lino.api.dd:Delete 41090 rows from <class 'lino_cosi.lib.finan.models.PaymentOrderItem'>.
+
+
+Commits
+=======
+
+I started to run tests on their server and therefore made a series of
+commits (in Lino, Lino XL, :ref:`welfare` and :ref:`cosi`).
+
+The following commands will run a few times on their server this
+weekend:
+
+  $ time python manage.py cpas2lino /mnt/oeshz_home_server/ANWPROG/TIM/CPAS
+
+A typical run lasts almost 2.5 hours::
+
+    real	142m53.273s
+    user	113m17.580s
+    sys	1m59.704s
+
+Here are the (slightly modified) last lines of output of
+:manage:`cpas2lino`:
+
+.. literalinclude:: 0304.py
+
+I will talk with the customer about these on Monday.
+

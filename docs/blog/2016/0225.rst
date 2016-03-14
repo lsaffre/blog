@@ -1,0 +1,27 @@
+===========================
+Thursday, February 25, 2016
+===========================
+
+Today I wrote the new module :mod:`lino_cosi.lib.invoicing` which is a
+reimplementation of :mod:`lino_cosi.lib.auto.sales`. Main advantages
+are:
+
+- Use a database table (an "invoicing plan"), not a virtual table
+- Make it possible to generate other invoices than sales invoices
+
+The rest of this post are just some work notes.
+
+>>> import lino_cosi.lib.invoicing
+>>> import lino_cosi.lib.courses
+>>> from lino import startup
+>>> # startup('lino_xl.projects.min2.settings.demo')
+>>> startup('lino_voga.projects.roger.settings.demo')
+>>> from lino.api import rt
+>>> fk = rt.modules.contacts.Role._meta.get_field('person')
+>>> fk.rel.to
+<class 'lino_voga.lib.contacts.models.Person'>
+
+
+Exception: lino_voga.projects.roger.lib.courses plugin tries to extend unresolved model 'courses.Line'
+
+

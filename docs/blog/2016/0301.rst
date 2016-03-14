@@ -1,0 +1,128 @@
+======================
+Tuesday, March 1, 2016
+======================
+
+Deleting a starred object left the stars with broken GFK "owner"
+================================================================
+
+I had yet another occurence of a problem which I now reported and
+fixed as :ticket:`805`::
+
+    Traceback (most recent call last):
+      ...
+      File "/lino/lino/core/site.py", line 2935, in get_welcome_messages
+        for msg in h(ar):
+      File "/lino/lino/modlib/stars/models.py", line 149, in welcome_messages
+        for obj in qs])
+      File "/lino/lino/core/requests.py", line 711, in obj2html
+        return self.renderer.obj2html(self, *args, **kwargs)
+      File "/lino/lino/modlib/extjs/ext_renderer.py", line 369, in obj2html
+        h = self.instance_handler(ar, obj)
+      File "/lino/lino/modlib/extjs/ext_renderer.py", line 357, in instance_handler
+        a = obj.get_detail_action(ar)
+    AttributeError: 'NoneType' object has no attribute 'get_detail_action'
+
+This was disturbing because it caused a blocking :term:`ise` in
+the welcome page.
+    
+I wrote a test case (in :mod:`lino_noi.projects.team`) to reproduce
+this. The problem was because the `controller_is_optional` model
+attribute was being ignored.  I created new model method
+:meth:`update_controller
+<lino.modlib.gfks.mixins.Controllable.update_controller>` instead.
+This feature was used only by :mod:`lino_xl.lib.stars` so far.
+
+Lino now (by default) refuses to
+delete a starred object.
+
+
+
+Vocabulary in Lino Welfare
+==========================
+
+"Payment instruction" ("Zahlungsanweisung") becomes 
+"Disbursement order" ("Ausgabeanweisung")
+
+I started to analyze the different use cases for these documents in
+TIM.
+
+- Two new fields :attr:`item_account
+  <lino_cosi.lib.finan.mixins.FinancialVoucher.item_account>` and
+  :attr:`item_remark
+  <lino_cosi.lib.finan.mixins.FinancialVoucher.item_remark>`.
+
+- Currently we use `narration` for what they call "Internal reference"
+  (interne Referenz), and `remark` for their "External reference".
+
+
+I removed an assertion in :func:`lino.core.inject.update_field`
+because it seems to be no longer useful after Django 1.8 (and because
+it gave a false positive) when I try to override the `verbose_name`
+for these fields.
+
+
+invalid literal for int() with base 10: 'fdpkvcnrfdybhur'
+=========================================================
+
+It seems that somebody installed some robot which does a request like
+this every now and then:
+
+  http://belref.lino-framework.org/countries/PlacesByPlace?limit=fdpkvcnrfdybhur
+
+Such requests now just raise a `SuspiciousOperation` "Invalid value
+for limit or offset" instead of causing an :term:`ise`.
+
+Which still causes Lino to send me an email each time. For the moment
+it's just annoying.
+
+Why do people install such robots?  What is their motivation?
+
+
+Übersicht Journale und Dokumentarten
+====================================
+
+Ich habe mir mal eine Übersichtstabelle der bestehenden Journalgruppen
+und Dokumentarten gemacht, wobei ich meine Aufmerksamkeit auf folgende
+Felder lenke (in Klammern die Feldbezeichnungen in Lino):
+
+- A = Haushaltsartikel (`account`)
+- NB1 = Gegenstand (`narration`)
+- NB2 = Externe Referenz (`your_ref`)
+- P1 = Partner. Der Sozialhilfeempfänger, um den es geht. (`project`)
+- P2 = Empfänger. Optionaler Zahlungsempfänger falls Zahlung an einen Dritten geht. (`partner`)
+
+Was mich interessiert, ist, wie diese Felder verteilt sind zwischen
+"oben" (IMP) und "unten" (IML), was seinerseits in TIM durch die
+Bildschirmansicht (View) definiert ist.
+
+Außerdem die Attribute P ("Partner auswählen beim Erstellen") und B
+("HH-Artikel auswählen beim Erstellen").
+
+================== = = ===== ================= ================== ========================
+Journalgruppe      P B View  Felder IMP         Felder IML        Lino database model
+================== = = ===== ================= ================== ========================
+Bestellung         P - BST   P1, P2, NB1, NB2   A, NB1            `vatless.ProjectInvoice`
+Rechnungseingang   P - REG   P1, P2, NB1, NB2   A, NB1            `vatless.ProjectInvoice`
+Forderungen        - - FFO   P1, P2, NB1, NB2   A, NB1            -
+Anweisungen        - B AAW   A, NB1, NB2        P1, P2, NB1, NB2  `finan.DisbursementOrder`
+Zahlungsaufträge   - - ZAU   NB1, NB2           P1, P2            `finan.PaymentOrder`
+Tresoreriejournale - - KAS   -                  P1, P2, NB1, NB2  `finan.BankStatement`
+Haushalt           P - HHB   NB1                A, NB1            `finan.JournalEntry`
+================== = = ===== ================= ================== ========================
+
+
+Bemerkungen
+
+- Bestellungen und Forderungen werden weiter in TIM gemacht (sind
+  keine Sozialhilfeausgaben).
+
+- Haushalt, Zahlungsaufträge und Tresoreriejournale sind soweit okay
+
+- bzgl. Rechnungseingang hat Lino zwei Varianten: 
+  - ProjectInvoicesByJournal (klassische REG) - Der Klient wird im
+    *oberen* Teil erfasst (maximal ein Klient pro Rechnung).
+
+  - InvoicesByJournal (Sammelrechnungen) : 
+    Der Klient wird im *unteren* Teil (pro Zeile) erfasst
+
+

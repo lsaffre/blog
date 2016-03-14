@@ -23,12 +23,33 @@ only values, not formulas. About 90 minutes of work!
 The number of participants
 ==========================
 
-Ticket :ticket:`788` starts to disturb.  I moved the `.odt` templates
-from :mod:`lino.modlib.lino_startup` to :mod:`lino.modlib.appypod`.
-Then I discovered that this is just another instance of our good old
-friend :ticket:`620`.  I'd like to talk with somebody about this
-:ticket:`620` because I am undecided whether it is worth working on
-it.
+Alexa would like to see the total number of participants of a
+course. Actually the total of the
+:attr:`lino_cosi.lib.courses.models.Enrolment.places` column.
+Unfortunately Lino does not show totals in an `Ext.grid`.  Fortunately
+it does show them in HTML and pdf view.  But unfortunately both these
+views don't work for :class:`EnrolmentsByCourse
+<lino_cosi.lib.courses.models.EnrolmentsByCourse>`, for different
+reasons. I opened ticket :ticket:`788` for this composite problem.
+
+Printing the table to pdf fails due to our good old friend
+:ticket:`620`.  I am undecided whether this ticket is worth working on
+it.  It looks tempting to reimplement the pdf view using
+:mod:`wkhtmltopdf <lino.modlib.wkhtmltopdf>` in order to avoid the
+problems of :mod:`html2odf <lino.utils.html2odf>`.  OTOH :mod:`appypod
+<lino.modlib.appypod>` remains important, e.g. for users who want Lino
+to generate editable documents (`.rtf`).
+
+Printing the table to html works, *but* it does not respect manually
+added columns (:ticket:`789`, HTML view of a table ignores manual
+modifications to column layout). And :class:`EnrolmentsByCourse
+<lino_cosi.lib.courses.models.EnrolmentsByCourse>` currently does not
+show the `places` column. So even if you unhide it manually, the HTML
+button still won't show you the sum of your places.
+
+Side effect: I moved the `.odt` templates used by
+:class:`lino.modlib.appypod.mixins.PrintTableAction` from
+:mod:`lino.modlib.lino_startup` to :mod:`lino.modlib.appypod`.
 
 Meanwhile, as a workaround for Alexa, I started to make a new
 printable "Overview" document of a course.  A new template
@@ -37,9 +58,12 @@ printable "Overview" document of a course.  A new template
 document.
 
 In order to get the sums in this document, I added
-:class:`lino.utils.SumCollector` to the default context of a Jinja
-template in :mod:`lino.modlib.jinja.renderer`, and I optimzed a bit on
-the API of that helper class.
+:class:`SumCollector <lino.utils.SumCollector>` to the default context
+of a Jinja template in :mod:`lino.modlib.jinja.renderer`, and I
+optimzed a bit on the API of that helper class. I am not yet really
+proud of that API, though.  And oops, later I noticed that these
+optimzations caused a failure in :ref:`welfare` so that I had to undo
+them (partly).
 
 
 Lino XL, the Lino Extension Library
@@ -51,21 +75,18 @@ In a short brainstorming session with Hamza we found the name for the
 that new Lino repository. 
 
 Hamza pointed out that lino_erp or "Enterprise" is wrong, because
-:ref:`cosi` , :ref:`voga` and others are and will always be part of
-Lino's Enmterprise functionality.
+:ref:`cosi` , :ref:`voga` are also "Enterprise" functionality.  
 
-It should rather be "Lino Extensions".  For example
-:mod:`lino.modlib.contacts` and :mod:`lino.modlib.cal` should
-certainly go into this new Lino Extensions.  Because if somebody wants
-to write her own implementation for contact management, then they
-should be free to do it.  They would use just Lino Core and not Lino
-extensions.  Only the “System plugins”, “User interfaces” and
+For example :mod:`lino.modlib.contacts` and :mod:`lino.modlib.cal`
+should certainly go into this new "extended" Lino.  Because if
+somebody wants to write her own implementation for contact management,
+then they should be free to do it.  They would use just Lino Core and
+not Lino extensions.  Only the “System plugins”, “User interfaces” and
 "Utilities" (http://lino-framework.org/api/lino.modlib.html) should
 remain in the core Lino repo.
 
 So the name will be Lino XL ("Extension Library"), Python name
 `lino_xl`.
-
 
 Another question was: A clone of the Lino repo is currently 120 MB,
 most of which is "useless" history. Should we use the occasion and

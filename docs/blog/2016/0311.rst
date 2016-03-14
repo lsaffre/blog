@@ -1,0 +1,166 @@
+======================
+Friday, March 11, 2016
+======================
+
+Okay, the answer to my yesterday's question is in the `Django
+migration guide
+<https://docs.djangoproject.com/es/1.9/topics/python3/#str-and-unicode-methods>`_.
+
+So I must "just" convert all those models:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.doctests')
+>>> from lino.api import dd, rt
+>>> for m in rt.models_by_base(dd.Model):
+...     if '__unicode__' in m.__dict__ and '__str__' not in m.__dict__:
+...         print(m)
+
+Above code snippet gave a lot of lines before the change.
+
+To reduce code changes and facilitate my task I added the decorator to
+:mod:`lino.api.dd`::
+
+  from django.utils.encoding import python_2_unicode_compatible
+
+After this change there was another failure::
+
+    $ go min1
+    $ python manage.py test
+    ...
+    Traceback (most recent call last):
+      ...
+      File "/lino/lino/modlib/extjs/views.py", line 461, in get
+        datarec = ar.elem2rec_detailed(elem)
+      File "/lino/lino/core/requests.py", line 843, in elem2rec_detailed
+        rec = ar.elem2rec1(rh, elem, **rec)
+      File "/lino/lino/core/requests.py", line 814, in elem2rec1
+        rec.update(data=rh.store.row2dict(ar, elem))
+      File "/lino/lino/core/store.py", line 1116, in row2dict
+        fld.value2dict(v, d, row)
+      File "/lino/lino/core/store.py", line 246, in value2dict
+        value, text = self.get_value_text(v, row)
+      File "/lino/lino/core/store.py", line 260, in get_value_text
+        return (v, str(i[1]))
+      File "/python2.7/site-packages/future/types/newstr.py", line 102, in __new__
+        return super(newstr, cls).__new__(cls, value)
+      File "/python2.7/site-packages/django/utils/functional.py", line 133, in __str__
+        return str(self.__cast())
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xe4' in position 4: ordinal not in range(128)
+
+I fixed this (in `Lino commit
+70ae8a6bc74
+<https://github.com/lsaffre/lino/commit/b44f6fd3c7c5a628cc7070bec9a0870ae8a6bc74>`__) by modifying the :meth:`get_value_text` method of
+:class:`lino.core.store.ComboStoreField` and the :meth:`as_callable`
+method of :class:`lino.core.choicelists.Choice`.
+
+
+
+maximum recursion depth exceeded while calling a Python object
+==============================================================
+
+Yet another problem then arose in :ref:`cosi`: a "RuntimeError: maximum
+recursion depth exceeded while calling a Python object" error::
+
+
+      File "/media/dell1tb/luc/work/lino/lino/modlib/extjs/views.py", line 461, in get
+        datarec = ar.elem2rec_detailed(elem)
+      File "/media/dell1tb/luc/work/lino/lino/core/requests.py", line 843, in elem2rec_detailed
+        rec = ar.elem2rec1(rh, elem, **rec)
+      File "/media/dell1tb/luc/work/lino/lino/core/requests.py", line 814, in elem2rec1
+        rec.update(data=rh.store.row2dict(ar, elem))
+      File "/media/dell1tb/luc/work/lino/lino/core/store.py", line 1122, in row2dict
+        fld.value2dict(v, d, row)
+      File "/media/dell1tb/luc/work/lino/lino/core/store.py", line 246, in value2dict
+        value, text = self.get_value_text(v, row)
+      File "/media/dell1tb/luc/work/lino/lino/core/store.py", line 285, in get_value_text
+        return (v.pk, str(v))
+      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/future/types/newstr.py", line 102, in __new__
+        return super(newstr, cls).__new__(cls, value)
+      File "lino_cosi/lib/ledger/models.py", line 184, in __str__
+        s = super(Journal, self).__str__()
+      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/utils/six.py", line 842, in <lambda>
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+      File "lino_cosi/lib/ledger/models.py", line 184, in __str__
+        s = super(Journal, self).__str__()
+      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/utils/six.py", line 842, in <lambda>
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+      File "lino_cosi/lib/ledger/models.py", line 184, in __str__
+        s = super(Journal, self).__str__()
+
+
+This was caused by the following application code (in
+:class:`lino_cosi.lib.ledger.models.Journal`)::
+
+    def __str__(self):
+        s = super(Journal, self).__str__()
+        if self.ref:
+            s += " (%s)" % self.ref
+        return s
+
+I replaced the line::
+
+        s = super(Journal, self).__str__()
+
+by::
+
+        s = dd.babelattr(self, 'name')
+
+that is, (in `this commit
+<https://github.com/lsaffre/lino-cosi/commit/ac9236869a37c6da6770a3d1fb639f12053930d9>`__)
+I manually did what the call to :func:`super` should have done. Seems
+that Django's decorator changes the behaviour of the :func:`super`
+object.
+
+
+
+'NoneType' object has no attribute 'groups'
+===========================================
+
+When doing :cmd:`fab initdb` in Lino Welfare, I get::
+
+    appy.pod.actions.EvaluationError: Problem installing fixture '.../lino_xl/lib/excerpts/fixtures/demo2.py': Error while evaluating the expression "html(body)" defined in the "from" part of a statement. AttributeError: 'NoneType' object has no attribute 'groups'
+
+It seems that :ref:`appy` is not compatible with future. You cannot
+use a futurized Lino and a non-futurized Appy together.  
+
+I don't want to go back, so I must help Gaetan going forward: by
+futurizing Appy!
+
+I downloaded a clone of `appy framework
+<https://code.launchpad.net/appy>`__ and tried to `futurize
+<http://python-future.org/quickstart.html>`__ it::
+
+    $ pip uninstall appy
+    ...
+    Successfully uninstalled appy-0.9.2
+    
+    $ cd ~/repositories
+    $ bzr branch lp:appy
+    $ cd appy
+    $ find -name '*.py' | xargs futurize -wn
+    ...
+    RefactoringTool: Warnings/messages while refactoring:
+    RefactoringTool: ### In file ./fields/workflow.py ###
+    RefactoringTool: Line 17: absolute and local imports together
+    RefactoringTool: ### In file ./shared/utils.py ###
+    RefactoringTool: Line 230: could not convert: raise "Sorry, I can't find a temp folder on your machine."
+    RefactoringTool: Python 3 does not support string exceptions
+    
+Okay until here. Then a little problem::
+    
+    $ pip install -e .
+    Directory '.' is not installable. File 'setup.py' not found.
+
+To solve this, I moved the appy repo into my custom :envar:`PYTHONPATH`::
+
+  $ mv appy ~/mypy
+
+But that was only the little problem.  The bigger problem is that
+futurize is just a little helper for resolving superficial
+problems. The true problems are hidden. And it seems that Appy does
+quite some fiddling with strings in different encodings.
+
+Actually the problem is easy: all the excerpts in
+:mod:`lino_xl.lib.excerpts.fixtures.demo2` fail to print.  If I set
+`SEVERE = False` in that module, the `initdb_demo` passes.
+

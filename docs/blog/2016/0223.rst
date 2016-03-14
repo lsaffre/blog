@@ -1,0 +1,136 @@
+==========================
+Tuesday, February 23, 2016
+==========================
+
+
+I am still in the final sprint for Lino Voga.
+
+The first release with splitted Lino
+====================================
+
+I upgraded :ref:`voga` on the :ref:`eiche` server in order to show to
+Alexa my first suggestion for :ticket:`787`. Some translations and
+layout optimizations.
+
+When running :cmd:`git pull` I still had some messages of style
+:message:`rm: remove write-protected regular file
+'./lino_cosi/lib/courses/models.pyc'?` which I now hopefully fixed by
+doing::
+
+  $ sudo chown -R admin:admin ~/repositories
+
+As expected, restoring the snapshot failed with a traceback::
+
+    $ python manage.py run snapshot/restore.py
+    ...
+    Traceback (most recent call last):
+      ...
+      File "cal_room.py", line 4, in <module>
+        loader.save(create_cal_room(1,[u'Eupen (Spiegelsaal)', u'Eupen (salle miro\xeet\xe9e)'],101,None,None,6,2))
+      File "snapshot/restore.py", line 437, in create_cal_room
+      ...
+    TypeError: 'tariff_id' is an invalid keyword argument for this function
+
+This was because I did not write a migrator for yesterday's database
+changes.  I didn't do this because it is easier to just edit the
+:xfile:`restore.py` file. That file contains::
+
+    def create_cal_room(id, name, company_id, contact_person_id, contact_role_id, tariff_id, calendar_id):
+        kw = dict()
+        kw.update(id=id)
+        if name is not None: kw.update(bv2kw('name',name))
+        kw.update(company_id=company_id)
+        kw.update(contact_person_id=contact_person_id)
+        kw.update(contact_role_id=contact_role_id)
+        kw.update(tariff_id=tariff_id)
+        kw.update(calendar_id=calendar_id)
+        return cal_Room(**kw)
+    
+I just needed to change the line with `tariff_id` into::
+    
+        kw.update(fee_id=tariff_id)
+
+And similar for `create_courses_line` and `create_courses_course`.
+    
+En passant I found a workaround for :ticket:`788`. The problem was
+caused by the following virtual column::
+
+
+    @dd.virtualfield(dd.HtmlBox(_("Participant")))
+    def pupil_info(cls, self, ar):
+        elems = [ar.obj2html(self.pupil,
+                             self.pupil.get_full_name(nominative=True))]
+        elems += [', ']
+        elems += join_elems(
+            list(self.pupil.address_location_lines()),
+            sep=', ')
+        return E.div(*elems)
+
+The real guilty is :mod:`lino.utils.html2odf` who does not know how to
+convert this to valid ODF, but we can avoid our problem by changing
+the last line into::
+
+        return E.p(*elems)
+
+Linking places to a map image
+=============================
+
+Google Maps knows about `Vana-Vigala
+<https://www.google.ee/maps/place/Vana-Vigala,+78003+Rapla+County/@58.7726168,24.2192473,13z/data=!3m1!4b1!4m2!3m1!1s0x46ed3940640fcbd9:0xab9ab4b052666943>`__.
+And of course Google Maps has an API to embed this map into an iframe
+`<iframe>`.
+But that API is probably not
+free and I won't invest my time into this unless somebody forces me
+(e.g. using money ;-)
+
+But also OpenStreetMap knows `Vana-Vigala
+<https://www.openstreetmap.org/relation/354530>`__, and they have a
+quick HTML snippet with an `<iframe>`:
+
+.. raw:: html
+
+    <iframe width="425" height="350" frameborder="0" scrolling="no"
+    marginheight="0" marginwidth="0"
+    src="http://www.openstreetmap.org/export/embed.html?bbox=24.140567779541016%2C58.756449286833046%2C24.301071166992188%2C58.82031895274005&amp;layer=mapnik"
+    style="border: 1px solid black">
+    </iframe>
+    <br/>
+    <small>
+    <a href="http://www.openstreetmap.org/#map=13/58.7884/24.2208">Bigger
+    map</a>
+    </small>
+
+So it should be possible to automatically include such a picture on a
+virtual field in a Lino application.
+
+But why is the village border missing on the iframe while it is
+visible when using the link to the "relation"?
+
+
+Inheriting quick search fields
+==============================
+
+I changed the kernel's (:mod:`lino.core.kernel`) behaviour about how
+:attr:`quick_search_fields
+<lino.core.model.Model.quick_search_fields>` should be
+inherited. Until now they were *never* inherited, even not from an
+abstract base class. Now they are *always* inherited. If you want to
+not inherit them from a parent using standard MRO, then you must set
+that field explictly to `None`.
+
+Manually settable simulated date
+================================
+
+Until now we had :attr:`lino.core.site.Site.the_demo_date` which is
+useful when generating demo data. 
+
+Now we also have
+:attr:`lino.modlib.system.models.SiteConfig.simulate_today` which is
+useful e.g. when Alexa needs to generate invoices *à postériori*.
+
+Miscellaneous
+=============
+
+- Compute amount when fee changed.
+- Some tables still used some old versino of
+  :meth:`get_simple_parameters<lino.core.actors.Actor.get_simple_parameters>`

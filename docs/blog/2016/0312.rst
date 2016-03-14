@@ -1,0 +1,58 @@
+========================
+Saturday, March 12, 2016
+========================
+
+Still working on :ticket:`825`. 
+
+Found one problem (the lazy objects created by
+:meth:`lino.core.choicelists.ChoiceList.display_text` worked only for
+`newstr`, not for `six.text_type`.
+
+The error is so difficult to find because something is hiding the real
+traceback. I see only "'NoneType' object has no attribute 'groups'"
+but have no idea which code causes this.
+
+I decided to attack from another side: I repair the test suite for
+Voga. Maybe the same bug appears there in another form. Or maybe I get
+new ideas.  I didn't do this until now because officially Hamza is
+working on it.  But Hamza is sleeping right now (or at least I hope so
+(time shift 2 hours)) and did not commit anything yesterday.
+Theoretically we should do this together because this conversion is
+really very complex and we can learn from each other here.  But I am
+in a hurry because this is blocking both Voga and Welfare where three
+important customers are waiting for results.
+
+Ha! And I found one bug with a probably wide area of possible
+consequences: :meth:`str2kw` did not return a unicode (i.e. a
+`newstr`) but an encoded string.
+
+And then some (meanwhile) trivial changes. Yes it is a pity that we
+didn't do this together. But okay.  So here is another set of commits
+in lino, xl, cosi and voga (which together fix the voga test suite).
+
+Unfortunately this bug was not the cause for my "'NoneType' object has
+no attribute 'groups'" problem.
+
+But we are now almost there. Our last problem (for :ticket:`36`) is::
+
+  'NoneType' object has no attribute 'groups'
+
+which occurs both in :ref:`noi` and in :ref:`welfare` during :cmd:`fab
+initdb`.  It is probably caused by the fact that these projects use
+:ref:`appy` which is not yet futurized.
+
+
+Update (9h38) : I found the place which causes the exception: it is in
+:mod:`appy.shared.css`. So yes, we need to futurize appy.
+
+The futurize script broke the following code (in appy) by changing::
+
+    from appy.shared.zip import unzip, zip
+    zip(fileName, tempFolder, odf=True)
+
+into::
+
+    from builtins import zip
+    from appy.shared.zip import unzip, zip
+    list(zip(fileName, tempFolder, odf=True))
+

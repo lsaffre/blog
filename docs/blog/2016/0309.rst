@@ -1,0 +1,45 @@
+===================================
+20160309 (Wednesday, 09 March 2016)
+===================================
+
+HTML report for test coverage
+=============================
+
+Sandeep suggested to add the following line to
+:func:`atelier.invlib.run_tests_coverage`::
+
+  cov.html_report(include=cov.get_data().measured_files())
+
+Of course. Good idea, Sandeep! I extended it a bit::
+
+    htmlcov = ctx.root_dir.child('htmlcov')
+    if htmlcov.exists():
+        print("Writing html report to %s" % htmlcov)
+        cov.html_report(include=cov.get_data().measured_files())
+
+That is: the html report get's created only when a directory
+named :xfile:`htmlcov` exists.
+
+More about test coverage
+========================
+
+
+I also saw that `inv cov` did not not use the `test_suite` specified
+in the project's :xfile:`setup.py` but discovered test cases in the
+project's `root_dir`. In simple projects the result is the same.
+
+I tried :cmd:`inv cov` on Lino (after adding a :xfile:`.coveragerc`
+file)
+
+This revealed a problem which I had seen with Hamza before (and that
+day Hamza had explained me how to work around it)::
+
+  TypeError: object.__new__(NotImplementedType) is not safe, use NotImplementedType.__new__()
+
+I guess that we must remove the necessity of having `current_project`
+in our `ctx` for invoke.
+
+But even after fixing this, :cmd:`inv cov` in Lino still says "No data
+collected".
+
+

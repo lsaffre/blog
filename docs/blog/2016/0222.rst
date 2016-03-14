@@ -1,0 +1,142 @@
+=========================
+Monday, February 22, 2016
+=========================
+
+Splitted Lino into "Core" and "Extension Library"
+=================================================
+
+Hamza did good work this weekend. On Saturday we started
+:ticket:`356`, and he continued on his own while I had a week-end with
+almost no computer time.  Now I merged his work into the masters of
+Lino and :ref:`xl` and continued where he stopped.  It took me less
+than a day. This was an example of perfect teamwork!  We can also say
+Bravo to the Python language which enables us to do such fundamental
+architechtural changes with such little effort.
+
+I moved :file:`lino_xl/projects/xl/locale` to
+:file:`lino_xl/lib/xl/locale` (this was probably a typo).
+
+Yes, in Lino both fab initdb and fab test work.
+
+:cmd:`fab initdb` in :ref:`xl` failed with an error *AttributeError:
+'NoneType' object has no attribute 'replace'*. I fixed this by a
+change in atelier: `run_in_demo_projects` now supports projects whose
+:attr:`cache_dir <lino.core.site.Site.cache_dir>` is `None` (the run
+the test suite in the project directory in these
+cases). :mod:`lino_xl.projects.i18n` is such a case.  But I don't know
+why we didn't have this problem earlier (but see later).
+
+Checkin because now I can reproduce the problem where Hamza was stuck
+yesterday evening::
+
+  django.core.exceptions.ValidationError: {'build_method': [u'This
+  field cannot be null.']}
+
+I have no explanation why this problem occurred now, but I worked
+around it by making the :attr:`build_method` field of a
+:class:`CachedPrintable <lino.modlib.printing.mixins.CachedPrintable>`
+nullable. Indeed it seems that this was some historic requirement, or
+if in the future we discover some code which relies on this field
+being non-nullable, then we should change that code.
+
+
+Then I started to look at the :cmd:`fab test` failures in
+:ref:`xl`. It seems that there is some work to to::
+
+    $ fab test
+    [localhost] local: python setup.py -q test
+    FEEEEEFFFEEEFFFEFEEEEFEEFEEEEFEFFEFEFEEEFF..FFFEEFFFFFFFFFFFFFFFFF.
+    ======================================================================
+    ERROR: test_actions (tests.DocsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+    ...
+    
+(But most failures were because we copied the tests for XL from Lino
+and didn't yet delete those which remain there).
+
+Aha, I found the explanation for the :message:`AttributeError:
+'NoneType' object has no attribute 'replace'` error above:
+:meth:`setup_cache_directory
+<lino.core.site.Site.setup_cache_directory>` was set to simply fail
+silently instead of raising an exception::
+
+  Exception: Cannot use /.../lino_cache/min2 for
+  lino_xl.projects.min2.settings.Site because it is used for
+  lino.projects.min2.settings.Site.
+
+As far as I can remember I disabled it once when I had problems to get
+Lino pass on Travis.  But here it was obviously necessary to raise an
+exception. Because must delete the :xfile:`lino_cache.txt` in my
+:envvar:`LINO_CACHE_ROOT` for the projects which moved from Lino
+to XL.
+
+9h50 : The test suites for both Lino and XL pass, and the Sphinx docs
+build (though with warnings). I published both doctrees and configured
+the subdomain for http://xl.lino-framework.org/
+
+Checkin and break. The next steps will be to 
+
+- remove Sphinx warnings from :cmd:`fab bd`
+- adapt the other projects to the changes
+
+
+14h30 : Voilà, we can consider :ticket:`356` as done because the
+following passed::
+
+  $ pp fab clean initdb test bd pd
+
+Oops, the :xfile:`fabfile.py` of :ref:`xl` still had
+`tolerate_sphinx_warnings` set to `True`. Done at 14h45.
+
+One thing remains to do, but is not urgent: the two documentation
+trees will need some content restructuration to digest the fact that
+Lino has been "cut" into two separated projects. For example the Lino
+documentation currently does not even *mention* that a :ref:`xl`
+exists...
+
+Lino Welfare (NBH)
+==================
+
+I fixed :ticket:`792`.  The :attr:`quick_search_fields
+<lino.core.model.Model.quick_search_fields>` for
+:class:`lino.modlib.contacts.models.Partner` is now set to ``"name"``.
+I especially also wrote a test case and functional specs about this:
+:ref:`cosi.specs.contacts`
+
+
+Fees per enrolment
+==================
+
+I worked on :ticket:`787`.  In Lino Voga we need a possibility to
+select the *participation fee* individually per enrolment. Example
+case is a tarification "150 € for the whole year or 60€ for one
+quarter". This usually leads to enrolments in three courses, the first
+enrolment generates an invoice of 150€, and the other two enrolments
+must not generate any invoice.
+
+Another problem are bus stops. :ticket:`793`. When they organize bus
+travels, then participant can choose among several bus stops where she
+will join the group. This choice must be enterer per enrolment.
+These must probably be yet another field per enrolment, and probably
+yet another pointer to Product, with a configurable category to
+control the list of choices.
+
+I tried a generalized way for solving both problems at once. The idea
+was to define choicelist like this::
+
+    EnrolmentFees.add('base_fee', _("Base fee"))
+    EnrolmentFees.add('bus_stop', _("Bus stop"))
+    EnrolmentFees.add('options', _("Options"))
+
+And then to have Lino create automatically create the fields for both
+categoriy and product, at the three levels (Line, Course, Enrolment).
+But this was getting very hackerish and would have required some
+internal changes for defining dynamic choosers.
+
+The second attempt is less clever, but simple and elegant: just add a
+field `Enrolment.fee`.  While I was there, I also changed the
+fieldname `tariff` to `fee`.
+
+
+

@@ -1,0 +1,78 @@
+=======================
+Saturday, March 5, 2016
+=======================
+
+Sandeep found a solution for #463
+=================================
+
+Congratulations and thanks to Sandeep who found a working solution for
+:ticket:`463`.  Sandeep is a voluntary contributor who does this "just
+for fun" after his daywork as Python developper in a bank. Despite
+this he found a solution to a problem where I was rather stuck.
+Thanks also to Hamza who tested and merged Sandeep's work into his
+repository and wrote a `pull request
+<https://github.com/lsaffre/atelier/pull/14>`__.  This is an
+encouraging piece of news because it shows that Lino starts to "live"
+also without me.
+
+It is the first time that I saw a (realistic) coverage report for
+:mod:`atelier`::
+
+    $ inv cov
+    Running tests for 'atelier' within coverage...
+    .......
+    ----------------------------------------------------------------------
+    Ran 7 tests in 1.875s
+
+    OK
+    Name                                   Stmts   Miss  Cover   Missing
+    --------------------------------------------------------------------
+    atelier/__init__.py                        9      0   100%   
+    atelier/fablib.py                        608    608     0%   5-1435
+    atelier/invlib.py                        328    328     0%   5-675
+    atelier/jarbuilder.py                     40     40     0%   5-103
+    atelier/projects.py                      118    118     0%   4-229
+    atelier/rstgen.py                        182     46    75%   83-89, 98-101, 105-126, 146, 496, 519, 535-536, 539, 542-543, 546-547, 559-562, 566-567, 571
+    atelier/setup_info.py                     13      2    85%   14-15
+    atelier/sphinxconf/__init__.py            47     33    30%   87-142, 156-164, 184-186, 189-191
+    atelier/sphinxconf/base.py               161    120    25%   53-76, 119-137, 151-159, 166-186, 214, 221, 225, 231-234, 237-240, 244-269, 273-290, 295-297, 303-310, 320-368
+    atelier/sphinxconf/blog.py               123    123     0%   5-318
+    atelier/sphinxconf/complex_tables.py      46     46     0%   5-87
+    atelier/sphinxconf/dirtables.py          113    113     0%   5-208
+    atelier/sphinxconf/insert_input.py        88     57    35%   87, 127, 131-181, 196-199, 202-211, 214-232, 258-263, 293
+    atelier/sphinxconf/interproject.py        23     23     0%   5-47
+    atelier/sphinxconf/refstothis.py          55     55     0%   5-130
+    atelier/sphinxconf/sigal_image.py         96     36    63%   119, 122, 138, 156-173, 193-206, 209, 212-218, 222-224
+    atelier/tasks.py                          41     41     0%   5-78
+    atelier/utils.py                         136     42    69%   57-58, 63, 119, 150, 180-190, 198-205, 212-218, 273, 302-305, 343, 346-350
+    --------------------------------------------------------------------
+    TOTAL                                   2227   1831    18%   
+
+Of course 18% is nothing to be proud about, that was not part of the
+ticket. The important thing is that now we can see this number and
+take it as a motivation to work on this.
+
+
+Thinking in Python
+==================
+
+An example of how it is possible to *think* in Python.
+
+I am working on :ticket:`143`, more precisely importing legacy data.
+I am analyzing the list of their journals.  I exported their table of
+journals from TIM to a csv file. From this file I now generated a
+:manage:`run` script which will create these journals on their Lino
+server.
+
+.. literalinclude:: 0305.py
+
+Above script is just the final result. It evolved during the weekend
+because I had to understand which journals should be imported and how
+to convert them from TIM to Lino.
+
+How I used it::
+
+  $ python 0305.py > create_journals.py
+  $ scp create_journals.py luc@their.server:~
+
+

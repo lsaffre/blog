@@ -1,0 +1,98 @@
+======================
+Sunday, March 13, 2016
+======================
+
+In order to reproduce the problem, I wrote the following script ::
+
+.. literalinclude:: 0313.py
+
+This is to be run after an :manage:`initdb_demo` with :data:`SEVERE`
+set to `False` in :mod:`lino_xl.lib.excerpts.fixtures.demo2`.  On my
+machine the script reproduces our error reliably.
+
+It was not trival to get the following traceback. I had to change
+appy's behaviour when the `raiseOnError` option is True: in that case
+it now *really* raises an exception (until now it still tried to
+"manage" that error by adding some information and then raise a new
+exception). 
+
+But finally here it is::
+
+    Error while evaluating the expression "html(body)" defined in the "from" part of a statement. TypeError: 'NoneType' object is not iterable
+    File "<string>", line 1, in <module>
+    File "/work/xl/lino_xl/lib/appypod/appy_renderer.py", line 170, in html_func
+    return self.renderXhtml(html, **kw)
+    File "/mypy/appy/pod/renderer.py", line 259, in renderXhtml
+    stylesMapping, self).run()
+    File "/mypy/appy/pod/xhtml2odt.py", line 643, in run
+    self.xhtmlParser.parse(self.xhtmlString)
+    File "/mypy/appy/shared/xml_parser.py", line 277, in parse
+    self.parser.parse(inputSource)
+    File "/usr/lib/python2.7/xml/sax/expatreader.py", line 107, in parse
+    xmlreader.IncrementalParser.parse(self, source)
+    File "/usr/lib/python2.7/xml/sax/xmlreader.py", line 123, in parse
+    self.feed(buffer)
+    File "/usr/lib/python2.7/xml/sax/expatreader.py", line 210, in feed
+    self._parser.Parse(data, isFinal)
+    File "/usr/lib/python2.7/xml/sax/expatreader.py", line 304, in start_element
+    self._cont_handler.startElement(name, AttributesImpl(attrs))
+    File "/mypy/appy/pod/xhtml2odt.py", line 553, in startElement
+    currentElem = e.onElementStart(elem, attrs)
+    File "/mypy/appy/pod/xhtml2odt.py", line 473, in onElementStart
+    styles = CssStyles(elem, attrs)
+    File "/mypy/appy/shared/css.py", line 57, in __init__
+    setattr(self, name, CssValue(attrs[name]))
+    File "/mypy/appy/shared/css.py", line 27, in __init__
+    value, unit = CssValue.valueRex.match(value)
+    <type 'exceptions.TypeError'>: 'NoneType' object is not iterable
+
+Now that we have a reproduceable traceback, let's look at the actual
+problem itself. It happens in the following code (in
+`appy/shared/css.py
+<http://bazaar.launchpad.net/~appy-dev/appy/trunk/view/head:/shared/css.py>`__)::
+
+    class CssValue:
+        valueRex = re.compile('(\d+)(%|px)?')
+
+        def __init__(self, value):
+            value, unit = CssValue.valueRex.match(value)
+            if not unit: unit = 'px'
+            self.value = int(value)
+            self.unit = unit
+
+
+Let's try to reproduce it in a simplified snippet:
+
+>>> mo = None
+>>> value, unit = mo
+Traceback (most recent call last):
+  ...
+TypeError: 'NoneType' object is not iterable
+
+Okay that's our error message, but it is useless because it is too
+much of a simplification. Here is a more accurate reproduction using
+the `re <https://docs.python.org/2/library/re.html>`__ module::
+
+>>> import re
+>>> valueRex = re.compile('(\\d+)(%|px)?')
+>>> value = b'10'
+>>> mo = valueRex.match(value)
+>>> type(mo)
+<type '_sre.SRE_Match'>
+
+Unfortunately the above snippet *does not* fail. 
+
+
+>>> mo.groups()
+('10', None)
+>>> valueRex.pattern
+'(\\d+)(%|px)?'
+>>> valueRex.flags
+0
+
+And even more. Even the *following* snippet does not fail:
+
+>>> from appy.shared.css import CssValue
+>>> CssValue('10')
+10px
+
