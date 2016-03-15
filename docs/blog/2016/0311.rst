@@ -120,11 +120,20 @@ When doing :cmd:`fab initdb` in Lino Welfare, I get::
 
     appy.pod.actions.EvaluationError: Problem installing fixture '.../lino_xl/lib/excerpts/fixtures/demo2.py': Error while evaluating the expression "html(body)" defined in the "from" part of a statement. AttributeError: 'NoneType' object has no attribute 'groups'
 
-It seems that :ref:`appy` is not compatible with future. You cannot
-use a futurized Lino and a non-futurized Appy together.  
+Actually the problem is easy: all the excerpts in
+:mod:`lino_xl.lib.excerpts.fixtures.demo2` fail to print.  If I set
+`SEVERE = False` in that module, the `initdb_demo` passes.
 
-I don't want to go back, so I must help Gaetan going forward: by
-futurizing Appy!
+It seems that :ref:`appy` is not compatible with `future`. You cannot
+use a futurized Lino and a non-futurized Appy together.  If I don't
+want to go back, I must help Gaëtan moving forward by getting Appy
+"futurized".
+
+According to `Appy ticket #130346
+<https://answers.launchpad.net/appy/+question/130346>`__ (Python 3 ?),
+the appy framework *does* work under Python 3.  But we don't know
+whether this is true because Appy has neither a :xfile:`setup.py`
+script nor a test suite.
 
 I downloaded a clone of `appy framework
 <https://code.launchpad.net/appy>`__ and tried to `futurize
@@ -151,16 +160,27 @@ Okay until here. Then a little problem::
     $ pip install -e .
     Directory '.' is not installable. File 'setup.py' not found.
 
-To solve this, I moved the appy repo into my custom :envar:`PYTHONPATH`::
+To solve this, I moved the appy repo into my custom
+:envvar:`PYTHONPATH`::
 
   $ mv appy ~/mypy
 
-But that was only the little problem.  The bigger problem is that
-futurize is just a little helper for resolving superficial
-problems. The true problems are hidden. And it seems that Appy does
-quite some fiddling with strings in different encodings.
+Another problem was that the futurize script broke the following code
+(in appy) by changing::
 
-Actually the problem is easy: all the excerpts in
-:mod:`lino_xl.lib.excerpts.fixtures.demo2` fail to print.  If I set
-`SEVERE = False` in that module, the `initdb_demo` passes.
+    from appy.shared.zip import unzip, zip
+    zip(fileName, tempFolder, odf=True)
+
+into::
+
+    from builtins import zip
+    from appy.shared.zip import unzip, zip
+    list(zip(fileName, tempFolder, odf=True))
+
+
+But these were only the little problems.  The true problems are
+hidden.  After all, futurize is just a little helper for resolving
+superficial problems.  And it seems that Appy does quite some fiddling
+with strings in different encodings.
+
 

@@ -17,14 +17,3 @@ if True:
     print(rv)
 
 
-# from django.conf import settings
-# settings.SITE.appy_params.update(raiseOnError=True)
-# from lino.api import rt
-# Excerpt = rt.modules.excerpts.Excerpt
-# ses = rt.login('robin')
-# # qs = Excerpt.objects.filter(build_time__isnull=True)
-# qs = Excerpt.objects.all()
-# for obj in qs:
-#     # dd.logger.info("20150526 rendering %s", obj)
-#     rv = ses.run(obj.do_print)
-#     print(rv)

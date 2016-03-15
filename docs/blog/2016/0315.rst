@@ -1,0 +1,48 @@
+=======================
+Tuesday, March 15, 2016
+=======================
+
+Here in summary the problem which locked me for almost one week
+(:ticket:`825`):
+
+>>> from builtins import str
+>>> import xml.etree.ElementTree as ET
+>>> a = ET.Element('a')
+>>> a.set(str('name'), str('10'))
+>>> ET.dump(a)
+<a b'name'="b'10'" />
+
+Above output (which of course is invalid XML syntax) comes under
+Python 2. Under Python 3 it is correct::
+
+    <a name="10" />
+
+The explanation is that `python-future <http://python-future.org/>`__
+introduces a special helper class `newstr` to simulate, under Python
+2, the behaviour of Python 3 strings.
+
+But `xml.etree.ElementTree
+<https://docs.python.org/2/library/xml.etree.elementtree.html>`__
+doesn't know about `python-future` and produces invalid XML when you
+feed it with such a string.
+
+If you use `ElementTree` and want to support both 2 and 3, then avoid
+`newstr` and use `six.text_type` instead.  After all `python-future`
+is a higher-level compatibility layer than six which tries to save you
+some work.
+
+Because the same problem occured in other places as well, I
+tried to systematically replace all::
+
+    from builtins import str
+
+by::
+
+    import six
+    str = six.text_type
+
+But that was not good.  Many doctests now failed again because one
+advantage of future's `newstr` class was to get printed without the
+"u" in front of the string literal...  This example shows that the
+`newstr` class is not a useless luxus.
+

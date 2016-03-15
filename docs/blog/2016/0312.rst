@@ -41,18 +41,6 @@ which occurs both in :ref:`noi` and in :ref:`welfare` during :cmd:`fab
 initdb`.  It is probably caused by the fact that these projects use
 :ref:`appy` which is not yet futurized.
 
-
 Update (9h38) : I found the place which causes the exception: it is in
 :mod:`appy.shared.css`. So yes, we need to futurize appy.
-
-The futurize script broke the following code (in appy) by changing::
-
-    from appy.shared.zip import unzip, zip
-    zip(fileName, tempFolder, odf=True)
-
-into::
-
-    from builtins import zip
-    from appy.shared.zip import unzip, zip
-    list(zip(fileName, tempFolder, odf=True))
 
