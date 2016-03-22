@@ -1,0 +1,64 @@
+======================
+Friday, March 18, 2016
+======================
+
+Lino as a lightweight alternative for Odoo
+==========================================
+
+Cool: Hamza mentioned Lino in a `discussion on Twitter
+<https://twitter.com/Yenthe666/status/709833406738210816>`_) about a
+lightweight alternative to Odoo.  And Daniel Reis (Author of the `Odoo
+Development Essentials
+<https://www.packtpub.com/big-data-and-business-intelligence/odoo-development-essentials>`_
+book) said "Nice, it looks like Lino fixes some of the issues with
+Django. Worth taking a look."  (`[*]
+<https://twitter.com/reis_pt/status/710600946989010944>`__)
+
+
+:ticket:`36` is *almost* done
+=============================
+
+Hamza's statement "The migration to Extjs6 and the port to Py3 are the
+main underway tasks." in above discussion made me think "What? Is
+Python 3 support only *underway*? Is it not *done*?"  But Hamza is
+right: :ticket:`36` is *almost* done, but not completely. I had to
+acknowledge this after running::
+
+  $ . ~/pythonenvs/py3/bin/activate
+  $ pp inv test
+
+
+I adapted `commondata <https://github.com/lsaffre/commondata>`__
+(including 
+`be <https://github.com/lsaffre/commondata-be>`__,
+`et <https://github.com/lsaffre/commondata-et>`__ and
+`eg <https://github.com/lsaffre/commondata-eg>`__)
+so that they pass under Python 3.
+
+And then I decided that I will leave these things to Hamza.
+
+I also noticed that my last changes in :mod:`lino.core.site` broke it
+in Python 3.  And the output of :cmd:`inv ci` is not colored. I guess
+it is the same reason as for the other problem that the output of
+:cmd:`inv test` has no newlines.
+
+Miscellaneous
+=============
+
+I adapted the Welfare test suite after :ticket:`833`.
+
+In :mod:`atelier.test` there was this function::
+
+    def interpreter_args():
+        if 'coverage' in sys.modules:
+            return ['coverage', 'run']
+        return [sys.executable]
+
+I now deactivated the following lines::
+
+        if 'coverage' in sys.modules:
+            return ['coverage', 'run']
+
+Because it seems that they were *not* needed for getting the coverage
+of 34% , and because they caused occasionally to all kinds of commands
+be run under coverage when we didn't ask for it.

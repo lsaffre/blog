@@ -1,0 +1,69 @@
+=======================
+Tuesday, March 22, 2016
+=======================
+
+I continued to work on :ticket:`834` (Install Lino on welstv).
+
+05h45 : Uff, I finally got :manage:`initdb_demo` to run on their site!
+The problems were mostly due to recent internal changes and appeared
+only now either because our test coverage is not perfect.  The last
+problem (reported :doc:`0320`) was because
+:mod:`lino.utils.html2xhtml` requires the `HTML Tidy library
+<http://tidy.sourceforge.net/>`__ to be installed on the system.
+There was also yet another encoding problem :meth:`dd.babel2kw
+<lino.core.site.Site.babel2kw>` caused by futurize's `newstr`
+(i.e. :ticket:`36`).
+
+Hamza is now working full speed on :ticket:`37`.  Yesterday evening we
+had another voice session with shared screen.  Now I merged his `pull
+request <https://github.com/lsaffre/lino_extjs6/pull/18>`_ into the
+master of :mod:`lino_extjs6`.
+
+I committed my changes to lino, xl, welfare and logos.
+
+
+Voice session with Alexa.
+
+I tried to reproduce :ticket:`841`. We have a duplicated participant
+there (ID 261 and ID 1391). And when trying to merge them, we get a
+server taceback ending with `IntegrityError: (1062, "Duplicate entry
+'261' for key 'PRIMARY'")`. But we did not yet find out how to
+reproduce this situation.
+
+We need a third item in `courses.CourseStates`. Until now we had
+"draft" and "registered". The "draft" remains, all "registered"
+courses become "active", and there is a new state "inactive". This
+last state means: the general course conditions have been discussed
+and fixed, and user can start to create enrolments, but the course
+will start only when there are enough participants.
+
+And a fourth CourseState "closed". Lino Voga will certainly need it.
+
+These changes will also be visible in :ref:`welcht`. I deliberately
+didn't ask their opinion because I can always go back for them if they
+don't want it.
+
+A Status Report for Lino Voga
+=============================
+
+I added a report called "Belegstatus" (:ticket:`842`).  It is a
+document they currently print out every morning.  I implemented it as
+:class:`lino_voga.lib.courses.models.StatusReport` and also installed
+it to the :meth:`get_admin_main_items
+<lino.core.site.Site.get_admin_main_items>` for
+:mod:`lino_voga.projects.base`.
+
+This was the first EmptyTable which I wanted to print using
+`wkhtmltopdf` instead of `appypod`.  This required some internal
+optimizations, but I like the result: We now have a generic template
+for printing such global reports.
+
+
+`wkhtmltopdf` still does not yet have page header and footer. The
+challenge with this is that we want to have them configurable. So they
+should be named 'FOO_header.wk.html'. But they should be optional.
+
+But then I 
+Oops::
+
+  The switch --footer-left, is not support using unpatched qt, and will be ignored.

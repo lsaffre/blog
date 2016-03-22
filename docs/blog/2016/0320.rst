@@ -1,0 +1,212 @@
+======================
+Sunday, March 20, 2016
+======================
+
+My first command on the new server `welstv`, our third Lino Welfare
+customer::
+
+    $ sudo apt-get install libapache2-mod-wsgi
+    
+Oops::
+
+    -bash: sudo: command not found
+
+No, problem, let's do it as everybody did it before `sudo` came::
+
+    $ su
+    # apt-get install sudo
+    
+But oops again::
+    
+    ...
+    Media change: please insert the disc labeled
+     'Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 DVD Binary-1 20160123-19:03'
+    in the drive '/media/cdrom/' and press enter
+
+Aha, they had this in their :xfile:`sources.list`::
+
+  deb cdrom:[Debian GNU/Linux 8.3.0 _Jessie_ - Official amd64 DVD Binary-1 20160123-19:03]/ jessie contrib main
+
+
+I deactivated this line, then it worked:
+
+    # apt-get install sudo
+    # addgroup USERNAME sudo
+
+After logging in again, I can now work as descibed in 
+:ref:`lino.admin.install`.
+
+
+MySQL and MariaDB
+=================
+
+I tried to go new paths: installed MariaDB instead of MySQL.
+
+
+
+Aborting downgrade from (at least) 10.0 to 5.5.
+If are sure you want to downgrade to 5.5, remove the file
+/var/lib/mysql/debian-*.flag and try installing again.
+
+
+While not mandatory, it is highly recommended that you set a password
+for the MySQL administrative "root" user.  If this field is left
+blank, the password will not be changed.  New password for the MySQL
+"root" user:
+
+
+Configuring mysql-server-5.5 : Unable to set password for the MySQL
+"root" user An error occurred while setting the password for the MySQL
+administrative user. This may have happened because the account
+already has a password, or because of a communication problem with the
+MySQL server.  You should check the account's password after the
+package installation.  Please read the
+/usr/share/doc/mysql-server-5.5/README.Debian file for more
+information.
+                                                                 
+
+The following didn't help::
+
+    $ sudo dpkg-reconfigure mysql-server
+    /usr/sbin/dpkg-reconfigure: mysql-server is broken or not fully installed
+
+
+It is strongly recommended to set a password for the mysql root user (which
+  /usr/bin/mysqlb -u root -D mysql -e "update user set password=password('new-password') where user='root'"
+  /usr/bin/mysql -u root -e "flush privileges"
+If you already had a password set add "-p" before "-u" to the lines above.
+
+When I have Mariadb-server, pip failed to install  MySQL-python::
+
+    $ pip install MySQL-python
+    Downloading/unpacking MySQL-python
+      Downloading MySQL-python-1.2.5.zip (108kB): 108kB downloaded
+      Running setup.py (path:/tmp/pip-build-bhpwbY/MySQL-python/setup.py) egg_info for package MySQL-python
+        sh: 1: mysql_config: not found
+        Traceback (most recent call last):
+          File "<string>", line 17, in <module>
+          File "/tmp/pip-build-bhpwbY/MySQL-python/setup.py", line 17, in <module>
+            metadata, options = get_config()
+          File "setup_posix.py", line 43, in get_config
+            libs = mysql_config("libs_r")
+          File "setup_posix.py", line 25, in mysql_config
+            raise EnvironmentError("%s not found" % (mysql_config.path,))
+        EnvironmentError: mysql_config not found
+        Complete output from command python setup.py egg_info:
+        sh: 1: mysql_config: not found
+    
+    Traceback (most recent call last):
+      File "<string>", line 17, in <module>
+      File "/tmp/pip-build-bhpwbY/MySQL-python/setup.py", line 17, in <module>
+        metadata, options = get_config()
+      File "setup_posix.py", line 43, in get_config
+        libs = mysql_config("libs_r")
+      File "setup_posix.py", line 25, in mysql_config
+        raise EnvironmentError("%s not found" % (mysql_config.path,))
+    
+    EnvironmentError: mysql_config not found
+    ----------------------------------------
+    Cleaning up...
+
+I tried these without success::
+
+    $ sudo apt-get install libmariadb-client-lgpl-dev
+    $ sudo apt-get install libmariadb-client-lgpl-dev-compat 
+    
+Until I discovered that it works when I have this::
+    
+    $ sudo apt-get install libmysqlclient-dev
+
+
+Problems in initdb_demo
+=======================
+
+The first (bigger) problem for tonight::
+
+    $ python manage.py initdb_demo
+    ...
+    INFO Loading /repositories/lino/lino/modlib/gfks/fixtures/std.py...
+    INFO:lino.utils.dpy:Loading /repositories/lino/lino/modlib/gfks/fixtures/std.py...
+    INFO Loaded 1 objects
+    INFO:lino.utils.dpy:Loaded 1 objects
+    INFO Loading /repositories/xl/lino_xl/lib/properties/fixtures/std.py...
+    INFO:lino.utils.dpy:Loading /repositories/xl/lino_xl/lib/properties/fixtures/std.py...
+    INFO Loaded 2 objects
+    INFO:lino.utils.dpy:Loaded 2 objects
+    INFO Loading /repositories/welfare/lino_welfare/modlib/contacts/fixtures/std.py...
+    INFO:lino.utils.dpy:Loading /repositories/welfare/lino_welfare/modlib/contacts/fixtures/std.py...
+    INFO Loaded 22 objects
+    INFO:lino.utils.dpy:Loaded 22 objects
+    INFO Loading /repositories/welfare/lino_welfare/modlib/uploads/fixtures/std.py...
+    INFO:lino.utils.dpy:Loading /repositories/welfare/lino_welfare/modlib/uploads/fixtures/std.py...
+    WARNING Failed to save UploadType #1 ('Aufenthaltserlaubnis'):
+    WARNING:lino.utils.dpy:Failed to save UploadType #1 ('Aufenthaltserlaubnis'):
+    Traceback (most recent call last):
+      File "manage.py", line 8, in <module>
+        execute_from_command_line(sys.argv)
+      File "/lib/python2.7/site-packages/django/core/management/__init__.py", line 353, in execute_from_command_line
+        utility.execute()
+      File "/lib/python2.7/site-packages/django/core/management/__init__.py", line 345, in execute
+        self.fetch_command(subcommand).run_from_argv(self.argv)
+      File "/lib/python2.7/site-packages/django/core/management/base.py", line 348, in run_from_argv
+        self.execute(*args, **cmd_options)
+      File "/lib/python2.7/site-packages/django/core/management/base.py", line 399, in execute
+        output = self.handle(*args, **options)
+      File "/repositories/lino/lino/modlib/lino_startup/management/commands/initdb_demo.py", line 33, in handle
+        super(Command, self).handle(*args, **options)
+      File "/repositories/lino/lino/modlib/lino_startup/management/commands/initdb.py", line 222, in handle
+        call_command('loaddata', *args, **options)
+      File "/lib/python2.7/site-packages/django/core/management/__init__.py", line 119, in call_command
+        return command.execute(*args, **defaults)
+      File "/lib/python2.7/site-packages/django/core/management/base.py", line 399, in execute
+        output = self.handle(*args, **options)
+      File "/lib/python2.7/site-packages/django/core/management/commands/loaddata.py", line 60, in handle
+        self.loaddata(fixture_labels)
+      File "/lib/python2.7/site-packages/django/core/management/commands/loaddata.py", line 100, in loaddata
+        self.load_label(fixture_label)
+      File "/lib/python2.7/site-packages/django/core/management/commands/loaddata.py", line 158, in load_label
+        obj.save(using=self.using)
+      File "/repositories/lino/lino/utils/dpy.py", line 427, in save
+        self.try_save(*args, **kw)
+      File "/repositories/lino/lino/utils/dpy.py", line 450, in try_save
+        obj.save(*args, **kw)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 700, in save
+        force_update=force_update, update_fields=update_fields)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 728, in save_base
+        updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 793, in _save_table
+        forced_update)
+      File "/lib/python2.7/site-packages/django/db/models/base.py", line 843, in _do_update
+        return filtered._update(values) > 0
+      File "/lib/python2.7/site-packages/django/db/models/query.py", line 645, in _update
+        return query.get_compiler(self.db).execute_sql(CURSOR)
+      File "/lib/python2.7/site-packages/django/db/models/sql/compiler.py", line 1149, in execute_sql
+        cursor = super(SQLUpdateCompiler, self).execute_sql(result_type)
+      File "/lib/python2.7/site-packages/django/db/models/sql/compiler.py", line 848, in execute_sql
+        cursor.execute(sql, params)
+      File "/lib/python2.7/site-packages/django/db/backends/utils.py", line 64, in execute
+        return self.cursor.execute(sql, params)
+      File "/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 112, in execute
+        return self.cursor.execute(query, args)
+      File "/lib/python2.7/site-packages/MySQLdb/cursors.py", line 187, in execute
+        query = query % tuple([db.literal(item) for item in args])
+      File "/lib/python2.7/site-packages/MySQLdb/connections.py", line 278, in literal
+        return self.escape(o, self.encoders)
+      File "/lib/python2.7/site-packages/MySQLdb/connections.py", line 203, in string_literal
+        return db.string_literal(obj)
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xe9' in position 11: ordinal not in range(128)
+    INFO Done manage.py initdb_demo (PID 9142)
+
+
+The reason was that the fixtures use :meth:`dd.str2kw
+<lino.core.site.Site.str2kw>` to fill multilingual text into the
+database.  And this method had been converted by the futurize script:
+it stored texts as `newstr` instances. And it seems that
+`mysql-python` is yet another package which does not know about this
+hack. Ticket :ticket:`36` is greeting.
+
+
+The next problem was::
+
+  appy.pod.actions.EvaluationError: Problem installing fixture 'lino_xl/lib/excerpts/fixtures/demo2.py': Error while evaluating the expression "html(body)" defined in the "from" part of a statement. SAXParseException: <unknown>:47:2: mismatched tag
+
