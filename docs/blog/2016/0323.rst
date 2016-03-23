@@ -2,10 +2,33 @@
 Wednesday, March 23, 2016
 =========================
 
+More report optimization
+========================
+
 The :class:`JobsOverview
 <lino_welfare.modlib.jobs.models.JobsOverview>` report was failing
 after yesterday's internal optimizations.  It took me yet another hour
 to repair it. But the result is cool: we no longer need the
-:file:`JobsOverview/Default.odt` template, and the content of this
-report is now being tested in :ref:`welfare.specs.jobs`.
+:file:`JobsOverview/Default.odt` template, and the functional spec
+(:ref:`welfare.specs.jobs`) now also tests the *content* of this
+report.
 
+Yet another example of why a developer should be paid *per month* (or
+*per hour*), but not *per ticket*.
+
+
+Importing legacy data into Lino Welfare
+=======================================
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.doctests')
+>>> from lino_welfare.modlib.welfare.management.commands.cpas2lino \
+...     import wanted_accounts
+>>> for obj in wanted_accounts():
+...     obj.full_clean()
+...     # obj.save()
+...     print(obj)
+(832/330/03B) Heizölzulage (durch Staat bezuschusst)
+(832/330/05) Sozio-kulturelle Beteiligung (Allgemein)
+...
+(832-4653/03) Erstatt. an Staat von Einn. 832/-3343/21
