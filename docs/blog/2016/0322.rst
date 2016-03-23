@@ -63,7 +63,37 @@ for printing such global reports.
 challenge with this is that we want to have them configurable. So they
 should be named 'FOO_header.wk.html'. But they should be optional.
 
-But then I 
-Oops::
+http://wkhtmltopdf.org/usage/wkhtmltopdf.txt
+
+But then I got this::
 
   The switch --footer-left, is not support using unpatched qt, and will be ignored.
+
+What means "unpatched qt"?
+`Wow!
+<http://stackoverflow.com/questions/10981960/wkhtmltopdf-patched-qt>`_
+It seems that it will be rather hard to
+get headers and footers into a wkhtmltopdf document!
+
+For the moment I switch back to appypdf as default_build_method for
+Lino Voga.
+
+
+
+Unsupported locale setting
+==========================
+
+Another little problem occured maybe after upgrading pip::
+
+>>> import locale
+>>> locale.setlocale(locale.LC_ALL, '')
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/lib/python2.7/locale.py", line 579, in setlocale
+    return _setlocale(category, locale)
+locale.Error: unsupported locale setting
+
+
+I solved this by setting :envvar:`LC_ALL` to `en_US.utf-8` in
+:file:`/etc/environment` (`thanks
+<http://ubuntuforums.org/showthread.php?t=1720356>`_).
