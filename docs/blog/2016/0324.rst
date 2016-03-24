@@ -1,0 +1,62 @@
+========================
+Thursday, March 24, 2016
+========================
+
+Here is now how to reproduce :ticket:`844`:
+
+The following code snippet was used to reproduce :ticket:`844`:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.std.settings.doctests')
+>>> from lino.api.doctest import *
+>>> obj = households.Member()
+>>> print(obj)
+Member object
+
+Explanation starts in :mod:`lino_xl.lib.households.models` which
+defines::
+
+    @python_2_unicode_compatible
+    class Member(mixins.DatePeriod):
+        def __str__(self):
+            if self.person_id is None:
+                return super(Member, self).__str__()
+            if self.role is None:
+                return unicode(self.person)
+            return u"%s (%s)" % (self.person, self.role)
+
+This code, on its own, is not problematic. The problem comes only when
+Lino Welfare extends the `Member` model.  In
+:mod:`lino_welfare.modlib.households.models` it says::
+
+    class Member(Member, mixins.Human, mixins.Born):
+        ...
+
+And in :mod:`lino.mixins.human` we have::
+    
+    from lino_xl.lib.households.models import *
+
+    @python_2_unicode_compatible
+    class Human(model.Model):
+
+        def __str__(self):
+            return self.get_full_name(nominative=True)
+
+
+The rule of thumb is: **Don't use :func:`super` in the :meth:`__str__`
+method of a `python_2_unicode_compatible` model.**
+
+My explanation is that `python_2_unicode_compatible` causes something
+to get messed up with the *mro* for the :meth:`__str__` method, but I
+wont't dive deeper into this right now because my problem was fixed by
+changing the relevant line::
+
+    return super(Member, self).__str__()
+
+into an explicit copy of the code which I want to run there (defined
+in the :func:`super` of Django's :class:`Model` class)::
+
+    return str('%s object' % self.__class__.__name__)
+
+I added a section about "Member objects" in
+:ref:`welfare.specs.households` to cover it.

@@ -20,6 +20,14 @@ Yet another example of why a developer should be paid *per month* (or
 Importing legacy data into Lino Welfare
 =======================================
 
+During a phone metting with Wilfried I understood a few more
+things. We must import only disbursement orders, nothing else. And
+Wilfried now gave me a complete list of the accounts (budgetary
+articles) to import.
+
+I adapted :manage:`cpas2lino`. Here is some doctest snippet which I
+used for basic temporary tests before committing.
+
 >>> from lino import startup
 >>> startup('lino_welfare.projects.eupen.settings.doctests')
 >>> from lino_welfare.modlib.welfare.management.commands.cpas2lino \
@@ -32,3 +40,76 @@ Importing legacy data into Lino Welfare
 (832/330/05) Sozio-kulturelle Beteiligung (Allgemein)
 ...
 (832-4653/03) Erstatt. an Staat von Einn. 832/-3343/21
+
+Just as a reminder to myself, here are the commands to run on the
+server::
+
+  $ go testlino
+  $ a
+  $ time python manage.py run ../cpas_eupen/snapshot/restore.py
+  $ python manage.py run create_journals.py 
+  $ cat delete_ledger.sql | python manage.py dbshell
+  $ time python manage.py cpas2lino /mnt/oeshz_home_server/ANWPROG/TIM/CPAS
+
+
+
+Letsencrypt sends erroneous expiration notices
+==============================================
+
+I received yet another email from expiry@letsencrypt.org::
+
+    Let's Encrypt certificate expiration notice
+
+    Hello,
+
+    Your certificate (or certificates) for the names listed below will
+    expire in 9 days (on 01 Apr 16 19:39 +0000). Please make sure to
+    renew your certificate before then, or visitors to your website
+    will encounter errors.
+
+    ...
+
+    For any questions or support, please visit
+    https://community.letsencrypt.org/. Unfortunately, we can't
+    provide support by email.
+
+    If you are receiving this email in error, unsubscribe at
+    http://mandrillapp.com/track/unsub.php?...
+
+    Regards,
+    The Let's Encrypt Team
+
+I started to receive these reminders about three months after my first
+installation on that server.  After the first mail I ran
+`letsencrypt-auto renew` successfully.  When I run it now, I get::
+
+    $ letsencrypt-auto renew
+    Updating letsencrypt and virtual environment dependencies...
+    ...
+    The following certs are not due for renewal yet:
+      ... (a list of all certificates on that server)
+    No renewals were attempted.
+
+
+Maximum recursion depth exceeded while calling a Python object
+==============================================================
+
+While investigating for :ticket:`844` I tried to do a dump and a
+restore in :ref:`welcht` in the hope of reproducing the problem.
+
+I got another problem instead. When trying to reload the data, I had
+an :message:`AttributeError: module object has no attribute
+OverlapGroups` on this line of the :xfile:`restore.py` file ::
+
+    if overlap_group: overlap_group = settings.SITE.modules.isip.OverlapGroups.get_by_value(overlap_group)
+
+This was because the following line was missing in
+:mod:`lino_welfare.modlib.isip.models`::
+
+  from .choicelists import *
+
+So I had to do an upgrade in :ref:`welcht` before even investigating
+more about :ticket:`844`.
+
+TODO: Automatically run double dump test (:cmd:`fab ddt`) for all demo
+projects.
