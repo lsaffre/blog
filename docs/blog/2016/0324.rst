@@ -2,7 +2,11 @@
 Thursday, March 24, 2016
 ========================
 
-Here is now how to reproduce :ticket:`844`:
+
+:func:`super` in the :meth:`__str__`  of a `python_2_unicode_compatible`
+========================================================================
+
+Here is now how to reproduce :ticket:`844`.
 
 The following code snippet was used to reproduce :ticket:`844`:
 
@@ -60,3 +64,56 @@ in the :func:`super` of Django's :class:`Model` class)::
 
 I added a section about "Member objects" in
 :ref:`welfare.specs.households` to cover it.
+
+
+Moving from `fabric` to `invoke`
+================================
+
+I wanted to get the Lino test suite pass on Travis CI. It took me
+almost the whole day.  Lots of subtle changes in :mod:`atelier`. 
+
+The main problem was to understand `how invoke does configuration
+<http://docs.pyinvoke.org/en/0.12.2/concepts/configuration.html>`_ and
+to decide how to store `current_project` and how to define
+configration variables.
+I added an `invoke.yaml` to most projects.
+
+Many more :cmd:`inv` commands now work.
+
+:cmd:`fab bd` was the easiest: it simply wasn't yet imported into the
+:mod:`atelier.tasks` module.
+
+There was a bug in :func:`atelier.utils.confirm` which made it fail
+under Python 2 when the prompt was a unicode string with non-ascii
+characters.
+
+
+.. literalinclude:: 0324.py
+
+Above script gives::
+
+    Traceback (most recent call last):
+      File "0324.py", line 4, in <module>
+        confirm("Ein schöner Tag?")
+      File "/atelier/atelier/utils.py", line 213, in confirm
+        ln = input(prompt)
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xf6' in position 7: ordinal not in range(128)
+
+A simplified version:
+
+.. literalinclude:: 0324.py
+
+
+But finally I can not do::
+
+  $ pp inv clean
+  $ pp inv initdb test bd pd
+
+
+I released Atelier 0.0.20 to PyPI (needed because Travis CI uses the
+released version)
+
+And the reward: the Lino test suite now `passes on Travis CI
+<https://travis-ci.org/lsaffre/lino/builds/118242460>`_ using `invoke`
+instead of `fabric`! At least for Python 2.
+
