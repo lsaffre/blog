@@ -1,0 +1,130 @@
+:date: 2016-03-29
+
+=======================
+Tuesday, March 29, 2016
+=======================
+
+Partner and bank account of a payment order
+===========================================
+
+Working on :ticket:`143`. Though this is also useful for :ref:`cosi`
+and :ref:`voga`.
+
+Eingabe ZAU oder AAW : im Bankkonto muss die primäre Kontonummer des
+Partners stehen. Und man darf nur die Nummern des Partners auswählen
+können.
+
+
+Yes, the `partner_changed` method is defined by
+:class:`FinancialVoucherItem
+<lino_cosi.lib.finan.mixins.FinancialVoucherItem>` and by
+:class:`BankAccount <lino_cosi.lib.sepa.mixins.BankAccount>`.
+
+
+In Lino Welfare, we want to allow PaymentOrderItems whose `partner` is
+empty. And in that case, Lino should use the project as partner.
+That's why we have a method::
+
+    def get_partner(self):
+        return self.partner or self.project
+
+But we cannot use this logic in `bank_account_choices`, so we have to
+reimplement it there::
+
+    @dd.chooser()
+    def bank_account_choices(cls, partner, project):
+        partner = partner or project
+        return rt.modules.sepa.Account.objects.filter(
+            partner=partner).order_by('iban')
+
+This might indicate a design flaw in the chooser API. In above case it
+would be more natural to define a chooser which works on an existing
+database object.  It is disturbing that the application developer can
+define a choicelist only by manually specifying the required context
+fields.  But be careful: that object-based chooser API would work only
+in grid editing mode, not on a detail window. And maybe after
+:ticket:`37` we would implent a row-based grid widget (which does not
+send a PUT after every cell edit), and there our natural chooser would
+equally fail.
+
+The Moya framework
+==================
+
+On PlanetPython I stumbled over `A side-by-side Comparison of Django
+and Moya
+<https://www.willmcgugan.com/blog/tech/post/django-comparison/>`_
+written by the author of `Moya <https://www.moyaproject.com/>`_.
+
+- Moya uses SQLAlchemy while Django uses its own ORM.
+  (But why are the examples in XML?
+  And I don't agree that "no imports" is an advantage.)
+
+- Moya has a package manager.  (Lino doesn't need one because we use
+  pip instead of reinventing the wheel)
+
+My conclusion: Yes, Lino is different from Moya in that we believe
+that database structure, screen layouts and business logic should be
+written in Python, not in XML. Python is a powerful and well-known
+parser, why should we throw away a subset of its features by
+introducing yet another textual description language? The main reason
+why frameworks like Moya do this is that it enables them to have
+non-programmers do the database design and screen layouts. Lino is
+here because we believe that both database design and screen layout
+should rather not be delegated to people who are unable to think in
+Python.  One missing piece in all this theory are features like
+user-defined views (:ticket:`848`).  
+
+I started to integrate these thought into the docs at
+:ref:`lino.think_python`.
+
+
+
+
+Miscellaneous changesin Voga
+============================
+
+In :ref:`voga` when printing an invoice, Alexa got an error message
+:message:`get_build_options() takes exactly 1 argument (2 given)". Fixed.
+
+EnrolmentsByCourse.pupil_info now shows a very customized information
+defined in lino_voga.projects.roger.lib.
+
+
+
+Filtering pupils
+================
+
+I was surprised to discover that Lino Voga had no filter parameters at
+all on `Pupils`.  That was because contacts.Partner, humans.Human and
+humans.Born & Co did not yet use the "new" API for defining filter
+parameters. Actually that API wasn't yet finished: we also want two
+methods :meth:`get_request_queryset
+<lino.core.model.Model.get_request_queryset>` and
+:meth:`get_title_tags <lino.core.model.Model.get_title_tags>` on the
+:class:`Model <lino.core.model.Model>`.
+
+Puah! And then it took me about 3 hours to get the actual test case
+pass:
+
+>>> from lino import startup
+>>> startup('lino_voga.projects.docs.settings.doctests')
+>>> from lino.api.doctest import *
+>>> print(rt.modules.courses.Pupils.params_layout.main)
+aged_from aged_to gender
+
+There are 36 pupils (21 men and 15 women) in our database:
+
+>>> json_fields = 'count rows title success no_data_text param_values'
+>>> kwargs = dict(fmt='json', limit=10, start=0)
+>>> demo_get('robin', 'api/courses/Pupils', json_fields, 36, **kwargs)
+
+>>> kwargs.update(pv=['', '', 'M'])
+>>> demo_get('robin', 'api/courses/Pupils', json_fields, 21, **kwargs)
+
+>>> kwargs.update(pv=['', '', 'F'])
+>>> demo_get('robin', 'api/courses/Pupils', json_fields, 15, **kwargs)
+
+It took so long because of a stupid bug in the `Actor.get_queryset`
+method which is rather a mousetrap, one day I should check whether it
+still makes sense and whether we can change this part of the API...
+

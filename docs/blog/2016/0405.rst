@@ -1,0 +1,51 @@
+:date: 2016-04-05
+
+======================
+Tuesday, April 5, 2016
+======================
+
+Sigh! You just wanted to dive into your work, and then there's a
+message in your inbox which changes all your good plans...
+
+Configuring Postfix relay
+=========================
+
+Today I discovered that messages to info@lino-framework.org don't get
+their way to my inbox. The sender then gets a message like this::
+
+    This is the mail system at host lino-framework.org.
+
+    I'm sorry to have to inform you that your message could not
+    be delivered to one or more recipients. It's attached below.
+
+    For further assistance, please send mail to postmaster.
+
+    If you do so, please include this problem report. You can
+    delete your own text from the attached returned message.
+
+                       The mail system
+
+    <john.doe@gmx.net> (expanded from <luc@lino-framework.org>): 
+    host smtp.uninet.ee[194.150.66.204] said: 
+      550 5.7.1 <john.doe@gmx.net>: 
+        Sender address rejected: 
+        Message rejected due to: SPF fail - not authorized.
+        Please see
+        http://www.openspf.org/Why?s=mfrom;id=john.doe@gmx.net;ip=123.456.78.90;r=
+        (in reply to MAIL FROM command)
+
+
+I am almost *glad* that this error occurs because it seems to indicate
+a bug in my Postfix configuration which might be the cause for
+problems with some mailing list members who don't receive list mails.
+
+The error message gives a hint:
+
+    If you run your own MTA, you may have to set a "smarthost" or
+    "relayhost". If you are mailing from outside your ISP's network, you
+    may also have to make your MTA use authenticated SMTP. Ideally your
+    server should listen on port 587 as well as port 25.
+
+I have almost no experience with `Postfix Configuration
+<http://www.postfix.org/BASIC_CONFIGURATION_README.html>`_, so I'd
+rather hope to continue on this with some friend.

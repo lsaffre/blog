@@ -1,0 +1,361 @@
+:date: 2016-04-01
+
+=====================
+Friday, April 1, 2016
+=====================
+
+I read `How to Upgrade Your Ext JS 3.4 Apps to Ext JS 6
+<https://www.sencha.com/blog/how-to-upgrade-your-ext-js-3-4-apps-to-ext-js-6/>`_,
+a blog post by Olga Petrova (Sales Engineer and software developer at
+Sencha).  Nice to read that Lino is not the only one who has been
+waiting so long!  Maybe these examples can help us for :ticket:`37`.
+
+I listened to the first ten minutes of `The Waterfall Model and
+“Managing the Development of Large Software Systems” (PT007)
+<http://pythontesting.net/podcast/waterfall/>`_.  Yes, these are
+important things to know... but I have the feeling that I "know"
+them. Or at least that Lino is doing well at that level. I am not (and
+I don't plan to become) owner of a big *company*.  I see the Lino
+community rather as a network than as a company.  I see my role as the
+one who gives a *chiquenaude initiale* to a system that will live on
+its own, a "world" where software is being done by people who love
+their work... oops, Luc, stop dreaming and start working!
+
+For ticket :ticket:`147` I plan a phone meeting with Wilfried next
+week. Before this, I want to verify whether everything we discussed
+last time has been done.  As a first step I updated the functional
+specs in :ref:`cosi.tested.ledger` and :ref:`welfare.specs.ledger`.
+
+Sidenote.  While running `inv initdb test` for Lino Welfare, I tried
+to build some Sphinx docs under Python 3. Which failed. Lots of errors
+which depend on complex environmental conditions. Here is one which
+seemed surprising::
+
+
+    (py3)$ pip install appy
+    Downloading/unpacking appy
+      Downloading appy-0.9.3.tar.gz (1.8MB): 1.8MB downloaded
+      Running setup.py (path:/virtualenvs/py3/build/appy/setup.py) egg_info for package appy
+
+        package init file 'appy/pod/test/images/__init__.py' not found (or not a regular file)
+        package init file 'appy/pod/test/results/__init__.py' not found (or not a regular file)
+        package init file 'appy/pod/test/templates/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/tr/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/templates/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/aqua/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/tiger/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/lang/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/ckeditor/__init__.py' not found (or not a regular file)
+    Installing collected packages: appy
+      Running setup.py install for appy
+        package init file 'appy/pod/test/images/__init__.py' not found (or not a regular file)
+        package init file 'appy/pod/test/results/__init__.py' not found (or not a regular file)
+        package init file 'appy/pod/test/templates/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/tr/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/templates/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/aqua/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/skins/tiger/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/jscalendar/lang/__init__.py' not found (or not a regular file)
+        package init file 'appy/gen/ui/ckeditor/__init__.py' not found (or not a regular file)
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/__init__.py", line 126
+            print '%d method(s) patched from %s to %s (%s)' % \
+                                                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/__init__.py", line 770
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/date.py", line 236
+            except DateTime.DateError, ValueError:
+                                     ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/pod.py", line 578
+            exec cmd
+                   ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/ref.py", line 1609
+            exec 'self.%sObject(appyObj, tied, noSecurity=False)' % action
+                                                                ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/string.py", line 828
+            exec 'res = obj.%s(*args)' % methodName
+                                     ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/boolean.py", line 130
+            exec 'res = %s' % value
+                          ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/calendar.py", line 550
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/fields/file.py", line 111
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/job.py", line 85
+            exec 'targetObject.%s(*args)' % toolMethod
+                                        ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/asksap.py", line 79
+            except SapError, se:
+                           ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/backup.py", line 88
+            except IOError, ioe:
+                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/eggify.py", line 173
+            except EggifierError, ee:
+                                ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/generate.py", line 74
+            except GeneratorError, ge:
+                                 ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/restore.py", line 60
+            except OSError, oe:
+                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/odfwalk.py", line 33
+            print 'Walking %s...' % fileName
+                                ^
+        SyntaxError: Missing parentheses in call to 'print'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/bin/new.py", line 109
+            os.chmod('bin/zopectl', 0744) # Make it executable by owner.
+                                       ^
+        SyntaxError: invalid token
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/px/__init__.py", line 67
+            except xml.sax.SAXParseException, spe:
+                                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/csv_parser.py", line 114
+            exec 'res = %s' % str(value)
+                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/utils.py", line 48
+            except OSError, oe:
+                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/diff.py", line 309
+            exec 'msg = self.%sMsg' % type
+                                  ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/packaging.py", line 164
+            os.chmod(name, 0744) # Make it executable by owner.
+                              ^
+        SyntaxError: invalid token
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/dav.py", line 120
+            except xml.sax.SAXParseException, se:
+                                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/tables.py", line 141
+            except TypeError, te:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/xml_parser.py", line 472
+            except Exception, err:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/ldap_connector.py", line 162
+            exec 'login = login.%s()' % self.loginTransform
+                                    ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/shared/sap.py", line 77
+            except pysap.BaseSapRfcError, se:
+                                        ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/elements.py", line 202
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/test/Tester.py", line 110
+            exec 'import %s' % contextPkg
+                           ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/actions.py", line 114
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/doc_importers.py", line 340
+            except ResourceError, re:
+                                ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/renderer.py", line 377
+            except OSError, oe:
+                          ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/pod/buffers.py", line 243
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/descriptors.py", line 219
+            exec "self.modelClass.%s = fieldType" % fieldName
+                                                ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/model.py", line 123
+            exec 'appyType = klass.%s' % name
+                                     ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/utils.py", line 14
+            exec 'from Products.%s.%s import %s as ZopeClass' % \
+                                                            ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/navigate.py", line 90
+            exec 'needIt = self.%sNeeded' % urlType
+                                        ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/wrappers/__init__.py", line 1021
+            except AttributeError, ae:
+                                 ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/wrappers/ToolWrapper.py", line 516
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/generator.py", line 202
+            exec 'moduleElem = module.%s' % name
+                                        ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/mail.py", line 127
+            except smtplib.SMTPException, e:
+                                        ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/layout.py", line 186
+            exec 'self.%s = %s%s' % (param, source, param)
+                                ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/mixins/__init__.py", line 600
+            except Exception, e:
+                            ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/mixins/ToolMixin.py", line 530
+            exec 'from Products.%s.%s import %s as C'% (self.getAppName(),name,name)
+                                                    ^
+        SyntaxError: invalid syntax
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/mixins/TestMixin.py", line 16
+            exec 'import %s' % moduleName
+                           ^
+        SyntaxError: Missing parentheses in call to 'exec'
+
+          File "/virtualenvs/py3/lib/python3.4/site-packages/appy/gen/installer.py", line 302
+            exec 'from %s import manage_add%s as ctor' % (module, name)
+                                                     ^
+        SyntaxError: invalid syntax
+
+    Successfully installed appy
+    Cleaning up...
+
+
+
+The sum of a boolean field
+==========================
+
+I discovered the following question: Should boolean fields sum up like
+numeric fields, with value 1 when True and 0 when False, and thus
+displaying as their sum the number of rows having `True`?  Until today
+my answer was **Yes**. 
+
+But this choice leads to results like the following:
+
+>>> rt.show(ledger.AccountTypes)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+==================== =============== =============== ======== ==========
+ value                name            text            D/C      Sheet
+-------------------- --------------- --------------- -------- ----------
+ A                    assets          Assets          Debit    Balance
+ L                    liabilities     Liabilities     Credit   Balance
+ I                    incomes         Incomes         Credit   Earnings
+ E                    expenses        Expenses        Debit    Earnings
+ C                    capital         Capital         Credit   Balance
+ B                    bank_accounts   Bank accounts   Debit    Balance
+ **Total (6 rows)**                                   **3**
+==================== =============== =============== ======== ==========
+<BLANKLINE>
+
+In the above example the sums are obviously disturbing, both visually
+and conceptually.
+
+So I now removed the :meth:`value2num
+<lino.modlib.extjs.elems.FieldElement.value2num>` method of
+:class:`lino.modlib.extjs.elems.BooleanMixin`.  And the above snippet
+now looks better:
+
+>>> rt.show(ledger.AccountTypes)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+======= =============== =============== ======== ==========
+ value   name            text            D/C      Sheet
+------- --------------- --------------- -------- ----------
+ A       assets          Assets          Debit    Balance
+ L       liabilities     Liabilities     Credit   Balance
+ I       incomes         Incomes         Credit   Earnings
+ E       expenses        Expenses        Debit    Earnings
+ C       capital         Capital         Credit   Balance
+ B       bank_accounts   Bank accounts   Debit    Balance
+======= =============== =============== ======== ==========
+<BLANKLINE>
+
+This change (as expected) caused changes in several tested docs:
+:ref:`cosi.specs.ledger`, :ref:`voga.specs.ledger`
+:ref:`welfare.specs.uploads` :ref:`welfare.specs.polls`
+:ref:`welfare.specs.pcsw` :ref:`welfare.specs.ledger`
+:ref:`welfare.specs.isip` :ref:`welfare.specs.integ`
+:ref:`welfare.specs.excerpts` :ref:`welfare.specs.cv2`
+:ref:`welfare.specs.clients` :ref:`welfare.specs.addresses`
+:ref:`welfare.tour.autoevents` :ref:`welfare.admin.printing`
+
+But all these changes confirmed that it was a good idea to change my
+answer to our question from **Yes** to **No**.
+
+
+
