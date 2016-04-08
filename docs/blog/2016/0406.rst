@@ -1,0 +1,71 @@
+:date: 2016-04-06
+
+========================
+Wednesday, April 6, 2016
+========================
+
+Cannot see participants of course 039
+=====================================
+
+Alexa reported the problem that Lino did not show the content of the
+EnrolmentsByCourse table for a given course. The server log disclosed
+the reason::
+
+  File "repositories/voga/lino_voga/projects/roger/lib/courses/models.py", line 102, in get_enrolment_info
+    s += " " + self.section
+  TypeError: coercing to Unicode: need string or buffer, Choice found
+
+That is, there was one participant with a non-empty `section` field in
+this course, and Lino did not yet manage this case correctly. Fixed.
+
+This problem took only 20 minutes, including voice chat with Alexa,
+code change, commit, release to their production site and explanation
+email to Alexa.
+
+
+
+Managing user permissions
+=========================
+
+I had a phone meeting with Gerd about managing user permissions. 
+The existing system uses class-based "user roles" and is the best we can imagine.
+We had two ideas for optimizing it: :ticket:`856` and :ticket:`857`.
+
+:ticket:`856` is clear (no discussions) but will require some work and
+is not vital.
+
+For :ticket:`857` here an introduction. They face the problem that
+even though they currently have only about a dozen of user profiles,
+they sometimes have difficulties to figure out which one is needed for
+a new user.
+
+My idea is to solve this by providing the following table:
+
+================================== ================ ============ ========== =========== ============= ============ ===========
+ Profile                            OfficeOperator   OfficeUser   SepaUser   DebtsUser   LedgerStaff   Supervisor   SiteAdmin
+---------------------------------- ---------------- ------------ ---------- ----------- ------------- ------------ -----------
+ Anonym
+ Begleiter im DSBE                                   X            X
+ Begleiter im DSBE (Manager)        X                X            X
+ Begleiter im DSBE (+Erstempfang)                    X            X
+ Berater Erstempfang                                 X            X
+ Empfangsschalter                   X                             X
+ Empfangsschalter (+Erstempfang)    X                             X
+ Schuldenberater                                     X            X          X
+ Sozi                                                X            X
+ Sozi (Manager)                     X                X            X
+ Buchhalter                                          X            X
+ Accountant (Manager)                                X            X                      X
+ Supervisor                         X                             X                                    X
+ Verwalter                          X                X            X          X           X                          X
+================================== ================ ============ ========== =========== ============= ============ ===========
+
+The real table should of course (1) have more columns (configurable as
+a list of "key functionalities") and (2) be accessible via the web
+interface.
+
+The table has been generated using the following script:
+
+.. literalinclude:: 0406.py
+
+
