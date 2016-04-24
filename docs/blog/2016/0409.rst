@@ -1,0 +1,27 @@
+:date: 2016-04-09
+
+=======================
+Saturday, April 9, 2016
+=======================
+
+A first little change for :ticket:`862`: When updating the events of a
+course, Lino (in
+:meth:`update_auto_events<lino.modlib.cal.mixins.EventGenerator.update_auto_events>`)
+now reports conflicting events to the JS console.  Actually the
+detailed report should be visible without opening the JS console, and
+mentioned conflicting events should be clickable. Per calendar event
+there should be a link with a list of all events on that day.
+
+More optimizations for :ref:`voga`: New command "Create invoices" in
+the main menu starts a "general" invoicing plan.
+
+Note :ticket:`864`. Lino does not yet support model extension on more
+than 2 generations of plugins.  Only known example so far is
+`courses.Enrolment`. The coures plugin is defined three times:
+:mod:`lino_cosi.lib.courses`, :mod:`lino_voga.lib.courses` and
+:mod:`lino_voga.projects.roger.lib.courses`. We currently need a hack
+to get it work: We must include 'Enrolment' in the
+:attr:`extends_models <lino.core.plugin.Plugin.extends_models>` of
+`roger` despite the fact that this model is *not* being extended
+there. The `Enrolment` model definition in
+:mod:`lino_voga.lib.courses` has a hard-coded ``abtract = False``.

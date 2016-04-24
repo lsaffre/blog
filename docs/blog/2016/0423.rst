@@ -1,0 +1,72 @@
+:date: 2016-04-23
+
+========================
+Saturday, April 23, 2016
+========================
+
+Letsencrypt
+===========
+
+I had the following error message when trying to renew the SSH
+certificates using letsencrypt::
+
+    WARNING:letsencrypt.renewal:
+    Attempting to renew cert from /etc/letsencrypt/renewal/bar.example.com.conf produced an unexpected error: 
+    Failed to run Apache plugin non-interactively
+    Missing command line flag or config entry for this setting:
+    We were unable to find a vhost with a ServerName or Address of bar.example.com.
+    Which virtual host would you like to choose?
+    (note: conf files with multiple vhosts are not yet supported)
+    Choices: ['default-ssl.conf               |                       | HTTPS |        ', 'static.conf                    | static.example.com     | HTTPS | Enabled', '000-default.conf               |                       |       | Enabled']
+    (The best solution is to add ServerName or ServerAlias entries to the VirtualHost directives of your apache configuration files.). Skipping.
+
+    The following certs were successfully renewed:
+      /etc/letsencrypt/live/static.example.com/fullchain.pem (success)
+
+    The following certs could not be renewed:
+      /etc/letsencrypt/live/foo.example.com/fullchain.pem (failure)
+      /etc/letsencrypt/live/bar.example.com/fullchain.pem (failure)
+    2 renew failure(s), 0 parse failure(s)
+
+
+    
+The solution was inspired by the note "conf files with multiple vhosts
+are not yet supported". It seems that indeed letsencrypt doesn't
+support having more than one ``<VirtualHost>`` directive per
+file. Solution in my case was to remove the `<VirtualHost>` containing
+the `RewriteRule`.
+
+
+
+Miscellaneous
+=============
+
+I renamed `OverdueEvents` to
+:class:`lino_xl.lib.cal.ui.OverdueAppointments` (and
+`show_appointments` is not set to "yes").  The most visible difference
+is that holidays are not shown in this table because they are no
+appointments.
+
+Here is yet another side effect of the future script::
+
+
+    Traceback (most recent call last):
+      File "/lib/python2.7/site-packages/django/core/handlers/base.py", line 147, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/lib/python2.7/site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/lino/modlib/extjs/views.py", line 462, in get
+        return json_response(datarec)
+      File "/lino/core/views.py", line 24, in json_response
+        s = py2js(x)
+      File "/lino/utils/jsgen.py", line 470, in py2js
+        or v.get_view_permission(_for_user_profile)
+      File "/lino/utils/jsgen.py", line 468, in py2js
+        "%s: %s" % (py2js(k), py2js(v)) for k, v in list(sorted(v.items()))
+      File "/lib/python2.7/site-packages/future/types/newstr.py", line 316, in __gt__
+        raise TypeError(self.unorderable_err.format(type(other)))
+    TypeError: unorderable types: str() and <type 'str'>
+
+And it is not reproduceable.

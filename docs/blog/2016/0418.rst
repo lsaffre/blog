@@ -1,0 +1,164 @@
+:date: 2016-04-18
+
+======================
+Monday, April 18, 2016
+======================
+
+Today I met Jasmin who works in a youth center in Eupen.  She
+explained me their needs for one of their projects called
+*Hausaufgabenschule* (French *École des devoirs*).  I started a
+similar project (with Marie) for the same organization some years ago,
+but that project went asleep mainly because at that time I did not
+manage to set up a server in their house. Now we start again from
+scratch.  :ticket:`872`
+
+They have Teachers, Pupils, Timeslots, Rooms, Appointments and some
+system of appointment rules.  This reminds :ref:`voga`, but I have the
+feeling that in their case we should not use :ref:`xl` because that
+would be a big beast.  So this would be a new little Lino application
+from scratch.
+
+After Jasmin I had another meeting in the same house with Johannes.  I
+heard that the project which I started with him in October 2015
+(:ticket:`872`) had been waiting on their side for Lino, too.  To our
+both surprise we discovered that one of my implementations
+(:mod:`lino_noi.projects.care`, which I started and then put to sleep
+after twe interviews with Johannes in October 2015) seems to fit their
+needs quite exactly.
+
+Johannes helped me to write a demo fixture:
+:mod:`lino_noi.projects.care.lib.tickets.fixtures.demo`.  The
+remainder of this blog entry is an introduction to the project in
+German.
+
+Projekt "Helfernetz"
+====================
+
+Es geht um die Idee einer "Patenschaftsbörse" oder
+"Hilfevermittlung" mit dem Ziel der zwischenmenschlichen Vermittlung
+zwischen Immigranten und Hiesigen.
+
+Im Gegensatz zur Patenschaftsbörse wird hier nur immer ein
+punktuelles, zeitlich begrenztes Engagement erwartet.
+
+Ein ähnliches Projekt hat die Katharina Kasper Stichting vor Kurzem
+vorgestellt.  Es gibt überhaupt schon viele solcher Systeme von
+Hilfsanfragen und Vermittlung.
+
+Was ist das Besondere an unserer Idee?
+
+- Es handelt sich weniger um eine Webseite als um eine
+  Datenbankanwendung, auf die ein Team freiwillliger Mitarbeiter
+  zugreifen kann, deren Vertrauenswürdigkeit garantiert wird. Die
+  erfassten Daten werden nicht direkt veröffentlicht.
+
+  Weder Hilfesuchende noch Anbieter brauchen sich selber
+  einzuloggen. Die wichtigste Arbeit der freiwilligen Mitarbeiter
+  besteht darin, mit vielen Menschen in ständigem Kontakt zu sein und
+  sowohl Angebote als auch Anfragen zu sammeln.  
+
+  Das Erfassen in der Datenbank wird durch eine andere Gruppe von
+  freiwilligen Mitarbeitern gemacht. Diese technischen Mitarbeiter
+  haben auch eine gewisse Schulung.
+
+- Unsere Idee ist ein Ticket-basiertes System, wie es in der
+  Softwareentwicklung benutzt wird. Jede Hilfeanfrage wird zu einem
+  "Ticket".  Ein Ticket hat einen "Besitzer" (der Hilfesuchende,
+  :attr:`reporter`) sowie einen zugewiesenen "Verantwortlichen"
+  (:attr:`assigned_to`), der sich "darum kümmert".  Außerdem ist auch
+  wichtig der Status eines Tickets: Offen, Erledigt, "Wartet auf
+  Reaktion von Dritten", "Wartet auf einen neuen Verantwortlichen",
+  usw.
+
+- Wichtig ist die Integration von "Helfern" und "Helfenden". Alle
+  werden in einen Topf geworfen. Jeder kann sowohl Anfragen als auch
+  Angebote machen.
+
+- Wohlgemerkt, es geht hier um kostenlosen Austausch. Hier wird weder
+  von Geld noch von Klümpchen gesprochen. Es geht nicht ums
+  Bezahltwerden, sondern ums Kennenlernen. Unter Freunden hilft man
+  sich ja auch ohne Bezahlung.
+
+- Die Mitarbeiter können auch Berichte ihrer Gespräche und Aktionen in
+  die Datenbank eintragen, die andere Mitarbeiter später lesen
+  können. Dadurch wird ein Teamgeist gefördert, der auch ohne viele
+  Versammlungen auskommt.
+
+- Eine mögliche Option ist, dass die Mitarbeiter ihre Arbeitszeit
+  notieren können. Es wirkt motivierend, wenn man seine verschenkte
+  Arbeitszeit irgendwo stehen sieht, slbst wenn man dafür kein Geld
+  bekommt.
+
+- Es ist denkbar, dass irgendwann auch die Benutzer selber ihre
+  Anfragen und/oder Angebote erfassen können. Aber ich würde anfangs
+  eher damit rechnen, dass ein Mitarbeiter die Erfassungsarbeit macht.
+
+- Wichtig ist auch, dass die Anwendung flexibel ist und zu einem
+  tragbaren Preis gewartet und weiterentwickelt werden kann.  Denn es
+  ist abzusehen, dass sich weitere Ideen erst im Laufe der Benutzung
+  zeigen werden.
+
+
+Angebote:
+
+- Repariere gerne Fahrräder
+- Ich liebe Gartenarbeit
+- Backe schöne Festtagskuchen
+- ...
+
+In Lino Care würden wir das erfassen als "Fähikeiten". Hier eine erste
+Liste solcher Fähigkeiten:
+
+- Unterricht (Sprache, Mathe
+- Gitarrenunterricht
+- Taxidienst
+- Fahrtendienst
+- Botengänge, Besorgungen
+- Reparaturarbeiten
+- Gartenarbeiten
+- Babysitting
+- Gesellschaft für Senioren
+- Spaziergänge mit Senioren
+- Spaziergänge mit Hunden
+- Kuchen backen
+- Kochen
+- Übersetzungsarbeiten
+- Sekretariat (Briefe beantworten)
+- Juristische Beratung
+- Krankenbesuche
+
+In der Datenbank müsste es folgende Tabellen geben:
+
+- Benutzer (Name, Tel, E-Mail, Ort) hier würden alle Benutzer (sowohl
+  die Sammler als auch die Anbieter und Sucher selber) erfasst.
+
+- Ein Katalog aller Dienstleistungen und
+  Gegenstände, die angeboten oder gefragt werden können)
+- Orte (eine Liste aller möglichen Ortsangaben)
+- Angebote (Person, Ort, Produkt, evtl. genauere Beschreibung, Wieviel
+  Zeit maximal, ...)
+- Anfragen (Person, Ort, Produkt, evtl. genauere Beschreibung, Wieviel
+  Zeit nötig ist, ...)
+
+
+..
+
+    13-14 Jasmine (:ticket:`872`)
+    14-16 Johannes (:ticket:`621`)
+    20-21 :ticket:`621` (code)
+    03:05-04:35 :ticket:`621` (code and docs)
+
+Ziele?
+Zielgruppen?
+Wie funktioniert das System?
+Welches wäre der Beitrag des Clubs (als Ganzes oder der einzelnen Mitglieder)
+
+
+Erweiterungsideen: 
+
+- Thesaurus der Fähigkeiten: Wer Arabisch kann, der kann auch Briefe übersetzen.
+- Sprachbezogene Fähigkeiten
+- Negativ-Fähigkeiten (was ich explizit nicht tun will)
+- Dringlichkeit
+
+

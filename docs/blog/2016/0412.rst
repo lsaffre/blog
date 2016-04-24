@@ -1,0 +1,29 @@
+:date: 2016-04-12
+
+=======================
+Tuesday, April 12, 2016
+=======================
+
+Yesterday we discovered a subtle but maybe important problem for
+:ticket:`143`: manually entered AAW get their amounts totalled into a
+negative sum.
+
+missing feature 
+in Lino Welfare we can have clearing on the same
+booking direction.
+
+The primary booking of an incoming invoice (REG) is usually DEBIT.
+The primary booking of a disbursement order (AAW) is *also* usually DEBIT.
+And an AAW satisfies (clears) a REG.
+
+
+I removed the message "List contains more than 900 rows". The idea was
+to protect users from inadvertently produce huge pdf files. But it is
+very disturbing to get this message during a demonstration :-)
+
+New field :attr:`lino_cosi.lib.ledger.models.Journal.yearly_numbering`.
+
+All vouchers are now certifiable.  IOW
+:class:`lino_cosi.lib.ledger.models.Voucher` no inherits from
+:class:`lino_xl.lib.excerpts.mixins.Certifiable`.
+I am not 100% sure whether this was a good idea.

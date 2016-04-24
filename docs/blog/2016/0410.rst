@@ -1,0 +1,41 @@
+:date: 2016-04-10
+
+======================
+Sunday, April 10, 2016
+======================
+
+I made a test tour for :ticket:`143` and stumbled only over siny
+stupid bugs. Nothing serious. But *Kleinvieh macht auch Mist*:
+
+One problem which turned out to be a simple configuration error:
+
+REG erstellen und registrieren. Der Betrag steht dann offen im Konto
+*(44000) Kreditoren*. AAW erstellen, Vorschlag
+übernehmen. Registreren.  AAW2 ist konfiguriert, dass es dieses Konto
+befriedigen kann.  Tut sie auch: bucht den Betrag wieder aus dem Konto
+*(44000) Kreditoren* raus.  Und dann bucht sie ihre Gegenbuchung aufs
+Konto *(44500) Auszuführende Aufträge*. Stimmt auch. Aber diese
+Gegebuchung hat weder Partner noch Klient ausgefüllt.
+
+Erklärung : Das Ankreuzfeld "needs partner" muss gesetzt sein auf dem
+Generalkonto (Haushaltsartikel).
+
+Dann hatte ich im Journal ZCB noch kein Generalkonto für die
+Hauptbuchung angegeben. Das Feld war leer. Und um das rauszufinden,
+habe ich fast eine Stunde gebraucht, weil ich mehrere unicode-Bugs
+hatte beim Erstellen der betreffenden Warnung.
+
+Ich bekam einen UnicodeDecodeError, wenn ich versuchte, das nach
+unicode umzuwandeln. Den fange ich in :mod:`lino.core.requests` jetzt
+ab und zeige dann die `repr` der Exception. Dadurch sah ich dann
+wenigstens die Meldung:
+
+    UnicodeDecodeError('ascii', 'No account in Zahlungsauftr\xc3\xa4ge
+    dringend CCG (ZDR)', 27, 28, 'ordinal not in range(128)')
+
+Da wurde also eine Exception erhoben, die einen utf-kodierten String
+mit non-ascii chars enthält. Der Schuldige war
+:mod:`lino_cosi.lib.finan.models`, da fehlte zum Beispiel das ``from
+__future__ import unicode_literals``. Da wurde ein unicode-String mit
+Sonderzeichen in einen bytestring reinformatiert.
+

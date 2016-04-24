@@ -1,0 +1,52 @@
+:date: 2016-04-15
+
+======================
+Friday, April 15, 2016
+======================
+
+A subtle stupid problem (:ticket:`870` TypeError: argument can't be
+<type 'unicode'>) took me 24 minutes.  A traceback::
+
+
+    Internal Server Error: /api/courses/Pupils
+    Traceback (most recent call last):
+      File "/python2.7/site-packages/django/core/handlers/base.py", line 123, in get_response
+        response = middleware_method(request)
+      File "/python2.7/site-packages/django/middleware/common.py", line 61, in process_request
+        if self.should_redirect_with_slash(request):
+      File "/python2.7/site-packages/django/middleware/common.py", line 76, in should_redirect_with_slash
+        if settings.APPEND_SLASH and not request.get_full_path().endswith('/'):
+      File "/python2.7/site-packages/django/http/request.py", line 124, in get_full_path
+        ('?' + iri_to_uri(self.META.get('QUERY_STRING', ''))) if self.META.get('QUERY_STRING', '') else ''
+      File "/python2.7/site-packages/future/types/__init__.py", line 163, in wrapper
+        raise TypeError(errmsg.format(mytype))
+    TypeError: argument can't be <type 'unicode'>
+
+    Traceback (most recent call last):
+      File "/python2.7/site-packages/django/core/handlers/base.py", line 123, in get_response
+        response = middleware_method(request)
+      File "/python2.7/site-packages/django/middleware/common.py", line 61, in process_request
+        if self.should_redirect_with_slash(request):
+      File "/python2.7/site-packages/django/middleware/common.py", line 76, in should_redirect_with_slash
+        if settings.APPEND_SLASH and not request.get_full_path().endswith('/'):
+      File "/python2.7/site-packages/django/http/request.py", line 124, in get_full_path
+        ('?' + iri_to_uri(self.META.get('QUERY_STRING', ''))) if self.META.get('QUERY_STRING', '') else ''
+      File "/python2.7/site-packages/future/types/__init__.py", line 163, in wrapper
+        raise TypeError(errmsg.format(mytype))
+    TypeError: argument can't be <type 'unicode'>
+    ine 913, in _resolve_lookup
+            current = current()
+          File "/python2.7/site-packages/django/http/request.py", line 158, in get_raw_uri
+            path=self.get_full_path(),
+          File "/python2.7/site-packages/django/http/request.py", line 124, in get_full_path
+            ('?' + iri_to_uri(self.META.get('QUERY_STRING', ''))) if self.META.get('QUERY_STRING', '') else ''
+          File "/python2.7/site-packages/future/types/__init__.py", line 163, in wrapper
+            raise TypeError(errmsg.format(mytype))
+        TypeError: argument can't be <type 'unicode'>
+
+
+The problem is obviously related to the future package (introduced for
+:ticket:`36`), but it appeared only after upgrading Django to
+1.9.5. It is yet anothe warning to me to try to avoid the future
+package as much as possible.
+    
