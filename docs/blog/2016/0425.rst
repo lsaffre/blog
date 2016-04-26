@@ -4,11 +4,140 @@
 Monday, April 25, 2016
 ======================
 
-The dates of the generated calendar events are now clickable in order
-to facilitate research in case of conflicting events.  I changed the
-name of `linked_date` to :attr:`when_html
+Lino Voga
+=========
+
+I worked on :ticket:`878` and made a first release: The dates of the
+generated calendar events are now clickable in order to facilitate
+research in case of conflicting events.  I changed the name of
+`linked_date` to :attr:`when_html
 <lino_xl.lib.cal.models.Event.when_html>`. `EventsByController` now
 uses :attr:`when_html <lino_xl.lib.cal.models.Event.when_html>`
 instead of `when_text`.
 
 
+Sorting strings in Python 2 and 3
+=================================
+
+Two days ago I removed ``sorted(v.items())`` in
+:mod:`lino.utils.jsgen` (which had been added by Hamza for
+:ticket:`36`). I did this because it caused a `TypeError` when the
+dictionary contained a mixture of :class:`str` and
+:class:`future.types.newstr` keys. This change (of course) broke the
+test suite.  The following snippet reproduces the problem:
+
+>>> from builtins import str
+>>> d = {"foo": 1, str("bar"): 2}
+>>> sorted(d.items())
+[('bar', 2), ('foo', 1)]
+
+When run with Python 2 the last line says:
+
+>>> sorted(d.items())
+Traceback (most recent call last):
+...
+TypeError: unorderable types: str() and <type 'str'>
+
+It took me more than two hours to find out where Lino uses bytestring
+as keys to the dictionaries which are sent to `py2js`.
+
+Note that `PEP 8
+<https://www.python.org/dev/peps/pep-0008/#whitespace-in-expressions-and-statements>`_
+recommends to *avoid extraneous whitespace immediately before the open
+parenthesis that starts the argument list of a function call*.
+
+
+
+
+
+Local customizations to the user permissions
+============================================
+
+Ticket :ticket:`879`. End-users ask for a "quick little" change
+regarding user permissions:
+
+  Wäre es möglich, den Reiter Sprachenkurs in Lino für den ganzen ASD
+  frei zu schalten?
+
+I did a first code change (in
+:mod:`lino_welfare.modlib.courses.models`) and answered:
+
+    Ist notiert als Ticket :ticket:`879`, und theoretisch ist ein
+    erster Vorschlag bereit.  Es gibt keinen Reiter "Sprachkurse",
+    wohl aber ein Panel "Sprachkurse" im Reiter "Sprachen".  Momentan
+    würde durch ein Release nur dieses eine Panel für den ASD
+    sichtbar.  Soll das Panel "Sprachkenntnisse" auch sichtbar werden?
+    Möchtet ihr eine neue Version installiert bekommen (mit den
+    bekannten Vor- und Nachteilen)?
+
+Gerd (understandably) asks:
+
+    Muss dafür eine neue Version her oder geht das über die
+    Konfigurationsdateien?
+
+I answered:
+    
+    "Das kannst du über lokale Konfigurationsdateien machen, aber dann
+    ist es halt scheiße".  Genauer gesagt hat es den Nachteil, dass
+    diese Anwendungsintelligenz dann weder dokumentierbar noch testbar
+    ist.  Was für die Endbenutzer freilich kein Trost ist, dass sie
+    auf ihre Lösung warten müssen.  En attendant könnte ich also mal
+    probieren, ob ich es tatsächlich mit einer lokalen Anpassung
+    hinkriege. Vielleicht diese Nacht.
+    
+And because that might indeed be an interesting quick win, I
+started to think about how I would do it using a "local patch".
+
+Okay, here is how you can get the :class:`CourseRequestsByPerson
+<lino_welfare.modlib.courses.models.CourseRequestsByPerson>` panel
+visible for :class:`SocialAgent
+<lino_welfare.modlib.pcsw.roles.SocialAgent>` (and not only for
+:class:`CoursesUser <lino_welfare.modlib.courses.roles.CoursesUser>`).
+
+First step is to **create and activate a local roles module**:
+
+- Create a file named :file:`myroles.py` next to your local
+  :xfile:`settings.py` with this content::
+
+    from lino_welfare.modlib.welfare.roles import *
+
+- In your :xfile:`settings.py` file, set :attr:`user_profiles_module
+  <lino.core.site.Site.user_profiles_module>` to the Python path of
+  above file::
+    
+    user_profiles_module = 'mysite.myroles'
+
+This first step should have no influence at all. We've just prepared a
+hook for defining local customizations (to the standard system defined
+by :mod:`lino_welfare.modlib.welfare.roles`).
+
+Second step is to add customizations to your :file:`myroles.py` file.
+In above example we would just have to add the following lines::
+
+    from lino.api import dd, rt
+    t = rt.modules.courses.CourseRequestsByPerson
+    t.required_roles = dd.required((CoursesUser, SocialAgent))
+
+
+I wrote a tutorial about this topic: :ref:`lino.tutorials.myroles`.
+
+
+Lino Voga (continued)
+=====================
+
+I continued on :ticket:`878`.
+
+
+Lino Care
+=========
+
+I worked on :ticket:`621` to do the list of ideas which I received
+last Thursday in Eupen with Johannes, Lukas, Annalisa and Carl.
+
+The affinity of a faculty and/or competence expresses how much a given
+user "likes" to get assigned to a ticket of this faculty.
+
+I updated :ref:`noi.specs.care` which is now a tested document.
+
+The :attr:`username <lino.modlib.users.models.User.username>` of a
+user is no longer mandatory.
