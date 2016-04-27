@@ -23,9 +23,42 @@ It seems that the general rule is: if you want your own detail_layout,
 then you should write your own plugin.
 
 
+I deployed everything to :ref:`lf`.
 
 
-Sending emails
-==============
+A new deployment strategy?
+===========================
+
+I am going to setup a new production site on `mylino.org`, and that
+site should have its own virtual environment. The easiest way would be
+to simply add a new environment as described in :ref:`dev.install`.
+
+But a clone of the Lino repository takes 257 MB of disk space. Do we
+really need to waste that much?
+
+I surfed around and found documents like `Setting up a private,
+team-wide PyPI repository <http://blog.xelnor.net/private-pypi/>`_,
+but it seems to me that our own packages server would be overkill.
+
+The easiest and most appropriate way seems to start using officially
+released "stable" versions of Lino.
+
+Here is a cheat sheet for installing Lino Noi::
+
+    $ cd ~/virtualenvs
+    $ virtualenv b
+    New python executable in b/bin/python
+    Installing setuptools, pip, wheel...done.
+    $ cd b
+    $ . bin/activate
+    $ mkdir lino_cache
+    $ mkdir lino_static
+    $ mkdir repositories
+    $ cd repositories
+    $ git clone https://github.com/lino-framework/xl.git
+    $ pip install -e xl/
+    $ git clone https://github.com/lsaffre/noi.git
+    $ pip install -e noi/
+
 
 
