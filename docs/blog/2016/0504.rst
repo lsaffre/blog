@@ -1,0 +1,69 @@
+:date: 2016-05-04
+
+======================
+Wednesday, May 4, 2016
+======================
+
+Code review
+===========
+
+I merged Hamza's last pull requests rather quickly, now I found time
+to review them more seriously.
+
+`PR 25 <https://github.com/lsaffre/lino_extjs6/pull/25>`_ (Add the id
+of selected item of combobox to the submit value) adds two variables
+`changed` and `hiddenvalue_tosubmit` to `Lino.ComboBox` and redefines
+the `updateValue` method in order to set them.  And then (in
+`Lino.FormPanel.save2`) it adds a loop over all fields in order to
+explicitly submit the hidden fields.
+
+This is very hackerish, but I don't see a better solution.  Note that
+it breaks when multiple choices are selected. I added a comment and
+one theoretisch optimization (no `selector` was defined if both
+``instanceof`` tests were false).
+
+
+`PR 26 <https://github.com/lsaffre/lino_extjs6/pull/26>`_ (Disable an
+event hack used with Extjs3 and fixed with Extjs6) has two changes:
+
+- Removes `layout: 'anchor'` and `defaults: { anchor: '100%' }` from 
+  the class definition of a `Lino.FormPanel`.
+
+  Why is this code change?
+
+
+- Disables generation of `active_fields` usage in a `DetailFormPanel`.
+
+  I undid this code change because `active_fields` are not a hack but
+  a feature. They are used e.g. in
+  :class:`lino_welfare.modlib.jobs.models.Contract` or
+  :class:`lino.modlib.countries.mixins.CountryCity`.  Active fields
+  cause the detail form to get automaticaly submitted, when one of
+  them has been changed.  But it certainly has nothing to do with
+  ExtJS version.
+
+  Technical remark: it would have been more clean to disable the
+  *whole* block, i.e. also the first line (`if
+  dh.layout._formpanel_name.endswith('.DetailFormPanel')`.
+
+  I removed the `active_change_event` attribute because this was
+  indeed just a now useless hack to avoid some ExtJS bug which no
+  longer exists.  I removed some comments which maybe caused Hamza to
+  believe that the whole block had become useless.
+
+  I guess that this change was to avoid an endless loop of submits
+  after modifying a ComboBox active. This endless loop now --of
+  course-- again occurs. It occurs when e.g. you select another city
+  on a partner because `city` is an active field.
+
+  So, Hamza, you must find another solution for this problem.
+
+
+Checking for missing cache files
+================================
+
+The :class:`lino.modlib.printing.mixins.CachedPrintableChecker` no
+longer automatically "fixes" the problem by setting `build_time` to
+None, because in cases of real data loss a system admin might want to
+have at least that timestamp in order to search for the lost file.
+
