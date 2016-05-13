@@ -1,0 +1,74 @@
+:date: 2016-05-09
+
+===================
+Monday, May 9, 2016
+===================
+
+Upgrade to ExtJS 6
+==================
+
+Good news: after the ComboBox conversion, Hamza is now advancing
+quickly in :ticket:`37` (Upgrade to ExtJS 6), fixing problem in rows.
+BTW he also wrote a first `blog entry
+<http://hamza.lino-framework.org/migration-from-extjs3-to-extjs6.html#migration-from-extjs3-to-extjs6>`_
+about his work.
+
+Now it would be really cool to get :ref:`noi` with ExtJS 6 into a
+usable state. We would start to use it ourselves before releasing it
+to some customer! This is what I actually want with ticket
+:ticket:`896`.  
+
+I tried by adding the following line to the :class:`Site` definition
+in my local copy of :mod:`lino_noi.projects.team.settings.demo`::
+
+    default_ui = 'lino_extjs6.extjs'
+
+and then doing::
+
+    $ cd lino_noi/projects/team
+    $ python manage.py runserver
+
+This first attempt revealed (as I expected) that
+:mod:`lino.modlib.tinymce` causes problems.  In a first step I plan to
+just remove this plugin and to try whether the built-in text editor of
+ExtJS 6 is better than that of ExtJS 3.  So we just deactivate TinyMCE
+by adding some more lines to above file ::
+
+
+    def get_apps_modifiers(self, **kw):
+        kw = super(Site, self).get_apps_modifiers(**kw)
+        kw.update(tinymce=None)
+        return kw
+
+But even then I still have a JavaScript syntax error "Unterminated
+string literal" in the following line::
+
+    var AttachmentsByMail_htmlbox333 = Ext.create(
+        'Lino.HtmlBoxPanel', { 
+            "always_enabled": true,
+            "bodyStyle": "overflow-x:hidden;", "containing_panel": this,
+            "flex": 22, 
+            "items": Ext.create('Ext.BoxComponent,{ autoScroll:true}), 
+            "layout": "fit",
+            "listeners": { 
+                "render": Lino.quicktip_renderer("Pi\u00e8ces jointes",
+                "(outbox.Mails.AttachmentsByMail) ") }, 
+            "master_panel": this, 
+            "name": "AttachmentsByMail", 
+            "title": "Pi\u00e8ces jointes",
+            "tools": [ Lino.show_in_own_window_button(Lino.outbox.AttachmentsByMail.grid) ], 
+            "value": "<br/>" });
+
+Hamza, can you try to reproduce and fix this? 
+
+
+Lino Voga final sprint
+======================
+
+For :ticket:`903` I worked out my next suggestion for the
+:meth:`__str__` method of a :class:`Course
+<lino_voga.projects.roger.lib.courses.models.Course>` (in Lino Voga à
+la Roger).
+
+Added a new model :class:`lino_cosi.lib.sales.models.PaperType`
+(:ticket:`902`).

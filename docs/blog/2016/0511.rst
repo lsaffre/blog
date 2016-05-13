@@ -1,0 +1,31 @@
+:date: 2016-05-11
+
+=======================
+Wednesday, May 11, 2016
+=======================
+
+I worked on :ticket:`901`: 
+Added a second column layout for the items of a sales invoice.
+
+Added a new database field
+:attr:`lino_xl.lib.products.models.Product.delivery_unit`
+
+The appy instruction used in `sales/VatProductInvoice/Default.odt`
+template for rendering the "body" of the invoice was until now::
+
+    do text
+    from table(rt.modules.sales.ItemsByInvoicePrint.request(this.owner))
+
+Now it is::
+
+    do text
+    from table(obj.get_print_items(ar))
+
+Note the new internal attribute :attr:`print_items_table
+<lino_cosi.lib.sales.models.VatProductInvoice.print_items_table>`.
+
+Lino (:mod:`lino_cosi.lib.invoicing.models`) did not select the
+correct language when generating invoice items. 
+
+Converted some text constants which had been hard-coded German until
+now to translatable texts.  Updated German translations.

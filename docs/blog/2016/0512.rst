@@ -1,0 +1,52 @@
+:date: 2016-05-12
+
+======================
+Thursday, May 12, 2016
+======================
+
+I worked on :ticket:`910` : a course (in :ref:`voga`) now has an
+"Export" button which generates and opens an xlsx file designed to be
+printed on paper for manually noting the presences of participants.
+
+This document has a special challenge: when there are more than 20
+events (or some configurable maximum number), then colums don't fit on
+a single page, and in that case it is necessary to split the document
+vertically, i.e. print remaining columns to a second page (or set of
+pages, if there are many participants).
+
+I believe that the first implementation using wkhtmltopdf had no
+future because wkhtmltopdf fails fundamentally with defining page
+headers and footers.
+
+This is also a new style of build method for printables: it has a
+target file to be generated and rendered to the request, but does not
+use any template at all. This is :class:`CustomBuildMethod
+<lino.modlib.printing.utils.CustomBuildMethod>`.
+
+Also TIL that `xlwt` has been replaced by `openpyxl`.
+
+We had a case of `AttributeError: 'NoneType' object has no attribute
+'number_of_events'`::
+
+    File "/lino_voga/lib/courses/models.py", line 257, in __init__
+      if obj.product.number_of_events:
+
+
+Alexa reported another subtle use case which I classify as part of
+:ticket:`909`:
+
+
+    Im Kurs 001 sind Leute eingeschrieben, die in ein paar Tagen
+    beginnen. Also Startdatum steht auf 17. Mai. Lino zeigt aber am
+    Bildschirm an (und druckt im Belegstatus aus), dass diese Plätze
+    noch frei sind. Wenn sich heute noch jemand anmeldet, dann sehen
+    wir nicht, dass der Kurs schon voll ist.
+  
+I fixed it and wrote some test cases into
+:ref:`voga.specs.courses`. To get these test cases I had to enhance
+the demo fixture (:mod:`lino_voga.lib.voga.fixtures.buche`).
+
+I did something which I should have done eariler: I changed the
+default English date formatting done by :mod:`lino.utils.date_format`
+from US to UK.  This causes of course lots of changes in doctests.
+But it is just too impossible to get used to the American date format.

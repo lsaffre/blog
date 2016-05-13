@@ -1,0 +1,24 @@
+:date: 2016-05-08
+
+===================
+Sunday, May 8, 2016
+===================
+
+A little change for Lino Voga in `column_names` of
+:class:`lino_voga.projects.roger.lib.courses.Pupils`.  And some
+translations were missing.
+
+And another change request turned out to be more tricky: they want
+:class:`CoursesByTopic <lino_voga.lib.courses.models.CoursesByTopic>`
+to show only *active* courses. But adding this condition to
+:meth:`param_defaults <lino.core.actors.Actor.param_defaults>` did not
+have any effect.  That was because
+:class:`lino_cosi.lib.courses.ui.CoursesByTopic` redefined
+:meth:`get_request_queryset
+<lino.core.dbtables.Table.get_request_queryset>` without calling
+:func:`super`.  And actually the "good" method for doing what this
+table wants to do (namely to link to a *remote field on the master*
+instead of linking directly to the master) is to write a custom
+:meth:`get_filter_kw <lino.core.tables.AbstractTable.get_filter_kw>`
+method.
+

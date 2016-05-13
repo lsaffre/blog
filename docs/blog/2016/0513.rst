@@ -1,0 +1,95 @@
+:date: 2016-05-13
+
+====================
+Friday, May 13, 2016
+====================
+
+Adapting test suites
+====================
+
+I adapted the test suites of :ref:`cosi` and :ref:`welfare`
+(:ticket:`881`).
+
+As a side-effect, I changed the output format of the :cmd:`fab
+summary` command to be shorter. On my machine it is now::
+
+    ========= ========================================== ========= ========================
+     Project   URL                                        Version   doctrees
+    --------- ------------------------------------------ --------- ------------------------
+     atelier   http://atelier.lino-framework.org          1.0.0     docs
+     cd        https://github.com/lsaffre/commondata      0.0.1     docs
+     be        https://github.com/lsaffre/commondata-be   0.0.1
+     ee        https://github.com/lsaffre/commondata-ee   0.0.1
+     lino      http://www.lino-framework.org              1.7.0     docs
+     xl        http://www.lino-framework.org              1.0.0     docs
+     noi       http://noi.lino-framework.org              0.0.2     docs
+     cosi      http://cosi.lino-framework.org             0.0.2     docs
+     welfare   http://welfare.lino-framework.org          1.1.26    docs, docs_de, docs_fr
+     presto    http://presto.lino-framework.org           0.0.1     docs
+     voga      http://voga.lino-framework.org             0.0.4     docs
+     ext6      http://www.lino-framework.org              0.0.1     docs
+     patrols   http://patrols.lino-framework.org          0.0.2     docs
+     logos     http://logos.lino-framework.org            0.0.1     docs
+     dblog     None                                                 docs
+     blog      None                                                 docs
+     jsvv      None                                                 docs
+     lucde     None                                                 docs
+     lucet     None                                                 docs
+     vv        None                                                 docs
+    ========= ========================================== ========= ========================
+
+
+
+
+Problems with sending email from a VPS
+======================================
+
+On both :ref:`lf` and :ref:`ml` I have currently problems when sending
+emails.
+
+To explore these problems, I used the following :file:`sendmail.py`
+script:
+
+.. literalinclude:: 0513_sendmail.py
+
+This script is to be invoked via :manage:`run` as follows::
+
+    $ python manage.py  run sendmail.py
+
+On :ref:`ml` (which is hosted at OVH), my first attempt takes about 1
+minute to complete, and then I get::
+
+    EMAIL_HOST : mx3.ovh.net
+    EMAIL_HOST_USER : 
+    DEFAULT_FROM_EMAIL : noreply@mylino.net
+    SERVER_EMAIL : noreply@mylino.net
+    EMAIL_PORT : 25
+    EMAIL_USE_TLS : True
+    ...
+    Traceback (most recent call last):
+    ...
+    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (553, "sorry, that domain isn't allowed to be relayed thru this MTA [mail497] (#5.7.1)")}
+    
+    
+According to `this <http://help.ovh.com/EmailConfiguration>`_ page
+their STMP server is `ns0.ovh.net`. When I try this, I get another
+error message::
+
+    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (554, '5.7.1 <133.ip-167-114-252.eu[167.114.252.133]>: Client host rejected: Access denied')}
+
+    
+   
+
+While on :ref:`lf` I get another error::
+
+    EMAIL_HOST : smtp.elisa.ee
+    EMAIL_HOST_USER : 
+    DEFAULT_FROM_EMAIL : noreply@lino-framework.org
+    SERVER_EMAIL : noreply@lino-framework.org
+    EMAIL_PORT : 25
+    EMAIL_USE_TLS : False
+    Traceback (most recent call last):
+    ...
+    socket.gaierror: [Errno -2] Name or service not known
+
+
