@@ -1,0 +1,102 @@
+:date: 2016-05-14
+
+======================
+Saturday, May 14, 2016
+======================
+
+Sending emails from my VPS
+==========================
+
+More research about :ticket:`916`.  Yesterday I had submitted my
+problem to OVH support. They did not yet answer my question. I don't
+know whether they offer an SMTP server which I can use as relay.
+
+Here is another thing I tried: I used a Google account and Google's
+SMTP server, as explained e.g. in `How to send email via Django?
+<http://stackoverflow.com/questions/6367014/how-to-send-email-via-django>`_. My settings::
+
+    EMAIL_HOST : smtp.gmail.com
+    EMAIL_HOST_USER : my.name@gmail.com
+    EMAIL_PORT : 587
+    EMAIL_USE_TLS : True
+    
+Now my :file:`sendmail.py` script gets a new error message::
+
+  smtplib.SMTPAuthenticationError: (534, '5.7.14 <https://accounts.google.com/signin/continue? ...> Please log in via your web browser and\n5.7.14 then try again.\n5.7.14  Learn more at\n5.7.14  https://support.google.com/mail/answer/78754 o4sm21416424wjx.45 - gsmtp')
+
+The indicated Google Help page (`Can’t sign in to my email app
+<https://support.google.com/mail/answer/78754>`__) explained that "To
+    help keep Google Apps users' accounts secure, we may block less
+secure apps from accessing Google Apps accounts." and that "Your app
+might not support the latest security standards."  In a first step
+they explain me that my app is not "secure", and that I should
+"upgrade" my app to a "more secure" app like Gmail. Tss, tss...  But
+finally: It suggests, if I really insist, to "Try changing a few
+settings to `allow less secure apps access
+<https://support.google.com/accounts/answer/6010255>`_ to your
+account."
+
+So I did that. It was probably necessary, but it wasn't enough. There
+was another thing to do:
+
+- Visit http://www.google.com/accounts/DisplayUnlockCaptcha and sign
+  in with your Gmail username and password. If asked, enter the
+  letters in the distorted picture.
+
+Where it said:
+
+    Bei der Anmeldung in einem neuen Gerät oder in einer neuen
+    Anwendung fordert Google Sie unter Umständen als
+    Sicherheitsmaßnahme auf, diesen zusätzlichen Schritt
+    durchzuführen.
+
+    Klicken Sie unten auf "Weiter", um Zugriff zu gewähren.
+
+And after clicking "Weiter", it finally said:    
+
+    Kontozugriff aktiviert
+
+    Melden Sie sich von Ihrem neuen Gerät oder Ihrer neuen Anwendung
+    aus erneut in Ihrem Google-Konto an.
+
+
+After this, my :file:`sendmail.py` script passed, and the test mail
+arrived to my inbox.
+
+
+Documentation changes
+=====================
+
+While thinking about how to prepare a talk for `FOSDEM
+<https://fosdem.org>`_, I started to realize that the docs tree of the
+Lino repository is not the right place for writing an overview about
+Lino.  A complete overview must *also* talk about :ref:`xl`,
+:ref:`welfare`, :ref:`cosi`, :ref:`voga` etc.  It is somehow nonsense
+to try to explain Lino without talking about these.
+
+But I want to avoid circular references in my doctrees. Yes, circular
+intersphinx references *are* feasable with Sphinx, but it requires
+some hacking, and actually I prefer to open another GitHub project
+called `book`, technically similar to my `blog
+<https://github.com/lsaffre/blog>`_ (i.e. just a doctree with
+intersphinx links to all these projects). And big parts of what is
+currently in Lino's `docs
+<https://github.com/lsaffre/lino/tree/master/docs>`_ directory will
+move into this "Lino Book". The advantage will be that I can refer to
+these other projects. Actually there will also a :mod:`lino_book`
+package containing tutorial projects.
+
+And the list of persons and organizations who helped me to write Lino
+by contributing ideas, this list should rather be part of my blog. I
+moved it to :doc:`/about/friends`.
+
+
+Write invoices for courses in draft state?
+==========================================
+
+The latest Lino Voga version generates invoices also for courses which
+are in draft state. This was just an idea of mine.  Alexa asked me to
+undo this "feature".  Invoices should come only for enrolments to
+courses which are in an "invoiceable" state, as before.
+
+

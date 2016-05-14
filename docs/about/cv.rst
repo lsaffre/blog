@@ -31,13 +31,12 @@ OÜ <http://www.saffre-rumma.net/>`_.
 Projects
 --------
 
-I am author and active maintainer of the `Lino framework
-<http://www.lino-framework.org/>`_ which based on `Django
+I am author and active maintainer of `Lino
+<http://www.lino-framework.org/>`_, a programming framework for
+writing customized database applications based on `Django
 <https://www.djangoproject.com/>`_ and `Sencha ExtJS
-<http://www.sencha.com/products/extjs/>`_ and written mainly in the
-`Python <https://www.python.org/>`_ programming language.  I am also
-the author of TIM_, written in Clipper, Lino's venerable predecessor
-which still runs on 30 sites in Belgium.
+<http://www.sencha.com/products/extjs/>`_.  I am also the author of
+TIM_, Lino's predecessor which still runs on 30 sites in Belgium.
 
 Other projects:
 
@@ -91,8 +90,14 @@ Language skills
 Computer skills
 ---------------
 
-- Programming Languages: Python, Javascript, Java, PHP, C++, bash,
-  Clipper, VisualBasic
+- Programming languages: Python, Javascript, Java, bash.
+
+  I have also worked in PHP, C++, Clipper, VisualBasic.
+
+  Lino is written mainly in the `Python <https://www.python.org/>`_
+  programming language, but also contains Javascript code and
+  ocasionally uses Java.
+
 
 - Application software: LibreOffice, Thunderbird, GIMP
 

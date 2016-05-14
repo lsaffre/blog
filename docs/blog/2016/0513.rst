@@ -4,6 +4,58 @@
 Friday, May 13, 2016
 ====================
 
+Problems with sending email from a VPS
+======================================
+
+On both :ref:`lf` and :ref:`ml` I have currently problems when sending
+emails from my Lino applications.
+
+To explore these problems, I used the following :file:`sendmail.py`
+script:
+
+.. literalinclude:: 0513_sendmail.py
+
+This script is to be invoked via :manage:`run` as follows::
+
+    $ python manage.py  run sendmail.py
+
+On :ref:`ml` (which is hosted in France at OVH), my first attempt
+takes about 1 minute to complete, and then I get::
+
+    EMAIL_HOST : mx3.ovh.net
+    EMAIL_HOST_USER : 
+    DEFAULT_FROM_EMAIL : noreply@mylino.net
+    SERVER_EMAIL : noreply@mylino.net
+    EMAIL_PORT : 25
+    EMAIL_USE_TLS : True
+    ...
+    Traceback (most recent call last):
+    ...
+    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (553, "sorry, that domain isn't allowed to be relayed thru this MTA [mail497] (#5.7.1)")}
+    
+    
+According to `this <http://help.ovh.com/EmailConfiguration>`_ page
+their STMP server is `ns0.ovh.net`. When I try this, I get another
+error message::
+
+    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (554, '5.7.1 <133.ip-167-114-252.eu[167.114.252.133]>: Client host rejected: Access denied')}
+   
+
+While on :ref:`lf` (hosted in Estonia by Elisa) I get another error::
+
+    EMAIL_HOST : smtp.elisa.ee
+    EMAIL_HOST_USER : 
+    DEFAULT_FROM_EMAIL : noreply@lino-framework.org
+    SERVER_EMAIL : noreply@lino-framework.org
+    EMAIL_PORT : 25
+    EMAIL_USE_TLS : False
+    Traceback (most recent call last):
+    ...
+    socket.gaierror: [Errno -2] Name or service not known
+
+
+
+
 Adapting test suites
 ====================
 
@@ -40,56 +92,62 @@ summary` command to be shorter. On my machine it is now::
 
 
 
-
-Problems with sending email from a VPS
+Generating invoices for a given course
 ======================================
 
-On both :ref:`lf` and :ref:`ml` I have currently problems when sending
-emails.
+I fixed :ticket:`917`.  Until now, in :ref:`voga` it was a bit
+complicated to generate invoices *for a given course*. Alexa had to
+set the `state` of all other courses to `Draft`. This was of course
+just a workaround. Now we have a good solution:
+:mod:`lino_voga.lib.invoicing`. This is an application-specific
+extension of :mod:`lino_cosi.lib.invoicing` which, in short, adds a
+new field :attr:`course <lino_voga.lib.invoicing.models.Plan.course>`
+to invoicing plans and a "basket" button to the Course model.
 
-To explore these problems, I used the following :file:`sendmail.py`
-script:
+Side effect: When Lino generates invoices (by executing a plan), then
+these are now automatically registered.
 
-.. literalinclude:: 0513_sendmail.py
 
-This script is to be invoked via :manage:`run` as follows::
+A blocking bug
+==============
 
-    $ python manage.py  run sendmail.py
+Alexa reported :ticket:`918`, her first blocking problem: a bug which
+made it impossible to create new enrolments (at least in courses whose
+`max_places` field was non-empty)::
 
-On :ref:`ml` (which is hosted at OVH), my first attempt takes about 1
-minute to complete, and then I get::
-
-    EMAIL_HOST : mx3.ovh.net
-    EMAIL_HOST_USER : 
-    DEFAULT_FROM_EMAIL : noreply@mylino.net
-    SERVER_EMAIL : noreply@mylino.net
-    EMAIL_PORT : 25
-    EMAIL_USE_TLS : True
     ...
-    Traceback (most recent call last):
-    ...
-    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (553, "sorry, that domain isn't allowed to be relayed thru this MTA [mail497] (#5.7.1)")}
-    
-    
-According to `this <http://help.ovh.com/EmailConfiguration>`_ page
-their STMP server is `ns0.ovh.net`. When I try this, I get another
-error message::
-
-    smtplib.SMTPRecipientsRefused: {u'luc.saffre@gmx.net': (554, '5.7.1 <133.ip-167-114-252.eu[167.114.252.133]>: Client host rejected: Access denied')}
-
-    
-   
-
-While on :ref:`lf` I get another error::
-
-    EMAIL_HOST : smtp.elisa.ee
-    EMAIL_HOST_USER : 
-    DEFAULT_FROM_EMAIL : noreply@lino-framework.org
-    SERVER_EMAIL : noreply@lino-framework.org
-    EMAIL_PORT : 25
-    EMAIL_USE_TLS : False
-    Traceback (most recent call last):
-    ...
-    socket.gaierror: [Errno -2] Name or service not known
-
-
+      File "/cosi/lino_cosi/lib/courses/models.py", line 510, in run_from_ui
+        msg = obj.get_confirm_veto(ar)
+      File "/cosi/lino_cosi/lib/courses/models.py", line 609, in get_confirm_veto
+        free = self.course.get_free_places(self)
+      File "/cosi/lino_cosi/lib/courses/models.py", line 366, in get_free_places
+        qs = PeriodEvents.active.add_filter(qs, rng)
+      File "/lino/lino/modlib/system/choicelists.py", line 87, in add_filter
+        Q(end_date__gte=obj.start_date))
+      File "/site-packages/django/db/models/query.py", line 790, in filter
+        return self._filter_or_exclude(False, *args, **kwargs)
+      File "/site-packages/django/db/models/query.py", line 808, in _filter_or_exclude
+        clone.query.add_q(Q(*args, **kwargs))
+      File "/site-packages/django/db/models/sql/query.py", line 1243, in add_q
+        clause, _ = self._add_q(q_object, self.used_aliases)
+      File "/site-packages/django/db/models/sql/query.py", line 1263, in _add_q
+        current_negated, allow_joins, split_subq)
+      File "/site-packages/django/db/models/sql/query.py", line 1269, in _add_q
+        allow_joins=allow_joins, split_subq=split_subq,
+      File "/site-packages/django/db/models/sql/query.py", line 1203, in build_filter
+        condition = self.build_lookup(lookups, col, value)
+      File "/site-packages/django/db/models/sql/query.py", line 1099, in build_lookup
+        return final_lookup(lhs, rhs)
+      File "/site-packages/django/db/models/lookups.py", line 19, in __init__
+        self.rhs = self.get_prep_lookup()
+      File "/site-packages/django/db/models/lookups.py", line 57, in get_prep_lookup
+        return self.lhs.output_field.get_prep_lookup(self.lookup_name, self.rhs)
+      File "/site-packages/django/db/models/fields/__init__.py", line 744, in get_prep_lookup
+        return self.get_prep_value(value)
+      File "/site-packages/django/db/models/fields/__init__.py", line 1296, in get_prep_value
+        return self.to_python(value)
+      File "/site-packages/django/db/models/fields/__init__.py", line 1260, in to_python
+        parsed = parse_date(value)
+      File "/site-packages/django/utils/dateparse.py", line 60, in parse_date
+        match = date_re.match(value)
+    TypeError: expected string or buffer
