@@ -4,7 +4,7 @@ from lino.utils.pythontest import TestCase
 
 
 class LinoTestCase(TestCase):
-    django_settings_module = "lino.projects.docs.settings.demo"
+    django_settings_module = "lino_book.projects.docs.settings.demo"
     project_root = Path(__file__).parent.parent
 
 

@@ -16,10 +16,9 @@ which are actually being used.  The bug was in :mod:`north.north_site`,
 where I did the conversion too late: modifying :setting:`LANGUAGES`
 has no effect when `settings` have been loaded.  Now it is fixed:
 
->>> import os
->>> os.environ['DJANGO_SETTINGS_MODULE'] = 'lino.projects.docs.settings.demo'
->>> from lino.api.shell import settings
->>> from __future__ import print_function
+>>> from lino import startup
+>>> startup('lino_book.projects.docs.settings.demo')
+>>> from lino.api.doctest import *
 >>> print(settings.LANGUAGES)
 [('de', 'German'), ('en', 'English'), ('es', 'Spanish'), ('et', 'Estonian'), ('fr', 'French'), ('nl', 'Dutch'), ('pt-br', 'Brazilian Portuguese')]
 

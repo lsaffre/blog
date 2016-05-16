@@ -10,14 +10,11 @@ The following snippet reproduces a wrong which occurred when a certain
 kind of invalid url was being requested. Lino should return a 404
 status in that case, not raise an :ref:`ise`.
 
->>> from __future__ import print_function
->>> import os
->>> os.environ['DJANGO_SETTINGS_MODULE'] = 'lino.projects.belref.settings.doctests'
->>> from django.test import Client
+>>> from lino import startup
+>>> startup('lino_book.projects.belref.settings.doctests')
 >>> from lino.api.doctest import *
->>> client = Client()
 >>> url = '/countries/CitiesByCountry'
->>> res = client.get(url)
+>>> res = test_client.get(url)
 >>> print(res.status_code)
 404
 
