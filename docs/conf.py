@@ -20,7 +20,7 @@ extlinks = {}
 extensions = []
 templates_path = []
 
-configure(globals(), 'lino_book.projects.min1.settings.doctest')
+configure(globals(), 'lino_book.projects.min1.settings.doctests')
 
 from atelier.sphinxconf import interproject
 interproject.configure(globals())

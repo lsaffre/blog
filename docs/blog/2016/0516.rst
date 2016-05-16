@@ -4,20 +4,138 @@
 Monday, May 16, 2016
 ====================
 
-I merged the documentation trees for :ref:`lino` and :ref:`xl` into
-one single tree. This tree is in a separate code repository
-:mod:`lino_book`, and all "didactical" projects are now in this
-repository as well.
+Lino documentation now includes Lino XL
+=======================================
 
-Main reasons for this change are
+A fundamental change (but only concerning docs and tests; the code
+itself is almost not modified): I merged the documentation trees for
+:mod:`lino` and :mod:`lino_xl` into one single tree. This tree is in a
+separate code repository :mod:`lino_book`, and all "didactical"
+projects are now in this repository as well.  Main reasons for this
+change are:
 
 - It is difficult to explain Lino without referring to :mod:`lino_xl`,
   so we need a "combined" documentation tree.
 
 - The "didactical projects" (e.g. :mod:`lino_book.projects.min1`) are
-  no longer included with the code repository, which is preferrable
-  for people who just want to install and run some Lino application.
+  no longer included with the Lino code repository. This is
+  preferrable for people who just want to install and run some Lino
+  application.
 
-As a consequence, many unit tests moved to :mod:`lino_book`:
-all those that are either based on doctest or
-use some of the didactical projects. 
+As a consequence, many unit tests (those which either are based on
+doctest or use some of the didactical projects) moved to this new
+repository.
+
+:mod:`lino`.
+
+
+Presence sheet (Anwesenheitsliste)
+==================================
+
+Alexa asked to not cut table cells over two pages, and to render this
+list in landscape orientation.
+
+- http://stackoverflow.com/questions/9288802/avoid-page-break-inside-row-of-table
+
+- http://stackoverflow.com/questions/20445417/creating-landscape-pdf-using-wkhtmltopdf-by-mikehaertl
+
+I did not get it to avoid page break inside a rows of table.  And it
+seems that in wkhtmltopdf you cannot specify the page orientation
+(landscape or portrait) from withing the HTML file.
+
+So once more I see that `wkhtmltopdf` is not a good method for
+building pdf reports from HTML templates.
+
+Since the presence sheet has dynamic columns, it is probably difficult
+to get this done using `appypod`.
+
+So I searched for yet another method. And found `WeasyPrint
+<http://weasyprint.org/>`_.  And gave it a try:
+:mod:`lino.modlib.weasyprint`.  And yes, it seems that
+:mod:`lino.modlib.weasyprint` is clearly the winner over
+:mod:`lino.modlib.wkhtmltopdf`!  At least for Lino.
+
+It was no problem to avoid page breaks inside table rows, define page
+orientation and margins. Even a page footer repeating the document
+title and including the page number. Don't ask me why wkhtmltopdf
+can't do it.
+
+Thanks to these pages:
+
+- `@page - Außenabstände in aufgeteilten Medien 
+  <https://wiki.selfhtml.org/wiki/CSS/@-Regeln#.40page_-_Au.C3.9Fenabst.C3.A4nde_in_aufgeteilten_Medien>`_
+
+
+- http://stackoverflow.com/questions/1360869/how-to-use-html-to-print-header-and-footer-on-every-printed-page
+
+- http://stackoverflow.com/questions/20050939/print-page-numbers-on-pages-when-printing-html
+
+
+AttributeError: 'module' object has no attribute 'FFI'
+======================================================
+
+The only problem with WeasyPrint was that it depends on Cairo which
+can be --as `they say
+<http://pythonhosted.org/cairocffi/overview.html#installing-cffi>`_
+and as I saw myself-- a bit tricky to install.  While on my
+development machine (Debian Trusty) it worked out of the box, I had to
+do some research for getting it to run on the production server
+(Debian Jessie) where I had this traceback::
+
+
+    Traceback (most recent call last):
+      ...
+      File "/repositories/lino/lino/modlib/weasyprint/choicelists.py", line 21, in <module>
+        from weasyprint import HTML
+      File "/virtualenvs/a/lib/python2.7/site-packages/weasyprint/__init__.py", line 336, in <module>
+        from .css import PARSER, preprocess_stylesheet  # noqa
+      File "/virtualenvs/a/lib/python2.7/site-packages/weasyprint/css/__init__.py", line 30, in <module>
+        from . import computed_values
+      File "/virtualenvs/a/lib/python2.7/site-packages/weasyprint/css/computed_values.py", line 18, in <module>
+        from .. import text
+      File "/virtualenvs/a/lib/python2.7/site-packages/weasyprint/text.py", line 18, in <module>
+        import cairocffi as cairo
+      File "/virtualenvs/a/lib/python2.7/site-packages/cairocffi/__init__.py", line 20, in <module>
+        from ._ffi import ffi
+      File "/virtualenvs/a/lib/python2.7/site-packages/cairocffi/_ffi.py", line 4, in <module>
+        ffi = _cffi_backend.FFI('cairocffi._ffi',
+    AttributeError: 'module' object has no attribute 'FFI'
+
+
+This was *not* the problem reported in `cairocffi 'module' object has
+no attribute 'FFI' #62
+<https://github.com/SimonSapin/cairocffi/issues/62>`_ because I can do
+``import cairocffi``.
+
+But the discussion `Failed to install “Cairocffi”
+<http://stackoverflow.com/questions/34719366/failed-to-install-cairocffi>`_
+helped me: I "just" had to make sure to have the right version of
+`cairocffi` installed::
+
+  $ pip install cairocffi==0.6
+
+New feature: Print actions with parameters
+==========================================
+
+Another problem was the question how to specify the period to cover on a presence sheet.
+
+Some minor changes in :mod:`lino.modlib.printing` in order to optimize
+the API for defining a :class:`DirectPrintAction
+<lino.modlib.printing.actions.DirectPrintAction>`.
+
+In order to define a new action :class:`PrintPresenceSheet
+<lino_voga.projects.roger.lib.courses.models.PrintPresenceSheet>`. This
+is the first print action with parameters.
+
+And then yet another subtle new feature: an application programmer can
+now set the new attribute :attr:`keep_user_values
+<lino.core.actions.Action.keep_user_values>` of an action to `True`.
+This is important in :class:`PrintPresenceSheet
+<lino_voga.projects.roger.lib.courses.models.PrintPresenceSheet>` when
+they print a series of presence sheets for different courses.  This
+feature did not even need any change to the Javascript code.
+`Lino.ActionFormPanel.set_field_values` just receives an empty dict
+(``{}``) in that case.
+
+A side effect of this is that I now have a displayfield with print
+actions
