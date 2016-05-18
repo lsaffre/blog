@@ -1,0 +1,108 @@
+:date: 2016-05-17
+
+=====================
+Tuesday, May 17, 2016
+=====================
+
+Code Camp in Vigala
+===================
+
+After reading an invitation to participate to the European CodeWeek
+(`Üleeuroopaline programmeerimisnädal Code Week
+<http://www.hitsa.ee/uritused/neljas-uleeuroopaline-programmeerimisnadal>`_
+by HITSA, the *Foundation for ICT related education development in
+Estonia*), I had problems to hold back my ideas, so I published them:
+`Vigala Code Camps are coming up <http://www.saffre-rumma.net/vcc/>`_
+
+And I also registered this to the `CodeWeek
+<http://events.codeweek.eu/view/11737/vigala-coding-camp/>`_ calendar.
+
+Lino Voga
+=========
+
+- Minor optimizations in :ref:`voga` for :ticket:`919`.
+- Courses.quick_search_fields = "pupil__name"
+
+Internal change about quick search fields
+=========================================
+
+I made a small change in :mod:`lino.core.dbtables`: Converted the
+`add_quick_search_filter` function into a class method on the actor:
+
+- :meth:`lino.core.dbtables.Table.add_quick_search_filter`
+- :meth:`lino.core.tables.AbstractTable.add_quick_search_filter`
+
+This requires also a changed call in :mod:`lino.modlib.extjs.views`
+and :mod:`lino_extjs6.extjs.views`.
+
+
+Community page and Teamwork Guide
+=================================
+
+I worked (for :ticket:`309`) on the :ref:`community` page and moved
+the :ref:`lino.team` section from :ref:`noi` to :ref:`book`.
+
+Error during `openpyxl_shutdown`
+================================
+
+The :ref:`welfare` test suite runs without failures, but I get a
+traceback during atexit::
+
+    Ran 51 tests in 197.162s
+
+    OK
+    INFO Done setup.py -q test (PID 9219)
+    INFO:lino.core.kernel:Done setup.py -q test (PID 9219)
+    Error in atexit._run_exitfuncs:
+    Traceback (most recent call last):
+      File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+        func(*targs, **kargs)
+      File "/py27/local/lib/python2.7/site-packages/openpyxl/writer/write_only.py", line 38, in _openpyxl_shutdown
+        for path in ALL_TEMP_FILES:
+    TypeError: 'NoneType' object is not iterable
+    Error in sys.exitfunc:
+    Traceback (most recent call last):
+      File "/usr/lib/python2.7/atexit.py", line 24, in _run_exitfuncs
+        func(*targs, **kargs)
+      File "/py27/local/lib/python2.7/site-packages/openpyxl/writer/write_only.py", line 38, in _openpyxl_shutdown
+        for path in ALL_TEMP_FILES:
+    TypeError: 'NoneType' object is not iterable
+
+Actually this looks like a bug in openpyxl. Maybe we should report
+it. Do we forget to close a temporary file? I avoided the traceback by
+moving the ``from openpyxl`` statements into the
+:meth:`ExcelRenderer.render` method.
+
+More optimizations for :ref:`voga`
+==================================
+
+- Einschreibungen pro Kurs : Am Bildschirm steht jetzt wieder nur der
+  Name des Teilnehmers
+
+- Statusbericht : Statt der Kolonne "Einschreibungen" haben wir jetzt
+  zwei Kolonnen "Angefragt" und "Bestätigt". Beide Kolonnen zeigen
+  jetzt nur noch aktive Einschreibungen an. Habe auch die Reihenfolge
+  dieser Kolonnen angepasst (scheint mir jetzt logischer)
+
+- Ausdruck Anwesenheitsblatt : hier werden jetzt nur aktive Teilnehmer
+  (in der angegebenen Periode) gedruckt
+
+A change in `linoweb.js`
+========================
+
+I discovered that the new :attr:`keep_user_values
+<lino.core.actions.Action.keep_user_values>` attribute of an action
+*did* require a subtle change in :xfile:`linoweb.js`,
+:func:`Lino.ActionFormPanel.add_field_values`: Until now this tested
+whether the form is dirty, and if not, submitted only the original
+field values which had been set by :meth:`set_status`. But now
+:attr:`status_field_values` can be empty when
+`Action.keep_user_values` is `True`. In that case we must submit the
+current values even if the form is not dirty.  I don't remember why we
+had this feature of not submitting unmodified field values, so I
+remove this feature for now. So from today, action parameter windows
+always submit *all* field values, even if the user did not change
+anything.
+
+I did the same modification in the :xfile:`linoweb.js` for
+:mod:`lino_extjs6` as well.

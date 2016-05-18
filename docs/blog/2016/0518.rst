@@ -1,0 +1,75 @@
+:date: 2016-05-18
+
+=======================
+Wednesday, May 18, 2016
+=======================
+
+Miscellaneous
+=============
+
+I fixed a bug introduced yesterday when moving the :attr:`pupil_info
+<lino_cosi.lib.courses.models.Enrolment.pupil_info>` field from the
+table to the model.
+
+
+When Lino does not generate automatic events as you expect them
+===============================================================
+
+I worked on :ticket:`924`, a concrete case in production data where
+Lino does not generate (exactly) the events we expected:
+
+    Im Kurs 002 erstellt Lino am 02.05 und 09.05. keine Termine,
+    obschon dort welche sein müssten. Wieso?
+
+    Auslöser ist, dass Alexa irgendwann die Stunde 1 (11.01.) auch
+    manuell angelegt hat. Der Spiegelsaal Eupen ist also für Lino
+    "schon belegt" (woher soll Lino wissen, dass das der gleiche Kurs
+    ist). Dadurch will Lino seine automatische Stunde 1 auf den
+    18.01. legen. Andererseits gibt es auch einen verknüpften Termin
+    für Stunde 1, der auch schon als stattgefundenen markiert
+    ist. Also ändert Lino nichts an diesem Termin und verschiebt
+    stattdessen alle folgenden Termine.  Und das alles findet 14x
+    statt, denn die ersten 14 Stunden sind schon manuell als
+    stattgefunden markiert.
+
+    Erstens müsste man eigentlich irgendwie gewarnt werden bezüglich der
+    Doppelbelegung des Spiegelsaals am 11.01.
+
+Note: as long as :ticket:`640` is not done, remember to set
+:attr:`verbose_client_info_message
+<lino.core.site.Site.verbose_client_info_message>` to True when you
+want to get a more detailed report in the Javascript console about why
+events aren't being generated as expected.
+
+The following changes help to explore the possible reasons for such
+problems (see also :ticket:`912`).
+
+- :class:`lino_xl.lib.cal.ui.EventsByDay` now includes start_time and
+  end_time column
+- Optimizations in the reporting done by :meth:`update_auto_events
+  <lino_xl.lib.cal.mixins.EventGenerator.update_auto_events>`.
+- New data checker
+  :class:`lino_xl.lib.cal.models.ConflictingEventsChecker`
+
+- :meth:`get_conflicting_events
+  <lino_xl.lib.cal.models.Event.get_conflicting_events>` had a bug: a
+  false positive. It considered all room-less events as conflicting.
+
+Hier jetzt ein detaillierter Log (wie du ihn auch selbst sehen kannst
+in der Javascript-Konsole)::
+
+    Termine aktualisieren for 002-2016 Kick Power Training ABO Eupen...
+    Generating events between 2016-01-11 and 2021-05-18.
+    Kurs #70 002-2016 Stunde 1 conflicts with [Event #3422 ('Termin #3422 Kick Power Training (11.01.2016 20:15)')], moving to 2016-01-18. 
+    Kurs #70 002-2016 Stunde 4 conflicts with [Event #104 ('Periodische Terminregel #12 Rosenmontag')], moving to 2016-02-15. 
+    Kurs #70 002-2016 Stunde 10 conflicts with [Event #176 ('Periodische Terminregel #13 Ostermontag')], moving to 2016-04-04. 
+    Kurs #70 002-2016 Stunde 15 conflicts with [Event #3904 ('Periodische Terminregel #15 Christi Himmelfahrt')], moving to 2016-05-16. 
+    Kurs #70 002-2016 Stunde 15 conflicts with [Event #3760 ('Periodische Terminregel #16 Pfingstmontag')], moving to 2016-05-23. 
+    Kurs #70 002-2016 Stunde 27 conflicts with [Event #4006 ('Periodische Terminregel #18 Maria Himmelfahrt')], moving to 2016-08-22. 
+    Kurs #70 002-2016 Stunde 45 conflicts with [Event #3994 ('Periodische Terminregel #22 2. Weihnachtstag')], moving to 2017-01-02. 
+    1 has been moved from 2016-01-18 to 2016-01-11: move subsequent dates (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52) by -7 days, 0:00:00
+    4 has been moved from 2016-02-08 to 2016-02-01: move subsequent dates (5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52) by -7 days, 0:00:00
+    5 has been moved from 2016-02-08 to 2016-02-15: move subsequent dates (6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52) by 7 days, 0:00:00
+    10 has been moved from 2016-03-28 to 2016-03-21: move subsequent dates (11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52) by -7 days, 0:00:00
+    11 has been moved from 2016-03-28 to 2016-04-04: move subsequent dates (12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52) by 7 days, 0:00:00
+    52 Datensätze wurden gelöscht.

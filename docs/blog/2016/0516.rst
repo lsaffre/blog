@@ -26,45 +26,47 @@ As a consequence, many unit tests (those which either are based on
 doctest or use some of the didactical projects) moved to this new
 repository.
 
-:mod:`lino`.
+Note: there is still something broken with the intersphinx links. Many
+of them currently don't work. E.g. :mod:`lino`
 
 
-Presence sheet (Anwesenheitsliste)
+Presence sheet (Anwesenheitsblatt)
 ==================================
 
 Alexa asked to not cut table cells over two pages, and to render this
 list in landscape orientation.
 
+In a first step I tried to do this using Google and `wkhtmltopdf`:
+
 - http://stackoverflow.com/questions/9288802/avoid-page-break-inside-row-of-table
 
 - http://stackoverflow.com/questions/20445417/creating-landscape-pdf-using-wkhtmltopdf-by-mikehaertl
 
-I did not get it to avoid page break inside a rows of table.  And it
-seems that in wkhtmltopdf you cannot specify the page orientation
-(landscape or portrait) from withing the HTML file.
-
-So once more I see that `wkhtmltopdf` is not a good method for
-building pdf reports from HTML templates.
+I did not get it to avoid page break inside a rows of table.  So once
+more I see that `wkhtmltopdf` is not a very good choice when you want
+to build pdf reports from HTML templates.  At least for Lino. It seems
+that in wkhtmltopdf you cannot specify the page orientation (landscape
+or portrait) from withing the HTML file.
 
 Since the presence sheet has dynamic columns, it is probably difficult
 to get this done using `appypod`.
 
 So I searched for yet another method. And found `WeasyPrint
-<http://weasyprint.org/>`_.  And gave it a try:
-:mod:`lino.modlib.weasyprint`.  And yes, it seems that
-:mod:`lino.modlib.weasyprint` is clearly the winner over
-:mod:`lino.modlib.wkhtmltopdf`!  At least for Lino.
+<http://weasyprint.org/>`_.  I gave it a try by creating the new
+plugin :mod:`lino.modlib.weasyprint`. This was not too difficult and
+revealed already that WeasyPrint has a good API.  And yes, it seems
+that :mod:`lino.modlib.weasyprint` is clearly the winner over
+:mod:`lino.modlib.wkhtmltopdf`!  
 
 It was no problem to avoid page breaks inside table rows, define page
 orientation and margins. Even a page footer repeating the document
 title and including the page number. Don't ask me why wkhtmltopdf
 can't do it.
 
-Thanks to these pages:
+BTW thanks to these pages:
 
 - `@page - Außenabstände in aufgeteilten Medien 
   <https://wiki.selfhtml.org/wiki/CSS/@-Regeln#.40page_-_Au.C3.9Fenabst.C3.A4nde_in_aufgeteilten_Medien>`_
-
 
 - http://stackoverflow.com/questions/1360869/how-to-use-html-to-print-header-and-footer-on-every-printed-page
 
@@ -117,15 +119,19 @@ helped me: I "just" had to make sure to have the right version of
 New feature: Print actions with parameters
 ==========================================
 
-Another problem was the question how to specify the period to cover on a presence sheet.
+Another problem (back in Lino) was the question how to specify the
+period to cover on a presence sheet. Our first idea was to use the
+list parameters. But (a) that was not intuitive and (b) list
+parameters are not accessible when you open the detail of a course
+from a hred to it (e.g. using the status report).
 
-Some minor changes in :mod:`lino.modlib.printing` in order to optimize
-the API for defining a :class:`DirectPrintAction
-<lino.modlib.printing.actions.DirectPrintAction>`.
-
-In order to define a new action :class:`PrintPresenceSheet
+So I defined a new action :class:`PrintPresenceSheet
 <lino_voga.projects.roger.lib.courses.models.PrintPresenceSheet>`. This
 is the first print action with parameters.
+
+This required some minor changes in :mod:`lino.modlib.printing` in
+order to optimize the API for defining a :class:`DirectPrintAction
+<lino.modlib.printing.actions.DirectPrintAction>`.
 
 And then yet another subtle new feature: an application programmer can
 now set the new attribute :attr:`keep_user_values
@@ -137,5 +143,5 @@ feature did not even need any change to the Javascript code.
 `Lino.ActionFormPanel.set_field_values` just receives an empty dict
 (``{}``) in that case.
 
-A side effect of this is that I now have a displayfield with print
-actions
+Another new thing which I guess Alexa is going to love is that I now
+have a displayfield with the most-used print actions.
