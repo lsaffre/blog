@@ -1,0 +1,38 @@
+:date: 2016-05-22
+
+====================
+Sunday, May 22, 2016
+====================
+
+More ideas about :ticket:`897`.
+
+In :ref:`noi` we need to rename "products" to "topics" (or
+"components" or something similar). And "interests" should not link to
+a product but to a topic.  And we must move these concepts into a
+plugin on its own. :mod:`lino_xl.lib.topics`.
+
+And then these interests should be per *partner*, not per *site*. That
+difference was not important in our use case of :ref:`noi`, but at
+:ref:`spz` they need topics and interests without the concept of
+sites.
+
+Before creating the new plugin :mod:`lino_xl.lib.topics`, I noted that
+many copyright headers in :mod:`lino_xl` were not yet adapted to the
+fact that this package is licensed AGPL, not under the BSD.
+
+And yes, in our database I'll need to create one partner per site
+before running that migrator. And every new site will probably cause a
+new partner as well because we usually have partners with only one
+site.  Hmm... do I want that? I am not really sure, but am ready to
+try it on the field.
+
+For the existing :ref:`noi` sites we will then need a migrator 
+
+- Load content from products.Product into the new topics.Topic table,
+  and ProductCat into the new TopicGroup table.
+
+- Interest.product becomes Interest.topic
+- Interest.site.partner becomes Interest.partner and if the site has
+  no partner, create one.
+- Rename Faculty.product_cat to topic_group
+- Rename Competence.product to Competence.topic

@@ -1,0 +1,120 @@
+:date: 2016-05-23
+
+====================
+Monday, May 23, 2016
+====================
+
+Duplicating a Referrable
+========================
+
+When duplicating a database object, Lino now calls the
+:meth:`on_duplicate <lino.core.model.Model.on_duplicate>` method on
+the master *before* saving it for a first time. 
+
+This change is needed because otherwise
+:meth:`lino.mixins.Referrable.on_duplicate` has no chance to do its
+work. Duplicating a :class:`Referrable <lino.mixins.Referrable>`,
+until now, failed with a :message:`IntegrityError (1062, "Duplicate
+entry 'XXX' for key 'ref'")` in any database other than SQLite (ticket
+:ticket:`934`).
+
+Run unit tests in a MySQL demo database
+=======================================
+
+In order to test this change, I added the new method
+:meth:`get_database_settings
+<lino.core.site.Site.get_database_settings>` on 
+:class:`lino.core.site.Site` so that I can run the unit test suite on
+MySQL instead of SQLite.
+
+I tried it and discovered that many test cases fail because of the
+different alphabetical ordering between SQLite and MySQL. So this is
+not feasable.
+
+What is feasable (but not yet used) is to use your own variant of the
+settings module and to write test cases which explicitly use this.
+This requires of course additional effort because tests will work only
+if a MySQL database and user with appropriate permissions has been
+created.  
+
+An example for this is
+:mod:`lino_welfare.projects.eupen.settings.mysql`.  Yes,
+:meth:`get_database_settings
+<lino.core.site.Site.get_database_settings>` is admittedly not very
+necessary for this example. 
+
+
+
+Error when printing a sales invoice
+===================================
+
+When trying to print a sales invoice yesterday with Alexa, we got this
+error message:
+
+    EvaluationError: Error while evaluating the expression
+    "table(obj.get_print_items(ar))" defined in the "from" part of a
+    statement.
+
+    NotImplementedError: inside 
+    
+Today I checked the Lino logfile and saw that the message was
+actually:
+
+    NotImplementedError: <dl> inside <text:p>
+    
+We just didn't see the complete message because our browser
+interpreted the tags. In order to avoid this in the future,
+:meth:`lino.core.requests.BaseRequest.error` now escapes the error
+message. I am not sure at all whether this is the right place, and I
+did not write any test case to verify it.
+
+The reason was then clear: Alexa had manually removed some dates from
+the :attr:`description
+<lino_cosi.lib.sales.models.ProductDocItem.description>` of one item::
+
+    Geplante Daten:
+     24.05.16, 31.05.16, 07.06.16, 14.06.16, 21.06.16, 13.09.16, 20.09.16, 27.09.16, 04.10.16, 11.10.16, 18.10.16, 25.10.16, 08.11.16, 15.11.16, 22.11.16, 
+
+She didn't know that the leading space was important. With the
+following description our problem was solved::
+
+    Geplante Daten:
+    24.05.16, 31.05.16, 07.06.16, 14.06.16, 21.06.16, 13.09.16, 20.09.16, 27.09.16, 04.10.16, 11.10.16, 18.10.16, 25.10.16, 08.11.16, 15.11.16, 22.11.16, 
+
+This raises of course the question about how to explain
+reSTructuredText to a non-programmer.
+
+
+
+Item descriptions
+=================
+
+I opened ticket :ticket:`936` and added a section "Scheduled dates" to
+the :ref:`voga.specs.invoicing` specs. This was the most
+time-consuming part of my day.
+
+
+Miscellaneous
+=============
+
+I changed the name :attr:`rt.modules <lino.api.rt.modules>` to
+:attr:`rt.models <lino.api.rt.models>`.  But the old name will
+probably remain some time for backwards-compatibility.
+
+I discovered the `tablib <http://docs.python-tablib.org>`_ project and
+started to think whether it makes sense to use this in
+Lino. :ticket:`935`
+
+Lino now supports generic relations
+===================================
+
+The new :attr:`invoicings
+<lino_cosi.lib.invoicing.mixins.Invoiceable.invoicings>` attribute of
+an :class:`Invoiceable <lino_cosi.lib.invoicing.mixins.Invoiceable>`
+is my first usage of Django's `GenericRelation
+<https://docs.djangoproject.com/ja/1.9/ref/contrib/contenttypes/#reverse-generic-relations>`_. And
+I discovered that Lino until now did not support these very well
+because if you define one, Lino will include it as a virtual field in
+your wildcard elements and then raise an exception because it cannot
+create a layout element for it.
+

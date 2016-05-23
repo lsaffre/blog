@@ -1,0 +1,47 @@
+:date: 2016-05-21
+
+======================
+Saturday, May 21, 2016
+======================
+
+I worked on :ticket:`926` (SlaveSummary for EventsByCourse):
+ 
+- The :class:`CourseDetail <lino_voga.lib.cal.models.CourseDetail>` in
+  :ref:`voga` now uses the new class :class:`EventsByCourse
+  <lino_voga.lib.cal.models.EventsByCourse>` instead of
+  :class:`EventsByController <lino_xl.lib.cal.ui.EventsByController>`.
+
+
+Lino Presto à la Daniel
+=======================
+
+I finally started to dive into :ticket:`897`.
+
+My customer SPZ are currently running an application written in TIM
+(Lino's predecessor) and they are actually very happy with TIM. But
+they are also motivated to migrate to Lino, and they will actively
+help by testing everything. They have their own inhouse server and a
+system administrator, so hosting is no additional burden for me.
+
+It seems to me that now is the right time to work on a prototype for
+them. It will be a combination of :ref:`cosi` and :ref:`noi`.
+
+I started the functional specs overview (:ref:`presto.specs.daniel`)
+and first code changes:
+
+- The code name for this prototype is
+  :mod:`lino_presto.projects.daniel`.  I removed the
+  :mod:`lino_presto.projects.mini` package because it is no longer
+  needed.
+
+- :mod:`lino_noi.lib.clocking` has a new
+  :attr:`ticket_model <lino_noi.lib.clocking.Plugin.ticket_model>`. 
+  For Daniel this will point to the *dossier*.
+
+- I moved some functionality from :mod:`lino_noi.lib.clocking` to a
+  new module :mod:`lino_noi.projects.team.lib.clocking`:
+  namely the parts which make sense only when
+  also :mod:`lino_noi.lib.tickets`  is installed.
+
+ 
+
