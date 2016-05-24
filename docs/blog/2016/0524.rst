@@ -6,13 +6,17 @@ Tuesday, May 24, 2016
 
 I continued on :ticket:`897`. 
 
-I renamed ``lino_presto.projects.daniel`` into
-:mod:`lino_presto.projects.psico`.  So we have now :ref:`psico` (which
-is a variant of :ref:`presto`). A psychologist, in Italian, is called
-*psicologo*.  Because "Lino Presto à la Daniel" was just too silly as
-a name for a software product.
+I renamed ``lino_presto.projects.daniel`` to
+:mod:`lino_presto.projects.psico`.  IOW we have now :ref:`psico`
+(which is a variant of :ref:`presto`). Because "Lino Presto à la
+Daniel" was just too silly as a name for a software product.
 
-I discovered yet another (compare :doc:`0205`) edge case where
+More plugin inheritance subtilities
+===================================
+
+Compare also :doc:`0205`. 
+
+I discovered yet another edge case where
 :meth:`lino.core.site.Site.is_abstract_model` plugin inheritance
 didn't work as expected. Consider the following 3 versions of the
 ``clocking`` plugin:
@@ -39,3 +43,83 @@ gets mad and says:
 I added a new internal Site instance
 attribute :attr:`installed_plugin_modules
 <lino.core.site.Site.installed_plugin_modules>` to avoid this.
+
+
+Very similar to :doc:`0205`, we now have:
+
+#.  :mod:`lino_presto.projects.psico.lib.contacts` inherits from
+#.  :mod:`lino_presto.lib.contacts` which inherits from 
+#.  :mod:`lino.modlib.contacts`
+
+The problem then is that the `contacts` plugin defines several models
+(Partner, Person, Company, ...)
+
+#.  :mod:`lino_presto.projects.psico.lib.contacts` overrides `Partner`
+#.  :mod:`lino_presto.lib.contacts` overrides `Partner`, `Person` and
+    `Company`
+#.  :mod:`lino.modlib.contacts`
+
+I rewrote the internal mechanism for :meth:`is_abstract_model
+<lino.core.site.Site.is_abstract_model>` almost completely, and I
+think that the :doc:`0205` problem is now solved as well.
+
+
+Managing user profiles
+======================
+
+Mathieu asked an interesting question (:ticket:`937`):
+
+    Mes collègues de la médiation de dettes sont intéressées par le module
+    :mod:`lino_welfare.modlib.debts`. Peux-tu donner accès à celui-ci au
+    profil 120 (Agent d'insertion (nouveaux bénéficiaires)) ?
+
+There are two ways to solve this.
+You'll probably need look at the source code of 
+:mod:`lino_welfare.modlib.welfare.roles` in order to follow.
+
+We have already :class:`ReceptionClerk
+<lino_welfare.modlib.welfare.roles.ReceptionClerk>`,
+:class:`ReceptionClerkNewcomers
+<lino_welfare.modlib.welfare.roles.ReceptionClerkNewcomers>` and
+:class:`IntegrationAgentNewcomers
+<lino_welfare.modlib.welfare.roles.IntegrationAgentNewcomers>`.  The
+profile "120 Integration agent (Newcomers)" corresponds the latter.
+There is also the
+:class:`DebtsUser<lino_welfare.modlib.debts.roles.DebtsUser>` role,
+which is currently used only for the user profile "300 Debts consultant".
+
+To fix Mathieu's problem, I just need to change
+:class:`IntegrationAgentNewcomers
+<lino_welfare.modlib.welfare.roles.IntegrationAgentNewcomers>`,
+telling it to inherit also from :class:`DebtsUser
+<lino_welfare.modlib.debts.roles.DebtsUser>`. Voilà.  En passant I
+noted that one docstring was erroneous.
+
+Note the difference between a user *profile* and a user *role*. A role
+is just a class object used to specify a set of permissions to grant.
+A user profile has exactly one role. A user profile has, in addition
+to the role, a few more attributes (like `hidden_languages`,
+`readonly`) which are relevant when generating Javascript library.
+
+We might be tempted to change Lino and say that a profile can have
+several roles. The advantage of this would be that we wouldn't need to
+create classes like :class:`ReceptionClerkNewcomers
+<lino_welfare.modlib.welfare.roles.ReceptionClerkNewcomers>` and
+:class:`IntegrationAgentNewcomers
+<lino_welfare.modlib.welfare.roles.IntegrationAgentNewcomers>` because
+these are just a combination of some other existing roles.  But that's
+just a temptation. Actually it is not bad at all to force us to write
+a class for every possible combination of user permissions.
+
+
+
+Alexa reported :ticket:`938`. This was (probably) a bug in 
+:xfile:`courses/Course/presence_sheet.weasy.html`.
+
+En passant I changed :attr:`slave_grid_format
+<lino.core.tables.AbstractTable.slave_grid_format>` for
+:class:`EnrolmentsByCourse
+<lino_cosi.lib.courses.ui.EnrolmentsByCourse>` so that it shows the
+slave table panel in plain html (not editable). Newbie users were
+confused because this table looked looked almost the same whether as
+slave panel or opened in own window.
