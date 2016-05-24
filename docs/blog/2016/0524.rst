@@ -1,0 +1,41 @@
+:date: 2016-05-24
+
+=====================
+Tuesday, May 24, 2016
+=====================
+
+I continued on :ticket:`897`. 
+
+I renamed ``lino_presto.projects.daniel`` into
+:mod:`lino_presto.projects.psico`.  So we have now :ref:`psico` (which
+is a variant of :ref:`presto`). A psychologist, in Italian, is called
+*psicologo*.  Because "Lino Presto à la Daniel" was just too silly as
+a name for a software product.
+
+I discovered yet another (compare :doc:`0205`) edge case where
+:meth:`lino.core.site.Site.is_abstract_model` plugin inheritance
+didn't work as expected. Consider the following 3 versions of the
+``clocking`` plugin:
+
+#.  :mod:`lino_noi.lib.clocking`
+
+#.  :mod:`lino_noi.projects.team.lib.clocking`
+
+#.  :mod:`lino_presto.lib.clocking` (whose name should be
+    :mod:`lino_presto.projects.psico.lib.clocking` because it is
+    psicospecific)
+
+When building the docs for :ref:`presto`, we have
+:mod:`lino_presto.projects.std.settings.doctests` active. Which
+installs :mod:`lino_noi.lib.clocking`. So #3 is never imported. But
+then autodoc nevertheless imports it for inspection. And Django then
+gets mad and says:
+
+    RuntimeError: Conflicting 'session' models in application
+    'clocking': <class 'lino_noi.lib.clocking.models.Session'> and
+    <class 'lino_presto.lib.clocking.models.Session'>.
+
+
+I added a new internal Site instance
+attribute :attr:`installed_plugin_modules
+<lino.core.site.Site.installed_plugin_modules>` to avoid this.
