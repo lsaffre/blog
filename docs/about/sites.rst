@@ -1,6 +1,6 @@
-=====
-Sites
-=====
+========
+My sites
+========
 
 
 .. _lf:
@@ -17,4 +17,20 @@ It is hosted in collaboration with
 
 mylino.net
 ----------
+
+
+
+.. _testlino:
+
+testlino
+--------
+
+
+
+.. _hoppel:
+
+hoppel
+------
+
+
 

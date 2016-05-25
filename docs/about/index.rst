@@ -20,4 +20,5 @@ applications.
    cv
    historic
    friends
-
+   sites
+   jargon

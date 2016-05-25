@@ -32,7 +32,7 @@ Projects
 --------
 
 I am author and active maintainer of `Lino
-<http://www.lino-framework.org/>`_, a programming framework for
+<http://www.lino-framework.org/>`__, a programming framework for
 writing customized database applications based on `Django
 <https://www.djangoproject.com/>`_ and `Sencha ExtJS
 <http://www.sencha.com/products/extjs/>`_.  I am also the author of
@@ -161,7 +161,6 @@ Personal views
 
 .. _AbAKUS: http://www.abakus.be
 .. _TIM: http://tim.saffre-rumma.net/129.html
-.. _Lino: http://www.lino-framework.org
 .. _TIMtools: http://code.google.com/p/timtools/
 .. _Clipper: http://en.wikipedia.org/wiki/Clipper_(programming_language)
 .. _Django: https://www.djangoproject.com/

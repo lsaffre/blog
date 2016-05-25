@@ -123,3 +123,41 @@ En passant I changed :attr:`slave_grid_format
 slave table panel in plain html (not editable). Newbie users were
 confused because this table looked looked almost the same whether as
 slave panel or opened in own window.
+
+
+Upgrade for :ref:`eiche`
+========================
+
+Änderungen:
+
+- Die Panels für "Termine" und für "Einschreibungen" im Detail-Fenster
+  eines Kurses sind jetzt nicht mehr bearbeitbare Tabellen. Um darin
+  zu arbeiten, muss man das Panel im eigenen Fenster öffnen.
+- Anwesenheitsblatt zeigte auch Teilnehmer an, die auch nach der
+  Periode anfingen.
+
+
+OptionParser usage for Django management commands is deprecated
+===============================================================
+
+When restoring a Python dump, I get the following warning:
+
+    WARNING:py.warnings:a/restore.py:656: RemovedInDjango110Warning:
+    OptionParser usage for Django management commands is deprecated, use
+    ArgumentParser instead
+
+
+
+Lino not sending emails
+=======================
+
+Oops, here is an example which shows that I am not a very good system
+administrator.  One production site did not send any emails any
+more. The end-users complained about this yesterday.  The reason was
+that I made them an upgrade on 28 January and forgot to define a
+:envvar:`LINO_SITE_MODULE` environment variable. Which was necessary
+after :doc:`0109`. Their site module not only defined the SMTP
+settings but also e.g. :setting:`LOGGING`. They have been running
+almost four month without a Lino log and without getting any emails
+from Lino.
+

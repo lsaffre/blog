@@ -36,7 +36,7 @@ Andres Toomsalu
 Gerd
 ----
 
-Gerd Xhonneux is system administrator at :ref:`weleup`.
+Gerd is system administrator at :ref:`weleup`.
 
 .. _hamza:
 
@@ -45,6 +45,11 @@ Hamza
 
 Is my assistant since September 2015.
 He has his own blog at http://hamza.lino-framework.org/
+
+.. _jt:
+
+Jüri
+----
 
 .. _joe:
 
@@ -108,9 +113,9 @@ Steve
 Rumma & Ko
 ==========
 
-`Rumma & Ko OÜ <http://saffre-rumma.net>`_ is :ref:`luc`\ 's
-employer. They live from offering professional consultance for Lino
-applications.
+`Rumma & Ko OÜ <http://saffre-rumma.net>`_ is my employer.
+My father-in-law is the main owner.
+We live from offering professional consultance for Lino applications.
 
 
 .. _active:
@@ -124,10 +129,11 @@ Contact: :ref:`at`
 
 .. _nex:
 
-Nex
-===
+Nex Data Systems
+================
 
-`Nex Data Systems OÜ <http://nex.ee>`_ in Pärnu.
+`Nex Data Systems OÜ <http://nex.ee>`_ is a hosting and ICT solutions
+provider in Pärnu.
 
 
 .. _weleup:
@@ -176,6 +182,13 @@ Oikos VoG are using :ref:`care` since April 2016.
 
 Contact: :ref:`anna`
 
+
+.. _spz:
+
+SPZ Eupen
+---------
+
+Website: http://www.spz.be/
 
 
 
