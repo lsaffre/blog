@@ -1,0 +1,129 @@
+:date: 2016-06-02
+
+======================
+Thursday, June 2, 2016
+======================
+
+Giving up :ticket:`951` (for now)
+=================================
+
+I realized (with Hamza's help) that :ticket:`951` is far from being
+done and will cause us still some more work. This ticket *is*
+important and should be done one day in the future, but right now is
+not the good moment.
+
+So I revoked all changes related to that ticket and returned back to
+the version of last Friday.
+
+::
+
+    $ go lino
+    $ git checkout 'master@{2016-05-29}'
+    $ go xl
+    $ git checkout 'master@{2016-05-29}'
+
+
+
+I manually restored some changes in Lino which were not related to
+:ticket:`951`:
+
+- https://github.com/lsaffre/lino/commit/2bd87d65eeb31e4fb4c0fb8f7bcb71c6fdf4477a  (lino/core/requests.py)
+- https://github.com/lsaffre/lino/commit/6f97e88306452b50246b0dd02364a47e545009f7 (lino/mixins/periods.py)
+- https://github.com/lsaffre/lino/commit/86049c1519b3cc164739c54e886c4a3aae5f3058 (lino/api/doctest.py, lino/core/actors.py and several more)
+
+
+Once more
+
+- go back to 3a216f874c2f4e4b0207face94b1b0037e199b62 (28.05.2016)
+
+
+
+$ git merge once_more 
+Auto-merging lino/modlib/extjs/views.py
+CONFLICT (content): Merge conflict in lino/modlib/extjs/views.py
+Auto-merging lino/modlib/extjs/elems.py
+CONFLICT (content): Merge conflict in lino/modlib/extjs/elems.py
+Auto-merging lino/core/renderer.py
+CONFLICT (content): Merge conflict in lino/core/renderer.py
+Auto-merging lino/core/layouts.py
+Auto-merging lino/core/actors.py
+Automatic merge failed; fix conflicts and then commit the result.
+
+
+About :ticket:`951` (for later)
+===============================
+
+Here is an summary of what :ticket:`951` will be (after the experience
+of last week):
+
+- Introduce the notion of widgets. These are a bit like the current
+  elements in lino.modlib.extjs.elems, but they are UI-agnostic: they
+  get instantiated once and for all user interfaces during kernel
+  startup.  The UI-agnostic part of :mod:`lino.modlib.extjs.elems`
+  moves into a new module :mod:`lino.core.widgets`
+
+  Widgets are responsible for the following:
+
+    - width and preferred_width
+    - height and preferred_height
+    - vflex and hflex
+    - permission handling
+
+- There will be quite some internal code changes in the startup
+  process and at many places. The code will become more
+  straightforward because widgets don't need to "know" the user
+  interface.
+
+  Much of what is currently in LayoutHandle can go either to `Layout`
+  or to a new class `CompiledLayout`. We will probably have a list of
+  all layouts, and we will "compile" them at startup.
+
+  `Layout.main` currently contains the original "layout template"
+  during the lifetime of the application. That's actually rather
+  useless. 
+
+  The `main` attribute of a Handle would wimply be (1) a text (or
+  `layouts.Panel`) *before* compiling, and during "compilation" it
+  would be replaced by the resulting widget instance.
+
+- To generate plain HTML or text, we don't need any "UI elements"
+
+- Unlike my first attempt for this ticket, we must not use multiple
+  inheritence when translating widgets to ExtJS elements. We continue
+  to create almost one element class per widget class, but now we will
+  rather have an attribute `widget` on each element. Actually these
+  elements become sinmple wrapper objects for generating JavaScript
+  code.
+
+
+
+The value_date of a ledger movement
+===================================
+
+
+- Added new field :attr:`Movement.value_date
+  <lino_cosi.lib.ledger.models.Movement.value_date>`. This corresponds
+  by default to the voucher's `entry_date` except for
+  :class:`DatedFinancialVoucher
+  <lino_cosi.lib.finan.mixins.DatedFinancialVoucher>` where it is
+  filled from the items `date` field.
+
+- Changed the internal API of :meth:`Voucher.create_movement
+  <lino_cosi.lib.ledger.models.Voucher.create_movement>` and
+  :meth:`FinancialVoucher.get_finan_movements
+  <lino_cosi.lib.finan.mixins.FinancialVoucher.get_finan_movements>`
+
+- But how to fill the new field :attr:`Movement.value_date
+  <lino_cosi.lib.ledger.models.Movement.value_date>` for Alexa who has
+  already entered more than hundert bank statements? Best solution
+  seems to be a new admin command which re-registers all (or some)
+  vouchers: :manage:`reregister`.
+
+- And then a new data checker
+  :class:`lino_cosi.lib.ledger.models.VoucherChecker`.
+
+- A little API optimization: one can now define a
+  :meth:`get_checkable_models
+  <lino.modlib.plausibility.choicelists.Checker.get_checkable_models>`
+  method of a data checker.
+

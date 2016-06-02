@@ -1,0 +1,24 @@
+:date: 2016-05-28
+
+======================
+Saturday, May 28, 2016
+======================
+
+
+I realized that parts of :mod:`lino.modlib.extjs` was still haunting
+around even when the :attr:`default_ui` was set to
+:mod:`lino_extjs6.extjs6`. Because Lino used a module
+:mod:`lino.core.elems` which did::
+
+  from lino.modlib.extjs.elems import create_layout_panel, create_layout_element
+
+The current solution is only half a solution: a new attribute
+``widgets`` of the ``SITE.kernel`` which is set (like
+``extjs_renderer``) during :meth:`on_ui_init` of both plugins.
+
+It's only half a solution because it causes :ref:`belref` or
+:mod:`lino_noi.projects.public` to fail (because they don't use any
+ExtJS at all).
+
+So the test suites are now broken. I won't continue on it before
+tomorrow.

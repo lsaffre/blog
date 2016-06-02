@@ -1,0 +1,80 @@
+:date: 2016-05-31
+
+=====================
+Tuesday, May 31, 2016
+=====================
+
+Lino Voga
+=========
+
+
+I worked for :ticket:`953`: The `sums` argument passed to
+:meth:`Actor.get_sum_text<lino.core.actors.Actor.get_sum_text>` (and
+to :meth:`Widget.format_sum <lino.core.widgets.Widget.format_sum>`)
+now is a `dict`, not a `list`.
+
+This API change is used (for :ticket:`952`) in
+:class:`MovementsByPartner
+<lino_cosi.lib.ledger.ui.MovementsByPartner>` where we now show the
+balance (i.e. the difference between the sums of debit and credit)::
+
+    @classmethod
+    def get_sum_text(self, ar, sums):
+        bal = sums['debit'] - sums['credit']
+        return _("Balance {1} ({0} rows)").format(
+            ar.get_total_count(), bal)
+
+The same result would have been possible using the column index, but
+then the method would break on subclasses with different
+:attr:`column_names <lino.core.actors.Actor.column_names>`.
+
+New attribute :attr:`sum_text_column
+<lino.core.actors.Actor.sum_text_column>` because otherwise in
+:class:`MovementsByPartner
+<lino_cosi.lib.ledger.ui.MovementsByPartner>` the text of the sums row
+would be in the first column (which is a date) although the third
+column (description) is better.
+
+
+
+WidgetFactory
+=============
+
+Ticket :ticket:`951`: Hamza and I discovered that
+:mod:`lino_extjs6.extjs6.elems` had actually lots of changes. Hamza
+will now convert it to the new `WidgetFactory` system.
+
+I discovered and fixed a first bug in the JavaScript code which had
+slipped through the net of our test suite: a rich TextField was not
+rendered correctly when `tinymce` was installed.
+
+Translations
+============
+
+La plupart des textes du module :mod:`lino_welfare.modlib.debts` sont
+maintenant traduits en français.
+
+
+'list' object has no attribute 'filter'
+=======================================
+
+It was not possible to select e.g. the type of a place. The server
+then reported::
+
+    AttributeError: 'list' object has no attribute 'filter'
+    in request GET /choices/countries/Places/type?_dc=1464710351811&country=BE&query=
+    TRACEBACK:
+      ...
+      File "/media/dell1tb/luc/work/lino/lino/core/dbtables.py", line 323, in add_quick_search_filter
+        return qs.filter(qs.model.quick_search_filter(search_text))
+
+This bug had been introduced a few weeks ago with the
+:meth:`add_quick_search_filter
+<lino.core.tables.AbstractTable.add_quick_search_filter>` method and
+had gone undiscovered since then.
+
+Now I wrote a new functional spec about the
+:ref:`book.specs.countries` module which covers this.
+
+I also wrote a new :mod:`lino.api.doctest` utility function
+:func:`show_choices <lino.api.doctest.show_choices>`.
