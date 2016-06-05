@@ -1,0 +1,79 @@
+:date: 2016-06-05
+
+====================
+Sunday, June 5, 2016
+====================
+
+ParamsLayout on tickets.Tickets has no params_store
+===================================================
+
+Hamza and I continue to receive, sporadically, series of error
+messages like the following::
+
+    Exception at /tickets/Ticket/39
+
+    20160329 params_layout ParamsLayout on tickets.Tickets has no params_store in <class 'lino_noi.lib.tickets.ui.Tickets'>
+    
+    ...
+
+I opened :ticket:`960` for this. It seems that the problem comes only
+when the server did not yet serve any *list* view. When the problem is
+"active", any public request for the **detail** of a ticket
+(e.g. http://bugs.lino-framework.org/tickets/Ticket/960) causes the
+internal server error. To "deactivate" the problem, it is enough to do
+a request to the index page (http://bugs.lino-framework.org). 
+    
+Which means that in some situations Lino somehow "forgets" to set that
+`params_store` at startup.
+
+The problem is reproduceable as follows::
+
+    $ cd lino_noi/projects/bs3
+    $ python manage.py runserver
+
+Then point your browser to some detail view (e.g.
+http://127.0.0.1:8000/tickets/Ticket/13) *without* previously
+requesting the index view http://127.0.0.1:8000.
+
+I added a (hidden) test case in :ref:`noi.specs.bs3` which reproduces
+the problem.
+
+I fixed the problem by adding, :mod:`lino.core.requests`, an otherwise
+useless call to :meth:`get_layout_handle
+<lino.core.layouts.BaseLayout.get_layout_handle>`::
+
+    # call get_layout_handle to make sure that
+    # params_store has been created:
+    self.actor.params_layout.get_layout_handle(
+        self.renderer.plugin)
+
+
+Yearly reports for ESF
+======================
+
+Continued to work on :ticket:`584`.  
+
+The initial observation was that we cannot manually create a summary
+in :class:`SummariesByClient
+<lino_welfare.modlib.fse.models.SummariesByClient>`.
+
+- Converted from `wkhtmltopdf` to `weasyprint`
+- Updated :ref:`welfare.specs.fse`
+- New exception :class:`lino.core.exceptions.UnresolvedChoice`
+- The icon for :class:`UpdateSummariesByMaster
+  <lino.modlib.summaries.mixins.UpdateSummariesByMaster>` now is a
+  lightning, not a bell.
+- :attr:`Summaries.allow_create
+  <lino_welfare.modlib.fse.models.Summaries.allow_create>` is now
+  False.
+- :class:`SummariesByClient
+  <lino_welfare.modlib.fse.models.SummariesByClient>` now has
+  :attr:`slave_grid_summary` "html".
+- Adapted some test suites
+
+
+TODO:
+- Don't show a sum for the years of a summary
+- Display a help text for each column
+
+
