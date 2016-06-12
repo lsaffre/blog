@@ -1,0 +1,51 @@
+:date: 2016-06-09
+
+======================
+Thursday, June 9, 2016
+======================
+
+Miscellaneous
+=============
+
+I fixed two :ref:`ise` tracebacks which arrived from :ref:`eiche`::
+
+  RelatedObjectDoesNotExist
+  Enrolment has no pupil.
+  in request POST /api/courses/EnrolmentsByCourse
+  lino_voga/lib/courses/models.py in pupil_info
+            txt = self.pupil.get_full_name(nominative=True)
+
+  AttributeError 
+  'BankStatementItem' object has no attribute 'match_changed'
+  in request PUT /api/finan/ItemsByBankStatement/1554
+  lino_cosi/lib/finan/mixins.py,  in guess_amount, line 286
+
+Handling partial payments
+=========================
+
+Alexa and I discovered yet another series of optimizations for
+:ref:`voga`. Mostly about handling partial payments.
+
+New table :class:`lino_cosi.lib.sales.models.DueInvoices`.  I started
+to write content for :ref:`voga.specs.sales`.  
+
+New virtual fields :attr:`balance_before
+<lino_cosi.lib.sales.models.VatProductInvoice.balance_before>` and
+:attr:`balance_to_pay
+<lino_cosi.lib.sales.models.VatProductInvoice.balance_to_pay>`.
+
+New parameter field :attr:`cleared
+<lino_cosi.lib.ledger.ui.PartnerVouchers.cleared>` for
+:class:`lino_cosi.lib.ledger.ui.PartnerVouchers`.
+
+They want a new voucher state :attr:`cancelled
+<lino_cosi.lib.ledger.choicelists.VoucherStates.cancelled>`.
+
+:mod:`lino_cosi.lib.finan.fixtures.demo_bookings` now generates a more
+realistic situation. Until now it was rather utopic: all customers
+paid their invoices as suggested and in time.  where not all most
+payments are arriving as suggested, i.e. the customer pays the full
+ammount. But there are exceptions: 5% discount taken at payment,
+partly payments, not paying at all, or (very accidentally) paying 2%
+too much.
+

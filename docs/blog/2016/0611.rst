@@ -1,0 +1,85 @@
+:date: 2016-06-11
+
+=======================
+Saturday, June 11, 2016
+=======================
+
+Two subtle optimizations of yesterday's changes in
+:meth:`lino.core.model.Model.workflow_buttons` and
+:meth:`lino.core.workflows.State.add_transition`.
+
+I added a section about "Workflow" in the specs for
+:ref:`voga.tested.cal`.
+
+Alexa and I had new ideas for handling the situation of dropped-out
+events:
+
+- The MoveEventNext action now also calls UpdateEvents.
+
+- Lino now supports a new way of dropping out an automatic event:
+  instead of moving it to the next available date, the user can clear
+  its number (auto_type) in order to detach it from the automatically
+  generated events. UpdateEvents will then generate a new event with
+  the missing number.
+
+
+Nullable integer fields
+=======================
+
+Note about NULL values in an number field.  If you enter a "0", then
+the value in the database will be 0.  If you enter an empty string,
+then the value will be NULL.
+
+But until now the `Ext.form.NumberField` did not render a NULL as
+blank but as a "0". So you didn't see the difference.
+
+I discovered the `useNull` option of `Ext.data.Field
+<http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.data.Field>`_:
+
+    useNull : Boolean
+    (Optional) Use when converting received data into a Number type (either int or float). If the value cannot be parsed, null will be used if useNull is true, otherwise the value will be 0. Defaults to false
+
+    Defaults to: false
+
+I removed `grid_column_template` (in :mod:`lino.modlib.extjs.elems`)
+and the definition of `Lino.NullNumberColumn` (in :xfile:`linoweb.js`)
+because they were useless.
+
+(Hamza, please do these changes also in :mod:`lino_extjs6`. You can
+test them e.g. in :ref:`voga`::
+
+  $ cd lino_voga.projects.roger
+  $ runserver
+  
+Then using the web interface log in as Robin, click on e.g. "Activity
+#3" in the main screen, select the Events tab, then open the Events
+panel in its own window. The column "No." is a nullable integer
+field. F2, DEL, ENTER on such a cell should leave it *empty* (while
+until yesterday Lino would show a "0").
+
+
+Einzelne Termine ausfallen lassen
+=================================
+
+Der Kursleiter teilt mit, dass sein Kurs an zwei Daten ausfällt:
+Stunde 27, weil er verhindert ist und Stunde 29, weil er verreist. Wie
+erfasse ich das? Es gibt zwei Möglichkeiten:
+
+- Klicke auf :guilabel:`[▽]` im Arbeitsablauf von Stunde 27.
+
+  Dadurch wird das Datum dieses Termins um eine Woche verschoben, und
+  das Datum aller folgenden Termine wird neu berechnet.  Der
+  verschobene Termin steht jetzt im Status :guilabel:`[☐]`, weil sein
+  Datum manuell bearbeitet wurde.
+
+- Drücke :kbd:`F2` im Feld :guilabel:`Nr.`, dann :kbd:`DELETE` und
+  :kbd:`ENTER`. Klicke im Arbeitsablauf auf :guilabel:`[☉]` um diese
+  Stunde als storniert zu markieren. Drücke :kbd:`F2` im Feld
+  `Kurzbeschreibung` und tippe "Fällt aus weil Leiter verhindert ist".
+
+  Dann klicke auf :guilabel:`⚡` um die Termine zu aktualisieren.
+
+  Wenn ein Termin keine Nummer hat, ist er *losgelöst* aus der Serie
+  der automatisch generierten Termine und wird nicht mehr durch den
+  Kurs kontrolliert. Er bleibt dennoch mit seinem Kurs *verknüpft*.
+

@@ -1,0 +1,66 @@
+:date: 2016-06-10
+
+=====================
+Friday, June 10, 2016
+=====================
+
+I deployed yesterday's version to :ref:`eiche`.
+:class:`InvoicesByJournal
+<lino_cosi.lib.sales.models.InvoicesByJournal>` did not yet show the
+new :attr:`cleared <lino_cosi.lib.ledger.ui.PartnerVouchers.cleared>`
+parameter field.
+
+I received error messages and did first diagnosis about :ticket:`971`.
+The bug is somewhere in :func:`lino.core.dbtables.add_gridfilters`.
+Seems not urgent.
+
+I worked on :ticket:`969`.  
+
+- I optimized the workflow buttons of calendar events in :ref:`voga`:
+  they don't use icons any more, just `unicode symbols
+  <https://en.wikibooks.org/wiki/Unicode/List_of_useful_symbols>`_. 
+
+- :meth:`lino.core.model.Model.workflow_buttons` now displays the
+  :attr:`button_text <lino.core.workflows.State.button_text>` of the
+  state if it is defined.
+
+- I removed the "take" action (in :ref:`voga`) because they don't want
+  it.
+
+- The :class:`lino_xl.lib.cal.mixins.MoveEventNext` action is now in
+  the workflow buttons and no longer in the toolbar. And it has the
+  button_text '▽'.
+
+- The `UpdateEvents` and `UpdateGuests` actions both had a "lightning"
+  icon. Now the former has '⚡' and the latter '☷' (both using unicode
+  characters)
+
+- The `UpdateEvents` action is now also available in the
+  EventsByController table.
+
+- Similar optimizations for GuestStates. I also defined transitions
+  for the guest states (until now it was not possible to change the
+  state of a participation in :ref:`voga`).
+
+- The cancelled state of an event is now ignored by `UpdateEvents`.
+
+The above brought a general optimization for Lino:
+
+- I renamed the :attr:`symbol` of a workflow state to 
+  :attr:`button_text <lino.core.workflows.State.button_text>`.
+
+  And the same attribute can now be defined on an action.
+
+  The difference between the :attr:`button_text
+  <lino.core.actions.Action.button_text>` and the :attr:`label
+  <lino.core.actions.Action.label>` of an action or state is rather
+  subtle. For example when logging something about an action, then the
+  label and not the button_text is used.
+
+
+And a change for :ref:`welfare` users as well:
+
+- Der Workflow von Terminen und Anwesenheiten wird jetzt nicht mehr
+  mit Icons sondern mit Unicode-Sonderzeichen gemacht.
+
+NB: some tests are still failing, e.g. in :ref:`book`.
