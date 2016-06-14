@@ -22,5 +22,108 @@ following other commands:
 
 
 I noticed that :manage:`garble_persons` was missing in :ref:`cosi` and
-:ref:`welfare`.
+:ref:`welfare` (and fixed that problem).
 
+Set member_until after payment
+==============================
+
+About :ticket:`975`.  The :attr:`member_until
+<lino_voga.projects.roger.lib.courses.models.Pupil.member_until>`
+field on each pupil should get updated automatically when a payment of
+a membership is being registered.
+
+New signal :data:`lino_cosi.lib.ledger.utils.on_ledger_movement`.  The
+first handler for this signal is in
+:mod:`lino_voga.projects.roger.lib.courses.models` and simply runs the
+:class:`courses.MemberChecker
+<lino_voga.projects.roger.lib.courses.models.MemberChecker>`.
+
+:class:`lino.modlib.plausibility.choicelists.Checker` now has a `self`
+attribute and refuses duplicate activations.
+
+
+Cannot log into Rose after apt-get upgrade
+==========================================
+
+After a routine upgrade of the Ubuntu 14.04 LTS on :ref:`rose`, we
+were not able to get beyond the login screen. You type your password
+in the GDM, it validates, but instead of getting into your Desktop,
+after a while, the GDM invites you again to enter your password.
+
+dmesgsaid::
+
+  [ 2598.360168] <3>[fglrx:firegl_init_device_list] *ERROR* No supported display adapters were found
+
+Which lead me to this thread:
+
+  http://ubuntuforums.org/showthread.php?t=2203858
+
+I tried to move the :file:`~/.config` directory
+I tried this::
+
+    $ sudo aptitude remove fglrx
+    ...
+    The following packages will be REMOVED:
+      fglrx fglrx-amdcccle{a} 
+    0 packages upgraded, 0 newly installed, 2 to remove and 19 not upgraded.
+    Need to get 0 B of archives. After unpacking 119 MB will be freed.
+    Do you want to continue? [Y/n/?] 
+    (Reading database ... 408518 files and directories currently installed.)
+    Removing fglrx-amdcccle (2:15.201-0ubuntu0.14.04.1) ...
+    Removing fglrx (2:15.201-0ubuntu0.14.04.1) ...
+    update-alternatives: using /usr/lib/pxpress/ld.so.conf to provide /etc/ld.so.conf.d/i386-linux-gnu_GL.conf (i386-linux-gnu_gl_conf) in auto mode
+    update-alternatives: warning: skip creation of /usr/share/applications/ubuntu-amdcccle.desktop because associated file /usr/share/fglrx/amdcccle.desktop (of link group i386-linux-gnu_gl_conf) doesn't exist
+    update-alternatives: warning: skip creation of /usr/share/applications/ubuntu-amdccclesu.desktop because associated file /usr/share/fglrx/amdccclesu.desktop (of link group i386-linux-gnu_gl_conf) doesn't exist
+    update-alternatives: warning: not replacing /usr/lib/i386-linux-gnu/xorg/extra-modules with a link
+    update-alternatives: using /usr/lib/pxpress/alt_ld.so.conf to provide /etc/ld.so.conf.d/x86_64-linux-gnu_GL.conf (x86_64-linux-gnu_gl_conf) in auto mode
+    update-alternatives: using /usr/lib/i386-linux-gnu/mesa/ld.so.conf to provide /etc/ld.so.conf.d/i386-linux-gnu_GL.conf (i386-linux-gnu_gl_conf) in auto mode
+    update-alternatives: warning: not replacing /usr/lib/i386-linux-gnu/xorg/extra-modules with a link
+    Processing triggers for bamfdaemon (0.5.1+14.04.20140409-0ubuntu1) ...
+    Rebuilding /usr/share/applications/bamf-2.index...
+    Processing triggers for libc-bin (2.19-0ubuntu6.9) ...
+
+
+Behavior-driven development
+===========================
+
+I read about `BDD
+<https://en.wikipedia.org/wiki/Behavior-driven_development>`_ and had
+a look into the `tutorial
+<http://pythonhosted.org/behave/tutorial.html>`_ of the `behave
+<http://pythonhosted.org/behave/>`_ package.  My first impression:
+Looks like a great tool, but for the moment I don't see any useful
+application in some Lino project.
+
+
+
+Numbers in a grid
+=================
+
+Oops, after yesterday's changes (Nullable integer fields) all numbers
+in a grid were left aligned. Fixed.  Hamza, please adapt
+:mod:`lino_extjs6.extjs6.elems` once more (by adding `align='right'`
+in the :meth:`get_column_options` of :clasS:`NumberFieldElement`::
+
+    def get_column_options(self, **kw):
+        ...
+        kw.update(align='right')
+
+
+
+Reihenfolge und Schnellsuche Kontoauszüge
+=========================================
+
+Alexa now has vouchers in two fiscal years, which revealed some
+problems with ordering them and searching for them.
+
+- VouchersByJournal are now ordered by 'accounting_period', 'number'
+
+- New virtual field
+  :attr:`lino_cosi.lib.ledger.models.Voucher.number_with_year`
+
+- :class:`lino_cosi.lib.ledger.models.Voucher` now has its own
+  customized :meth:`quick_search_filter
+  <lino_cosi.lib.ledger.models.Voucher.quick_search_filter>` method.
+
+- New model attribute :attr:`quick_search_fields_digit
+  <lino.core.model.Model.quick_search_fields_digit>`
