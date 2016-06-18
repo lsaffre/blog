@@ -1,0 +1,96 @@
+:date: 2016-06-15
+
+========================
+Wednesday, June 15, 2016
+========================
+
+Themes support in ExtJS 6
+=========================
+
+Hamza added the possibility of selecting the "theme" by setting the
+site attribute :attr:`lino_extjs6.extjs6.Plugin.theme_name` (`PR #38
+<https://github.com/lsaffre/lino_extjs6/pull/38/files>`_). I added the
+different names to :mod:`lino_noi.projects.team.settings.demo` He
+wrote "It is really funny to see Lino under so many themes."
+
+Hamza, I don't agree with you ;-) This is not only *funny*. It is
+*awesome*, *great*, *exciting*!
+
+The most exciting for me is to have the proof that it is so easy. (I
+knew that before, but there are different types of knowledge).
+
+Code review: in the :xfile:`index.html` template I replaced the block
+
+::
+
+    {%- if not extjs.theme_name == '' -%}
+        {%- set theme = extjs.theme_name  -%}
+    {%- else -%}
+        {%- set theme ='ext-theme-neptune-lino'  -%}
+    {%- endif -%}
+    
+by a single line
+
+::
+
+    {%- set theme = extjs.theme_name  -%}
+
+because it is redundant to define a default value at two places.
+
+A question: Hamza, can't we change the name `ext-theme-neptune-lino`
+to `theme-neptune-lino` in order to be consistent with the existing
+naming system?
+
+And a remark. While all this is *funny*, *great* and *exciting*, I
+suggest to concentrate on the `classic` theme at first. Because I know
+my customers: they are very resistent against changes.  The classic
+theme has some quite visible layout problem in the detail window.
+
+The `free_events` attribute of an enrolment
+===========================================
+
+I continued to fiddle with the demo fixtures in order to write
+testable specs about invoicing in :ref:`voga`. There are a lot of
+enrolments for different situations, which generated some invoices,
+and until now I did not test these.
+
+I noticed for example that the max_date of an invoicing plan was being
+ignored when generating invoices. As a result, the demo database
+contained invoices about enrolments in the future.
+
+I moved the sales bookings from
+:mod:`lino_cosi.lib.ledger.fixtures.demo_bookings` into a separate
+fixture :mod:`lino_cosi.lib.sales.fixtures.demo_bookings`.  This
+fixture is not being used by :ref:`voga` (where they don't have
+"simple" sales of products without enrolments).
+
+Die Ehrenamtlichen können die List memberships nicht sehen. Müssen sie
+aber.
+
+I removed the SuggestedCoursesByPupil panel from the PupilDetail.
+
+
+Variable row height in a grid
+=============================
+
+Hamza and I had a two hours voice session with shared screen about
+:ticket:`977`. We used :class:`SuggestionsByBankStatement
+<lino_cosi.lib.finan.models.SuggestionsByBankStatement>` as an example
+for our tests.
+
+Result: Lino now has a new attribute :attr:`row_height
+<lino.core.tables.AbstractTable.row_height>` for tables.
+
+Files modified::
+
+    modified:   lino/modlib/extjs/ext_renderer.py
+    modified:   lino/modlib/extjs/linoweb.js
+    modified:   lino/modlib/extjs/static/extjs/lino.css
+
+Hamza, note that I afterwards decided to *not* remove the
+`variable_row_height` feature because I realized that there are maybe
+places where we want it (and where the fact that it breaks pagination
+is not a big problem). But also with variable_row_height the
+:func:`calculatePageSize` function no longer creates a fake row in
+order to call its :meth:`getHeight` method. 
+
