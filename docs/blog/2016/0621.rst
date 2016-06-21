@@ -1,0 +1,84 @@
+:date: 2016-06-21
+
+======================
+Tuesday, June 21, 2016
+======================
+
+I continued on :ticket:`985`: new command :cmd:`inv bh`.
+Optimizations in :mod:`lino.sphinxcontrib.help_text_builder`.  Started
+to convert existing `help_text` attributes to :rst:dir:`attribute`
+directives. All major applications (:ref:`noi`, :ref:`voga`,
+:ref:`welfare` and/or :ref:`presto`) now have this feature enabled.
+
+TODO: 
+
+- Convert `help_text` strings to `attribute` directives.
+- How to solve the problem that :cmd:`inv bh` needs :mod:`lino`?
+  Actually we should split :mod:`atelier.invlib` and move certain
+  commands to a new module :mod:`lino.utils.invlib`. But then we would
+  need to split the documentation page on :ref:`inv_commands` into two
+  different pages. I want to be able to run ``pp inv bh``, i.e. in a
+  project like :ref:`blog` which has no help_texts_tree defined, the
+  :cmd:`inv bh` should not fail but simply do nothing.  OTOH I also
+  want :mod:`atelier` to stay simple. People who have no Lino
+  application at all should not get scared away by lots of functions
+  they don't care about.  To be meditated...
+
+
+Stream-lining Initial Setup
+===========================
+
+:ref:`james` had some interesting ideas for making the "Getting
+started" guide more user-friendly.  
+
+Yes, of course it is important to avoid scaring away new and future
+Lino fans by a too high level at the entrance door.  I opened
+:ticket:`986` for this.
+
+My first reactions:
+
+- The "Getting started" section of the :ref:`lino.dev` should *not*
+  simplify things because:
+
+  - Cloning the repositories and working in development mode is necessary
+    because these instructions are primarily meant for future core
+    developers who are able to submit pull requests.
+
+  - Even our future system administrator (who doesn't need to be a
+    Python programmer) should be experienced enough to not get scared
+    away by these instructions.
+
+- Indeed we should start to have a really user-friendly installation
+  guide, targeted to "system administrators who just want to give Lino
+  a quick try", And this should indeed be as simple as ``pip install
+  lino_noi``.
+
+- Such an installation guide cannot be in the documentation of the
+  framework, it must be in the docs of a given existing application
+  (:ref:`noi`, :ref:`voga`, :ref:`welfare` and/or :ref:`presto`).
+
+
+
+IntegrityError: (1062, "Duplicate entry '2313' for key 'PRIMARY'")
+==================================================================
+
+Alexa and I failed to merge partners 2210 and 2313 in their database.
+A first inspector script revealed that they both have related Guest
+objects which are not being reported by the MergeAction.
+
+Trying to reproduce this problem caused some side effects:
+
+- Show :class:`lino_xl.lib.xl.cal.ui.GuestsByPartner` table
+  ("presences") in the partner detail in :ref:`voga`.
+  This table also has a slave summary now.
+
+- Changed the verbose_name of :class:`lino_xl.lib.xl.cal.models.Guest`
+  from "Guest" to "Presence".
+
+
+
+AttributeError: 'Event' object has no attribute 'update_cal_summary'
+====================================================================
+
+This error message came when the user tried to update the 
+:attr:`auto_type` field of a generated calendar event.

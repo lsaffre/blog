@@ -46,6 +46,14 @@ Hamza
 Is my assistant since September 2015.
 He has his own blog at http://hamza.lino-framework.org/
 
+.. _james:
+
+James
+-----
+
+Is a Lino fan living in Japan.
+
+
 .. _jt:
 
 Jüri

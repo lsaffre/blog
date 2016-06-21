@@ -1,0 +1,82 @@
+:date: 2016-06-19
+
+=====================
+Sunday, June 19, 2016
+=====================
+
+I deployed the latest version to :ref:`eiche`. A quick spontaneous
+change which they will probably like: The detail_layout of a sales
+invoice in :ref:`voga` now shows :attr:`balance_before
+<lino_cosi.lib.sales.models.VatProductInvoice.balance_before>` and
+:attr:`balance_to_pay
+<lino_cosi.lib.sales.models.VatProductInvoice.balance_to_pay>` instead
+of total_excl and total_vat.  That's because our first target group
+are the other educational organisations in Eastern Belgium, none of
+whom needs to care about VAT.
+
+#980 (Export vers Excel ne fontionne pas)
+=========================================
+
+The :ref:`welcht` server reported two errors related to
+:mod:`lino.modlib.export_excel` and caused by :ticket:`913`:
+
+- "ImportError: No module named openpyxl" was because they didn't have
+  `openpyxl` installed.  I added `openpyxl` to `install_requires` and
+  removed `xlwt` and `xlrd` which were still being declared there
+  though they are no longer used.
+
+- Even with `openpyxl` installed, we had a `UnicodeEncodeError:
+  'ascii' codec can't encode character u'\xc9' in position 0: ordinal
+  not in range(128)` whenever some column header contained non-ascii
+  characters.
+
+  This case was not covered by :ref:`lino.specs.export_excel`.  I
+  added a section which repeats the request for French user "Romain".
+  I had to add `fr` to the :attr:`languages
+  <lino.core.site.Site.languages>` of
+  :mod:`lino_book.projects.min1.settings.demo`.
+  
+  An unrelated test, :ref:`lino.specs.invalid_requests` was in this
+  document until now, now it is in its own document.
+
+- :mod:`lino.api.doctest` now does ``from builtins import str``.
+
+
+
+ImportError: cannot import name ctask
+=====================================
+
+:ref:`james` reported a problem (and its solution) which occured when
+using the new pyinvoke version 0.13 (`released 10 days ago
+<http://www.pyinvoke.org/changelog.html>`_). I adapted
+:mod:`atelier.invlib` so that it now works with both versions.
+
+I registered this problem as :ticket:`981`. It was also the reason for
+build failures on Travis which had started last week and which I just
+didn't yet take time to look at since then.
+
+Congratulations to :ref:`james` for his first code contribution.
+
+
+Minor optimizations in Lino Noi
+===============================
+
+I removed the boolean fields :attr:`closed`, :attr:`standby` and
+:attr:`feedback` of a ticket from the user interface. This field is
+obsolete.
+
+
+Convert fab release to inv release
+==================================
+
+About the :func:`abort` function:
+https://github.com/pyinvoke/invoke/issues/269
+
+
+Released Lino 1.7.2
+===================
+
+The main reason for this release was that I wanted to test the
+:cmd:`inv release` command. But anyway it was time for the next
+release.  And indeed, version 1.7.1 failed (has no files), that's why
+I did a second attempt.
