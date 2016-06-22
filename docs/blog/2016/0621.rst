@@ -57,28 +57,60 @@ My first reactions:
   framework, it must be in the docs of a given existing application
   (:ref:`noi`, :ref:`voga`, :ref:`welfare` and/or :ref:`presto`).
 
-
-
-IntegrityError: (1062, "Duplicate entry '2313' for key 'PRIMARY'")
-==================================================================
-
-Alexa and I failed to merge partners 2210 and 2313 in their database.
-A first inspector script revealed that they both have related Guest
-objects which are not being reported by the MergeAction.
-
-Trying to reproduce this problem caused some side effects:
-
-- Show :class:`lino_xl.lib.xl.cal.ui.GuestsByPartner` table
-  ("presences") in the partner detail in :ref:`voga`.
-  This table also has a slave summary now.
-
-- Changed the verbose_name of :class:`lino_xl.lib.xl.cal.models.Guest`
-  from "Guest" to "Presence".
-
-
-
 AttributeError: 'Event' object has no attribute 'update_cal_summary'
 ====================================================================
 
 This error message came when the user tried to update the 
 :attr:`auto_type` field of a generated calendar event.
+
+
+IntegrityError: (1062, "Duplicate entry '2313' for key 'PRIMARY'")
+==================================================================
+
+Alexa and I failed to merge participants 2210 and 2313 in their
+database.  A first inspector script revealed that they both have
+related Guest objects which are not being reported by the MergeAction.
+
+Trying to reproduce this problem caused a minor new feature and a side
+effect:
+
+- Show :class:`lino_xl.lib.cal.ui.GuestsByPartner` table
+  ("presences") in the partner detail in :ref:`voga`.
+  This table also has a slave summary now.
+
+- I changed the verbose_name of :class:`lino_xl.lib.cal.models.Guest`
+  from "Participant" to "Presence".
+
+Select :menuselection:`Activities --> Participants`, go to Dorothée
+Demeulenaere, click the :guilabel:`Merge` action.
+
+Lino asks the following confirmation:
+
+    Are you sure you want to merge Mrs Dorothée Demeulenaere into Mrs
+    Dorothée Dobbelstein?
+    
+    - 1 Participants will get reassigned.
+    - Mrs Dorothée Demeulenaere will be deleted
+
+When you confirm, then you get:    
+    
+    Cannot delete Partner Demeulenaere Dorothée because 5 Bank
+    Statement items refer to it.
+
+But actually it has been deleted.
+
+When analyzing the code (:mod:`lino.core.merge`), it seems that Lino
+currently does not care at all about MTI parents. For example, when
+merging two participants, then it sees their enrolments but not
+e.g. their invoices, bank statements etc (i.e. ignores all related
+objects pointing to this participant as person or partner).
+
+I am surprised that this problem did not appear already in
+:ref:`welfare`. A possible explanation is that most of their related
+objects are linked via the MTI leaf (Client).
+
+To solve the problem, I added a new function
+:func:`traverse_ddh_fklist`. 
+
+:mod:`lino_cosi.projects.std.tests.test_cosi` now does a merge action
+of two Person objects and covers this problem.
