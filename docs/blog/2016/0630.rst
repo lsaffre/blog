@@ -1,0 +1,101 @@
+:date: 2016-06-30
+
+=======================
+Thursday, June 30, 2016
+=======================
+
+Open knowledge
+==============
+
+The latest `EFF <https://www.eff.org/>`_ newsletter made me stumble
+over `Open access: All human knowledge is there—so why can’t everybody
+access it?
+<http://arstechnica.com/science/2016/06/what-is-open-access-free-sharing-of-all-human-knowledge/>`_
+and I could not resist from integrating this truly excellent report
+into my opinion about :doc:`/topics/copyright`.
+
+
+The paging toolbar of a grid panel
+==================================
+
+I started to work on :ticket:`1001`.
+
+In `Lino.GridPanel.initComponent` I create an `Ext.toolbar.Paging`
+instance.  
+
+- I now call :meth:`this.callParent` in all initCompnent methods
+
+- I changed the name of the variable where I store this instance from
+  ``tbar`` to ``paging_toolbar``.  Because `tbar
+  <http://docs.sencha.com/extjs/6.0.2-classic/Ext.grid.Panel.html#cfg-tbar>`_
+  is a config option of `Ext.grid.Panel`, and it seems that ExtJS
+  deletes these when the component has been initialized.
+
+  Interesting discussion:
+  https://www.sencha.com/forum/archive/index.php/t-99904.html
+
+- `Ext.toolbar.Paging` no longer has a method :meth:`changePage`.  I
+  replaced `paging_toolbar.changePage(x)` by
+  `paging_toolbar.store.loadPage(x)`
+
+No success so far...
+
+
+Cannot resolve keyword 'name_fr' into field
+===========================================
+
+I found the reason for :ticket:`1005` and :ticket:`971` and fixed it.
+It was a bug in the :meth:`quick_search_filter` method of
+:class:`lino.mixins.Referrable` which caused it to ignore the `prefix`
+argument. Here is the buggy code. (Do you see the bug?)::
+
+    @classmethod
+    def quick_search_filter(cls, search_text, prefix=''):
+        if search_text.isdigit():
+            return models.Q(**{prefix+'ref__icontains': search_text})
+        return super(Referrable, cls).quick_search_filter(
+            search_text, prefix='')
+
+The whole thing took me more than two hours.  I had to write a test
+case in :ref:`voga.specs.partners`, and then I fixed some secondary
+bugs:
+
+- all participants had their pupil_type field empty in the Voga demo database
+- :mod:`lino.utils.core.get_field` caused a RemovedInDjango110Warning:
+  'get_field_by_name is an unofficial API that has been
+  deprecated. You may be able to replace it with
+
+
+Ticket :ticket:`1002`
+=====================
+
+Que les ateliers soient actifs ou non, ils se retrouvent dans toutes les catégories (actifs/inactifs/terminés)
+
+This was a bug in
+:mod:`lino_welfare.projects.chatelet.modlib.courses.models`.
+
+
+Boolean fields are not summable
+===============================
+
+A little optimization which I did some time ago (:doc:`0401`) in
+:mod:`lino.modlib.extjs` was not yet done in
+:mod:`lino_extjs6.extjs6`: boolean fields should no longer be
+considered as summable fields.  I now removed the `BooleanMixin` class
+completely since it was no longer used.
+
+I discovered this bug because :ref:`noi.specs.tickets` failed when
+:attr:`default_ui <lino.core.site.Site.default_ui>` in
+:mod:`lino_noi.projects.team.settings.demo` was locally set to
+:mod:`lino_extjs6.extjs6`.
+
+Another problem when switching back and forth between
+:mod:`lino.modlib.extjs` and :mod:`lino_extjs6.extjs6` is the fact
+that :mod:`lino.modlib.tinymce` currently must get removed explicitly.
+This plugin works only with ExtJS 3, and we currently believe that we
+will never need it in ExtJS 6.  
+So Lino should remove it automatically when extJS 6 is being used.
+I am still meditating about how we must solve this.
+My current favourite idea is to add a new attribute
+:attr:`lino.core.plugin.Plugin.ignore_plugins`.
+

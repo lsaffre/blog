@@ -22,3 +22,4 @@ applications.
    friends
    sites
    jargon
+   /topics/index

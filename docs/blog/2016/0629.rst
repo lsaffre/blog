@@ -1,0 +1,80 @@
+:date: 2016-06-29
+
+========================
+Wednesday, June 29, 2016
+========================
+
+Hamza and I have been working on :ticket:`977`.
+
+The :meth:`GridPanel.computePageSize` method
+============================================
+
+In Lino, a grid panel tries to request exactly as many rows of data as
+it can display within the space it is filling.
+
+In ExtJS 3 we had a trick to compute the exact height of a row, but
+that trick fails with ExtJS 6. We want to know the number of grid rows
+that will fit into the grid before actually requesting any data from
+the server.  The store is not yet loaded. We don't want the height of
+*every* data row. The trick is to create a volatile DOM element with
+the same CSS as a grid cell and with `<br/>` as content. And instead
+of displaying this element, we just note its height.
+
+The following was interesting as well:
+http://www.extjs-tutorial.com/extjs/working-with-dom
+
+The total inner height of the panel (i.e. the number of pixels
+available for all rows) seems to be `grid.Panel.getViewRegion
+<http://docs.sencha.com/extjs/6.2.0-classic/Ext.grid.Panel.html#method-getViewRegion>`_.
+
+Here is an interesting thread: `how to get height of a row from
+gridview extjs 4?
+<http://stackoverflow.com/questions/6581199/how-to-get-height-of-a-row-from-gridview-extjs-4>`_
+
+Until now I did not find a perfect solution. As a workaround I use a
+hard-coded value for the height of a row.
+
+Hamza, I commit my last working version so that you can continue on it
+if you want.
+
+A second commit (`0b3728d..2bf6799
+<https://github.com/lsaffre/lino_extjs6/commit/2bf67994175c44119617d67cea4fbd0be8010eb3>`_)
+with a solution which looks satisfying to me, so I would say that the
+hack which creates a fake grid row from the two templates is not
+necessary.
+
+The cool new trick (and the thing I had to learn) was how to get the
+correct total available height of the grid widget. My first approach
+was this::
+
+  var height = this.getViewRegion().getSize().height;
+
+But it seems that this one is the best::
+
+  var gb = this.body.selectNode('.x-grid-view', false);
+  var height = gb.getHeight();
+
+I used the browser's inspector to find out that I must query for the
+``x-grid-view`` element of the grid.
+
+I also needed to write and play with the following sandbox showcase.
+
+
+A sandbox showcase
+==================
+
+I opened :ticket:`999` and added a first example of a "showcase". The
+example itself is taken from `extjs-tutorial.com
+<http://www.extjs-tutorial.com/extjs/working-with-dom>`_.
+
+This first showcase helped me to understand that `Ext.get()
+<http://docs.sencha.com/extjs/6.2.0-classic/Ext.dom.Element.html#static-method-get>`_
+retrieves an `Ext.Element` object which wraps a *DOM element* of the
+document (or null if no matching element was found).
+
+This kind of showcase snippets can be interesting when trying to debug
+some tough Javascript problem.  The basic approach is the same as it
+was in `the showcases I wrote back in 2010
+<https://github.com/lsaffre/lino/tree/master/extjs-showcases>`_ when I
+discovered ExtJS 3.
+

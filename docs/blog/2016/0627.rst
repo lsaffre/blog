@@ -1,0 +1,50 @@
+:date: 2016-06-27
+
+=====================
+Monday, June 27, 2016
+=====================
+
+Activity report in Lino Noi
+===========================
+
+I started to work on :ticket:`993`.
+
+I made a first attempt using a new DirectPrintAction
+`PrintActivityReport`, but abandoned when I discovered that Lino does
+not yet manage list actions with a parameter window.
+
+I decided to convert ServiceReport from appypod to weasyprint.
+
+I noted that calling :meth:`ar.show
+<lino.core.requests.BaseRequest.show>` from within a template was
+being rendered to the console by :class:`WeasyBuildMethod
+<lino.modlib.weasyprint.choicelists.WeasyBuildMethod>`.
+
+And then another "detail" :meth:`ar.show
+<lino.core.requests.BaseRequest.show>` in a weasy document should not
+add a grey background to the table cells. This is nice when rendering
+tables e.g. in a slave table summary.  These `tableattrs` and
+`cellattrs` now are no longer on the request but on the renderer.
+
+
+The :class:`ProjectsByReport
+<lino_noi.projects.team.lib.clocking.ui.ProjectsByReport>` table now
+has a new column "Total time". See :ref:`noi.specs.clocking`.
+
+
+
+
+
+Enrolment options
+=================
+
+Alexa started to configure Hikes for :ref:`eiche`. It is the first
+time they use enrolment options.
+
+
+A little optimization: the :meth:`__str__` method of `courses.Line` now
+includes the :attr:`name` field.
+
+The virtual fields
+confirmed and requested of a course
+now display the sum of places (and no longer the number of records).

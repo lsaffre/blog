@@ -1,0 +1,128 @@
+:date: 2016-06-23
+
+=======================
+Thursday, June 23, 2016
+=======================
+
+I started to work on :ticket:`988`. We want a new table parameter and
+a new virtual field on every partners table.
+
+This ticket is not only useful in :ref:`voga`, also in :ref:`cosi`,
+:ref:`welfare` and :ref:`presto`. And for all future applications with
+accounting functionality.
+
+So it should be defined in :mod:`lino_cosi.lib.contacts.models`.
+
+
+Discovered a design flaw
+========================
+
+Every application has its own version of ``contacts`` plugin:
+
+- :mod:`lino_voga.lib.contacts.models`
+- :mod:`lino_presto.lib.contacts.models`
+- :mod:`lino_welfare.lib.contacts.models`
+
+These extensions until now inherited from
+:mod:`lino.modlib.contacts.models` and *not* from
+:mod:`lino_cosi.lib.contacts.models`::
+
+    from lino.modlib.contacts import Plugin   # __init__.py
+    from lino.modlilib.contacts.models import *  # models.py
+    
+This was a design flaw which just didn't disturb until now because
+:mod:`lino_cosi.lib.contacts.models` just defined some detail layouts
+which anyway weren't being reused by the applications.
+    
+But actually they must inherit from :mod:`lino_cosi.lib.contacts`
+    
+    from lino_cosi.lib.contacts import Plugin
+    from lino_cosi.lib.contacts.models import *
+
+Redefining the detail_layout
+============================
+
+Note: why do we need::
+
+    @dd.receiver(dd.post_analyze)
+    def customize_contacts2(sender, **kw):
+        site = sender
+        site.modules.contacts.Persons.set_detail_layout(PersonDetail())
+        site.modules.contacts.Companies.set_detail_layout(CompanyDetail())
+        site.modules.contacts.Partners.set_detail_layout(PartnerDetail())
+    
+and cannot just do::
+
+    Persons.detail_layout = PersonDetail()
+    Companies.detail_layout = CompanyDetail()
+    Partners.detail_layout = PartnerDetail()
+    
+One reason is: `set_detail_layout` has the advantage of doing some
+validation. (TODO: explain more).
+    
+It seems that the following is a compromise which works::
+    
+    Persons.set_detail_layout(PersonDetail())
+    Companies.set_detail_layout(CompanyDetail())
+    Partners.set_detail_layout(PartnerDetail())
+    
+As I wrote for :ticket:`526`, "it seems that the general rule is:
+if you want your own detail_layout, then you should write your own
+plugin."
+
+In other words, if you write your own plugins, then you don't need to
+put your set_detail_layout calls into a post_analyze handler.
+
+
+Pluggable accounting functionality
+==================================
+
+In :ref:`welfare` we have a challenge: we would like to have the
+accounting functionality "pluggable". For example in chatelet it is
+disabled, they don't want any ledger, journals, movements & Co. And we
+want that choice independently of the choice "eupen" or "chatelet".
+
+We solve this using the two classes
+:class:`lino_cosi.lib.vat.mixins.PartnerDetailMixin` and
+:class:`lino_cosi.lib.vatless.mixins.PartnerDetailMixin`.  They both
+define a `ledger` tab panel, and they both are designed to "do
+nothing" when `ledger` is not installed. Or more precisely they define
+a DummyPanel named `ledger` in that case. Partner details who use
+them, must make sure that their `main` contains `ledger`.
+
+
+A pitfall
+=========
+
+It took me some time to realize that, when I write a
+:class:`lino_cosi.lib.contacts.models.Partner` class, then I must also
+write :class:`Person <lino_cosi.lib.contacts.models.Person>`
+:class:`Company <lino_cosi.lib.contacts.models.Company>` classes.
+
+
+Note that in :mod:`lino_xl.lib.households` we don't write::
+
+    from lino.modlib.contacts.models import Partner
+
+    class Household(Partner):
+        ...
+        
+But::        
+
+    contacts = dd.resolve_app('contacts')
+
+    class Household(contacts.Partner):
+        ...
+
+The advantage is that we don't need to create a
+:mod:`lino_cosi.lib.households` plugin which would avoid this trick
+for households:
+
+
+    from lino_xl.lib.households.models import *
+    from lino_cosi.lib.contacts.models import Partner
+
+    class Household(Partner, Household):
+        ...
+
+I started a new specs document :ref:`voga.specs.partners`.

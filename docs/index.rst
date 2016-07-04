@@ -20,7 +20,6 @@ Sitemap
 .. toctree::
    :hidden:
 
-   topics/index
    tickets/index
    glossary
    ref/index

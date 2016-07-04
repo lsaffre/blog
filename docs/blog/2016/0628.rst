@@ -1,0 +1,36 @@
+:date: 2016-06-28
+
+======================
+Tuesday, June 28, 2016
+======================
+
+:class:`ItemsByInvoicePrintNoQtyColumn
+<lino_cosi.lib.sales.models.ItemsByInvoicePrintNoQtyColumn>`
+now has :attr:`hide_sums` set to `False`. Indeed this
+information was useless because the sum is being printed anyway afterwards. And in invoices with only one item it was even ugly.
+
+
+In :xfile:`item_description.html` we have::
+
+    {{_("Time")}}: {{obj.course.weekdays_text}} {{obj.course.times_text}}.
+
+This lead to an ugly text in case of one-event courses:
+
+    Zeit: Jeden 0. Dienstag 09:00-18:30.
+    
+This was because
+:attr:`lino_xl.lib.cal.mixins.RecurrenceSet.weekdays_text` is far from
+covering all situations and far from being well-tested.  I made it a
+bit better and added some examples in :ref:`book.specs.cal`.
+
+TODO: discuss with Roger and Monique about more 
+features in :xfile:`item_description.html`
+
+
+Alexa reported :ticket:`998`: Yes, it is perfectly okay to write an
+invoice for an enrolment which starts in the future.  But at least for
+our demo fixtures we don't want invoices for enrolments in the future.
+This was in
+:meth:`lino_voga.lib.courses.models.Enrolment.get_invoiceable_product`
+
+Probably fixed.

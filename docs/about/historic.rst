@@ -2,12 +2,12 @@
 Historic notes
 ==============
 
-My computer career started at the age of 14. Between 1982 and 1987 I
-passed some of my spare time by writing simple BASIC programs on a
-TRS-80. I discovered this hobby because I attended to a one-week
-programming camp in 1982. My father was at this time the proud
-possessor of a Tandy TRS-80 with 64 KB of RAM and a graphics
-resolution of 127 x 64 black and white pixels.
+My computer career started in **1982** when I was 14 after attending
+to a one-week programming camp.  Between 1982 and 1987 I passed some
+of my spare time by writing simple BASIC programs on a TRS-80. My
+father was at this time the proud possessor of a `Tandy TRS-80
+<https://en.wikipedia.org/wiki/TRS-80>`_ with 64 KB of RAM and a
+graphics resolution of 127 x 64 black and white pixels.
 
 Before becoming a programmer, I studied Biology at the University of 
 Namur (French-speaking part of Belgium), during two years from 
@@ -16,17 +16,17 @@ studies, I think that these two years were not lost for me. They had
 a deep contribution on how I look at our world. I am most thankful 
 to J.L. De Sloover for his teachings.
 
-After my studies I worked at Siemens-Nixdorf in Liège for 18 months 
-(from September 1990 to January 1992). I got in touch with the 
-operating systems UNIX and BS/2000. One of my projects was for 
-example a parser who read a database definition file and generated a 
-PostScript file that visualized entity/relations diagrams of the 
+After my studies I worked at Siemens-Nixdorf in Liège for 18 months
+(from September **1990** to January **1992**). I got in touch with the
+operating systems UNIX and BS/2000. One of my projects was for example
+a parser who read a database definition file and generated a
+PostScript file that visualized entity/relations diagrams of the
 database.
 
-In December 1992 I resigned at Siemens-Nixdorf because I had decided
-to change my vocation: I wanted to become a primary school teacher.
-Although programmer was a beautiful and secure job, I was not
-fascinated by what I was doing. In Belgium it is theoretically
+In **December 1992** I resigned at Siemens-Nixdorf because I had
+decided to change my vocation: I wanted to become a primary school
+teacher.  Although programmer was a beautiful and secure job, I was
+not fascinated by what I was doing. In Belgium it is theoretically
 possible to make a diplome by learning on your own and passing a state
 exam ("Jury central"). I applied for acceptance to this exam.  While
 waiting for an answer from the government I started a half-time job as
@@ -66,11 +66,18 @@ year*: continued the Java port project on my own and without getting
 money for it.  I once tried a *PHP* port that got quite far but is now
 forgotten.
 
-In 2002 I abandoned C++, Java and PHP without tears after discovering
-the Python_ programming language.  In September 2008 I started to use
-Django_.  In August 2009 I started to use ExtJS_.
+In *2002** I abandoned C++, Java and PHP without tears after
+discovering the Python_ programming language.
 
+When I discovered Django_ in the end of **2008**, after having worked
+many months on my own database model, I was quickly fascinated.  The
+ORM and database model based on 'apps' is simply genial.  The way of
+how this is integrated into a web application server system: genial.
 
+But a few things disturbed me with Django, and I felt that I need to
+change them before I can be satisfied.  That's why I started to write
+Lino.  After some search for a valuable user interface, 
+I started to use ExtJS_ in August 2009.
 
 
 **Where is the songbook project? Where is your private blog?**

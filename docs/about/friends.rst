@@ -116,14 +116,26 @@ Steve
 -----
 
 
+.. _evea:
+
+EVEA
+====
+
+.. image:: evea.png
+   :align: right
+
+EVEA is the Estonian Association of SME.
+
+Eesti Väike- ja Keskmiste Ettevõtjate Assotsiatsioon, http://evea.ee
+
 .. _rumma:
 
 Rumma & Ko
 ==========
 
-`Rumma & Ko OÜ <http://saffre-rumma.net>`_ is my employer.
-My father-in-law is the main owner.
-We live from offering professional consultance for Lino applications.
+`Rumma & Ko OÜ <http://saffre-rumma.net>`_ is my employer, owned by my
+father-in-law, my wife and myself.  Rumma & Ko lives from offering
+professional consultance for TIM and Lino applications.
 
 
 .. _active:
