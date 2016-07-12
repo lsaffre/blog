@@ -1,0 +1,67 @@
+:date: 2016-07-11
+
+=====================
+Monday, July 11, 2016
+=====================
+
+Lino under Python 3
+===================
+
+I found a solution for :ticket:`1036`.  I don't understand why, but
+the problem disappeared when I added `universal_newlines=True
+<https://docs.python.org/3/library/subprocess.html#subprocess.Popen>`__
+to my :func:`Popen` calls.
+
+As a result, :mod:`atelier` now passes again under both Python
+versions on `Travis CI
+<https://travis-ci.org/lsaffre/atelier/builds/143800632>`__.
+
+While I was there, I cleaned up the failures of the Lino test suite
+under Python 3.  
+
+I still don't trust in the :func:`atelier.utils.dict_py2` function, I
+prefer to use :func:`json.dumps`.  Anyway both methods failed on
+`dict`\ s with more than one item. I converted snippets like this::
+
+    >>> dict_py2(expr)
+    {'name_de': 'Hallo', 'name': 'Hello'}
+
+to::
+
+    >>> expr == {'name_de': 'Hallo', 'name': 'Hello'}
+    True
+
+I also had problems with snippets like this:
+
+    >>> import json
+    >>> print(json.dumps(list(streets_of_eupen())[:5]))
+    ["Aachener Stra\u00dfe", "Akazienweg", "Alter Malmedyer Weg", "Am Bahndamm", "Am Berg"]
+
+My lesson here was that :func:`json.dumps` cannot be used when the
+output contains non-ASCII characters...
+
+Next result: also the :ref:`lino` Lino Core :mod:`lino` now passes
+again under both Python versions on `Travis CI
+<https://travis-ci.org/lsaffre/lino/builds/143829258>`__.
+
+
+Protecting against spam
+=======================
+
+:ref:`andi` explained me why my IP address had been regarded as a
+spammer. The postfix I am running there did no SPAM control at all.
+Mails arriving at adresses like luc@lino-framework.org or
+info@lino-framework.org were happily forwarded to smtp.elisa.net Now
+that Lino was getting more known, there is more spam arriving at these
+adresses.  This never disturbed me because I use Thunderbird which has
+a good spam filter.
+
+The problem is that Elisa started to increase their spam
+controls. Which actually is not a problem but a good thing. So they
+accused me of polluting the Internet with Spam, they didn't know that
+I was polluting only my own inbox.
+
+I now read `this
+<http://en.linuxreviews.org/HOWTO_Stop_spam_using_Postfix>`__ and
+other sources, and configured my Postfix to do at least the basic
+hygiene.

@@ -1,0 +1,80 @@
+:date: 2016-07-09
+
+======================
+Saturday, July 9, 2016
+======================
+
+
+Client host rejected: Access denied
+===================================
+
+Yesterday I noted that :ref:`lf` is not sending emails any more.  It
+turned out that Elisa had blocked it on their SMTP server. When trying
+to submit a message, I get::
+
+  host smtp.elisa.ee[194.150.66.204] refused to talk to me: 554 5.7.1 <unknown[194.204.31.42]>: Client host rejected: Access denied)
+
+ 
+Now I am trying to figure out why.
+It seems that this is because my server had been sending spam.
+Looking into my :xfile:`mail.log`, I choose the following case::
+
+  Jul  3 06:32:33 vps postfix/smtp[32614]: 899E82A44B8: to=<ayaty@drxunchdv.org>, relay=smtp.elisa.ee[194.150.66.204]:25, delay=216939, delays=216908/0.04/30/0.13, dsn=4.1.2, status=deferred (host smtp.elisa.ee[194.150.66.204] said: 450 4.1.2 <ayaty@drxunchdv.org>: Recipient address rejected: Domain not found (in reply to RCPT TO command))
+
+By grepping for 899E82A44B8, I see that the earliest entries are::
+
+    $ sudo grep 899E82A44B8 /var/log/mail.log.1
+    Jun 30 18:16:54 vps postfix/cleanup[32082]: 899E82A44B8: message-id=<20160630151654.899E82A44B8@lino-framework.org>
+    Jun 30 18:16:54 vps postfix/qmgr[3362]: 899E82A44B8: from=<>, size=33933, nrcpt=1 (queue active)
+    Jun 30 18:16:54 vps postfix/bounce[32081]: 71E8A2A69D9: sender non-delivery notification: 899E82A44B8
+    Jun 30 18:16:54 vps postfix/smtp[32080]: 899E82A44B8: host smtp.elisa.ee[194.150.66.204] said: 450 4.1.2 <ayaty@drxunchdv.org>: Recipient address rejected: Domain not found (in reply to RCPT TO command)
+    ...
+
+Hm... I lack experience in finding out the guilty from those logs.
+Reading the comments in `this thread
+<http://unix.stackexchange.com/questions/121517/my-postfix-installation-is-sending-out-spam-how-to-stop-it>`__,
+I suspect a WordPress site which I installed a few months ago and
+which is not being used anymore.  So just in case I simply uninstall
+WordPress and PHP::
+
+    $ sudo aptitude remove wordpress
+    $ sudo aptitude remove php5 dokuwiki mediawiki php-wikidiff2
+
+I hope for :ref:`andi`\ 's help on Monday for analyzing the log files
+in order to make sure whether this is a plausible explanation.
+
+Supervisor
+==========
+
+So now I can continue to get :manage:`linod` running using Supervisor.
+
+I used the recommended way described on the `installation page
+<http://www.supervisord.org/installing.html>`__::
+
+  $ easy_install supervisor
+
+Though after reading `this
+<https://packaging.python.org/pip_easy_install/>`__ I think that I
+should have preferred ``pip`` over ``easy_install``...
+
+So this installed the binaries to my virtual environment at
+:file:`/usr/local/pythonenv/demo`.
+
+I created the config file :file:`/etc/supervisord.conf` as instructed.
+
+I learned that the message :message:`unix:///tmp/supervisor.sock no
+such file` means simply that the supervisord daemon is not running.
+
+I downloaded the `Debian startup script
+<https://github.com/Supervisor/initscripts/blob/master/debian-norrgard>`__
+to :file:`/etc/init.d/supervisord` and adapted two lines::
+
+    DAEMON=/usr/local/pythonenv/demo/bin/$NAME
+    DAEMON_ARGS="-c /etc/supervisord.conf --pidfile ${PIDFILE}"
+
+
+And then (thanks to `this
+<http://serverfault.com/questions/96499/how-to-automatically-start-supervisord-on-linux-ubuntu>`__
+for the hint) registered it as a service::
+
+  $ sudo update-rc.d supervisord defaults

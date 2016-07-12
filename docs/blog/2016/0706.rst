@@ -1,0 +1,75 @@
+:date: 2016-07-06
+
+=======================
+Wednesday, July 6, 2016
+=======================
+
+Today I had a few offline working hours.
+
+I renamed :mod:`lino.modlib.notifier` to :mod:`lino.modlib.notify`.
+
+I repaired all test suites after the changes of the last days.
+
+I did a job which had been waiting impatiently (at least in my head):
+move :mod:`lino.modlib.contacts` :mod:`lino_xl.lib.contacts`. Ticket
+:ticket:`838`.
+
+The following plugins moved together with :mod:`lino_xl.lib.contacts`:
+
+- :mod:`lino_xl.lib.stabel`
+- :mod:`lino_xl.lib.countries`
+- :mod:`lino_xl.lib.polls`
+- :mod:`lino_xl.lib.concepts`
+- :mod:`lino_xl.lib.eid_jslib`
+- :mod:`lino_xl.lib.events`
+
+Notes:
+
+- :mod:`lino.modlib.office` remains in lino because uploads depends on
+  it. But office roles no longer can include the contacts roles. Which
+  means that I must adapt the roles in welfare.
+
+- For :mod:`lino.modlib.languages` I was tempted to also move it
+  because it is not a "system" plugin. But it remains in lino because
+  is rather a general feature than a part of the extension library.
+  For example it is used by :ref:`logos` which would not be glad if we
+  oblige them obliged to depend on XL just because of the languages
+  plugin.
+
+
+End-users and reSTructuredText markup
+=====================================
+
+Ticket :ticket:`1026`. Alexa wrote: "schau dir doch mal die Rechnung
+von Frau X an.  Ich habe hier Veränderungen dran gemacht und jetzt
+kann ich nicht mehr in die Druckansicht."
+
+To be more precise, she received the follwing error message:
+
+    EvaluationError: Error while evaluating the expression
+    "table(obj.get_print_items(ar))" defined in the "from" part of a
+    statement. NotImplementedError: inside
+    
+The server log was a bit better::
+    
+    NotImplementedError: <dl> inside <text:p>
+        
+(The tags had been interpreted and not rendered. Somewhere is an
+escape missing).
+        
+The actual problem was that she had in her description the following
+text::
+
+    Termine:
+     25.01.16, 01.02.16, 15.02.16, 22.02.16, 29.02.16, 07.03.16, 14.03.16, 21.03.16
+    
+The second line starts with a space.  And because their
+descriptions are interpreted as reSTructuredText markup, this is
+converted to HTML as a `definition list
+<http://www.w3schools.com/tags/tag_dl.asp>`__.
+
+It is of course difficult to explain to normal humans the subtleties
+of reSTructuredText markup...  Okay we might switch them to HTML...
+OTOH I want to avoid a HTML editor field for invoice items at least in
+their application, because most of the time the content is very
+simple...  Needs meditation.

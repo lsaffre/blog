@@ -1,0 +1,146 @@
+:date: 2016-07-07
+
+======================
+Thursday, July 7, 2016
+======================
+
+Pitfall when getting started
+============================
+
+Grigorij had reported a problem when following the `Getting started
+<http://www.lino-framework.org/dev/install.html>`_ guide. The
+:mod:`lino.modlib.wkhtmltopdf` plugin failed to import when trying to
+do::
+
+  from wkhtmltopdf.utils import render_pdf_from_template
+
+I answered too quickly that "When you see in Python that "from xxx.yyy
+import zzz" fails with an ImportError, then you know that package xxx
+is not installed.  So the explanation is that wkhtmltopdf is not
+installed.  Solution for you now is to simply ``pip install
+wkhtmltopdf``."
+
+But that was wrong. The :mod:`lino.modlib.wkhtmltopdf` plugin does not
+require `wkhtmltopdf`, it requires `django-wkhtmltopdf`.  Thanks to
+Hamza who found the real explanation.
+
+I now changed :mod:`lino.modlib.wkhtmltopdf` so that it fails only
+when you actually try to print something using this method. I don't
+add `django-wkhtmltopdf` to `install_requires` because the
+:mod:`lino.modlib.wkhtmltopdf` plugin is probably deprecated.
+
+Yes, we should write automated tests that cover the `Getting started
+<http://www.lino-framework.org/dev/install.html>`_ guide, i.e. create
+a new virtualenv etc... Let's discuss about the
+details... :ticket:`1027`
+
+
+ExtJS6 Paging buttons in detail window
+======================================
+
+I fixed :ticket:`1023`. This was just because the items of the toolbar
+were `Ext.toolbar.Toolbar` instances. They must be `Ext.button.Button`
+instances of course.
+
+Release to lf.org
+=================
+
+I did a release to :ref:`lf`, mainly in order to test my changes for
+:ticket:`807` (:blogref:`20160704`).  It will also activate the recent
+changes for :ticket:`559` and therefore requires me to install the new
+:manage:`linod` command as a daemon process.
+
+Before the actual release I converted :mod:`lino.utils.daemoncommand`
+from optparse to argparse. And added a comand-line `--list` to
+:manage:`linod`.
+
+Timezone tests
+==============
+
+The release itself was trivial.  Then, after the release, even before
+caring about the daemon, I had to run a rather fragile manual test:
+see whether datetime fields are correctly dumped and restored after
+the little change for :ticket:`807` I made :blogref:`20160704`.
+Because I was not very sure whether the test case I wrote covered
+everything.  And it turned indeed out that there was still some bug.
+
+I made a double dump test and looked at the first entry of the
+`changes_changes.py` file (which holds the Pythonic representations of
+the :class:`changes.Change <lino.modlib.changes.models.Change>`
+instances).
+
+In the "reference" snapshot created with old version we have::
+
+  loader.save(create_changes_change(u'1',dt(2015,11,16,6,44,59),...
+
+This is the first (registered) change in our ticketing system.  It was
+at 6:44 in the morning of 2015-11-16. Nobody will probably ever know
+in which timezone this was. We might find it out, but the change
+timestamps are actually not that important for us. The test
+
+Note that also after :blogref:`20160704` the files themselves continue
+to contain naive dates.  We don't need to also write their timezone
+because they are always all in the same timezone. The new version just
+interprets them "intelligently", converting them to aware timestamps
+before writing them to the database.
+
+The first double dump test gave this:
+
+In a1 (the first dump after loading from snapshot)::
+
+  loader.save(create_changes_change(u'1',dt(2015,11,16,4,44,59),...
+
+In b1, the second dump after loading from a1::
+
+  loader.save(create_changes_change(u'1',dt(2015,11,16,2,44,59),...
+
+This shows that all timestamps would get shifted by 2 hours for every
+dump/restore from now on. That's not good!
+
+What I understood only today was that :manage:`dump2py` was wrong when
+it did simply::
+
+    if isinstance(field, models.DateTimeField):
+        d = value
+        return 'dt(%d,%d,%d,%d,%d,%d)' % (
+            d.year, d.month, d.day, d.hour, d.minute, d.second)
+
+It must convert the value to a naive date before writing it to the
+stream::
+
+    if isinstance(field, models.DateTimeField):
+        if is_aware(value):
+            d = make_naive(value)
+        else:
+            d = value
+        return 'dt(%d,%d,%d,%d,%d,%d)' % (
+            d.year, d.month, d.day, d.hour, d.minute, d.second)
+
+I verified my theory with another double dump after pulling above
+change:
+
+In a2 (the first dump after loading from snapshot)::
+
+  loader.save(create_changes_change(u'1',dt(2015,11,16,6,44,59),...
+
+In b2, the second dump after loading from a2)::
+
+  loader.save(create_changes_change(u'1',dt(2015,11,16,6,44,59),...
+
+So now it looks okay.  
+
+I think that I don't need to automate this test because this is an
+exceptional situation. But I should probably run it manually again
+when I'll do releases on the other production sites.
+
+Installing :manage:`linod` as a daemon
+======================================
+
+Then I installed :manage:`linod` as daemon.  I prepared two bash
+script templates and updated the docs about :ref:`admin.linod`.
+
+But it turned out that :mod:`lino.utils.daemoncommand` does not
+collaborte well with newer Django versions.
+
+This remains for tomorrow. It is not that urgent, the only problem
+until it is done is that notifications won't be sent out as emails.

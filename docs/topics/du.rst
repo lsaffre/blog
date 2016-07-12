@@ -4,6 +4,8 @@
 Monitoring disk usage
 =====================
 
+These are just my personal notes. No warranty whatsoever.
+
 .. contents:: Table of contents
     :local:
     :depth: 1

@@ -9,6 +9,8 @@ Debian
    :maxdepth: 2
 
    du
+   postfix
+   smtp
 
 
 Philosophy

@@ -19,7 +19,7 @@ from lino.utils import iif
 from lino.utils import IncompleteDate
 from xlrd import open_workbook, xldate_as_tuple
 
-from lino.modlib.contacts.utils import street2kw
+from lino_xl.lib.contacts.utils import street2kw
 
 from lino.api.shell import courses, countries
 from lino.api import dd, rt

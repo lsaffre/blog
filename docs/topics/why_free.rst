@@ -6,8 +6,8 @@ Why software must be free
    customized database applications.
 
 In this article I try to explain to deciders of public institutions
-and private enterprises, why software must be free, why your
-organization should choose `Linux
+and private enterprises, why software must be free, why you should
+avoid proprietary software, why your organization should choose `Linux
 <https://en.wikipedia.org/wiki/Linux>`_ rather than `Windows
 <https://en.wikipedia.org/wiki/Microsoft_Windows>`_ or `OS X
 <https://en.wikipedia.org/wiki/OS_X>`_ as the operating system on your

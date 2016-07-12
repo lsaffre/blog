@@ -1,0 +1,100 @@
+:date: 2016-07-05
+
+=====================
+Tuesday, July 5, 2016
+=====================
+
+Community work
+==============
+
+I merged `Hamza's work <https://github.com/lsaffre/noi/pull/3>`__ on
+:ticket:`946` into the master of :ref:`noi` and added a test case to
+:ref:`noi.specs.tickets`.
+
+I noticed that builds for :ref:`noi` on Travis are `failing
+<https://drone.io/github.com/lsaffre/noi/110>`__ for a very stupid
+reason: because :ref:`xl` has never been released to PyPI.  So I now
+released version 1.0.0 of :ref:`xl`.  :ref:`book.changes` for this
+project are together with :ref:`lino` and :ref:`book`.
+
+The project settings on drone.io were still configured for using
+:cmd:`fab` instad of :cmd:`inv`.  Now they are failing (at least)
+because the latest Lino is not released. But I leave this waiting
+because I started working on :ticket:`1017`.
+
+
+Notifications framework
+=======================
+
+For :ticket:`1017` we "just" want to extend Lino's notification
+framework so that the actual sending of emails is done in a separate
+job.
+
+
+- The :meth:`notify.Notification.notify
+  <lino.modlib.notify.models.Notification.notify>` method should no
+  longer call :meth:`send_email
+  <lino.modlib.notify.models.Notification.send_email>`.
+
+- :mod:`lino.modlib.notify.models` must define a task which calls
+  :meth:`send_email
+  <lino.modlib.notify.models.Notification.send_email>` on every
+  unsent notification.
+
+- Register that task to be run every 10 seconds.  The `schedule
+  <https://github.com/dbader/schedule>`__ package seems interesting
+  for this.
+
+- Write a daemon command :manage:`linod` which runs all scheduled tasks.
+
+Since the last two items will probably be interesting for other
+plugins as well, they should be in a central place (and not in the
+:mod:`lino.modlib.notify` plugin).
+
+We have :mod:`lino.utils.daemoncommand` which worked well for
+:manage:`watch_tim` (until they migrated from TIM to Lino and no
+longer needed to synchronize them).
+But it needs to be converted from optparse to argparse.
+
+
+Code changes:
+
+- New model mixin :class:`lino.modlib.notify.mixins.Observable`.
+  :class:`lino_noi.lib.tickets.models.Ticket` 
+  and :class:`lino.modlib.comments.models.Comment`
+  are the first usage.
+
+- :mod:`lino.modlib.notify` is the first usage of the `schedule
+  <https://github.com/dbader/schedule>`__ package: it registers two
+  handlers :func:`send_pending_emails` and
+  :func:`clear_seen_notifications`.
+
+- New admin command :manage:`linod`. On a development machine you
+  simply run this in a separate terminal. On a production server this
+  should be installed as a service (starting a new process every 10
+  seconds would probably cause a big server load).
+
+- I revised both the database structure and the API for the
+  notification framework.
+
+Which also resulted in a great progress for :ticket:`932` (Make the
+comments system in Noi usable).
+
+
+Bleached comments
+=================
+
+About :ticket:`1022`: I stumbled over the probabele explanation: I
+guess that our observation was because *bleach* was not installed or
+not active. See source code of :mod:`lino.modlib.comments.models`.
+
+I added ``ol``, ``ul`` and ``li`` to
+:attr:`lino.modlib.comments.models.Comment.ALLOWED_TAGS` because these
+tags seem harmless.
+
+
+Commit
+======
+
+I commited my changes to master and pushed them though some test
+suites are probably broken.

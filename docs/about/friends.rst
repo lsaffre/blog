@@ -6,6 +6,12 @@ A list of people and organizations that I consider my friends and whom
 I might mention in my blog.
 
 
+.. _andi:
+
+Andi
+----
+
+
 .. _ap:
 
 Andreas Peil
@@ -19,7 +25,7 @@ Alexa
 Is a voluntary :ref:`voga` expert in Eupen.
 
 
-.. _anna:
+.. _annalisa:
 
 Annalisa
 --------
@@ -198,9 +204,16 @@ Oikos
 
 Website: http://www.oikos-eupen.be/
 
-Oikos VoG are using :ref:`care` since April 2016.
+Oikos VoG (project manager :ref:`annalisa`) started a social project
+using :ref:`care` and in April 2016.  It is co-funded by the
+`Fondation Roi Baudouin
+<https://www.kbs-frb.be/fr/Activities/Grants/2016/2016D36000204568>`__
+and `Kiwanis <http://www.kiwanis.be/eupen/unterstutzte-soz-projekte>`_
 
-Contact: :ref:`anna`
+Almost at the same time Oikos had to cope with important
+restructurations because the ministrery decided to stop most of their
+financial support. The :ref:`care` project continues independently of
+this discussion.
 
 
 .. _spz:
