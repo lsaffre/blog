@@ -32,14 +32,49 @@ of new ideas for :ref:`care`. I summarize them in German.
   nebeneinander und im Hauptmenü unter einem Punkt "Fähigkeiten".
 
 - Fähigkeiten: Referenz raus
-- Es fehlen noch einige Übersetzungen
+- Es fehlen noch viele Übersetzungen
 - Im Detail eines Produkts die Kompetenzen anzeigen.
 - "Produkte" umbenennen nach "Optionen"
 - "Produkte" ins Menü "Konfigurierung"
 - Kontakte : komplett raus
 - users.User : inherit Adressable
-- "Stars" übersetzen nach "beobachtete Tickets".
-- Uploads raus
-- Outbox und Excerpts raus
+- "Stars" übersetzen nach "Favoriten" bzw. "beobachtete Tickets".
+- Uploads, Outbox und Excerpts raus
 
 
+:ref:`care` is the first application application that uses
+:mod:`lino_xl` but does *not* use :mod:`lino_xl.lib.contacts`
+
+Side effects:
+
+- It was not possible to remove an automatically installed plugin
+  using :meth:`get_apps_modifiers`.
+
+- Moved the `hide_region` attribute from :mod:`lino_xl.lib.contacts`
+  :mod:`lino_xl.lib.countries`
+
+- You can now manually set :attr:`lino.core.actors.Actor.abstract` to
+  `True` when you want to hide a whole table. Usage example is
+  :class:`lino_noi.lib.tickets.ui.MyKnownProblems` which makes no
+  sense without :mod:`contacts` installed. So I can simply say::
+
+    class MyKnownProblems(Tickets):
+        ...
+        abstract = not dd.is_installed('contacts')
+
+Two bugfixes which I also applied to :mod:`lino_extjs6.extjs6.elems`:
+
+- :class:`RichTextField` lost is verbose_name when tinymce was
+  installed. That's fixed by the new line
+  ``kw.update(label=field.verbose_name)`` in
+  :class:`lino.modlib.extjs.elems.TextFieldElement`
+  and
+  :class:`lino_extjs6.extjs6.elems.TextFieldElement`
+
+- :meth:`lino.modlib.extjs.elems.Panel.wrap_formlayout_elements` now
+  does not add a Wrapper around hidden elements. That was the reason
+  for :ticket:`1039` (which had been reported in my head only).
+
+
+I checked in because my manuel test via web interface seemed
+satisfying. TODO: adapt test suites.

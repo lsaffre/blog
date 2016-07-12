@@ -205,13 +205,14 @@ Oikos
 Website: http://www.oikos-eupen.be/
 
 Oikos VoG (project manager :ref:`annalisa`) started a social project
-using :ref:`care` and in April 2016.  It is co-funded by the
+using :ref:`care` in April 2016.  The project is co-funded by the
 `Fondation Roi Baudouin
 <https://www.kbs-frb.be/fr/Activities/Grants/2016/2016D36000204568>`__
-and `Kiwanis <http://www.kiwanis.be/eupen/unterstutzte-soz-projekte>`_
+and `Kiwanis
+<http://www.kiwanis.be/eupen/unterstutzte-soz-projekte>`_.
 
 Almost at the same time Oikos had to cope with important
-restructurations because the ministrery decided to stop most of their
+restructurations because a minister decided to stop most of their
 financial support. The :ref:`care` project continues independently of
 this discussion.
 
