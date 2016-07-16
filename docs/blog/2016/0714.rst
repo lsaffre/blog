@@ -1,0 +1,19 @@
+:date: 2016-07-14
+
+=======================
+Thursday, July 14, 2016
+=======================
+
+While repairing test suites, I discovered yet another encoding problem
+in :meth:`run_subprocess <atelier.test.TestCase.run_subprocess>`
+introduced some days ago: Under Python 2, if the output contains
+non-asci chars, then we must yes decode it before wrapping it into our
+msg, but later we must re-encode it because exceptions, in Python 2,
+don't want unicode strings.
+
+I also added two command-line options to my :command:`pp`
+command. Sometimes I want to run e.g.::
+
+  $ pp -s noi inv test
+
+

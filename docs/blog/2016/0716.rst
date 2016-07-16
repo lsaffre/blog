@@ -1,0 +1,48 @@
+:date: 2016-07-16
+
+=================================
+20160716 (Saturday, 16 July 2016)
+=================================
+
+ValueError: invalid literal for float(): 0:10
+=============================================
+
+There was a bug in :mod:`lino.modlib.export_excel` causing it to fail
+when the table had a DurationField.
+
+When searching for a test case to reproduce this, I first wrote
+:ref:`noi.specs.export_excel`, but then was surprised to see that
+calendar events didn't have a `Duration` field. I changed the
+implementation: the :class:`StartedEnded` mixin no longer exists. It
+caused the following behaviour: when saving a Session whose end_date
+is empty, it filled the end_date from start_date. This behaviour was
+disturbing because the end_date didn't get changed when you afterwards
+changed the start_date. So I wrote a new implementation for
+:meth:`get_duration`, end_date can now be empty (which means that we
+should use the same date as in `start_date`), and as a result,
+calendar events now have a Duration field.
+
+To fix the bug itself was yet another hour of work. I completely
+reimplemented :mod:`lino.modlib.export_excel`: Joe had written it
+using a :class:`TableRenderer` class, but this was unefficient (it
+called :meth:`lino.core.tablerequest.TableRequest.get_field_info` for
+every row), and it converted the values using an unreliable try-except
+mechanism.
+
+
+ESF Statistics
+==============
+
+I fixed two bugs in :mod:`lino.modlib.summaries`:
+
+- the last year was not being computed
+- counters were never being reset
+
+I added first test cases to :ref:`welfare.specs.fse`.
+
+The :manage:`checksummaries` command is now automatically being run
+daily.
+
+New function decorators 
+:func:`schedule_often <lino.api.dd.schedule_often>`
+:func:`schedule_daily <lino.api.dd.schedule_daily>`

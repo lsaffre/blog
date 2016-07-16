@@ -1,0 +1,135 @@
+:date: 2016-07-15
+
+=====================
+Friday, July 15, 2016
+=====================
+
+Release on :ref:`lf`
+====================
+
+I commited my work of the last days (although they are not 100%, and
+the :ref:`welfare` test suite is currently broken).
+
+I did a release to :ref:`lf`, mainly because I am receiving a daily
+error message caused by an obsolete project on that
+server. Theoretically I must just remove that obsolote project, but
+the error message is not optimal, some parts of the logs are
+unclear. Before repairing anything, I'd like to see whether the error
+report is better with the new logger configuration.
+
+I also removed my manual installation of a development supervisor on
+:ref:`lf` and installed the stable debian version. That's a rather old
+version, but it works for me and has the advantage of running out of
+the box. As a result, our own :manage:`linod` now finally is running,
+and notification mails are being sent out.
+
+As a side effect, before the release, I did two quick ideas in
+:ref:`noi`:
+
+- New ticket state "Ready". This is for when a ticket is theoretically
+  fixed and is just waiting to be released so that the reporter can
+  verify and confirm that the ticket is done.
+
+- The ▶ and ◉ actions are now also displayed in the workflow buttons
+  of a ticket.
+
+
+
+Lino failing on travis
+======================
+
+Failure on travis::
+
+    $ python --version
+    Python 2.7.9
+    $ pip --version
+    pip 6.0.7 from /home/travis/virtualenv/python2.7.9/lib/python2.7/site-packages (python 2.7)
+    8.83s$ pip install .
+    Processing /home/travis/build/lsaffre/lino
+    ...
+    Collecting html5lib (from lino==1.7.5)
+      Downloading html5lib-0.999999999.tar.gz (245kB)
+        100% |################################| 245kB 2.3MB/s 
+        html5lib requires setuptools version 18.5 or above; please upgrade before installing (you have 12.0.5)
+
+I try to add "pip install -U pip" to Lino's :xfile:`.travis.yml`.
+Or rather "pip install -U setuptools"? 
+Yes, that `fixed 
+<https://travis-ci.org/lsaffre/lino/builds/144914092>`__ the problem.
+
+On `drone <https://drone.io/github.com/lsaffre/lino/424>`_ it is the
+same.
+
+
+Course areas
+============
+
+I continued with :ticket:`699`.  I realized that :ticket:`1013` is
+closely related to this, so I decided to work on this first.  These
+tickets represent actually a whole series of problems and changes
+related to the concept of course areas.
+
+The `Enrolment.course_area` is now `editable=False`. This field is
+necessary because I don't see any other way of doing it:
+
+- In :ref:`welcht` they want to differentiate BasicEnrolmentsByClient
+  and JobsEnrolmentsByClient. There is no difference in database
+  structure, they just need to spread their courses over two different
+  panels of the ClientDetail.
+
+- In :ref:`voga` until now they didn't yet express such a need, but
+  course areas seem a perfect solution for solving their ticket
+  :ticket:`1013`.
+
+
+Here is our family of courses plugins:
+
+- :mod:`lino_cosi.lib.courses`
+- :mod:`lino_welfare.projects.chatelet.modlib.courses`
+- :mod:`lino_voga.lib.courses` adds e.g. invoiceable
+- :mod:`lino_voga.projects.roger.lib.courses` adds some specific
+  fields for managing the member fields.
+
+Note that :mod:`lino_welfare.modlib.courses` ("external courses") is
+not related at all.
+
+I moved the :class:`PrintPresenceSheet
+<lino_voga.lib.courses.models.PrintPresenceSheet>` action from
+:mod:`lino_voga.projects.roger.lib.courses` to
+:mod:`lino_voga.lib.courses` because this is general to :ref:`voga`,
+not just at :ref:`eiche`).
+
+I fixed a typo bug in :mod:`lino_cosi.lib.courses.ui`.
+
+Lino Voga now uses CourseAreas for differentiating between "Courses",
+"Hikes" and "Journeys".
+
+
+Lino Welfare now at Joinup
+==========================
+
+I registered :ref:`welfare` at the Joinup catalogue of
+interoperability solutions for public administrations:
+
+https://joinup.ec.europa.eu/software/lino_welfare/description
+
+(Note that it has just been submitted and requires the validation from
+site moderator before it will be visible on the Joinup site).
+
+Joinup is a collaborative platform for e-Government professionals who
+want to share their experience with each others. Created by the
+European Commission and funded by the European Union.
+
+I also plan to participate in the `Sharing and Reuse Awards Contest
+<https://joinup.ec.europa.eu/community/sharingandreuse/og_page/awards-contest>`__.
+
+
+Atelier documentation
+=====================
+
+I fiddled and optimized a bit in the :mod:`atelier` documentation.  I
+found it disturbing to have two configuration files per project
+(:xfile:`tasks.py` and :file:`invoke.yaml`). For the :ref:`atelier`
+and :ref:`book` project I now merged them. I added a ``**kwargs`` to
+the :func:`setup_from_tasks <atelier.tasks.setup_from_tasks>` function
+to make the :xfile:`tasks.py` more useable.  To be continued...

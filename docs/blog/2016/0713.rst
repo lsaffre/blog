@@ -1,0 +1,145 @@
+:date: 2016-07-13
+
+========================
+Wednesday, July 13, 2016
+========================
+
+First use of Supervisor
+=======================
+
+I installed :manage:`linod` on :ref:`oikos`.
+
+First I installed `Supervisor <http://www.supervisord.org>`__ using::
+
+  $ sudo apt-get install supervisor
+
+and created a file :file:`/etc/supervisor/conf.d/linod.conf` with this
+content::
+
+    [program:linod]
+    command=source /path/to/prj/env/bin/activate ; python /path/to/prj/manage.py linod
+    username = www-data
+
+This failed because the ``command`` must be a *command* and not a
+shell feature. So this one is better::
+
+    [program:linod]
+    command=/path/to/prj/linod.sh
+    username = www-data
+
+And then the linod.sh script contains::
+
+    set -e  # exit on error
+    cd /path/to/prj
+    . env/bin/activate
+    python manage.py linod
+
+   
+Of course also::    
+
+  $ pip install schedule
+
+
+What I learned: Running Django admin commands as a daemon using
+supervisor is straightforward and a pleasure.
+
+
+Source distributions and data files
+===================================
+
+But then. Oops::
+
+  jinja2.exceptions.TemplateNotFound: notify/body.eml
+
+This was because the :xfile:`notify/body.eml` was not included with
+the source distribution on PyPI.  So here is the next Lino release,
+version 1.7.4.  
+
+Which didn't work either.  Yes, indeed, the body.eml file is still
+missing. Before doing my next public release, I ran the following
+command many times in order to create a local tar.gz file which I can
+inspect::
+
+  $ python setup.py sdist
+
+Finally I found `here
+<http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute>`__
+the solution which is to remove the following line from my
+:xfile:`setup.py` file::
+
+  include_package_data=True
+
+But now we have another problem::
+
+  TemplateNotFound: linoweb.js
+
+The :xfile:`linoweb.js` has been included previously. I assume that it
+is missing now because I removed the `include_package_data=True`.
+
+Okay, I give up for this time. I reconfigured their site to use git
+clones instead of pip wheels. Lino is not yet usable when installed
+using ``pip install lino``.
+
+
+Adapting :ref:`welfare` to the new notification framework
+=========================================================
+
+:ticket:`559` is not yet completely done: pcsw.Client must become
+observable.
+
+
+Voice session with Mathieu and Aurélie
+======================================
+
+We talked about a series of tickets, resulting in a subtle todo list
+for me.
+
+- :class:`lino_welfare.modlib.integ.choicelists.ContractEvents`:
+  renamed 'signed' to 'issued', added new item 'decided'. This
+  reflects the internal field names :attr:`date_issued
+  <lino_welfare.modlib.isip.mixins.ContractBase.date_issued>` and
+  :attr:`date_decided
+  <lino_welfare.modlib.isip.mixins.ContractBase.date_decided>` of a
+  contract.
+
+- :ticket:`1004` (Filtrage Bénéficiaires): our first plan was "quand
+  :attr:`lino_welfare.modlib.integ.models.Clients.coached_by` n'est pas
+  vide, ne prendre que les primaires", but actually we must just default
+  :attr:`lino_welfare.modlib.integ.models.Clients.only_primary` to True.
+
+- :ticket:`1007` (Fichiers téléchargés) : La colonne "Description" est
+  maintenant cliquable. Quand on y clique, il ouvre le document
+  téléchargé.
+
+  :class:`lino_welfare.modlib.uploads.models.UploadsByClient` now uses
+  the new virtual field
+  :attr:`lino.modlib.uploads.models.Upload.description_link`
+
+- :ticket:`699` : Ateliers actifs pourtant pas dans la liste des
+  orientations possibles. Code change:
+  :meth:`Enrolment.course_choices` no longer filters by course_area.
+
+  Todo Mais : pg Atelier Activons-nous vient-il dans panneau du
+  dessus?
+
+  :ticket:`699` : Explication: quand on insère une inscription en
+  faisant clic droit sur une inscription existante (pour ouvrir le
+  menu contexte où l'on peut sélectionner "Créer"), alors il prend
+  le `course_area` de celle-ci, indépendamment du panneau utilisé.
+
+  Code changes:
+
+  - :attr:`lino_cosi.lib.courses.models.Line.course_area` can no
+    longer be blank and has CourseAreas.default as default value.
+
+  - :meth:`Enrolment.full_clean` now always forces the course_area of
+    the enrolment to be that of the course line.
+
+  - detail_layout of a :class:`lino_cosi.lib.courses.ui.Lines` now
+    shows the `course_area` field
+
+  - In
+    :mod:`lino_welfare.projects.chatelet.modlib.courses.models`,
+    removed CourseAreas.integ, renamed
+    CourseAreas.basic to CourseAreas.default
+
