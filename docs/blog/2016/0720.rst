@@ -1,0 +1,63 @@
+:date: 2016-07-20
+
+========================
+Wednesday, July 20, 2016
+========================
+
+I finished adapting the test suites to my changes of the last days.
+
+The event type "System note" is now being created in the :mod:`demo
+<lino_xl.lib.notes.fixtures.demo>` fixture of :mod:`lino_xl.lib.notes`
+(and not in :mod:`std <lino_xl.lib.notes.fixtures.std>`).
+
+
+
+TypeError: coercing to Unicode: need string or buffer, NoneType found
+=====================================================================
+
+I received above error message from a production server and tried to
+reproduce it. It comes when I select :menuselection:`Explorer -->
+Ledger --> Accounting periods` on that server. The traceback mentions
+:message:`Unprintable AccountingPeriod(pk=6L,error=TypeError('coercing
+to Unicode: need string or buffer, NoneType found',)`. So I wrote the
+following script::
+
+    from lino.api.shell import *
+    obj = ledger.AccountingPeriod.objects.get(pk=6)
+    print obj
+    
+And running it gave::
+
+    $ python manage.py run 20160720.py
+    Traceback (most recent call last):
+      ...
+      File "20160720.py", line 3, in <module>
+        print obj
+      File "/local/lib/python2.7/site-packages/django/utils/six.py", line 842, in <lambda>
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+    AttributeError: 'NoneType' object has no attribute 'encode'
+
+
+It comes because they created a new period with an empty `ref`.
+
+- I removed that bug from the :meth:`__str__` of
+  :class:`lino_cosi.lib.ledger.models.AccountingPeriod`.
+
+  Wrote a test case for this in
+  :mod:`lino_cosi.projects.std.tests.test_cosi`
+
+- Created :ticket:`1062`.
+
+
+'line__topic' is an invalid keyword argument for this function
+==============================================================
+
+And yet another little bug: :ticket:`1063` (TypeError: 'line__topic'
+is an invalid keyword argument for this function).  This came when
+some end-user had tried to create an activity into the
+:class:`lino_cosi.lib.courses.ui.CoursesByTopic` table.  We must set
+`allow_create` to `False` on this table because the topic of a course
+is known only indirectly via the line, and we would not know which
+activity line to set for a new activity.
+
+

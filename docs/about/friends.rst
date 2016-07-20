@@ -60,6 +60,14 @@ James
 Is a Lino fan living in Japan.
 
 
+.. _grigorij:
+
+Grigorij
+--------
+
+Is a Lino fan living in Moscow.
+
+
 .. _jt:
 
 Jüri

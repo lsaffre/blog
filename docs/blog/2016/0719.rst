@@ -1,0 +1,152 @@
+:date: 2016-07-19
+
+======================
+Tuesday, July 19, 2016
+======================
+
+Testing the client workflow
+===========================
+
+The critical thing after :ticket:`1054` is to test whether everything
+still works correctly. Some processes there are not yet covered by any
+automatic test because they contain Javascript dialogs.  So the
+following is currently to be tested manually.
+
+The following instructions are for :mod:`lino_welfare.projects.eupen`,
+but similar steps are in :mod:`lino_welfare.projects.chatelet`.
+
+- Install :ref:`welfare`, go to the
+  :file:`lino_welfare/projects/eupen` directory, run
+  :manage:`initdb_demo` followed by :manage:`runserver`.
+
+- Instead of logging in as Theresia, Caroline etc, consider logging in
+  as Robin and then *act as* Theresia, Caroline.  The advantage is
+  that your menus and labels will be in English.
+
+Managing newcomer requests (:class:`AssignCoach
+<lino_welfare.modlib.newcomers.AssignCoach>` and :class:`RefuseClient
+<lino_welfare.modlib.pcsw.models.RefuseClient>`)
+
+- Act as Caroline
+
+- Select :menuselection:`Newcomers --> New Clients`,
+  double-click on **Emil EIERSCHAL**, select the `Coaches` tab.
+
+- In the `Available coaches` panel, click on `Assign` next to Hubert.
+  Confirm dialog by clicking `OK`.  Note that the console says::
+
+    Notify 1 users that EIERSCHAL Emil (175) zugewiesen zu Hubert Huppertz
+
+- Note that the Workflow field now says "Coached --> Former"
+
+- Switch to the "History" tab and verify that a system note has been
+  created.
+
+- Close the detail window and reopen it on Bruno BRAUN (another
+  client).  Select the `Coaches` tab.  In the `Workflow` field click
+  on `Refuse`.  Select "PCSW is not competent" as `Refusal reason`
+  from the selection list.  Confirm dialog by clicking `OK`.
+
+- Switch to the "History" tab and verify that a system note has been
+  created.
+
+- Act as Hubert and verify that he has a welcome message "You have 1
+  unseen notifications".  Click on this message and verify that the
+  "About" field of the notification is a clickable pointer to the
+  client *Emil EIERSCHAL*.
+
+  No notification is sent for RefuseClient since there is no coaching.
+
+
+As a reception clerk, receive a waiting visitor
+(:class:`ReceiveVisitor <lino_xl.lib.reception.ReceiveVisitor>`)
+
+
+- Click on the first client listed in `Waiting visitors` (**EMONTS
+  Daniel**).
+- That client is waiting for Hubert.  Click `Receive` in the
+  `Appointments` panel.  You get a confirmation :message:`Emonts
+  Daniel begins consultation with Hubert Huppertz. Are you sure?`.
+  Click OK. Note that they are now `Busy`.
+- Close the detail window. Note that Daniel is no longer listed in
+  `Waiting visitors`.
+
+
+As a reception clerk, check out a visitor who leaves the center
+(:class:`CheckoutVisitor <lino_xl.lib.reception.CheckoutVisitor>`)
+
+- From the main menu, select :menuselection:`Reception --> Busy
+  visitors`.
+
+- Find Daniel Emonts. Click on `Checkout`. Confirm the message
+  :message:`Emonts Daniel leaves after meeting with Hubert
+  Huppertz. Are you sure?`
+
+
+As a reception clerk, check in a visitor with appointment
+(:class:`CheckinVisitor <lino_xl.lib.reception.CheckinVisitor>`)
+
+- Note that the demo data is not very realistic here.
+
+- Click on the first client mentioned in **Waiting visitors**.
+
+- Click `Checkin` on one of the appointments mentioned there
+
+- Confirm the dialog
+
+- Note that a system note has been created.
+
+
+
+- :class:`EndCoaching <lino_welfare.modlib.pcsw.coaching.EndCoaching>`
+  seems no longer used
+
+- :class:`CreateClientVisit <lino_welfare.modlib.reception.CreateClientVisit>` 
+- :class:`CreateCoachingVisit
+  <lino_welfare.modlib.reception.CreateCoachingVisit>`
+
+
+
+Managing Notifications
+======================
+
+I added filter parameters for :class:`Notifications
+<lino.modlib.notify.models.Notifications>`.
+
+Ticket :ticket:`1056` done.
+
+I was not possible until now to override the `verbose_name` of the
+:attr:`owner` field of a :class:`Controllable
+<lino.modlib.gfks.mixins.Controllable>`.  Now it is possible using
+:meth:`update_controller_field
+<lino.modlib.gfks.mixins.Controllable.update_controller_field>`.
+
+
+About naming things
+===================
+
+The :ref:`voga` test suite had a subtle failure caused by
+:ticket:`1013` (Konfigurieren können, welches Kolonnenlayout für
+Einschreibungen eines Kurses benutzt wird).
+
+I start to understand that one day we should rename the "courses"
+module to "activities". Because its usage is not limited to
+courses. And because it has not much to do with a school.  I started
+to act accordingly: e.g. changed the `verbose_name` of
+:class:`lino_cosi.lib.courses.models.Course` from "Course" to
+"Activity". Or what was seen by users as a "Course series" is now an
+"Activity line".  So :ref:`voga` no longer needs to override this.
+Note that in :ref:`welcht` they continue to call them "Workshops"
+("Ateliers" in French).
+
+Another thing I understood today in a meeting with :ref:`annalisa`: we are
+going to rename the word "tickets" by "pleas" (translated to "Bitten"
+in German).
+
+Both cases show one of Lino's cool sides: it is relatively painless to
+implement such name changes.
+
+Note also that I don't plan to also change the *internal* name (plugin
+and models) very soon. Because changing these is more painful because
+we need to define and apply database migrators.
+

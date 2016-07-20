@@ -1,0 +1,117 @@
+:date: 2016-07-18
+
+=====================
+Monday, July 18, 2016
+=====================
+
+Notifications versus system notes
+=================================
+
+This weekend I meditated about the following tickets:
+
+- :ticket:`559` (Notification framework) itself is done. I like it
+  very much. Needs documentation.
+
+- :ticket:`1017` (Don't send email directly, but create a
+  notification) is done for :ref:`noi` but not for :ref:`welfare`
+  because there we are still using a pre-#559 solution.
+
+- :ticket:`930` (Send notification via email when a guest checks in)
+  is sleeping because (at least in :ref:`weleup`) they prefer
+  :ticket:`923` (Display live notifications even when the browser is
+  minimized)
+
+Notifications and system notes have in common that they are emitted by
+"the system" (i.e. not by the users themselves) and that they are sent
+by email to a list of "observers".
+
+The difference is that system notes are meant as persistent historic
+events while notifiations are being deleted automatically by
+:manage:`linod`.
+
+So system notes are not going to disappear.  But we need to adapt that
+framework. 
+
+That's why I created and did :ticket:`1054` (Adapt lino_xl.lib.notes
+to new lino.modlib.notify):
+
+- move the concept of system notes out of the core into
+  :mod:`lino_xl.lib.notes`.
+
+- creating a system note until now sent emails directly, now it
+  creates notifications instead.
+
+- We now differentiate beween :class:`Observable
+  <lino.modlib.notify.mixins.Observable>` and :class:`ChangeObservable
+  <lino.modlib.notify.mixins.ChangeObservable>`.
+
+Side effects
+
+- `My notifications` is back in the `Office` menu
+
+
+A hotfix in Chatelet
+====================
+
+There was a typo bug in
+:meth:`lino_cosi.lib.courses.ui.Enrolments.create_instance`. I patched
+it manually on their site.
+
+
+Macken beim Erfassen von Teilnehmern
+====================================
+
+Alexa called my, this time with Gaby at her side, in order to report a
+series of new, beautiful little problem reports:
+
+- Einfügen Teilnehmer in Kurs mit F2 auf letzter Zeile der ersten
+  Seite.  Neuer Teilnehmer erscheint dann dort und man kann z.B. die
+  Anzahl Plätze eingeben. Aber wenn der Kurs mehr als eine
+  Bildschirmseite voll Einschreibungen hat und es nicht die letzte
+  Seite ist, dann ist das ja eigentlich nicht richtig. Und in der Tat,
+  sobald man Refresh macht (oder Detail des Teilnehmers mal öffnet und
+  wieder schliesst), ist der neue Teilnehmer wieder "verschwunden".
+
+- Einfügen per Doppelklick, Teilnehmer auswählen, Lupe klicken. Zurück
+  kommen: Patsch, das Eingabefenster ist blau.
+
+- Tiens, statt des Pfeilchens vielleicht eher ⌕ (U+2315, eine Lupe)
+  als Symbol zum Öffnen des Details.
+
+I call them :ticket:`1055` and plan the following optimizations:
+
+- Bug: Auf einem aktiven Kurs kann man "Einfügen" nicht klicken (weil
+  aktive Kurse nicht bearbeitbar sind, was aber Unsinn ist)
+
+- Einen neuen Kurs anlegen sollte nur Monique dürfen, nicht Gaby
+- Hilfetext "Neuen Datensatz erstellen" ersetzen durch den Titel, den
+  das Einfügefenster hat.
+
+- Display a phantom row only on the last page of a grid panel.
+
+
+Vigala Code Camp
+================
+
+Today would be the first day of the `Vigala Code Camp
+<http://events.codeweek.eu/view/11737/vigala-coding-camp/>`__.  But
+this first occurence of the camp is not happening due to lack of
+participants.
+
+Which does not mean that I am deceived.  It was an *almost expected*
+condition since I did not do any active publicity for it. I just
+announced it in my blog (on :doc:`0517`) and wrote that description on
+our website (`Vigala Code Camps are coming up
+<http://www.saffre-rumma.net/vcc/>`_).
+
+And it doesn't mean either that there will no code camps in Vigala in
+the future. It's rather the opposite: designing and planning this
+Vigala Code Week made me hope more than ever that some day in the
+future these camps will become reality.  We now even received a
+`certificate
+<http://events.codeweek.eu/static/certificates/11737-2e10732e546aece3b311185afda3684889243e8e.pdf>`_,
+just because I introduced my report, declaring the number of
+participants (1), their average age (48) and that 0% of them were
+female. You might call it cheating to accept an automatically
+generated certificate for an event which did not take place, but I
+accepted it gratefully as a confirmation for my hope.

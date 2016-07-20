@@ -25,9 +25,9 @@ calendar events now have a Duration field.
 To fix the bug itself was yet another hour of work. I completely
 reimplemented :mod:`lino.modlib.export_excel`: Joe had written it
 using a :class:`TableRenderer` class, but this was unefficient (it
-called :meth:`lino.core.tablerequest.TableRequest.get_field_info` for
-every row), and it converted the values using an unreliable try-except
-mechanism.
+called :meth:`ar.get_field_info
+<lino.core.tablerequest.TableRequest.get_field_info>` for every row),
+and it converted the values using an unreliable try-except mechanism.
 
 
 ESF Statistics
@@ -46,3 +46,165 @@ daily.
 New function decorators 
 :func:`schedule_often <lino.api.dd.schedule_often>`
 :func:`schedule_daily <lino.api.dd.schedule_daily>`
+
+
+Testing testing
+===============
+
+I repaired the :ref:`noi` test suite and stumbled over yet another
+unicode problem with :cmd:`inv test`.  It happens only under Python 2,
+and only if some test fails, and only if the output of that failure
+contains non-ascii characters.
+
+To reproduce it, I added (to the :ref:`atelier` repository) a test
+case which always fails using a message in German which I refuse to
+translate::
+
+    class BasicTests(TestCase):
+
+        def test_fail_with_unicode_error(self):
+            self.fail(u"Scheiße wa!")
+    
+Now I can run::
+
+    $ python setup.py -q test
+    .F.......
+    ======================================================================
+    FAIL: test_02 (tests.BasicTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/luc/work/atelier/tests/__init__.py", line 20, in test_02
+        self.fail(u"Scheiße wa!")
+    AssertionError: Schei\xdfe wa!
+
+    ----------------------------------------------------------------------
+    Ran 9 tests in 1.524s
+
+    FAILED (failures=1)
+
+Works perfectly under both Python 2 and 3. 
+
+But when I run :cmd:`inv test` (which basically does the same), then I
+get::
+
+
+    $ inv test
+    .F.......
+    ======================================================================
+    FAIL: test_fail_with_unicode_error (tests.BasicTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/luc/work/atelier/tests/__init__.py", line 14, in test_fail_with_unicode_error
+        self.fail(u"Scheiße wa!")
+    AssertionError: Schei\xdfe wa!
+
+    ----------------------------------------------------------------------
+    Ran 9 tests in 1.424s
+
+    FAILED (failures=1)
+    Traceback (most recent call last):
+      File ".../virtualenvs/py27/bin/inv", line 11, in <module>
+        sys.exit(program.run())
+      File ".../virtualenvs/py27/local/lib/python2.7/site-packages/invoke/program.py", line 275, in run
+        debug("Received a possibly-skippable exception: {0!r}".format(e))
+      File ".../virtualenvs/py27/local/lib/python2.7/site-packages/invoke/exceptions.py", line 49, in __repr__
+        return str(self)
+      File ".../virtualenvs/py27/local/lib/python2.7/site-packages/invoke/exceptions.py", line 46, in __str__
+        """.format(self.result.exited, err_label, err_text)
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xdf' in position 369: ordinal not in range(128)
+
+After two hours of poking around, I gave up for this time and created
+ticket :ticket:`1052`.  I guess that the solution is somewhere in
+:mod:`atelier.invlib`, or in :mod:`invlib.program`.  It is not very
+urgent, since it happens only under Python 2, and only when some test
+fails. And when it happens, then the simple workaround is to type
+``python setup.py test`` yourself.
+
+
+
+ExtJS6 is coming
+================
+
+Hamza and I had a long working session yesterday. I now merged the
+result of these hours into the master).
+
+I added :mod:`lino_xl.lib.extensible` to the :attr:`disables_plugins
+<lino_extjs6.extjs6.Plugin.disables_plugins>` of
+:ref:`extjs6`. Because that's a perfect second use case for
+:attr:`disables_plugins <lino.core.plugin.Plugin.disables_plugins>`.
+
+
+Grigorij is back
+================
+
+:ref:`grigorij` is back after a week of holidays.  His task is to walk
+through the "Getting started" section of the Developer's Guide, ask
+questions if necessary and report his successes and any problems he
+encounters.  This task has a double benefit:
+
+1) he learns about installing Python packages, virtual environements,
+   updating git clones etc. This is a knowledge which every Python
+   professional needs.
+
+2) Lino gets better because he helps us to "test the
+   documentation". When he stumbles over a problem and does the work
+   of reporting it, then we can fix it. Our goal is that every
+   (motivated) beginner experiences joy when walking through this
+   document.
+
+So thanks in advance, Grigorij, for your contribution to the Lino
+project!
+
+Here is a problem he helped me to discover: the "Collecting static
+files" section was absolutely useless in the installation instructions
+for developers.  I moved it to the :ref:`lino.admin.install`,
+replacing a section "Serving Javascript frameworks" which was hanging
+around there from old times.  On a development server you don't need
+to run :manage:`collectstatic` because the server does that
+dynamically.
+
+Another problem which Grigorij would soon report is the following::
+
+    $ cd lino_book/projects/polly
+    $ python manage.py initdb_demo
+    We are going to flush your database (.../default.db).
+    Are you sure (y/n) ? [Y,n]?
+    Operations to perform:
+    ...
+    Installed 18 object(s) from 5 fixture(s)
+    $ python manage.py runserver
+    CommandError: You must set settings.ALLOWED_HOSTS if DEBUG is False.
+
+This was because :mod:`lino_book.projects.polly.settings.demo` did not
+set :setting:`DEBUG` to True.
+
+So, Grigorij, before going on make sure to update your git clones (see
+:ref:`dev.git_pull`).
+
+
+A third problem I discovered whil writing this: the online demo of
+:ref:`polly` was broken.
+
+
+Grigorij also reported a problem :message:`TypeError:
+setup_from_tasks() got an unexpected keyword argument 'demo_projects'`
+which was caused by my yesterday's changes.  So I released
+:ref:`atelier` version 1.0.2.
+
+
+More statistics for ESF
+=======================
+
+I continued on :ticket:`584`.  See code changes in
+:mod:`lino_welfare.modlib.esf`.
+
+I wrote a new utility function :func:`lino.utils.dates.weekdays`
+(thanks to `earl
+<http://stackoverflow.com/questions/11550314/python-date-range-generator-over-business-days>`__
+for the basic idea).
+
+Lino now (theoretically) knows all the requested types of statistical
+fields as described in :ref:`welfare.specs.esf`. Of course we are not
+yet at the end. But now it is time for a release in order to watch
+real data.
+
