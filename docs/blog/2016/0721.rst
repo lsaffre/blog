@@ -1,0 +1,206 @@
+:date: 2016-07-21
+
+=======================
+Thursday, July 21, 2016
+=======================
+
+I made a release in :ref:`welcht`, and since today they are not
+working in Belgium, I had time to explore some problems I encountered
+more deeply than usual.
+
+Scheduling background tasks and installing Supervisor
+=====================================================
+
+It was my second or third Supervisor on a production server, and I am
+really satisfied with the combination Schedule and Supervisor.  Now I
+updated the docs about :ref:`admin.linod`.  Later I also added a page
+:ref:`dev.linod`, optimized the API and reported :ticket:`1069`.
+
+
+Configure logging
+=================
+
+It seems that messages logged to the ``console`` logger are not shown
+when working through a terminal on a remote server.
+
+I wrote a little script :file:`pinglog.py` (and added it to
+:file:`lino_book/projects/polly`) so you can easily try yourself::
+
+    from lino.api import dd
+    dd.logger.info("pinglog via dd.logger.info()")
+    import logging
+    logging.getLogger('django').info("pinglog to logger django")
+    logging.getLogger('lino').info("pinglog to logger lino")
+    logging.getLogger('lino.foo').info("pinglog to logger lino.foo")
+    logging.getLogger('foo.lino').info("pinglog to logger foo.lino")
+    
+Here is the output on my machine::
+        
+    $ python manage.py run pinglog.py 
+    Started manage.py run pinglog.py (using lino_book.projects.polly.settings.demo) --> PID 6764
+    pinglog via dd.logger.info()
+    pinglog to logger django
+    pinglog to logger lino
+    pinglog to logger lino.foo
+    Done manage.py run pinglog.py (PID 6764)
+    
+As expected, the last message does *not* get logged, all others do.
+
+When I run the same command in a terminal on a remote server, then I
+see no output, although all except the last message get correctly
+logged to the :xfile:`system.log` file.
+
+I started a new documentation page :ref:`lino.logging`.  I introduced
+a new (optional) environment variable :envvar:`LINO_LOGLEVEL`.
+
+
+Odd behaviour of DurationField with `default`
+=============================================
+
+When restoring the dump, I got this error message::
+
+    - esf.ClientSummary {u'esf50': [u'This field cannot be null.'],
+      u'esf60': [u'This field cannot be null.'], u'esf70': [u'This
+      field cannot be null.']} (170 object(s) with primary key 1, 2,
+      ...
+      183, 184, 185, 186, 187, 188, 189)
+
+This is strange, because I don't want them to be nullable, and they
+all have ``default=Duration("0:00")`` specified, so why do they now
+contain `None`?
+
+Yes, :class:`lino_welfare.modlib.esf.models.ClientSummary` is indeed
+the first model ever which uses a :class:`DurationField
+<lino.core.fields.DurationField>` with a default value.
+
+I started to search for bugs in the application logic in
+:mod:`lino.modlib.summaries` and :mod:`lino_welfare.modlib.esf`.
+
+I then saw that :manage:`dump2py` did not write the "0:00" values
+correctly.  Here is what it generates for every record::
+
+  loader.save(create_esf_clientsummary(1,None,2012,None,0,0,0,3,0,0,0,0,0,None,None,None,116,None,False,False,False,None,u''))
+
+And here is a code snippet to verify the problem:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.chatelet.settings.demo')
+>>> from lino.api.doctest import *
+>>> ClientSummary = rt.models.esf.ClientSummary
+>>> obj = ClientSummary.objects.all()[0]
+>>> results = ClientSummary._meta.get_field('results')
+>>> print(obj.master)
+AUSDEMWALD Alfons (116)
+>>> print(obj.esf50)  # AFTER BUGFIX: 0:00
+None
+>>> fld = ClientSummary._meta.get_field('esf50')
+>>> fld.__class__
+<class 'lino.core.fields.DurationField'>
+>>> print(fld.value_from_object(obj))  # AFTER BUGFIX: 0:00
+None
+>>> print(fld.get_default())
+0:00
+
+>>> obj.full_clean()    # AFTER BUGFIX no traceback
+Traceback (most recent call last):
+   ...
+ValidationError: {u'esf50': [u'Ce champ ne peut pas \xeatre vide.'], u'esf60': [u'Ce champ ne peut pas \xeatre vide.'], u'esf70': [u'Ce champ ne peut pas \xeatre vide.']}
+
+>>> from lino.utils.html2text import html2text
+>>> from lino.modlib.lino_startup.management.commands.dump2py import Command
+>>> # ses = rt.login()
+>>> # print(html2text(E.tostring(results.value_from_object(obj, ses))))
+>>> cmd = Command()
+>>> print(cmd.value2string(obj, fld))    # AFTER BUGFIX '0:00'
+None
+
+>>> from lino.utils.quantities import Duration
+>>> print(Duration("0:00"))
+0:00
+
+Note that above snippet no longer passes now since the bug is fixed.
+I used doctest in lieu of a debugger as follows::
+
+  $ python -m doctest docs/blog/2016/0721.rst
+
+The problem was in
+:meth:`lino.core.fields.DurationField.from_db_value`::
+
+    def from_db_value(self, value, expression, connection, context):
+        return Duration(value) if value else None
+
+This must be::
+
+    def from_db_value(self, value, expression, connection, context):
+        return Duration(value) if value else self.get_default()
+
+
+Two other field definitions had their own implementation of
+:meth:`from_db_value`, I adapted them as well.
+
+As a result of all this we have one bug less in Lino:
+
+- Until now Lino did not support well the case of defining a `default`
+  value for fields of type :class:`QuantityField
+  <lino.core.fields.QuantityField>`, :class:`DurationField
+  <lino.core.fields.DurationField>` or :class:`IncompleteDateField
+  <lino.core.fields.IncompleteDateField>`.  Changed API for these
+  fields: when `blank` is True, then `null` must be True as well.  The
+  statement "QuantityFields are implemented as CharFields and
+  therefore should *not* be declared `null=True`.  But if
+  `blank=True`, empty strings are converted to `None` values." is now
+  obsolete.
+
+
+Failing builds on drone.io
+==========================
+
+Builds on drone.io for :ref:`lino`, :ref:`welfare` and others failed
+because html5lib refused to install with earlier versions::
+
+  html5lib requires setuptools version 18.5 or above; please upgrade before installing (you have 0.9.8)
+
+We had that on Travis before. I added a line ``pip install -U
+setuptools`` to the `settings
+<https://drone.io/github.com/lsaffre/lino/admin>`__ of these project.
+
+
+Rendering "normal html" inside an ExtJS panel
+=============================================
+
+Here is another topic. :ticket:`1067`. We might need this for
+converting to ExtJS6. Hamza and I have been looking at a layout
+problem which I suspect to be related to the `htmlText` CSS class
+defined in :xfile:`lino.css`.
+
+In Lino we often have fragments of custom HTML content (generated by
+application code) which we want to display in some ExtJS panel.
+
+- :meth:`get_slave_summary <lino.core.tables.AbstractTable.get_slave_summary>` methods
+- Fields defined using `dd.virtualfield`,
+  especially `dd.HtmlBox`
+- Fields defined using `dd.displayfield`
+- Fields defined using `dd.constant`
+- The :attr:`message
+  <lino.core.requests.ValidActionResponses.message>` of a response to
+  some action.
+
+Application code on these places currently does something like::
+
+  return E.div(*body, class_='htmlText')
+
+or::
+
+  return u"""<div class="htmlText">{0}</div>""".format(html)
+
+Both methods are being used. `E.div` is preferred in general, except
+when rendering chunks of HTML coming from a RichTextField or from a
+template (because in these cases it makes no sense to parse this HTML
+just to wrap it into an ElementTree which anyway will just be rendered
+as a string.
+
+New functions
+:meth:`ar.html_text <lino.core.request.BaseRequest.html_text>`
+and
+:func:`rt.html_text <lino.api.rt.html_text>`,
+and :meth:`lino.modlib.extjs.ext_renderer.ExtRenderer.html_text`.
