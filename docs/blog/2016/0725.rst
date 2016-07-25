@@ -20,26 +20,40 @@ Help texts
 ==========
 
 Ticket :ticket:`985`.
-I reworked the :mod:`lino.sphinxcontrib.help_text_builder` module
-which starts to give first visible results.
+starts to give first visible results.
+I am still discovering the general workflow. 
 
-I fixed a fundamental design flaw: there was only one target per
-project doctree, but e.g. the doctree of :ref:`book` must write
-:xfile:`help_texts.py` to both :mod:`lino.modlib.lino_startup` and
-:mod:`lino_xl.lib.xl`.
+I fixed a design flaw: there was only one target per project doctree,
+but e.g. the doctree of :ref:`book` must write a
+:xfile:`help_texts.py` file to both :mod:`lino.modlib.lino_startup`
+and :mod:`lino_xl.lib.xl`.
 
-I am still discovering the general workflow. It seems that it must
-actually *not* be a builder but a perfectly normal extension which
-just listens to the html builder and writes some additional files when
-that builder finishes.
+I realized that it must not be a **builder** but a perfectly normal
+**extension** which just listens to the html builder and writes its
+files when that builder finishes.
 
-But for the moment the optimal execution order is this::
+I renamed the :mod:`lino.sphinxcontrib.help_text_builder` module
+into :mod:`lino.sphinxcontrib.help_texts_extractor` 
 
-  $ pp inv bd bh initdb test
+I removed the :cmd:`inv bh` command since it is no longer needed. The
+:xfile:`help_texts.py` is automatically created at the end of
+:cmd:`inv bd` (though only when *all* documents have been parsed
+during that build, i.e. only after :cmd:`inv clean`)
 
+A last thing to observe is project interdependency: since the help
+texts for lino and xl are being updated only when book is being built,
+there might be side effects for the projects in between. That is, I
+cannot simply run::
+
+    $ pp inv clean bd pd initdb test
+
+But must split them at least into these::
+
+    $ pp inv clean bd pd
+    $ pp inv initdb test
+    
 The most time-consuming part of this ticket is of course yet to do:
-convert existing code to the new feature.
-
+convert existing code so that it uses the new feature.
 
 
 Developer's Guide
