@@ -1,0 +1,90 @@
+:date: 2016-07-24
+
+=====================
+Sunday, July 24, 2016
+=====================
+
+The Invoke configuration is tricky
+==================================
+
+I stumbled over a subtle problem related to my usage of the `invoke
+configuration
+<http://docs.pyinvoke.org/en/0.13.0/concepts/configuration.html>`_
+when defining the :attr:`blog_root <atelier.env.blog_root>` setting.
+
+This setting is defined once for (almost) all my projects in my user
+preferences, which are in :xfile:`~/.invoke.py`.  Except for certain
+projects which have their own blog.  These projects have an
+:xfile:`invoke.yaml` file which overrides this value.
+
+Now I continued my general plan of moving all project settings from
+the :xfile:`invoke.yaml` files to the :xfile:`tasks.py` files. I added
+the following to their :xfile:`tasks.py` file::
+
+    from unipath import Path
+    ROOT = Path(__file__).parent
+    DOCS = ROOT.child('docs').absolute()
+    ns.configure(dict(blog_root=DOCS))
+
+
+And that didn't work as expected.  Because Invoke loads first all
+`.py` configs and then all `.yaml` configs, and user preferences
+override project configuration when they are in the same format.
+
+
+Tolerating database errors during :manage:`dumpy`
+=================================================
+
+When you run :manage:`dumpy` in a project whose database structure is
+not in sync with the source code, then the dump normally fails upon
+the first database error. When you specify `--tolerate` then it will
+continue nevertheless. The danger with this is that you might not even
+see these error messages. So now :manage:`dumpy` repeats them at the
+end, saying::
+
+  There were <count> database errors. The dump in <filename> is not complete.
+
+
+Lino XL being tested on Travis CI
+=================================
+
+Hamza submitted a `pull request
+<https://github.com/lino-framework/xl/pull/6>`__ for :ref:`xl` which
+adds a :xfile:`.travis.yml` file to the repository. And also a
+:xfile:`requirements.txt` file.
+
+I also had to tell `travis-ci.org
+<https://travis-ci.org/lino-framework/xl>`_ to watch for it.
+
+I added `appy` and `fuzzy` to the :xfile:`requirements.txt` file
+because I believed that this file *replaces* the information specified
+by `install_requires`. Later I removed them again and saw that I was
+wrong.
+
+Now the build starts on Travis, The Python 2 version passes, but the
+Py3 version `fails
+<https://travis-ci.org/lino-framework/xl/jobs/146961408>`_
+
+Hamza, I let you investigate this. Can't you create an account on
+Travis and have it watch your GitHub repositories as well? Isn't one
+CI build enough? Should we stop using `drone.io`? 
+
+
+Releases on :ref:`eiche` and :ref:`lf`
+======================================
+
+Yet another case of :ref:`admin.linod`.
+I started a new document :ref:`admin.virtualenv`.
+I made a translation to German.
+Otherwise nothing special.
+Except for the following error message::
+
+    201607-24 16:44:50 INFO courses_enrolment : Loading 1431 objects to table courses_enrolment...
+    201607-24 16:45:08 WARNING models : 81.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+
+
+Miscellaneous
+=============
+
+There was an ``import sys`` missing in the test suite of :ref:`book`.
+

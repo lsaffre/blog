@@ -8,7 +8,6 @@ Debian
 .. toctree::
    :maxdepth: 2
 
-   du
    postfix
    smtp
 
