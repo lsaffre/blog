@@ -1,0 +1,59 @@
+:date: 2016-07-27
+
+========================
+Wednesday, July 27, 2016
+========================
+
+Support for applications with responsive design
+===============================================
+
+Cool! It is now possible to write Lino applications that use different
+screen layouts depending on the device they are running on. At least
+theoretically because the basic concepts are now implemented.  I
+opened a new ticket :ticket:`1076` for this.
+
+The first plugin which uses this new feature is
+:mod:`lino_cosi.lib.courses` (and its descendants
+:mod:`lino_voga.lib.courses` and
+:mod:`lino_voga.projects.roger.lib.courses`).
+
+Responsive Design Support was not a very urgent feature, but it will
+be needed to write a good solution for :ticket:`1078`.
+
+Summary of changes:
+
+- Lino now differentiates between the "models module" and the "actors
+  module" of a plugin.  
+
+- New dictionary :attr:`rt.actors <lino.core.site.Site.actors>`
+  contains the "actors" modules of each plugin.
+
+- On plugins which define a design module, the models module should no
+  longer contain actors.
+
+- New site attributes :attr:`lino.core.site.Site.design_name`
+
+- :meth:`rt.get_actors_module <lino.core.site.Site.get_actors_module>`
+
+- Note that choicelists aren't actors and should be in :attr:`rt.models`
+
+TODO: write documentation and a concrete example.
+
+
+Notifications framework
+=======================
+
+Ticket :ticket:`1079` (Le système de mail ne fonctionne plus quand on
+clique sur "Arriver" pour envoyer la personne en salle d'attente)
+caused me to make some important changes to the notifications API. The
+first version had some quite strange constructs. I think it is getting
+better. And I also added two test modules to :ref:`welfare`. 
+
+And I fixed a bug in :mod:`lino.utils.djangotest` which caused one of
+these tests to fail when being run as part of the suite and to pass
+when run individually. It seems that Django does not automatically
+reset the current language between successive tests.
+
+
+
+

@@ -1,0 +1,60 @@
+:date: 2016-07-26
+
+================================
+20160726 (Tuesday, 26 July 2016)
+================================
+
+I fixed two trivial failures in the test suite of :ref:`book`.
+
+
+Anzahlungsrechnungen
+====================
+
+Ticket :ticket:`1059`. Alexa and Roger agreed tht their original
+implementation plan was overkill. We just need to adapt their print
+template so that it includes information about advance payments.
+
+In :ref:`voga`, the template used to print a sales invoice is
+:xfile:`sales/VatProductInvoice/Default.odt`.  This file is in the
+:xfile:`config` directory of :mod:`lino_cosi.lib.sales`.  
+It is an :term:`appy.pod template` 
+which uses itself two Jinja templates
+:xfile:`sales/VatProductInvoice/body.html`
+and
+:xfile:`sales/VatProductInvoice/trailer.html`.
+
+
+Local system
+admins might override it with a local version, but our goal is to
+provide a robust template which is generally usable and easily
+extendable using documented methods.
+
+
+    do text
+    from jinja('sales/VatProductInvoice/body')
+
+    do text
+    from jinja('sales/VatProductInvoice/trailer')
+
+
+
+In :ref:`lino.admin.appy_templates`, the :func:`jinja
+<lino_xl.lib.appypod.context.jinja>` no longer automatically adds
+`.html` because that was a misfeature.
+
+Zwei neue Teilnehmerfilter
+==========================
+
+Added two new filter parameters 
+:attr:`lino_voga.lib.courses.models.Pupils.course`
+and
+:attr:`lino_voga.lib.courses.models.Pupils.partner_list`.
+
+
+Adressetiketten drucken
+=======================
+
+do text
+from html(rec.address_html)
+
+

@@ -1,0 +1,65 @@
+:date: 2016-07-28
+
+=======================
+Thursday, July 28, 2016
+=======================
+
+Notification framework
+======================
+
+This morning I believed that ticket :ticket:`1079` should be solved
+now, and so I did a relase in :ref:`welcht`. But nope, it seems that
+it is not solved. The rest of my workday went into finding bugs
+and writing test cases for the notification framework, partly
+with some more changes to the API.
+
+It was intensive work which required long-term concentration, but now
+Lino Welfare also has a new tested document
+:ref:`welfare.specs.notify`, and the automatic tests in
+:mod:`lino_welfare.projects.std.tests.test_notify` are now more or
+less complete.  It was really time to write these test cases!
+
+I removed the :meth:`get_actors_module` method and instead, at
+startup, set default values for :attr:`rt.actors
+<lino.core.site.Site.actors>` from :attr:`rt.models`.
+
+During the release I also stumbled over the following problem which
+took me at least two hours.
+
+
+Configuring the logger for schedule
+===================================
+
+In :ref:`welcht` they are currently having a big Lino log file which
+is filled with lines as the following::
+
+  201607-24 13:02:44 INFO __init__ : Running job Every 10 seconds do send_pending_emails() (last run: 2016-07-24 13:02:34, next run: 2016-07-24 13:02:44)
+
+The `schedule` module is clear and simple, it does this::
+
+    import logging
+    logger = logging.getLogger('schedule')
+
+    class Job(object):
+
+        def run(self):
+            """Run the job and immediately reschedule it."""
+            logger.info('Running job %s', self)
+            ret = self.job_func()
+            self.last_run = datetime.datetime.now()
+            self._schedule_next_run()
+            return ret
+
+So indeed we must set the schedule logger level to WARNING.
+:meth:`lino.core.site.Site.setup_logging` does this now.  I did a lot
+of Lino commits because the change "somehow didn't work", and I
+thought that the problem had to do with the logger configuration.
+
+The actual guilty was supervisor: for some reason (I guess because I
+had changed several times the actual name of the :manage:`linod`
+process to start) there were a dozen of :manage:`linod` processes
+running, and of course these processes continued to to their work
+trustfully...
+
+TIL: when you change the configuration of supervisor, make sure that
+any old processes have been stopped!
