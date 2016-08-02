@@ -27,15 +27,16 @@ During the release I also stumbled over the following problem which
 took me at least two hours.
 
 
-Configuring the logger for schedule
-===================================
+Supervisor failed to terminate :manage:`linod`
+==============================================
 
-In :ref:`welcht` they are currently having a big Lino log file which
-is filled with lines as the following::
+In :ref:`welcht` they were having a big Lino log file which is filled
+with lines as the following::
 
   201607-24 13:02:44 INFO __init__ : Running job Every 10 seconds do send_pending_emails() (last run: 2016-07-24 13:02:34, next run: 2016-07-24 13:02:44)
 
-The `schedule` module is clear and simple, it does this::
+I immediately guessed that it had to do with the logger configuration
+for schedule. The `schedule` module is clear and simple, it does this::
 
     import logging
     logger = logging.getLogger('schedule')
@@ -51,9 +52,12 @@ The `schedule` module is clear and simple, it does this::
             return ret
 
 So indeed we must set the schedule logger level to WARNING.
-:meth:`lino.core.site.Site.setup_logging` does this now.  I did a lot
-of Lino commits because the change "somehow didn't work", and I
-thought that the problem had to do with the logger configuration.
+:meth:`lino.core.site.Site.setup_logging` does this now.  
+
+
+I then did a lot of Lino commits because the change "somehow didn't
+work", and I thought that the problem had to do with the logger
+configuration.
 
 The actual guilty was supervisor: for some reason (I guess because I
 had changed several times the actual name of the :manage:`linod`
@@ -63,3 +67,12 @@ trustfully...
 
 TIL: when you change the configuration of supervisor, make sure that
 any old processes have been stopped!
+
+Later I realized that it was not at all inadvertance when playing with
+configuration. Supervisor did not terminate the process correctly: it
+created two processes and killed only one of them.  Other Supervisor
+users helped my to understand why: it was because the
+:xfile:`linod.sh` script spawned a subprocess which (for some reason)
+was not seen by Supervisor and therfore remained alive. And that the
+problem must be solved by adding an `exec` to the :xfile:`linod.sh`
+script. As I (now) explain in :ref:`admin.linod`.

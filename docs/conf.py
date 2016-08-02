@@ -325,8 +325,11 @@ inheritance_graph_attrs.update(size='"12.0, 16.0"')
 inheritance_graph_attrs.update(fontsize=14, ratio='compress')
 
 
-extensions += ['sphinxcontrib.feed']
-# extensions += ['sphinxfeed']
+# extensions += ['yasfb']
+# extensions += ['sphinxcontrib.feed']
+extensions += ['sphinxfeed']
 feed_base_url = 'http://luc.lino-framework.org'
 feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"
+feed_field_name = 'date'
+

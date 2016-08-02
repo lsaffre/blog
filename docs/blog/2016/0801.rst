@@ -1,0 +1,146 @@
+:date: 2016-08-01
+
+======================
+Monday, August 1, 2016
+======================
+
+Today I didn't work very much (we came back from Saremaa), and that
+time went into exploring some problems caused by upgrading my machine
+from Ubuntu 14.04 to 16.04.
+E.g. Python is now version 2.7.12 (it was 2.7.6)
+
+Virtualenvs broken after upgrade to Ubuntu 16.04
+================================================
+
+This one looked rather spectacular::
+  
+    $ python -m datetime
+    Traceback (most recent call last):
+      File ".../virtualenvs/py27/lib/python2.7/site.py", line 703, in <module>
+        main()
+      ...
+      File ".../virtualenvs/py27/local/lib/python2.7/site-packages/coverage/html.py", line 6, in <module>
+        import datetime
+    ImportError: No module named datetime
+
+The solution was to remove and re-create the virtual environment.
+
+After reading `this
+<http://stackoverflow.com/questions/36796887/virtualenv-python-broke-after-upgrading-ubuntu-15-10-to-16-04>`_
+I guess that the explanation is that yes, virtualenvs rely on the
+paths of your Python intallation, and thus they can break when you
+upgrade to some new Debian version.
+
+Atelier no longer needs Fabric
+==============================
+
+When using the new virtual environment, I noticed that some parts of
+:ref:`atelier` still depended on Fabric.  I removed this dependency by
+deactivating :meth:`atelier.projects.Project.load_fabfile`.
+
+
+Problem with for loops in :term:`appy.pod`
+==========================================
+
+Another problem occured later during :cmd:`inv initdb` in
+:ref:`welfare`::
+
+    appy.pod render /media/dell1tb/luc/work/welfare/lino_welfare/modlib/isip/config/isip/Contract/Default.odt -> ~/tmp/lino_cache/welfare_std/media/webdav/userdocs/appyodt/isip.Contract-1.odt (language='en',params={'raiseOnError': True, 'ooPort': 8100, 'pythonWithUnoPath': u'/usr/bin/python3'}
+    Traceback (most recent call last):
+      File "~/virtualenvs/py27/bin/django-admin.py", line 5, in <module>
+        management.execute_from_command_line()
+      ...
+    appy.pod.actions.EvaluationError: Problem installing fixture '~/luc/work/xl/lino_xl/lib/excerpts/fixtures/demo2.py': Error while evaluating expression "row.company". 
+       File "~/virtualenvs/py27/local/lib/python2.7/site-packages/appy/pod/buffers.py", line 702, in evaluate
+        res, escape = evalEntry.evaluate(context)
+       File "~/virtualenvs/py27/local/lib/python2.7/site-packages/appy/pod/elements.py", line 144, in evaluate
+        res = self._eval(context)
+       File "~/virtualenvs/py27/local/lib/python2.7/site-packages/appy/pod/elements.py", line 125, in _eval
+        res = eval(self.expr, context)
+       File "<string>", line 1, in <module>
+     <type 'exceptions.NameError'>: name 'row' is not defined
+
+I can cheat the test suite by setting `raiseOnError=False`, but that's
+not a solution. A first observatio
+is that the problem disappeared after doing::
+
+  $ pip install 'appy==0.9.3'
+
+Which means that version 0.9.4 of :term:`appy.pod` is the "guilty".
+Gaetan has done a lot of work in Appy, some of it probably very useful
+for Lino. I scanned through his release notes for `0.9.4
+<https://launchpad.net/appy/0.9/0.9.4>`_, but at first glance I did
+not see any obvious reason for our problem. Needs more investigation.
+I created :ticket:`1089` for this.
+
+
+A new RSS feed generator for my blog
+====================================
+
+A third problem caused by the new virtualenv was when running
+:cmd:`inv bd` in my :ref:`blog`::
+
+    Extension error:
+    Could not import extension sphinxcontrib.feed (exception: No module named feed)
+
+First I had to find out how to install ``sphinxcontrib.feed``. Because
+"pip install sphinxcontrib.feed" does not work. I had to clone
+`sphinx-contrib <https://bitbucket.org/birkenfeld/sphinx-contrib>`_
+and to do::
+
+  $ cd ~/repositories/sphinx-contrib/feed
+  $ python setup.py build
+  $ python setup.py install
+
+This fixed the first exception, but then I had yet another exception
+during :cmd:`inv bd` in my blog::
+
+    Exception occurred:
+      File "~/virtualenvs/py27/lib/python2.7/site-packages/feed-0.3a0.dev20160801-py2.7.egg/sphinxcontrib/feed/absolutify_urls.py", line 72, in absolutify
+        html_serializer = html5lib.serializer.htmlserializer.HTMLSerializer()
+    AttributeError: 'module' object has no attribute 'htmlserializer'
+
+I could not find anything helpful neither in the `html5lib
+documentation <http://html5lib.readthedocs.io/en/latest/index.html>`_
+nor in the code of :file:`sphinxcontrib/feed/absolutify_urls.py`.
+
+Since I was locked, I checked whether there is some other RSS feed
+generator for Sphinx which gives the same result. 
+
+I tried `yasfb <https://pypi.python.org/pypi/yasfb>`_, but that's not
+what I want. There are almost 2000 pages in my blog's doctree and I
+definitively don't want to have an RSS item for each of them.
+
+Finally I opted to take `Fergus Doyle's sphinxfeed
+<https://github.com/junkafarian/sphinxfeed>`_. The only problem here
+was that sphinxfeed expects a meta variable named ``:Publish Date:``
+at the beginning of each blog entry, while my blog files use the
+``:date`` meta variable. And I didn't want to change them all.  So I
+forked the project, added add a new config variable `feed_field_name`
+and sent Fergus a `pull request
+<https://github.com/junkafarian/sphinxfeed/pull/2>`_.  I'll now wait
+for his feedback.
+
+
+Alt-Tab and the Application Switcher
+====================================
+
+After the Ubuntu upgrade, :kbd:`Alt-Tab` did not work as I am used it
+to work. It switches to the next window without displaying any
+intermediate list of open windows. I had to install this::
+     
+  $ sudo apt install compizconfig-settings-manager
+  $ ccsm
+
+And then I found under "Window Management" an option "Application
+Switcher" which was disabled. I enabled it, confirmed some questions
+about some conflict with some Ubuntu Plugin, and then it worked again.
+
+     
+Anpassungen
+===========
+
+I solved ticket :ticket:`1088` and deployed that version to
+:ref:`eiche`. It didn't even need a database migration since all the
+fields were already there.
+

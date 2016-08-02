@@ -1,0 +1,56 @@
+:date: 2016-07-30
+
+=======================
+Saturday, July 30, 2016
+=======================
+
+I finished working on :ref:`lino.tutorial.polls` and then wrote to
+:ref:`grigorij`: Thanks once more for your patience. The biggest
+problem was maybe that Django reorganized their beginner tutorial, you
+must now read the first two chapters. But there were quite some other
+changes, too, so please refresh your browser and walk through that
+tutorial once more from the beginning. Yes, I imagine that I am asking
+much from you. The problem with writing documentation for beginners is
+that you need a beginner for "testing" whether it works, and every
+human can be a beginner only once because when he reads some document
+a second time (after a change), then he's no longer a real
+beginner... Let's hope that many more beginners are coming after you
+:-)
+
+Defining the detail layout of a table
+=====================================
+
+I worked on :ticket:`1076` (Wenn man Aktivität via Statusbericht
+öffnet, hat man kein komplettes Detail).
+
+Here is how to reproduce this problem:
+
+- Make sure you have yesterday's version of the :ref:`lino`,
+  :ref:`xl`, :ref:`cosi` and :ref:`voga` repositories.
+
+- Start a development server::
+
+      $ cd voga/lino_voga/projects/roger
+      $ python manage.py initdb_demo
+      $ runserver
+
+- Log in as robin. Click on "001 Greece 2014" in the Status Report.
+  The detail window has only three tabs (not four), and in the
+  `Enrolments` tab there are (among others) two columns "Start date"
+  and "End date" which should not be there.  You can see the correct
+  detail window when you use the main menu :menuselection:`Activities
+  --> Journeys` and double-click on the "Greece 2014" row.
+
+
+The solution was to implement a custom :meth:`get_detail_action
+<lino.core.model.Model.get_detail_action>` for
+:class:`lino_cosi.lib.courses.models.Course`::
+
+    def get_detail_action(self, ar):
+        if self.line_id:
+            area = self.line.course_area
+            if area:
+                table = rt.actors.resolve(area.courses_table)
+                return table.detail_action
+        return super(Course, self).get_detail_action(ar)
+            

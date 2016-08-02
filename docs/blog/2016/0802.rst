@@ -1,0 +1,45 @@
+:date: 2016-08-02
+
+=======================
+Tuesday, August 2, 2016
+=======================
+
+I continued on :ticket:`1089` and found the explanation. The new
+:term:`appy.pod` seems more strict about whitespace in ``for ``
+statements.
+
+The real error message (which I saw after rendering the document with
+`raiseOnError=False` was:
+  
+   Bad "for" expression "row in". A "for" expression must be of the
+   form: {name} in {expression}. {name} must be a Python variable
+   name. It is the name of the iteration variable. {expression} is a
+   Python expression that, when evaluated, produces a Python sequence
+   (tuple, string, list, etc).
+
+The template used to render ISIP contracts contained the
+following statement at three places::
+
+  do text for p in self.contractpartner_set.all()
+
+The problem disappeared after I had gone through all three statements,
+deleted the whitespace between "p" and "in", and inserted a new space.
+Don't ask me what was wrong with the previous whitespace. There was no
+visible difference. I was (h)appy that it worked and didn't want to
+investigate the `content.xml`.
+
+Inline strong start-string without end-string
+=============================================
+
+Yet another problem caused indirectly by the Ubuntu upgrade: I cannot
+build the docs for atelier (without setting `tolerate_sphinx_warnings`
+to `True`)::
+
+  atelier/atelier/tasks.py:docstring of atelier.tasks:0: WARNING: Inline strong start-string without end-string.
+
+This is actually an old problem. It comes because autosummary includes
+imported objects (and because some external code may contain invalid
+docstrings). See `Sphinx ticket #1061
+<https://github.com/sphinx-doc/sphinx/issues/1061>`__.  I manualy
+patched my copy of Sphinx as explained `there
+<http://stackoverflow.com/questions/25405110/sphinx-autosummary-with-toctree-also-lists-imported-members/25460763#25460763>`__.
