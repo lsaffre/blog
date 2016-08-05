@@ -1,0 +1,109 @@
+:date: 2016-08-03
+
+=========================
+Wednesday, August 3, 2016
+=========================
+
+What happens with Lino when Luc dies?
+=====================================
+
+I opened :ticket:`1095`, a rather administrative ticket.  The goal is
+to formulate an answer to the often-heard question "What happens with
+Lino when Luc dies?". (No I don't plan to die soon, but we all know
+that I will do it sooner or later, and we all want a Lino which is
+able to live without me).
+
+Yesterday I had a chat with :ref:`alexa` which confirmed the urgence
+of this ticket, and less than a few hours later :ref:`hamza` for the
+first time pushed commits directly to the `lino` and `book`
+repositories.
+
+I continued that direction and transferred GitHub ownership of the
+following repos from lsaffre to `lino-framework
+<https://github.com/lino-framework>`__ (where :ref:`hamza` has the
+same permissions as I):
+
+- :ref:`atelier`
+- :ref:`cosi`
+- :ref:`voga`
+- :ref:`welfare`
+- :ref:`extjs6`
+
+I also renamed "lino-cosi" to "cosi", "lino-welfare" to "welfare" and
+"lino-extjs6" to "extjs6".
+
+I changed the title of `lino-framework
+<https://github.com/lino-framework>`__ from "Lino Framework" to "The
+Lino Core Team".
+
+I started a new document :ref:`team.setup` and updated some
+documentation pages in the :ref:`community` section.  
+
+I also finally wrote a `Confidentiality Agreement
+<http://www.saffre-rumma.net/dl/confidentiality_agreement.pdf>`_. Thanks
+to `IPWatchdog
+<http://www.ipwatchdog.com/tradesecret/simple-confidentiality-agreement-2/>`_
+for providing a free sample.  Such an agreement is needed if Rumma &
+Ko wants to grant individual freelancers access to production sites
+where confidential customer data is being hosted.
+
+
+Setting up a work environment
+=============================
+
+I created a new virtualenv "lino" on my machine and tried the things I
+wrote in :ref:`team.setup`. I did some changes:
+
+- removed 'appy==0.9.3' from :ref:`install_requires` in Lino (appy is
+  required by XL, and the version restriction is no longer necessary.
+- removed 'fuzzy' from :ref:`install_requires` in XL
+- moved lino.modlib.print_pisa to lino_xl.lib.pisa
+- removed lino.utils.appy_pod
+- added `metaphone` to :ref:`install_requires` in Welfare (Hamza, why
+  did you use some other repository in requirements.txt which had some
+  warning when I tried to install it?)  
+- adapted welfare/docs/specs/dupable_clients.rst because the phonetic
+  words are slightly changed (but look okay).
+  
+- One test in lino_book/docs/specs/dumps.rst was a little problematic
+  because it failed with every little version change of some
+  dependency. And of course it would never pass on both Python 2 & 3
+  at the same time. So I just changed :manage:`dump2py` so that it
+  does no longer write this :meth:`lino.core.site.Site.using_text`
+  string as a comment of the dump files.
+
+I wrote a bash script :file:`install_dev_projects.sh` which I placed
+in my :xfile:`~/repositories` directory::
+
+    #!/bin/bash
+    set -e  # exit on error
+    pip install -e atelier
+    pip install -e lino
+    pip install -e cd
+    pip install -e ee
+    pip install -e be
+    pip install -e eg
+    pip install -e xl
+    pip install -e noi
+    pip install -e cosi
+    pip install -e presto
+    pip install -e welfare
+    pip install -e patrols
+    pip install -e logos
+    pip install -e voga
+
+This makes it easy to create a virgin virtualenv and test whether the
+installation works.
+    
+I adapted the :xfile:`setup.py` of some projects
+
+I stopped to run the test suites under Py3 when I had the following in
+:ref:`xl`::
+
+    from appy.pod.renderer import Renderer
+  File "/media/dell1tb/virtualenvs/lino3/lib/python3.5/site-packages/appy/__init__.py", line 126
+    print '%d method(s) patched from %s to %s (%s)' % \
+
+Which shows that `appy` is not yet usable under Python 3. We should
+talk with Gaetan (author of appy) about who should do the work of
+porting it...

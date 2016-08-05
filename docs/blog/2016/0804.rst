@@ -1,0 +1,108 @@
+:date: 2016-08-04
+
+========================
+Thursday, August 4, 2016
+========================
+
+Lino Voga
+=========
+
+Two minor tickets: :ticket:`1107`
+:meth:`lino_voga.lib.courses.desktop.EventsByCourse.get_slave_summary`
+now displays the `auto_type`.
+
+And :ticket:`1110` was caused by this code::
+
+    def full_clean(self, *args, **kwargs):
+        if self.fee_id is None and self.course_id is not None:
+            self.fee_id = self.course.fee_id  # WRONG
+            self.fee = self.course.fee        # RIGHT
+
+And then I started to work on :ticket:`1059` (which is now a general
+solution for prepayments). My plan is to create a powerful but
+non-intrusive system by simply adding a :attr:`printed_text
+<lino_cosi.lib.ledger.models.PaymentTerm.printed_text>` field to
+:class:`PaymentTerm <lino_cosi.lib.ledger.models.PaymentTerm>`, and to
+render this content using Jinja.
+
+A side effect of this: I moved :meth:`render_jinja
+<lino.modlib.jinja.Plugin.render_jinja>` out of
+:class:`lino.core.requests.BaseRequest` to the plugin object because
+it was nonsense to have it in the core.
+
+And *en passant* I fixed :ticket:`1109`, modified demo fixtures to
+create some partners with an invoice_recipient, adapted the test cases
+and wrote a specs example for it in :ref:`voga.specs.invoicing`.
+
+Miscellaneous
+=============
+
+I discovered that Django's :manage:`loaddata` emits yet another
+ignorable warning :message:`No fixture data found for *` (which Lino
+now ignores as it did already with :message:`No fixture named '.*'
+found.`).
+
+
+`git push` asking for username and password
+===========================================
+
+After :ticket:`1074` I did a mistake when running :cmd:`git remote
+set-url origin`: I used the `https` and not the `git+ssh` version of
+the urls. Here is how corrected it::
+
+  $ go lino
+  $ git remote set-url origin git+ssh://git@github.com/lino-framework/lino.git 
+
+  $ go cosi  
+  $ git remote set-url origin git+ssh://git@github.com/lino-framework/cosi.git
+
+And similarily in other projects.  Notes:
+
+- With the following command I get a nice list of the remotes in
+  all my projects::
+
+    $ pp git remote -v show
+
+- It seems that the ``git+ssh://`` prefix is optional.
+
+
+Lino Welfare
+============
+
+:ticket:`1111` was a bug in mod:`lino_welfare.modlib.isip.choicelists`
+:which caused the following traceback on the server as soon as the
+user specified some `start_date` or `end_date` in the filter
+parameters::
+
+    TRACEBACK:
+      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/core/handlers/base.py", line 147, in get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/py27/local/lib/python2.7/site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/py27/local/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/lino/lino/modlib/extjs/views.py", line 551, in get
+        for row in ar.sliced_data_iterator]
+      File "/lino/lino/core/tablerequest.py", line 140, in get_sliced_data_iterator_property
+        self.execute()
+      File "/lino/lino/core/tablerequest.py", line 79, in execute
+        self._data_iterator = self.get_data_iterator()
+      File "/lino/lino/core/tablerequest.py", line 155, in get_data_iterator
+        return self.actor.get_request_queryset(self)
+      File "/welfare/lino_welfare/modlib/jobs/models.py", line 356, in get_request_queryset
+        qs = super(Contracts, cls).get_request_queryset(ar)
+      File "/welfare/lino_welfare/modlib/isip/mixins.py", line 607, in get_request_queryset
+        elif ce == ContractEvents.decided:
+
+I added a test which covers this in :ref:`welfare.specs.jobs`.
+
+
+Tests on travis-ci
+==================
+
+I added a :xfile:`requirements.txt` and :xfile:`.travis.yml` to
+:ref:`cosi` and updated that of :ref:`welfare`. Similar actions for
+:ref:`voga` and :ref:`noi`. I activated these repositories on Travis.
+
+Yes, this is only the beginning, for the moment they are all still
+red...

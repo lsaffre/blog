@@ -5,7 +5,7 @@ Tuesday, August 2, 2016
 =======================
 
 I continued on :ticket:`1089` and found the explanation. The new
-:term:`appy.pod` seems more strict about whitespace in ``for ``
+:term:`appy.pod` seems more strict about whitespace in ``for``
 statements.
 
 The real error message (which I saw after rendering the document with
@@ -43,3 +43,103 @@ docstrings). See `Sphinx ticket #1061
 <https://github.com/sphinx-doc/sphinx/issues/1061>`__.  I manualy
 patched my copy of Sphinx as explained `there
 <http://stackoverflow.com/questions/25405110/sphinx-autosummary-with-toctree-also-lists-imported-members/25460763#25460763>`__.
+
+
+Transferred GitHub repositories for Lino and Lino Book
+======================================================
+
+I transferred ownership of the GitHub repositories for Lino and Lino
+Book from my personal account to our team account, and I renamed
+"lino_book" to simply "book".
+
+==================================== ======================================
+Old                                  New
+==================================== ======================================
+https://github.com/lsaffre/lino      https://github.com/lino-framework/lino
+
+https://github.com/lsaffre/lino_book https://github.com/lino-framework/book
+
+==================================== ======================================
+
+
+As explained in `About repository transfers
+<https://help.github.com/articles/about-repository-transfers/>`_ I
+then was supposed to do::
+
+  $ cd ~/repositories/lino
+  $ git remote set-url origin https://github.com/lino-framework/lino.git
+  $ cd ~/repositories/book
+  $ git remote set-url origin https://github.com/lino-framework/book.git
+
+
+
+Formatting Belgian national id numbers
+======================================
+
+The :attr:`national_id
+<lino_xl.lib.beid.mixins.BeIdCardHolder.national_id>` of a
+:class:`BeIdCardHolder<lino_xl.lib.beid.mixins.BeIdCardHolder>` is now
+being formatted and validated immediately when the object is saved.
+
+This behaviour is optional, though. In order to activate it, you must
+set
+:attr:`lino_xl.lib.beid.mixins.BeIdCardHolder.validate_national_id` to
+`True`. This is because in :ref:`welfare` they might not want it.
+
+In :ref:`voga` they now see the :class:`ProblemsByOwner
+<lino.modlib.plausibility.models.ProblemsByOwner>` panel on every
+partner view.
+
+
+      
+
+Yet another documentation bug
+=============================
+
+:ref:`grigorij` found yet another "bug" in :ref:`lino.tutorial.polls`:
+The "config" directory must not be "under your project directory" but
+in the "mysite" directory.
+
+I also noted that the `<div class="htmlText">` is no longer necessary
+since we now have
+:meth:`lino.modlib.extjs.ext_renderer.ExtRenderer.html_text`.
+
+
+Sphinx: search index couldn't be loaded
+=======================================
+
+The following warning is nagging me::
+
+    Warning, treated as error:
+    WARNING: search index couldn't be loaded, but not all documents will be built: the index will be incomplete.
+
+It seems that the html builder has a problem when loading an existing
+searchindex.js file. (the exception there is an IOError "read error at
+pos 99758"). And because I use `-W
+<http://www.sphinx-doc.org/en/stable/invocation.html#cmdoption-sphinx-build-W>`_,
+I cannot do an incremental build any more.  As a temporary workaround
+I patched my copy of Sphinx :file:`sphinx/builders/html.py`.  Before:: 
+
+        except (IOError, OSError, ValueError):
+            if keep:
+                self.warn('search index couldn\'t be loaded, but not all '
+                          'documents will be built: the index will be '
+                          'incomplete.'.)
+
+After:: 
+
+        except (IOError, OSError, ValueError) as e:
+            if keep:
+                self.info('search index couldn\'t be loaded, but not all '
+                          'documents will be built: the index will be '
+                          'incomplete. ({})'.format(e))
+
+
+
+Lino and Django 1.10
+====================
+
+Yes, :mod:`lino_cosi.lib.sepa.fields` still uses
+`SubfieldBase`. Django 1.9 issues a DeprecationWarning, and Django
+1.10 says :message:`AttributeError: 'module' object has no attribute
+'SubfieldBase'`.
