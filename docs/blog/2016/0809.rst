@@ -1,0 +1,33 @@
+:date: 2016-08-09
+
+=======================
+Tuesday, August 9, 2016
+=======================
+
+Lino Welfare
+============
+
+I did :ticket:`1096` and released in :ref:`welcht`.
+
+I continued to adapt :ref:`welfare.specs.esf`.
+
+The field :attr:`has_esf
+<lino_welfare.modlib.pcsw.models.Client.has_esf>` was not yet visible
+in the detail window.
+
+I renamed :meth:`EventGenerator.update_cal_calender` to
+:meth:`lino_xl.lib.cal.mixins.EventGenerator.update_cal_event_type`.
+      
+I wrote a new data checker :meth:`ObsoleteEventTypeChecker
+<lino_xl.lib.cal.models.ObsoleteEventTypeChecker>` which will be used
+when they modify their configuration. And it found some problems in
+their data:
+
+    201608-09 06:13:51 INFO models : Found 707 and fixed 0 data problems in Events.
+
+(I will run :manage:`checkdata` with ``--fix`` manually after a visual
+check with the customer.)
+
+The message "User %s has no email address" (and one other) logged by
+:meth:`Notification.send_email` is now being logged at the debug level
+because we don't want to see it every 10 seconds.

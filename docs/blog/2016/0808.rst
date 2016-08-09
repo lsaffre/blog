@@ -1,0 +1,86 @@
+:date: 2016-08-08
+
+======================
+Monday, August 8, 2016
+======================
+
+
+NameError: global name 'E' is not defined
+=========================================
+
+There were still problems with :ticket:`1059` which took me time to
+understand.  I got an exception :message:`NameError: global name 'E'
+is not defined` when trying to print an invoice with a payment_term
+which has a `printed_text`, e.g.::
+
+  Prepayment <b>30%</b> ({{obj.total_incl*0.3}})
+  due {{fds(obj.due_date)}},
+  remaining {{obj.total_incl - obj.total_incl*0.3}}
+  due 10 days before delivery.
+
+
+ 
+Prepayment <b>30%</b> ({{obj.total_incl*Decimal('0.30')}}) due 
+{{fds(obj.due_date)}}, remaining 
+{{obj.total_incl - obj.total_incl*Decimal('0.30')}}
+due 10 days before delivery.
+    
+
+
+         
+>>> from decimal import Decimal
+>>> price = Decimal('18.00')
+
+>>> print(price * 0.30)
+Traceback (most recent call last):
+   ...
+TypeError: unsupported operand type(s) for *: 'Decimal' and 'float'
+>>> print(price * 30 / 100)
+5.40
+
+>>> price - price * 30 / 100
+Decimal('12.60')
+
+
+Miscellaneous
+=============
+
+Jason S asked for `help about how "breadcrumbs" (relbar "parents"
+list) work
+<https://groups.google.com/forum/#!topic/sphinx-users/5Ffj_tKm6bA>`_,
+and Komiya answered, and I tried that trick for :ref:`book`. I think
+the breadcrumbs bar ("relbar") is indeed more intuitive when it
+includes the current page. For example
+http://lino-framework.org/dev/install.html
+
+Lino Welfare
+============
+
+The `esf_field` is now included in the detail of a calendar event
+type.  This is the first use case of a field defined as DummyField on
+the model and then "overridden" (or rather converted into a real
+field) if :mod:`lino_welfare.modlib.esf` is installed.
+
+New ESF field type :class:`GuestHoursFixed` because we realized that
+they don't want the number of presences (:class:`GuestCount`) but a
+fixed time per presence. For information sessions it is 2 hours per
+presence, for the other fields it is 1 hour per presence.
+
+'extra' does not exist in evaluation environment
+================================================
+
+:cmd:`inv mm` said::
+       
+       pkg_resources._vendor.packaging.markers.UndefinedEnvironmentName: 'extra' does not exist in evaluation environment.
+
+::
+   
+    $ pip install -U setuptools
+    Collecting setuptools
+      Using cached setuptools-25.1.6-py2.py3-none-any.whl
+    Installing collected packages: setuptools
+      Found existing installation: setuptools 25.1.1
+        Uninstalling setuptools-25.1.1:
+          Successfully uninstalled setuptools-25.1.1
+    Successfully installed setuptools-25.1.6
+       

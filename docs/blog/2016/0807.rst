@@ -1,0 +1,84 @@
+:date: 2016-08-07
+
+======================
+Sunday, August 7, 2016
+======================
+
+An equivalent  of ``startproject`` for Lino
+===========================================
+
+Once more thanks to :ref:`grigorij` who reported his problems with the
+:ref:`lino.tutorial.lets`. His report made me see the next steps I can
+do for making the :ref:`lino.dev` better.
+
+Two immediate changes to the current :ref:`lino.tutorial.lets`:
+
+- Remove the last line from your :xfile:`models.py` file (the one
+  which says ``from .ui import *``) and rename :file:`ui.py` to
+  :file:`desktop.py`. This is because we now have :attr:`layout_name
+  <lino.core.site.Site.layout_name>`.
+  
+- In your :xfile:`settings.py`, change "self.modules" to "self.actors".
+  (See :attr:`lino.core.site.Site.actors`)
+
+Note, :ref:`grigorij`, that these changes are not related to your
+problems. Your problems come probably because the tutorial uses
+somewhat hackerish :xfile:`manage.py` and :xfile:`settings.py` files.
+  
+But more importantly, I started to convert this tutorial into an
+independent `project on GitGub
+<https://github.com/lino-framework/algus>`__ so that it can serve as a
+template for new Lino applications: :ref:`algus`.
+
+TODO: Write a tutorial about how to use :ref:`algus`. Adapt
+:ref:`lino.tutorial.lets`.
+
+
+I had the following error message when doing :cmd:`inv release`::
+  
+  error: Upload failed (403): You are not allowed to edit 'lino-algus' package information
+     
+This was simply because on the first release on PyPI you must say
+`setup.py register` instead of `setup.py sdist upload`.
+
+
+
+ImportError: No module named appy_renderer
+==========================================
+
+This one happened on a production server::
+
+    Traceback (most recent call last):
+
+      File "env/repositories/xl/lino_xl/lib/lists/models.py", line 41, in <module>
+        from lino_xl.lib.appypod.mixins import PrintLabelsAction
+      File "env/repositories/xl/lino_xl/lib/appypod/mixins.py", line 34, in <module>
+        from .appy_renderer import AppyRenderer
+    ImportError: No module named appy_renderer
+
+
+The problem is here::
+
+    $ ls -al env/repositories/xl/lino_xl/lib/appypod
+    total 96
+    drwxrwxr-x  3 admin    www-data  4096 Aug  7 06:25 .
+    drwxrwxr-x 39 admin    www-data  4096 Aug  6 09:41 ..
+    -rw-rw----  1 admin    admin    24403 Aug  6 09:40 appy_renderer.py
+    -rw-rw----  1 root     root     18439 Aug  7 06:25 appy_renderer.pyc
+    -rw-rw-r--  1 admin    www-data  3839 Aug  5 21:04 choicelists.py
+    -rw-rw-r--  1 root     root      3903 Aug  7 06:25 choicelists.pyc
+    drwxrwxr-x  2 admin    www-data  4096 Aug  5 21:04 config
+    -rw-rw-r--  1 admin    www-data  1853 Aug  5 21:04 __init__.py
+    -rw-rw-r--  1 www-data www-data  1576 Aug  6 09:41 __init__.pyc
+    -rw-rw-r--  1 admin    www-data  4999 Aug  5 21:04 mixins.py
+    -rw-rw-r--  1 www-data www-data  5293 Aug  6 09:41 mixins.pyc
+    -rw-rw-r--  1 admin    www-data  1571 Aug  5 21:04 models.py
+    -rw-rw-r--  1 root     root      1147 Aug  7 06:25 models.pyc
+
+
+The directory doesn't have the SETGID sticky bit set.
+The cron job which does a daily snapshot (it runs every morning at
+6:25) is running as root.
+
+While working on this I updated :ref:`lino.admin.fileperm` (which
+becomes better but it still work in process).

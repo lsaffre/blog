@@ -7,18 +7,266 @@ Friday, August 5, 2016
 Moved three demo projects
 =========================
 
-I moved three demo projects from :mod:`lino_cosi.projects` to
-:mod:`lino_book.projects`:
+I moved three demo projects from :ref:`cosi` to :ref:`book`:
 
 - :mod:`lino_book.projects.apc`
 - :mod:`lino_book.projects.pierre`
 - :mod:`lino_book.projects.cosi_ee` (previously :mod:`lino_book.projects.ylle`)
      
-This is mainly because these projects depend :mod:`commondata`, a
+This is mainly because these projects depend on :mod:`commondata`, a
 useless dependency for normal production sites.  Also they are merely
 localizations of :mod:`lino_cosi.projects.std` and more useful as
 examples for local :xfile:`settings.py` modifications.
 
 I also moved some tested documents (:ref:`book.specs.cosi_ee` and
-:ref:`book.specs.ajax`) from Cosi to Book because they rely on these
-demo projects.
+:ref:`book.specs.ajax`) from :ref:`cosi` to :ref:`book` because
+they rely on these demo projects.
+
+And the :mod:`commondata` packages are no longer required by
+:ref:`cosi`. I moved this dependency to :ref:`book`.
+
+
+Missing translations during build on Travis
+===========================================
+
+Travis reports a `failing build
+<https://travis-ci.org/lino-framework/cosi/builds/149977296>`_ for
+:ref:`cosi` with problems like this one::
+
+    **********************************************************************
+    File "/home/travis/build/lino-framework/cosi/docs/specs/general.rst", line 140, in general.rst
+    Failed example:
+        rt.login('romain').show_menu()
+        #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+    Differences (unified diff with -expected +actual):
+        @@ -2,7 +2,7 @@
+         - Products : Products, Product Categories
+         - Comptabilité :
+        -  - Sales : Factures vente (SLS), Sales credit notes (SLC)
+        -  - Purchases : Factures achat (PRC)
+        -  - Financial : Payment Orders (PMO), Caisse (CSH), Bestbank (BNK), Opérations diverses (MSC)
+        +  - Sales : Sales invoices (SLS), Sales credit notes (SLC)
+        +  - Purchases : Purchase invoices (PRC)
+        +  - Financial : Payment Orders (PMO), Cash (CSH), Bestbank (BNK), Miscellaneous Journal Entries (MSC)
+           - Create invoices
+         - Office : Mes Fichiers téléchargés, Mon courrier sortant, Mes Extraits
+    **********************************************************************
+
+This looks as if some part of the i18n system is missing. Hmm...
+
+The translation of "Sales invoices" to Factures vente" is in
+:file:`cosi/lino_cosi/lib/cosi/locale/fr/LC_MESSAGES/django.po`.
+
+Hamza, I leave this job to you! This is :ticket:`1071`.
+
+
+Getting Lino to run with Django 1.10
+====================================
+
+No fixture named 'few_languages' found
+---------------------------------------
+
+Django 1.10 complained that :message:`No fixture named 'few_languages'
+found.`, and Django was right there: When I specify 'few_languages' in
+:attr:`demo_fixtures <lino.core.site.Site.demo_fixtures>` and there is
+no such fixture *at all* in any of the installed plugins, then the
+application developer must simply remove 'few_languages' from their
+:attr:`demo_fixtures <lino.core.site.Site.demo_fixtures>`.
+
+Same problem with fixtures 'props', 'demo_events', 'welfare_std',
+'mini', 'local'.
+
+:meth:`MyModel._meta.get_all_related_objects` no longer exists
+--------------------------------------------------------------
+
+In :mod:`lino.utils.mti` there was a deprecated usage
+of :meth:`MyModel._meta.get_all_related_objects`. 
+As they explain in
+`Migrating from the old API <https://docs.djangoproject.com/es/1.9/ref/models/meta/#migrating-from-the-old-api>`__, this must become::
+
+    [
+        f for f in MyModel._meta.get_fields()
+        if (f.one_to_many or f.one_to_one)
+        and f.auto_created and not f.concrete
+    ]
+
+And since I called :meth:`MyModel._meta.get_all_related_objects` with
+three keyword parameters::
+
+  include_hidden=True, include_proxy_eq=True, local_only=True
+
+The `include_hidden=True` goes to :meth:`get_fields` and the
+`local_only=True` becomes an `if f.model is model`.  I did not
+investigate why we had `include_proxy_eq=True` but it seems that
+this is no longer necessary...
+
+Changed Command API
+-------------------
+
+It seems that Django 1.10 has changed something with the handling of
+positional arguments (they are no longer added to the `*args` tuple
+passed to :meth:`handle`. . I changed the commands :manage:`run`,
+:manage:`show` and :manage:`dump2py`.
+        
+
+Query filtering with `__isnull`
+===============================
+
+The :ref:`welfare.specs.countries` specs fails under Django 1.10. It
+seems that the `isnull
+<https://docs.djangoproject.com/en/1.10/ref/models/querysets/#isnull>`__
+lookup operator has changed behaviour or maybe even a bug.
+
+I created a script :file:`django110_isnull.py` in
+:mod:`lino_welfare.projects.eupen`::
+
+    from lino.api.shell import *
+    Country = rt.models.countries.Country
+    print Country.objects.all().count()
+    print Country.objects.filter(actual_country__isnull=True).count()
+    print Country.objects.filter(actual_country__isnull=False).count()
+    print Country.objects.exclude(actual_country__isnull=True).count()
+    be = Country.objects.get(isocode="BE")
+    print type(be.actual_country)
+
+The output of this script under Django 1.9 is::       
+
+    270
+    266
+    4
+    4
+    <type 'NoneType'>
+
+But under 1.10 it is::
+
+    270
+    266
+    266
+    4
+    <type 'NoneType'>
+    
+Strange. There are 270 countries, and 4 of them have `actual_country`
+set, all the others have a NULL value in that field (as for example
+Belgium).  I currently don't see another explanation for this than a
+Django bug (which seems hard to believe).  When `foo` is a nullable
+ForeignKey, then `qs.filter(foo__isnull=False)` should not return the
+same query as `qs.filter(foo__isnull=True)`!
+
+Anyway, as long as this problem is not fixed, we must leave
+'django<1.10' in our dependencies.
+
+Hamza, I suggest that you try to write a minimal pure Django project
+which reproduces the problem. If you can reproduce it, then submit a
+ticket on Django.  For us this is :ticket:`1115`.
+
+
+AttributeError: 'module' object has no attribute 'FFI'
+======================================================
+
+I am having the following traceback on a production server::
+   
+    Traceback (most recent call last):
+      ...
+      File ".../repositories/lino/lino/modlib/weasyprint/models.py", line 10, in <module>
+        from .choicelists import *
+      File ".../repositories/lino/lino/modlib/weasyprint/choicelists.py", line 25, in <module>
+        from weasyprint import HTML
+      File ".../virtualenvs/a/lib/python2.7/site-packages/weasyprint/__init__.py", line 338, in <module>
+        from .css import PARSER, preprocess_stylesheet  # noqa
+      File ".../virtualenvs/a/lib/python2.7/site-packages/weasyprint/css/__init__.py", line 30, in <module>
+        from . import computed_values
+      File ".../virtualenvs/a/lib/python2.7/site-packages/weasyprint/css/computed_values.py", line 18, in <module>
+        from .. import text
+      File ".../virtualenvs/a/lib/python2.7/site-packages/weasyprint/text.py", line 18, in <module>
+        import cairocffi as cairo
+      File ".../virtualenvs/a/lib/python2.7/site-packages/cairocffi/__init__.py", line 20, in <module>
+        from ._ffi import ffi
+      File ".../virtualenvs/a/lib/python2.7/site-packages/cairocffi/_ffi.py", line 4, in <module>
+        ffi = _cffi_backend.FFI('cairocffi._ffi',
+    AttributeError: 'module' object has no attribute 'FFI'
+
+It happens on the first incoming web request after restarting apache.
+A second traceback, ending in :message:`RuntimeError: populate() isn't
+reentrant`, is just a follow-up of this traceback.  I opened ticket
+:ticket:`1119` for this.
+
+Yes, there is something wrong with the permissions of cairocffi::
+
+    $ python -c 'import _cffi_backend; print type(_cffi_backend.FFI)'
+    <type 'type'>
+
+    $ sudo -u www-data python -c 'import _cffi_backend; print type(_cffi_backend.FFI)'
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    AttributeError: 'module' object has no attribute 'FFI'
+
+Actually the problem can be reduced to this::  
+
+    $ python -c "import cairocffi"  # OK
+  
+    $ sudo -u www-data python -c "import cairocffi"
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    ImportError: No module named cairocffi
+
+That is, as `admin` used I can import `cairocffi`, as `www-data`
+not. This indicates a permissions problem.
+
+I tried this (now that umask and ownership problems seem fixed)::
+
+    $ pip install --upgrade --force-reinstall cffi
+    $ pip install --upgrade --force-reinstall cairocffi
+    $ pip install --upgrade --force-reinstall CairoSVG
+
+
+I tried whether there are directories in my virtualenv which are not
+executable for other group members::
+    
+    $ find -L env -type d ! -perm /g=x
+
+I made sure that all Python files are owned by group `www-data`::
+    
+    $ chown -R admin:www-data env
+   
+I visually checked the permissions of all directories::    
+
+    $ find -L env/repositories -type d | xargs ls -ld | less
+
+Find `.pyc` files in my site-packages which are not group-writable::
+
+    $ find -L env/local/lib/python2.7/site-packages -name '*.pyc' ! -perm /g=w
+
+Find `.pyc` files in my repositories which are not group-writable::
+
+    $ find -L env/repositories/ -name '*.pyc' ! -perm /g=w
+    env/repositories/lino/lino/modlib/lino_startup/management/commands/show.pyc
+    
+Aha, this indicates that the `setgid flags
+<https://en.wikipedia.org/wiki/Setuid>`_ are not set.  This is not the
+cause of our problem, but let's verify the reason.  When the
+:file:`show.pyc` file was created by user admin, it did not inherit
+the group of its directory.  This came because I hadn't yet set umask
+002 in the activate script of my new environment.
+
+Some background. This problem comes because the site uses
+:mod:`lino.modlib.weasyprint` which depends on `weasyprint
+<http://weasyprint.org/>`__, which depends on `cairocffi
+<https://pythonhosted.org/cairocffi/>`__.  `cairocffi
+<https://pythonhosted.org/cairocffi/>`__ is a CFFI-based drop-in
+replacement for Pycairo.  `Pycairo
+<https://www.cairographics.org/pycairo/>`_ is an object-oriented API
+for cairo.  `Cairo <https://www.cairographics.org/>`_ is a 2D vector
+graphics library.
+
+Google found `this
+<https://github.com/SimonSapin/cairocffi/issues/62>`_ discussion where
+SimonSapin suggests::
+
+    $ python -c 'print(__import__("_cffi_backend").__file__)'
+    /home/admin/virtualenvs/a/local/lib/python2.7/site-packages/_cffi_backend.so
+    $ sudo -u www-data python -c 'print(__import__("_cffi_backend").__file__)'
+    /usr/lib/python2.7/dist-packages/_cffi_backend.x86_64-linux-gnu.so
+    
+And indeed, I have different files.
+
+    
