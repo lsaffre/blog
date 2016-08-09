@@ -160,14 +160,13 @@ Active Systems
 `Active Systems OÜ <http://active.ee>`_.
 Contact: :ref:`at`
 
-
 .. _nex:
 
 Nex Data Systems
 ================
 
 `Nex Data Systems OÜ <http://nex.ee>`_ is a hosting and ICT solutions
-provider in Pärnu.
+provider in Pärnu, Estonia.
 
 
 .. _weleup:
