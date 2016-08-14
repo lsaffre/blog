@@ -1,0 +1,44 @@
+:date: 2016-08-10
+
+==========================
+Wednesday, August 10, 2016
+==========================
+
+Optimizations in Lino Noi
+=========================
+
+With :ref:`annalisa` we had decided to remove the concepts of
+milestones and deployments from :ref:`care` because we could not find
+any sense to them there.
+
+Implementation: I moved the models :class:`Milestone
+<lino_noi.lib.deploy.models.Milestone>` and :class:`Deployment
+<lino_noi.lib.deploy.models.Deployment>` from
+:mod:`lino_noi.lib.tickets` to a new plugin
+:mod:`lino_noi.lib.deploy`.  And this plugin is then *deactivated* in
+:ref:`care`.
+
+This action was rather time-consuming and not really necessary. Normal
+people would just have removed the deployments and milestones from the
+tables and layouts.
+
+As a side effect we have a little new feature
+:attr:`welcome_message_when_count
+<lino.core.actors.Actor.welcome_message_when_count>`.
+
+Another new feature is that Lino now complains when you specify an
+invalid model name as the :attr:`lino.core.actors.Actor.model`.
+
+For example :class:`lino_welfare.modlib.aids.models.Confirmations` had
+``'aids.Confirmation'`` which was silently being replaced by `None` at
+startup. The problem with this behaviour was that it is more difficult
+to get correct error messages. I had still ``'tickets.Milestone'``
+there and it took me some time to find it out.
+
+En passant I also added a new filter parameter
+:attr:`lino_noi.lib.tickets.ui.Tickets.site`.
+
+I fixed a bug in :mod:`lino.core.kernel` which caused the help texts
+of table parameter fields extracted from Sphinx docs to not appear in
+the web interface because they were being installed only when the
+:xfile:`linoweb.js` files had been generated.

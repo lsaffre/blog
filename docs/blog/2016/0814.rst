@@ -1,0 +1,83 @@
+:date: 2016-08-14
+
+=======================
+Sunday, August 14, 2016
+=======================
+
+Lino Care moving forward
+========================
+
+During a meeting with :ref:`annalisa` we identified a few new things
+for :ref:`care`:
+
+- The "simple" user profile must have access to a very limited
+  functionality. They plan to invite many people to register as simple
+  users and to enter their pleas.
+  
+- A new table "Where I can help"
+  :class:`lino_noi.lib.tickets.ui.SuggestedTickets`
+
+- And one thing which looks tiny but caused a rather big series of
+  code changes: in :ref:`care` we need an action to say "I want to
+  assign this ticket to me". I noted that a field `assigned_to` was
+  defined on both :class:`lino_noi.lib.tickets.models.Ticket` and
+  :class:`lino_xl.lib.cal.models.Event`. This field is now defined in
+  the new :class:`lino.modlib.users.mixins.Assignable` mixin.
+
+  Until now, if an application wanted to have the `take` action on its
+  calendar events, it had to simply import a module
+  ``lino_xl.lib.cal.workflows.take``::
+
+     from lino_xl.lib.cal.workflows import take
+
+  This module no longer exists, and I moved away from this approach
+  (it is still there for
+  :mod:`lino_xl.lib.cal.workflows.feedback`). This approach is
+  deprecated because it has at least one disadvantage: you cannot
+  remove it once it has been imported.
+
+  The new approach is the :class:`lino.modlib.users.mixins.Assignable`
+  mixin in combination with two new user roles
+  :class:`lino.modlib.users.roles.Helper` and
+  :class:`lino.modlib.users.roles.AuthorshipTaker`.
+
+
+Bugfix : GridEdit.select_rows is now `False` (it was `True`)  
+
+
+
+Lino at FOSDEM 2017
+===================
+
+I submitted a request for a devroom at `FOSDEM 2017
+<https://www.fosdem.org/2017/>`__:
+
+Title: **Getting started with Lino**
+
+Description:
+
+    I would give a short overview of the `Lino framework
+    <http://www.lino-framework.org/>`__, write a few example
+    applications, and if participants bring ideas, maybe we will
+    create a new application from scratch. Participants can get
+    started on their own by reading http://www.lino-framework.org/dev/
+    before the event and get further support during FOSDEM.
+
+Coordinator's affinity to the topic of the devroom:
+
+    Luc is the author of the framework
+
+Why does it fit FOSDEM:
+
+    Lino is a young expanding framework being used on 5 production
+    sites, 4 of them in Belgium. The framework is designed for
+    professional developers who write customized database applications
+    for their customers or employer.
+
+
+Listing your projects
+=====================
+
+I removed the :cmd:`inv ls` command and added a ``--list`` option to
+:cmd:`per_project`.  Because that's where this functionality has its
+right place.

@@ -1,0 +1,82 @@
+:date: 2016-08-11
+
+===================================
+20160811 (Thursday, 11 August 2016)
+===================================
+
+I made an upgrade on :ref:`lf` because at least the :ref:`voga` online
+demo was broken.
+
+I worked on the :ref:`lino.dev` because I realized (thanks to
+:ref:`james` and :ref:`grigorij`) that after :ref:`lino.dev.start` and
+:ref:`lino.dev.first` I need to insert a new section
+:ref:`lino.dev.team`.
+
+
+How to find the source code from dotted notation
+================================================
+
+Here is a newbie question which surprised me, I wasn't aware that this
+might be a problem, I needed :ref:`james` to stumble over it.
+
+Some days ago I gave him the following hint for fixing :ticket:`1127`:
+
+    You'll need to move some code from the get_used_libs() method in
+    lino.core.site.Site to lino_welfare.projects.std.settings.Site
+
+He then asked:
+     
+     Where can I find lino_welfare.projects.std.settings.Site?
+
+**Answer 1**
+
+Imagine that I would have written my hint in this blog, using Sphinx
+markup to create underlying links:
+
+    You'll need to move some code from the :meth:`get_used_libs
+    <lino.core.site.Site.get_used_libs>` method in
+    :class:`lino.core.site.Site` to
+    :class:`lino_welfare.projects.std.settings.Site`.
+          
+You can now click on these links. Clicking on a link leads you to the
+**API documentation page**, more precisely to the section of that page
+which shows the docstring of the class or method I am taking about.
+
+But how to find the source code? Note that every *API documentation
+page* has, somewhere near the top, in a paragraph on its own, the
+following sentence:
+
+  (This module’s source code is available _here_.)
+
+Clicking on the word _here_ leads you to a place on GitHub which
+should show you the source file.
+
+**Answer 2**
+
+But you can do all this without clicking and without internet
+connection, if you have the source code.
+
+For example `lino_welfare.projects.std.settings.Site`.
+
+The part before the first dot is `lino_welfare`. This is the top-level
+name of a python package. It is the pythonic name of :ref:`welfare`,
+which is published on PyPI under
+https://pypi.python.org/pypi/lino-welfare and which you cloned from
+GitHub.  Your copy of the source code should be in
+:xfile:`~/repositories/welfare`. The structure of that directory is a
+normal Python project, it contains (among others)::
+
+  docs/
+  lino_welfare/
+  tests/
+  setup.py
+  README.rst
+
+A special challenge with the name
+`lino_welfare.projects.std.settings.Site` is that the corresponding
+source code is defined **either** in a file
+:file:`lino_welfare/projects/std/settings.py` **or** in a file
+:file:`lino_welfare/projects/std/settings/__init__.py`.  Only one of
+them can exist (Python would get confused if they would exist both).
+      
+
