@@ -1,0 +1,60 @@
+:date: 2016-08-22
+
+=======================
+Monday, August 22, 2016
+=======================
+
+Hamza is working on :ticket:`1115`. I reviewed and accepted his pull
+requests in atelier, lino, extjs6 and book.
+
+My biggest worry with :ticket:`1115` is the problem I discovered on
+:doc:`0805` (script :file:`django110_isnull.py` in
+:mod:`lino_welfare.projects.eupen`).  I now saw that there is hope
+that the problem is indeed a bug in Django 1.10 (`#26983
+<https://code.djangoproject.com/ticket/26983>`_ which will be fixed in
+`1.10.1
+<https://docs.djangoproject.com/en/1.10/releases/1.10.1/>`_. Yes,
+:class:`lino_xl.lib.countries.models.Country` is (at least within our
+projects) the only model that uses a *CharField* as primary key.
+
+
+Sphinx autosummary documents imported members
+=============================================
+
+Issue `2336 <https://github.com/sphinx-doc/sphinx/issues/2336>`_
+is still not fixed in the current Sphinx version on PyPI.
+
+I updated :ref:`lino.dev.bd`.
+
+
+ImportError: No module named ee.places
+======================================
+
+Yet another error message on
+https://readthedocs.org/projects/lino/builds/. I released version
+0.0.2 of :mod:`commondata.be` and :mod:`commondata.ee` and then
+manually relaunched a build. This build also failed `with the same
+message <https://readthedocs.org/projects/lino/builds/4323054/>`_. For
+the moment I see no explanation. Hamza, do you have any idea?
+
+Size of address labels
+======================
+
+I worked on ticket :ticket:`1144`.  Address labels are being done by
+:class:`lino_xl.lib.appypod.mixins.PrintLabelsAction`.  As a quick
+solution I changed in the template file :xfile:`appypod/Labels.odt`
+(in :mod:`lino_xl.lib.appypod`):
+
+- changed row height from 30mm to 37mm
+- changed all page borders to 0mm (because 37mm*8=296mm and I don't
+  know whether the remaining 1mm goes to the top or to the bottom)
+- In Table properties, changed "Spacing to content" from 0mm to 7mm
+  (arbitrarily guessed value).
+
+I also renamed the file from :xfile:`Labels.odt` to
+:xfile:`appypod/Labels.odt`.
+
+I also wrote a test case which covers the function.
+
+TODO: add a method for users to select their own custom template
+file.

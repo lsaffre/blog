@@ -1,0 +1,114 @@
+:date: 2016-08-18
+
+=========================
+Thursday, August 18, 2016
+=========================
+
+
+A new newbie
+============
+
+Welcome to Rauno who answered to our job offer on `talendidkoju.ee
+<http://www.talendidkoju.ee/too-ja-praktikapakkumised/too/lino-application-developer>`__. He
+is a Python beginner and will start as a volunteer.  Unlike
+:ref:`grigorij` or :ref:`james` he has the advantage of living close
+to me.  We won't meet during the next weeks because I will be in
+Belgium, but meanwhile I made two optimizations to the
+:ref:`lino.dev`: I splitted :ref:`dev.env` and :ref:`dev.runtests`
+into two separate pages and moved :ref:`lino.tutorial.lets` out of the
+"Your first application" section to "Get acquaintaned".
+
+
+     
+Miscellaneous
+=============
+
+Oops, the code snippets I added yesterday to
+:ref:`lino.tutorial.polls` worked only yesterday. Fixed.
+
+     
+A :guilabel:`⚑` button too much
+===============================
+
+Oops, we now have a :guilabel:`⚑` button in the team variant of
+:ref:`noi` as well.  We don't want it there. It was meant only for
+:ref:`care` users.  A side effect of :ticket:`1134`.
+
+By "the :guilabel:`⚑` button" I mean of course the
+:class:`TakeAuthorship <lino.modlib.users.mixins.TakeAuthorship>`
+action. This action is visible only for users having the
+:class:`AuthorshipTaker <lino.modlib.users.roles.AuthorshipTaker>`
+role.
+
+The problem comes because I made :class:`OfficeOperator
+<lino.modlib.office.roles.OfficeOperator>` inherit from
+:class:`AuthorshipTaker <lino.modlib.users.roles.AuthorshipTaker>`.  I
+must remove it there (not all office operators are authorship takers),
+and then, in :mod:`lino_welfare.modlib.welfare.roles`, add
+:class:`AuthorshipTaker <lino.modlib.users.roles.AuthorshipTaker>` to
+all roles which inherit from :class:`OfficeOperator
+<lino.modlib.office.roles.OfficeOperator>`.
+       
+The problem went undiscovered because this situation was not covered
+by our test suite. Now it is covered in :ref:`noi.specs.tickets`.
+
+
+The Polls tutorial and Django 1.10
+==================================
+
+Hamza wrote about the :ref:`lino.tutorial.polls` tutorial:
+
+  Working with the original value of `demo_fixtures` which is `['std',
+  'demo', 'demo2']` throws an error with Django 1.10 because the
+  fixtures ``std`` and ``demo2`` don't exist for the polls project.
+  To avoid this, I have added `demo_fixtures = ['demo']`.
+  
+The default value for `demo_sites`
+==================================
+
+As a continuation of Hamza's observation and to make things more
+clear, I changed the default value for `demo_sites` from `['std',
+'demo', 'demo2']` to `[]`. 
+
+This caused :ref:`tutorials.de_BE` to break. I fixed it by adding a
+`demo_sites` there.
+
+About single-directory tutorials
+================================
+
+I also noted that the :ref:`tutorials.de_BE` tutorial (and several
+others) also still uses the obsolete and unpedagogical "call_command"
+approach for loading its demo fixture.  But we cannot I replace this
+by the newer :class:`Sheller <atelier.sheller.Sheller>` approach
+because this doesn't work in documents that are being tested using
+:meth:`run_django_manage_test
+<lino.utils.pythontest.TestCase.run_django_manage_test>`.  The
+:class:`Sheller <atelier.sheller.Sheller>` approach does not work in
+my so-called "single-directory tutorials" because Django creates a
+temporary test database while a `manage.py initdb_demo` command called
+from sheller would run in the cached demo database. Very subtle. I
+think the only good solution to this would be to convert these
+single-directory tutorials to demo projects.  One advantage of
+single-directory tutorials this the (apparent) simplicity because
+everything is in one directory. This advantage would get lost.  To be
+meditated. Not urgent. Ticket :ticket:`1138`.
+
+Three new tickets
+=================
+
+- Lino Garden : a Lino for managing Lino sites on SAAP server. The
+  host provider would register every customer into this as a user, and
+  the end-users can themselves select thei application, specify
+  installation options, initialize their database, make backups,
+  launch upgrades. Ticket :ticket:`1053`
+  
+- A document with control questions in order evaluate how far a newbie
+  or core team candidate is.
+  Ticket :ticket:`1142`.
+  
+- Get Lino applications to run from PyPI. It seems that this is
+  currently not possible because some templates are not included with
+  the source dists. This will also require us to use testpypi and to
+  formalize the release procedure.
+  Ticket :ticket:`1142`.
+  

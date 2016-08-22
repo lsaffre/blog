@@ -1,0 +1,142 @@
+:date: 2016-08-17
+
+==========================
+Wednesday, August 17, 2016
+==========================
+
+#1115 (Support Django 1.10)
+===========================
+
+I accepted Hamza's pull requests for Lino and Book and then reviewed
+his work.
+
+Yes, :manage:`initdb` and :manage:`initdb_demo` were still using some
+obsolete features.  I continued to convert them, e.g. the class
+attributes `args` and `help` are now obsolete.  There is some hassle
+with the handling of positional arguments.
+
+About :ref:`lino.tutorial.polls`: Hamza correctly noted that I forgot
+to adapt the :file:`demo1.py` fixture when I worked on that tutorial
+last week. He then correctly decided that the problem went undetected
+because that fixture was never loaded during automatd tests. And your
+solution to set ``demo_fixtures = ['demo', 'demo1']`` indeed caused
+the problem to be covered.  But it introduced another problem: the
+questions were loaded twice.
+
+I fixed these problems by adding a series of invisible code snippets
+into the :file:`index.rst` file.
+
+The construct
+
+>>> from django.core.management import call_command
+>>> call_command('initdb', 'demo', interactive=False)
+
+also seems to have some problem with the handling of positional
+arguments. Furthermore it is rather obsolete because we now have:
+
+>>> from atelier.sheller import Sheller
+>>> shell = Sheller()
+>>> shell("python manage.py initdb demo --noinput -v 0")
+
+Using the sheller is better here because it reflects reality more
+accurately and because it also covers the shell's command-line
+parsing.
+
+One difficulty was that I want to run these invisible code snippets
+with `--verbosity` set to 0 because the output of these commands is
+not relevant here (an `rt.show('polls.Questions')` afterwards is a
+better test), and that :mod:`lino.utils.dpy` logged two messages
+("Loading %s..." and "Loaded %d objects") even when verbosity was 0. I
+removed these two messages.
+
+Miscellaneous
+=============
+
+Yesterday I tidied up in atelier and removed
+`Project.load_fabfile`. Now I fixed a regression in the
+:cmd:`per_project`
+
+ImportError: No module named metaphone.word
+===========================================
+
+The online demo of :ref:`welfare` reported a :message:`ImportError: No
+module named metaphone.word`.
+
+First assumption: I thought yes, indeed, when I did did the upgrade
+there some days ago, (i.e. :cmd:`git pull` in all repositories), I did
+not consider the fact that :ref:`welfare` has a changed
+:ref:`install_requires`. The following doesn't output anything in that
+environment::
+       
+    $ pip freeze | grep meta
+
+
+I didn't even try to fix the problem by saying ``pip install
+metafone`` because I wanted more: I wanted to avoid similar problems
+in similar future situations. What we would need is a general way of
+telling pip to update the dependencies of an editable package. I tried
+the following::
+
+    $ pip install -U lino-welfare
+    Collecting lino-welfare
+      Downloading lino-welfare-1.1.25.tar.gz (3.8MB)
+        100% |████████████████████████████████| 3.8MB 147kB/s 
+    ^COperation cancelled by user
+
+No, that's now what we want. And I would even say that this is a
+strange behaviour of pip. Okay my request is a bit odd, I ask it to
+upgrade a package which is installed in editable mode.
+
+I tried this::
+
+    $ pip install -U -e lino-welfare/
+    Obtaining file:///home/luc/repositories/lino-welfare
+    Collecting lino_cosi (from lino-welfare==1.1.26)
+      Downloading lino-cosi-0.0.2.tar.gz (3.0MB)
+        100% |████████████████████████████████| 3.0MB 189kB/s 
+    Collecting vobject (from lino-welfare==1.1.26)
+      Downloading vobject-0.9.2.tar.gz (50kB)
+        100% |████████████████████████████████| 51kB 4.0MB/s 
+    Requirement already up-to-date: django-iban in /usr/local/pythonenv/demo/lib/python2.7/site-packages (from lino-welfare==1.1.26)
+    Requirement already up-to-date: metafone in /usr/local/pythonenv/demo/lib/python2.7/site-packages (from lino-welfare==1.1.26)
+    Requirement already up-to-date: weasyprint in /usr/local/pythonenv/demo/lib/python2.7/site-packages (from lino-welfare==1.1.26)
+    Requirement already up-to-date: cairocffi<0.7 in /usr/local/pythonenv/demo/lib/python2.7/site-packages (from lino-welfare==1.1.26)
+    Requirement already up-to-date: suds in /usr/local/pythonenv/demo/lib/python2.7/site-packages (from lino-welfare==1.1.26)
+    Collecting lino (from lino_cosi->lino-welfare==1.1.26)
+      Downloading lino-1.7.5.tar.gz (10.5MB)
+        100% |████████████████████████████████| 10.5MB 55kB/s 
+    ^COperation cancelled by user
+
+This either isn't what we need because it ignores the fact that cosi,
+lina and xl are equally in editable mode and therefore should not get
+updated.
+
+But all above was rather useless.  Yes it is a little problem that pip
+cannot upgrade the dependencies of editable packages. But I had that
+error message immediately after upgrade during `initdb_demo`, and I
+actually *did* `pip install metafone` at that moment.
+
+If I had tried to fix the problem by saying ``pip install metafone``,
+I would have noticed that it actually *was* installed. When using `pip
+freeze` and `grep` to see whether a package is installed, you should
+always add the `-i` option to grep::
+
+    $ pip freeze | grep -i meta
+    Metafone==0.5
+    
+The explanation for our problem was in a completely different
+direction. It was because the metaphone directory in the site-packages
+directory of the virtualenv had been created with the wrong group. I
+guess that I didn't yet have all :ref:`lino.admin.fileperm` problems
+fixed on :ref:`lf` when I installed metafone. As a result, Apache was
+not able to import it.
+
+En passant:
+
+- I removed a useless code line "from metaphone.word import Word" in
+  :mod:`lino.mixins.dupable`
+       
+- I removed the `.encode('utf8')` from `dm =
+  fuzzy.doublemetaphone(s.encode('utf8'))` because this was necessary
+  only with fuzzy. (Or I hope so... at least the test suite did not
+  fail after removing it).

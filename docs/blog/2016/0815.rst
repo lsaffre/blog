@@ -1,0 +1,113 @@
+:date: 2016-08-15
+
+=======================
+Monday, August 15, 2016
+=======================
+
+Oops, in yesterday's version there was still a bug which caused the
+:ref:`presto` test suite to break::
+
+    Exception: tickets.MyTickets.param_defaults() returned invalid keyword 'user'
+
+Now the bug is fixed, and the :ref:`noi` test suite also covers it.
+
+
+Increase test coverage
+======================
+
+I "accidentally" worked on :ticket:`835`:
+
+- :cmd:`inv clean` now accepts a ``--batch`` option.  
+- I added a new configuration option :attr:`inv.coverage_command`
+- The ``source`` option in :file:`.coveragerc` is a `multi-valued
+  string
+  <https://coverage.readthedocs.io/en/default/config.html#syntax>`__
+
+And the :xfile:`tasks.py` of :ref:`book` now defines
+:attr:`inv.coverage_command` to do the equivalent of::
+
+      pp inv initdb test clean --batch bd
+      
+Result: you can now run :cmd:`inv cov` in :ref:`book` to make a
+coverage report which includes all projects. The process takes more
+than half an hour to complete.
+
+But the big problem is that I get::
+
+    Coverage.py warning: Module lino_xl was never imported.
+    Coverage.py warning: Module lino_book was never imported.
+    Coverage.py warning: Module lino_noi was never imported.
+    Coverage.py warning: Module lino_cosi was never imported.
+    Coverage.py warning: Module lino_voga was never imported.
+    Coverage.py warning: Module lino_presto was never imported.
+    Coverage.py warning: Module lino_welfare was never imported.
+
+Hm...
+http://stackoverflow.com/questions/18573542/coverage-py-does-not-cover-script-if-py-test-executes-it-from-another-directory
+
+Note that with the current solution, coverage result will depend on
+the list of projects defined in your :xfile:`~/.atelier/config.py`.
+
+
+Lino and the new ExtJS 6 Grid panel
+===================================
+
+I continued to work on ticket :ticket:`1072` after three weeks of
+other (more urgent) things.
+
+Once more I dived into the guides about `Grids
+<http://docs.sencha.com/extjs/6.0.2-classic/guides/components/grids.html>`__
+page. I noted that it speaks about setting `selType` which is
+deprecated since ExtJS 5. So maybe the whole document is not
+trustworthy.
+
+Bon. Lino, until now, added a custom `handleKeyDown` event handler to
+the `Ext.selection.CellModel` in order to add modifications to the
+standard behaviour.
+
+Question: What's the difference between::
+
+  Ext.override(Ext.selection.CellModel, {...});
+
+and::  
+
+    Ext.define('Lino.selection.CellModel', {
+      override : 'Ext.selection.CellModel',
+      ...});
+
+Theoretically I think that we want the first variant (`Ext.override
+<http://docs.sencha.com/extjs/6.0.2-classic/Ext.html#method-override>`__).
+Hamza, did you change this? Why?
+
+But this question is no longer relevant, since I decided to completely
+remove this custom event handler because:
+
+- Anyway the `handleKeyDown` is never called because ExtJS 6 has a
+  changed API there.
+- The ENTER and F2 keys are handled correctly (as we want it) by
+  adding the ``celledit`` plugin.
+- I connected `celldblclick` to call :meth:`on_celldblclick` which
+  needed a new signature.
+- Many of these key combinations were not much used anyway (TAB, PgDn,
+  PgUp, Ctrl+Home, ...)
+- I added a handler for `cellkeydown` which currently is empty (just
+  logs to the console) but should probably handle any special keys.
+
+I am going to push these changes because I believe that it is the
+right direction... but there is much to do:
+
+- When editing a cell, e.g. END doesn't move to the end of the cell
+  but to the last page of the grid. Not really what we want...
+- The `afteredit` handler seems to be broken. It does not save objects.
+- handle INSERT and DELETE in `on_cellkeydown`
+- handle any normal key in `on_cellkeydown` so that it starts editing.
+- we need to redefine what happens when user edits the phantom
+  record. This is buggy also when using ExtJS3.
+
+When working on this, I am currently using mysite::
+
+  $ cd lino_extjs/projects/mysite
+  $ touch manage.py ; runserver
+
+And then click on [Tickets] to have a normal grid with more than one
+page.

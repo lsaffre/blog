@@ -1,0 +1,71 @@
+:date: 2016-08-20
+
+=========================
+Saturday, August 20, 2016
+=========================
+
+Get Lino applications to run from PyPI
+======================================
+
+I took :ticket:`1143`. The problem is the same as in `Python
+Packaging: Data files are put properly in tar.gz file but are not
+installed to virtual environment
+<http://stackoverflow.com/questions/13307408/python-packaging-data-files-are-put-properly-in-tar-gz-file-but-are-not-install>`_.
+
+I have been fiddling with these things in the past several times, but
+today I used the following important trick for the first time: I must
+use a suite of commands for testing this locally.
+
+First I initialized a temporary virtualenv::
+
+    $ go cosi
+    $ virtualenv tmp/env
+    $ . tmp/env/bin/activate
+    $ pip install lino-cosi
+
+And then I invoked the following suite many times::
+    
+    $ inv sdist
+    $ pip uninstall lino-cosi -y
+    $ pip install --no-index -f /home/luc/work/book/docs/dl/lino-cosi/ lino-cosi
+    $ ls tmp/env/local/lib/python2.7/site-packages/lino_cosi/lib/sepa/config
+    ls: cannot access 'tmp/env/local/lib/python2.7/site-packages/lino_cosi/lib/sepa/config': No such file or directory
+
+What I learned:
+
+- Adding :xfile:`__init__.py` files is definitively not a good idea.
+
+- The important thing was `include_package_data=True`.
+
+- I don't need to specify `package_data` at all. Python looks at
+  :xfile:`MANIFEST.in` for deciding what the package data is.
+  Observation confirmed by `this thread
+  <http://stackoverflow.com/questions/7522250/how-to-include-package-data-with-setuptools-distribute>`_.
+
+- I could not confirm whether it is necessary to specify
+  `zip_safe=False` because at least on my machine it did not use zip
+  files. But `here
+  <http://stackoverflow.com/questions/15869473/what-is-the-advantage-of-setting-zip-safe-to-true-when-packaging-a-python-projec>`__
+  they say that if I don't specify it, it might happen that the
+  package gets installed as a zipped file, and in that case (and
+  because I dont use pkg_resources) Lino would not find package data
+  files.
+
+- I added `*.rst` in :xfile:`MANIFEST.in` so that :file:`README.rst`
+  gets included. I still get the warning "sdist: standard file not
+  found: should have one of README, README.txt"
+
+  I removed `*.py` and `*.po` because it seems that these are not
+  necessary.
+
+- Which one is better? `from distutils.core import setup or `from
+  setuptools import setup`? --> `You should use setuptools if you
+  can. <https://www.reddit.com/r/Python/comments/3882rh/distutils_vs_setuptools/>`__
+
+
+I then started (but not yet published) new versions to PyPI:
+
+- Lino 1.7.6, Lino XL 1.7.5, Lino Cosi 0.0.4
+
+
+  

@@ -1,0 +1,54 @@
+:date: 2016-08-19
+
+=======================
+Friday, August 19, 2016
+=======================
+
+I updated the :ref:`community` section and started a new page
+:ref:`lino.dev.interview`.
+
+I tested the :ref:`dev.install` guide and discovered that it needs
+more changes.
+
+
+- :cmd:`inv initdb` failed when everything was installed as
+  instructed. I added :mod:`lino_cosi` and several other dependencies
+  to :ref:`book`. And then I released :ref:`cosi` 0.0.3.
+
+TODO:
+
+- It is *not* necessary to define a :envvar:`LINO_CACHE_ROOT`. This
+  section should go to a later tutorial.
+
+- It seems that we need to split the installation guide: one version
+  for those who just want to see a quick result and another version
+  which installs a full developer environment. The quickstart version
+  would clone only the :ref:`book` repository. This will work of couse
+  only when we get the templates problem fixed. Note that the
+  :ref:`book` project is probably the only one for which a version on
+  PyPI makes no sense because it is solely for educational, testing
+  and documentation purposes and not meant for use on a production
+  server.
+
+- Also :cmd:`inv test` now works almost out of the box, except
+  e.g. for a `TemplateNotFound: iban/uppercasetextfield.js`. The files
+  *are* contained in the tar.gz file, but it seems that they don't get
+  unpacked.
+
+  In my :xfile:`~/.invoke.py` I have::
+
+    sdist_dir = '/home/luc/work/book/docs/dl'
+
+  Now I can create an sdist archive in that directory::
+
+    $ go cosi ; inv sdist
+
+  This does not get published on PyPI since I don't add the
+  ``upgrade`` option.
+
+  And then I can simulate a "real" install via PyPI by doing::
+
+    $ pip install -f /home/luc/work/book/docs/dl/ lino-cosi
+    
+
+    
