@@ -1,0 +1,166 @@
+:date: 2016-08-29
+
+=======================
+Monday, August 29, 2016
+=======================
+
+Die DG als Lino Hosting-Provider?
+=================================
+
+I wrote the following statement in German about ticket :ticket:`1095`
+(What happens with Lino when Luc dies?) and its follow-up
+:ticket:`1124`.
+
+Wenn wir uns Fragen über die Stabilität und Kontinuität von Lino
+stellen, dann müssen wir unterscheiden zwischen *Hosting* und
+*Entwicklung*.
+
+- *Hosting* = einen Web-Server aufstellen bzw. mieten, darauf Lino
+  installieren und den Server warten.  Der Hoster ist verantwortlich
+  dafür, dass der Server zuverlässig läuft (Verfügbarkeit, Backup,
+  Sicherheit, Schutz vor Hackern, schnelle Reaktion im
+  Problemfall).
+
+- *Entwicklung* = neue Versionen programmieren, neue Module und
+  Funktionen einbauen
+
+Wenn Sie als Betriebsleiter einen verlässlichen Hoster haben, dann
+kann ich heute sterben, und Ihr Betrieb läuft auch in zwei Jahren noch
+mit Lino weiter. Lino ist von Grund aus dafür konzipiert, stabil zu
+laufen und wenig Wartung zu benötigen.  Eventuelle Änderungen in der
+Software lassen Sie durch irgendeinen Pythonprogrammierer gegen
+Bezahlung beheben. Lino ist freie Software, der komplette Quellcode
+ist auf GitHub verfügbar.
+
+Grob geschätzt bestehen Ihre Sorgen als Unternehmer zu 95% aus Hosting
+und zu 5% aus Entwicklung.
+
+Das einzige Problem, wenn ich plötzlich ausfiele, wäre die
+langfristige Kontinuität des Projekts. Rumma & Ko arbeitet daran, dass
+sich auch dafür eine Lösung findet, bevor es so weit ist. En attendant
+sollten wir uns jetzt vorrangig um die 95% besagter Sorgen kümmern.
+
+Hosting kostet nur einen Bruchteil der Entwicklung. Rumma & Ko bietet
+Hosting momentan sogar *umsonst* an, einfach nur damit die Suche nach
+einem Hoster unsere Kunden nicht davon abhält, Lino zu benutzen. Ich
+mach das mit Liebe und gar nicht schlecht, aber ich ich gebe zu, dass
+dieser Job mir eigentlich nicht liegt und ich froh wäre, diese
+Verantwortung nicht mehr tragen zu müssen.
+
+Eine Lino-Anwendung hosten kann quasi jeder, der eine Django-Anwendung
+hosten kann. Davon gibt es tausende Anbieter.  Zugegebenermaßen
+übertreibe ich damit ein bisschen.  Um das Hosting von
+Lino-Anwendungen wirklich auf tausende unabhängige Hoster auslagern zu
+können, fehlt noch ein kleiner Schritt, ein weiteres Glied im Prozess
+der `Softwareverteilung
+<https://de.wikipedia.org/wiki/Softwareverteilung>`_: wir (Rumma & Ko)
+arbeiten momentan mit einem einzigen *branch*, dem sogenannten *master
+branch*. Um die Verteilung zu industrialisieren, müssen wir mit
+mindestens zwei *branches* ("stable" und "development") arbeiten und
+eine Versionspolitik einführen.
+
+Dieser Schritt ist nicht sehr kompliziert, aber es wäre sinnlos, ihn
+zu tun, solange es keinen unabhängigen Hoster gibt, der diese
+Infrastruktur dann auch nutzt.
+
+Hier beißt sich momentan die Katze in den Schwanz: jeder Hoster, den
+ich anspreche, merkt schnell, dass die Sache auch für ihn mit einem
+bisschen Arbeit verbunden ist, denn mindestens einer seiner
+Mitarbeiter muss sich vertraut machen mit den Unterschieden zwischen
+Lino und Django. Diese technischen Details sind prinzipiell im
+`Administrator's Guide <http://lino-framework.org/admin/>`_
+dokumentiert, der allerdings auch erst fertig werden kann, wenn
+mindestens ein unabhängiger Hoster ihn nutzt.
+
+Hier könnte die DG als Katalysator fungieren, indem sie zum ersten
+Lino-Hoster wird und Hosting als Dienstleistung für die VoGs der DG
+anbietet. Konkret hieße das, dass ein Informatiker des Ministeriums
+eine Zeitlang einige Stunden pro Woche mit Rumma & Ko Zeit investiert,
+um besagten Prozess der Softwareverteilung zu formalisieren.
+
+Also es fehlt nicht viel, um Lino aus der One-Man-Situation raus zu
+heben. Der Kuchen ist fertig, ich brauche nur noch jemanden, der mir
+hilft, den Kuchen einzupacken und zu verteilen.  Wenn sich kein
+öffentlicher Dienst findet, dann werde ich früher oder später einen
+privaten Unternehmer finden, aber der wird es nicht für die
+Gemeinschaft tun, sondern für die eigene Tasche.
+
+
+
+Lino Care moving forward
+========================
+
+I continued on my to-do list started :doc:`yesterday <0828>` for
+:ticket:`1128`.
+     
+DONE:
+
+- Users must be able to say whether they want to get notified by email.
+  New field `notifyme_mode`.
+  
+- Add a button ✉ for sending a welcome mail to new users.
+
+- I optimized the toolbar of the MySettings form. The ChangePassword
+  action now has ✱ as button text.
+  
+Side effects:  
+
+- Simple users are now (again) able to write comments.  The "Office"
+  menu is back for them.
+
+- I changed `ONE_CHAR_LABEL` in :mod:`lino.modlib.extjs.ext_renderer`
+  so that it uses a bigger font size.
+       
+- Unfortunately I didn't get the `help_text` for the ✱ and ✉ buttons
+  to show up as tooltips.  As it turned out, a tooltip becomes visible
+  only on buttons with an `iconCls`. On a button which has only text
+  we must use `Lino.quicktip_renderer`. But I didn't find out why this
+  doesn't seem to work.
+
+TODO:
+
+- The "Office" menu should come after the "Pleas" menu in the main
+  menu toolbar. Some menu commands seem useless and should get hidden
+  again.
+  
+- Collect feedback: the reporter of a ticket should be able (and
+  invited) to *rate* a ticket when it has been done. New field `rating`
+  and a choicelist `Ratings` (Excellent, Good, Okay, Suboptimal, Bad).
+
+- New user profile "Collector" (Bittensammler)
+
+- Einfache Benutzer sollen Tickets nicht löschen können (selbst ihre
+  eigenen nicht).
+
+- Site admins should be able to see a history and make statistics
+  about how many tickets have been requested, done, evaluated etc.
+
+TALK:
+  
+- Einen Vorschlag ablehnen können. IOW add a possibility to "refuse" a
+  suggestion.
+- Add a "geographical location" per ticket? Do we need the `site`
+  field in its current meaning (in :ref:`care`)?
+- Do we need a new model "Promise (user, ticket, date_taken,
+  date_done, evaluation)"?
+
+
+        
+Started to use pytest
+=====================
+
+Hamza started to use `Pytest <http://doc.pytest.org/en/latest/>`_ as
+an alternative to standard python test and tried `pytest-cov
+<https://pytest-cov.readthedocs.io/en/latest/readme.html>`__ as a
+plugin to measure coverage (including doctests and fixtures file) and
+I have got 67% (and 70% in some case) of coverage rapport.  I changed
+:cmd:`inv test` and :cmd:`inv cov` commands in :ref:`atelier` and
+added `pytest.ini` file to :ref:`book` and then got coverage results
+of 67% and 70%. This sounds more or less realistic for the first
+time. Congratulations!
+
+I merged his work into the master branch and adapted :ref:`noi` to use
+pytest as well. I did not yet fully understand why coverage of
+subprocesses now works (and why we didn't get it to work without
+pytest), but pytest looks great and seems more pleasant to use than
+the default test runner.

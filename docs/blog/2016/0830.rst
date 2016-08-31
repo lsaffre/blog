@@ -1,0 +1,74 @@
+:date: 2016-08-30
+
+========================
+Tuesday, August 30, 2016
+========================
+
+Lino Voga : manually modifying generated invoices
+=================================================
+
+The field `invoiced object` of a sales invoice item is a
+:class:`GenericForeignKey <lino.modlib.gfks.fields.GenericForeignKey>`
+pointing to the invoiceable object which caused this invoice
+item. This field is injected by :mod:`lino_cosi.lib.invoicing.models`
+into the :attr:`item_model
+<lino_cosi.lib.invoicing.Plugin.item_model>`.
+
+Until now it was not editable, but now it is. 
+
+This was a bit tricky because there were two subtle problems in the
+core:
+
+- the automatic chooser defined by
+  :class:`GenericForeignKey <lino.modlib.gfks.fields.GenericForeignKey>` did not work (I once
+  wrote this but never tested it).
+  
+- :mod:`lino.modlib.extjs` generated invalid JS code when the field
+  used as parameter of a chooser was a unicode string. It used this
+  code::
+
+    "...jscode...(%r)" % varname
+
+  which caused JS code ``...jscode...(u'invoiceable_id')``. 
+  Now it uses::
+  
+    "...jscode...('%s')" % varname
+  
+     
+
+Lino Care : more optimizations
+==============================
+
+DONE:
+
+- New field `rating` and a choicelist `Ratings` (Excellent, Good,
+  Okay, Suboptimal, Bad).
+
+- New user profile "Connector" (Bittensammler)
+
+TALK:
+  
+- Einfache Benutzer sollen Bitten nicht löschen können (selbst ihre
+  eigenen nicht).
+
+- Site admins and connectors should be able to see a history and make
+  statistics about how many pleas have been requested, done, rated
+  etc.
+
+- The "Office" menu should come *after* the "Pleas" menu in the main
+  menu toolbar. Some commands of the Office menu seem useless and
+  should get hidden again.
+  
+- Einen Vorschlag ablehnen können. IOW add a possibility to "refuse" a
+  suggestion.
+  
+- Add a "geographical location" per ticket? Do we need the `site`
+  field in its current meaning (in :ref:`care`)?
+  
+- Do we need a new model "Promise (user, ticket, date_taken,
+  date_done, evaluation)"?
+
+- How to invite the reporter of a ticket to *rate* a ticket when it
+  has been done?  List of "Unrated pleas which are done".
+    
+- Was sollen Bittensammler alles tun können?

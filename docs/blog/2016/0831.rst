@@ -1,0 +1,148 @@
+:date: 2016-08-31
+
+====================================
+20160831 (Wednesday, 31 August 2016)
+====================================
+
+Hamza is advancing on :ticket:`835`. I reviewed his work and merged it
+into the master branch.
+
+Ticket :ticket:`1154`.  Mathieu asked to reduce the access rights of a
+:class:`ReceptionClerkNewcomers
+<lino_welfare.modlib.welfare.roles.ReceptionClerkNewcomers>`.  This
+sounds trivial, but it caused quite some changes in the hierarchy of
+user roles.
+
+- We have a new user role :class:`SimpleContactsUser
+  <lino_xl.lib.contacts.roles.SimpleContactsUser>`
+  
+- `OfficeUser` no longer inherits from `ContactsUser` (we now want to
+  define `OfficeUser` profiles who do not have full contacts
+  functionality).  Similar changes for several other user roles. For
+  example a ReceptionClear no longer inherits from SocialAgent.
+
+In general I learned today that the user roles should be as atomic as
+possible, plugins should usually not define roles which inherits some
+other role defined by another plugin. Such combination of user roles
+should happen in the `user_profile_module` (which I plan to rename to
+`user_goggles_module` because I plan to rename user "profiles" to user
+"goggles", see below). This is not a final verdict. To be observed.
+
+At some moment I had error messages like the following::
+
+    Error when calling the metaclass bases
+        Cannot create a consistent method resolution order (MRO) for bases AidsStaff, SepaStaff, SiteUser, ContactsUser, OfficeUser
+
+The error was caused e.g. by the following class definition::
+
+    class SiteAdmin(
+            AuthorshipTaker,
+            SiteAdmin,
+            IntegrationStaff,
+            DebtsStaff, LedgerStaff,
+            NewcomersAgent,
+            OfficeStaff,
+            AidsStaff, SepaStaff):
+        """The site adminstrator has permission for everything."""
+
+
+Such errors can happen when you fiddle inside of the role
+definitions. And it was quite difficult to find a solution because the
+class hierarchy is so complex. Some examples:
+
+User roles in :ref:`noi`:
+
+
+.. inheritance-diagram:: lino_noi.lib.noi.roles
+                         
+User roles in :ref:`presto`:
+
+.. inheritance-diagram:: lino_presto.lib.presto.roles
+
+
+
+   
+Rename "UserProfiles" to "UserGoggles"
+======================================
+
+I start to like the word "goggle" as a replacement for "profile"
+(:ticket:`1031`). Note that this is yet another vocabulary conflict
+between Django and me, and that this time (not as with the application
+conflict) I recognize that Django is right and that I was wrong.  A
+profile, in general, is a description of a person's life, work,
+interests.  Every user has its own profile.  But in Lino, for the
+moment, many users share the same "profile".  A user "profile" in Lino
+is a set of attributes which results in a given rendering of the
+:xfile:`linoweb.js` file. Currently this means, in first place, a
+given user role, but also some options like the languages to hide and
+the optional "readonly" mode. The word "goggle" means that every user
+must chose a goggle which will determine which parts of the
+application he or she is going to see.
+
+Yes, this change is purely "linguistic" and will cause a lot of
+changes in code and documentation. And worse: even my customers are
+used to the word "profile" and I will need to re-educate them.  But I
+believe that men should do what needs to be done, without worrying too
+much about their chances of success.
+
+
+About our deployment workflow
+==============================
+
+I start to understand that, if we want to find independent hosters who
+offer Lino applications to their customers, we must optimize our
+deployment workflow. Actually Hamza is working on this: test coverage,
+get our projects to build on travis, drone and readthedocs.
+
+But one missing piece is a "stable" version of our application suite.
+I read the following articles:
+
+- `Developing and Deploying with Branches
+  <http://guides.beanstalkapp.com/version-control/branching-best-practices.html>`_
+
+- `Stop using git pull for deployment!
+  <http://grimoire.ca/git/stop-using-git-pull-to-deploy>`__
+
+Questions:
+  
+- Should I start to emit a pull request for every commit? And if yes,
+  must I fork all projects on lino-framework?
+
+- If we have two or even three branches in every project, how will my
+  everyday work change?
+
+
+Let's take today as an example: one trivial ticket (:ticket:`1154`)
+caused code changes in 7 projects (:ref:`lino`, :ref:`xl`,
+:ref:`welfare`, :ref:`noi`, :ref:`cosi`, :ref:`presto`, :ref:`voga`):
+
+- 2016-08-31 17:54 : `lino <http://www.lino-framework.org>`__
+  `6e2bba8 <https://github.com/lino-framework/lino/commit/d95c0499fa98b5c355fe020f54744b20b6e2bba8>`__
+
+- 2016-08-31 17:54 : `lino_xl <http://www.lino-framework.org>`__
+  `eda57a5 <https://github.com/lino-framework/xl/commit/49e3a57cec3105af2a7e1815ed1e374b1eda57a5>`__
+
+- 2016-08-31 17:54 : `lino_noi <http://noi.lino-framework.org>`__
+  `aec468b <https://github.com/lino-framework/noi/commit/3ad479203a7fd80a297804889425ad550aec468b>`__
+
+- 2016-08-31 17:55 : `lino_cosi <http://cosi.lino-framework.org>`__
+  `eb7aefb <https://github.com/lino-framework/cosi/commit/bd8302246e86b648966aa0389bc79392feb7aefb>`__
+
+- 2016-08-31 17:55 : `lino_welfare <http://welfare.lino-framework.org>`__
+  `eb7aefb <https://github.com/lino-framework/cosi/commit/bd8302246e86b648966aa0389bc79392feb7aefb>`__
+
+- 2016-08-31 17:55 : `lino_presto <http://presto.lino-framework.org>`__
+  `9e439f0 <https://github.com/lsaffre/presto/commit/79b6c58e77e8188fb6802e6a4887c8ff59e439f0>`__
+
+- 2016-08-31 17:55 : `lino_book <http://www.lino-framework.org>`__
+  `f03e7b5 <https://github.com/lino-framework/book/commit/9b6160cdb1cfd4dbfbc4242b0a79b7a5df03e7b5>`__
+       
+
+  
+Resetting a forgotten password
+==============================
+
+Until now it was not possible (via the web interface) to reset the
+password of a user who had forgotten their password. Now it is: I
+added a new rule that a SiteAdmin does not need to specify a current
+password in the ChangePassword action.

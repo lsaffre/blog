@@ -321,7 +321,8 @@ blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
 
 
 inheritance_graph_attrs = dict(rankdir="TB")
-inheritance_graph_attrs.update(size='"12.0, 16.0"')
+# inheritance_graph_attrs.update(size='"12.0, 16.0"')
+inheritance_graph_attrs.update(size='"48.0, 64.0"')
 inheritance_graph_attrs.update(fontsize=14, ratio='compress')
 
 
