@@ -7,6 +7,9 @@
 Hamza is advancing on :ticket:`835`. I reviewed his work and merged it
 into the master branch.
 
+Changed user roles for ReceptionClerkNewcomers
+==============================================
+
 Ticket :ticket:`1154`.  Mathieu asked to reduce the access rights of a
 :class:`ReceptionClerkNewcomers
 <lino_welfare.modlib.welfare.roles.ReceptionClerkNewcomers>`.  This
@@ -85,6 +88,9 @@ used to the word "profile" and I will need to re-educate them.  But I
 believe that men should do what needs to be done, without worrying too
 much about their chances of success.
 
+Hm... the above is true also if we replace `goggle` by `user_class` or
+`user_type`... to be meditated.
+
 
 About our deployment workflow
 ==============================
@@ -146,3 +152,63 @@ Until now it was not possible (via the web interface) to reset the
 password of a user who had forgotten their password. Now it is: I
 added a new rule that a SiteAdmin does not need to specify a current
 password in the ChangePassword action.
+
+
+Include template files with source distributions
+================================================
+
+I continued with :ticket:`1143` and did for :ref:`xl` and :ref:`noi`
+what I started for :ref:`cosi` on :doc:`0820`.
+
+First I initialized a temporary virtualenv::
+
+    $ go xl
+    $ virtualenv tmp/env
+    $ . tmp/env/bin/activate
+    $ pip install lino-xl
+
+And then I invoked the following suite until ``ls`` worked::
+    
+    $ inv sdist
+    $ pip uninstall lino-xl -y
+    $ pip install --no-index -f /home/luc/work/book/docs/dl/ lino-xl
+    $ ls tmp/env/local/lib/python2.7/site-packages/lino_xl/lib/excerpts/config/excerpts/LetterPaper.odt
+
+Similar for :ref:`noi`::    
+
+    $ go noi
+    $ virtualenv tmp/env
+    $ . tmp/env/bin/activate
+    $ pip install lino-noi
+
+And then I invoked the following suite until ``ls`` worked::
+    
+    $ inv sdist
+    $ pip uninstall lino-noi -y
+    $ pip install --no-index -f /home/luc/work/book/docs/dl lino-noi
+    $ ls tmp/env/local/lib/python2.7/site-packages/lino_noi/lib/clocking/config/clocking/ServiceReport/default.weasy.html
+
+    
+I also replaced some underscores by dashes in some places (after
+reading `this
+<http://stackoverflow.com/questions/19097057/pip-e-no-magic-underscore-to-dash-replacement>`__).
+
+I also released :ref:`atelier` 0.0.3 because of the changed :cmd:`inv
+sdist` command.
+
+Okay, it seems that the template files would now get included with the
+next official release. But I still have no clear plan about how to
+continue.  I guess we must setup a unit test which kind of runs above
+commands (i.e. make a fake release to a local directory `sdist_dir`),
+then installs the package into a virgin environment and then runs some
+kind of "deployment test suite".
+
+
+Courses not visible to everybody
+================================
+
+I realized that :ticket:`1154` was not finished : they wanted
+:class:`ReceptionClerkNewcomers
+<lino_welfare.modlib.welfare.roles.ReceptionClerkNewcomers>` to *not*
+see :mod:`lino_xl.lib.courses`. But most tables in that module were
+visible to everybody until now.

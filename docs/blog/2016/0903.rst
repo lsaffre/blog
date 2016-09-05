@@ -1,0 +1,48 @@
+:date: 2016-09-03
+
+===========================
+Saturday, September 3, 2016
+===========================
+
+Prepayment invoices
+===================
+
+I worked on :ticket:`1059` (continuing from :doc:`0808`). It is almost
+done, but I get an error::
+
+  EvaluationError: Error while evaluating the expression
+  "jinja('sales/VatProductInvoice/trailer.html')" defined in the
+  "from" part of a statement. TypeError: unsupported operand type(s)
+  for *: 'Decimal' and 'float'
+
+The trick to avoid this error (without adding `Decimal` to the default
+context of every parse operation) is::
+
+    Prepayment <b>30%</b> ({{(obj.total_incl*30)/100}} {{obj.currency}}) due on
+    <b>{{fds(obj.due_date)}}</b>, remaining 
+    {{obj.total_incl - (obj.total_incl*30)/100}} {{obj.currency}}
+    due 10 days before delivery.
+
+Change in database structure for :class:`PaymentTerm
+<lino_cosi.lib.ledger.models.PaymentTerm>` : The :attr:`printed_text
+<lino_cosi.lib.ledger.models.PaymentTerm.printed_text>` field must be
+a :class:`BabelTextField<lino.utils.mldbc.fields.BabelTextField>`
+(i.e. separate for each supported language).
+      
+And then I added the last piece for this ticket: a new field
+:attr:`payment_term
+<lino_voga.lib.courses.models.Course.payment_term>` per course which
+makes it possible to say that all enrolments to a given course get a
+given payment term.
+
+In summary, Lino use a rather simple approach to handle prepayment
+invoices: only the global amount and the final due date is stored in
+the database, all intermediate amounts and due dates are just
+generated in the printable document. If you use different prepayment
+formulas, you define one :class:`PaymentTerm
+<lino_cosi.lib.ledger.models.PaymentTerm>` for each of them (and take care
+to configure your :attr:`printed_text
+<lino_cosi.lib.ledger.models.PaymentTerm.printed_text>` field).
+
+I finished by adapting the test suites in :ref:`voga`, :ref:`welfare`
+and :ref:`cosi`.

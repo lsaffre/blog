@@ -1,0 +1,92 @@
+:date: 2016-09-02
+
+=========================
+Friday, September 2, 2016
+=========================
+
+Optimizations for Lino Voga
+===========================
+
+With Alexa we discovered the following bug: when specifying, in an
+invoicing plan, a :attr:`partner
+<lino_cosi.lib.invoicings.models.Plan.partner>` which is not a pupil
+(but for example an oranization), then Lino failed to generate
+invoices.  This was because :meth:`get_invoiceables_for_plan
+<lino_voga.lib.courses.models.Enrolment.get_invoiceables_for_plan>`
+forgot that the partner might still be an invoice_recipient.
+:ticket:`1109`.  TODO: write a test case to cover this.
+
+Added an action `show_invoice_partners`
+and table :class:`lino_cosi.lib.sales.models.PartnersByInvoiceRecipient`
+
+And then an addition to :ticket:`1075` (Teilnehmerfilter erweitern) :
+wenn man in Teilnehmerliste eine Aktivität als Filter angibt,
+berücksichtigt Lino jetzt auch Beginn- und Enddatum.
+
+I wanted to deploy this to :ref:`eiche` before they start working and
+therefore committed these changes without having run the full test
+suite. And trustful Travis promptly detected a failure.
+
+Error messages on Travis
+========================
+
+In :ref:`voga` we had the following error message::
+
+  jinja2.exceptions.TemplateNotFound: courses/Enrolment/item_description.html
+
+I fixed this by adding a `-e` option in :xfile:`.travis.yml`.
+
+And then we had::
+
+  /bin/bash: pytest: command not found
+
+This went away, maybe after I added pytest to some dependency.
+
+And this one was tricky::
+
+    ImportError: No module named unohelper
+
+It was because we need to run `sudo apt-get install python3-uno`.  The
+`Uno Project <http://www.openoffice.org/udk/>`_ is not very well
+documented.  appy.pod at some moment runs a Python 3 subprocess which
+will communicate with LibreOffice using the `Python bridge
+<http://www.openoffice.org/udk/python/python-bridge.html>`_.
+
+
+And :mod:`commondata` 0.0.2 fails to install in Python 3 with::
+
+    NameError: name 'file' is not defined
+
+Same for :mod:`commondata.be` and :mod:`commondata.be`. I solved this
+by adding, in book requirements.txt development versions for these
+projects as well.
+
+
+The :ref:`xl` test suite fails under Python 3 with::
+         
+  File ".../xl/tests/test_appy_pod.py", line 24, in <module>
+    from appy.pod.renderer import Renderer
+  File ".../python3.5/site-packages/appy/__init__.py", line 126
+    print '%d method(s) patched from %s to %s (%s)' % \
+                                                  ^
+  SyntaxError: invalid syntax
+
+I now sent a mail to Gaetan, asking how to proceed. I can reproduce
+these errors locally and they are rather trivial to solve, but I am
+not sure whether he is able and willing to accept contributions.
+
+And yet another one::
+
+    appy.pod.actions.EvaluationError: Problem installing fixture '/home/travis/virtualenv/python2.7.9/src/lino-xl/lino_xl/lib/excerpts/fixtures/demo2.py': Error while evaluating the expression "html(body)" defined in the "from" part of a statement. Exception: 20150923 html2xhtml(...
+    Invalid endtag. Expected </b>, found <p>
+  
+This was because ``sudo apt-get install tidy`` was missing in
+`before_install` of the :xfile:`travis.yml`.
+
+
+ValueError: Cannot convert b'Aktiv' to Excel
+============================================
+
+I fixed a bug in :mod:`lino.modlib.export_excel` which caused above
+error when somebody wanted to export a table with a
+:mod:`lino.core.choicelists.Choicelist` column.

@@ -1,0 +1,100 @@
+:date: 2016-09-01
+
+===========================
+Thursday, September 1, 2016
+===========================
+
+I continued with :ticket:`1143`.
+
+The :cmd:`inv sdist` command now checks whether the current version is
+already published on PyPI, and if so, fails.  For projects which have
+no `version` in their :xfile:`setup_info.py` it will do nothing.  As a
+result, I can now run the following command::
+
+  $ pp inv sdist
+
+This creates a "fake release" of the next version for all projects in
+my :attr:`env.sdist_dir`.
+
+I had to change the `version` of several projects. Note that
+:ref:`algus` will never be published on PyPI because that would make
+no sense.
+
+I wrote a new command :cmd:`inv test_sdist`. Actually this command has
+existed once in the past, but I never got it to work. Now it seems to
+work, at least on :ref:`noi`.
+
+
+
+Changed user role for ReceptionClerkNewcomers
+=============================================
+
+Yesterday night I deployed ticket :ticket:`1154` to :ref:`welcht`, and
+this morning Mathieu reported "Merci mais l’accueil n’a plus accès à
+la visualisation des rendez-vous.".
+
+Which means that we found yet another place which was not covered by
+any test.
+
+The solution itself was easy:
+:class:`lino_xl.lib.cal.reception.models.AppointmentsByPartner` uses
+the event's :attr:`when_text <lino_xl.lib.cal.models.Event.when_text>`
+column which usually is clickable. But (as a consequence of my
+fiddlings with the user roles) the :class:`OneEvent
+<lino_xl.lib.cal.models.OneEvent>` was no longer viewable for
+`OfficeOperator`.
+
+Less easy and more interesting was how to cover this.  It unvealed a
+subtle but fundamental problem: when rendering :meth:`obj2html
+<lino.core.requests.BaseRequest.obj2html>` in a doctest snippet, there
+was no visible difference between clickable links and non-clickable
+links.  The best (though not easiest) solution was to change
+:meth:`lino.core.renderer.HtmlRenderer.action_call` to no longer
+return `None`.  As an example, here is a (simplified) doctest code
+snippet from :ref:`welfare.specs.reception` before and after this
+change.
+
+BEFORE:
+
+>>> rt.login('theresia').show(reception.AppointmentsByPartner, obj)
+=========================== ================= =======================================================
+ When                        Managed by        Workflow
+--------------------------- ----------------- -------------------------------------------------------
+ *Thu 15/05/2014 at 09:00*   Caroline Carnol   **Accepted** → [Excused] [Absent] [Present] [Checkin]
+ *Thu 22/05/2014*            Mélanie Mélard    **Waiting** → [Receive] [Checkout]
+ ...
+=========================== ================= =======================================================
+<BLANKLINE>
+
+AFTER:
+
+>>> rt.login('theresia').show(reception.AppointmentsByPartner, obj)
+====================================== ================= =======================================================
+ When                                   Managed by        Workflow
+-------------------------------------- ----------------- -------------------------------------------------------
+ `Thu 15/05/2014 at 09:00 <Detail>`__   Caroline Carnol   **Accepted** → [Excused] [Absent] [Present] [Checkin]
+ `Thu 22/05/2014 <Detail>`__            Mélanie Mélard    **Waiting** → [Receive] [Checkout]
+ ...
+====================================== ================= =======================================================
+
+
+This little change caused of course some failures in existing test
+suites, but I think that it was worth the effort.
+
+
+Oops
+====
+
+Okay, while updating :ref:`dev.setup_info` I had been thinking that
+the following is more elegant::
+
+    from past.builtins import execfile
+    execfile('lino_noi/setup_info.py')
+
+But it doesn't work because it depends on the `future
+<https://pypi.python.org/pypi/future>`_ package and :xfile:`setup.py`
+is being run before dependencies are installed. So it must remain the
+less readable variant::
+  
+    fn = 'lino_noi/setup_info.py'
+    exec(compile(open(fn, "rb").read(), fn, 'exec'))

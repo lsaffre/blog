@@ -16,6 +16,8 @@ studies, I think that these two years were not lost for me. They had
 a deep contribution on how I look at our world. I am most thankful 
 to J.L. De Sloover for his teachings.
 
+In **June 1990** I finished my studies of Gradué en informatique.
+
 After my studies I worked at Siemens-Nixdorf in Liège for 18 months
 (from September **1990** to January **1992**). I got in touch with the
 operating systems UNIX and BS/2000. One of my projects was for example
@@ -50,34 +52,42 @@ technical support for our customers.  Besides working on TIM I gave
 computer lessons about Office software (MS Word, Excel, Access) to
 end-users in our training center or at the customers' offices.
 
-In 1995 I started to work on a "TIM for Windows", using *Borland C++*.
+In **1995** I started to work on a "TIM for Windows", using *Borland
+C++*. In **March 1999** I switched to *Java*.
 
-In March 1999 I switched to *Java*. 
+In **January 1999** I met my future wife.
 
-In August 2000 I announced to my employer that I decided to move to
-Estonia.  I promised them to stay another year so that they have a
-chance to find a successor for me.  I passed the
-"Ausbilder-Eignungsprüfung" in Aachen (Germany) and became responsible
-for the training of a 19-year-old future software application
-developer (IT-Fachmann, Fachrichtung Anwendungsentwicklung).
+In **February 1999** I passed the "Ausbilder-Eignungsprüfung" in
+Aachen (Germany) and became responsible for the training of a
+19-year-old future software application developer (IT-Fachmann,
+Fachrichtung Anwendungsentwicklung).
 
-After my moving to Estonia in August 2001 I started a *sabbatical
+In **August 2000** I announced to my employer that I decided to move
+to Estonia.  I agreed to stay another year so that they have a chance
+to find a successor for me.
+
+In **October 2000** I married.
+
+In **August 2001** I moved to Estonia where I started a *sabbatical
 year*: continued the Java port project on my own and without getting
 money for it.  I once tried a *PHP* port that got quite far but is now
 forgotten.
 
-In *2002** I abandoned C++, Java and PHP without tears after
-discovering the Python_ programming language.
+In **August 2002** I announced to the TIM users in Eastern Belgium
+that I would continue to maintain and give support for TIM, but at new
+conditions, requiring a yearly fee.
+
+In **2002** I discovered the Python_ programming language and
+abandoned C++, Java and PHP without tears.
 
 When I discovered Django_ in the end of **2008**, after having worked
 many months on my own database model, I was quickly fascinated.  The
 ORM and database model based on 'apps' is simply genial.  The way of
 how this is integrated into a web application server system: genial.
-
 But a few things disturbed me with Django, and I felt that I need to
 change them before I can be satisfied.  That's why I started to write
-Lino.  After some search for a valuable user interface, 
-I started to use ExtJS_ in August 2009.
+Lino.  After some search for a valuable user interface, I started to
+use ExtJS_ in **August 2009**.
 
 
 **Where is the songbook project? Where is your private blog?**
