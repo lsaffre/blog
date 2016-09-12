@@ -1,0 +1,74 @@
+:date: 2016-09-09
+
+=========================
+Friday, September 9, 2016
+=========================
+
+The badges
+==========
+
+I changed the markup for showing the "badges" in the
+:xfile:`setup_info.py` files of :ref:`lino`, :ref:`xl` and
+:ref:`book`.
+
+Instead of defining a lot of ``.. image::`` directives, I use a single
+``.. raw:: html`` directive. This is mainly to avoid warnings when
+building the doc tree (so that I can set
+:attr:`inv.tolerate_sphinx_warnings` back to `False`). Another benefit
+is that the code gets less complex because we define everything in one
+place and don't need to invent additional unique names.
+       
+
+Last optimizations for :ref:`care`
+==================================
+
+Today I finished the list of optimizations after my last meeting with
+:ref:`annalisa` for :ticket:`1128` (at least those which I should
+implement ASAP).
+
+
+        
+Deploy to :ref:`lf`
+===================
+
+16.16 (GMT+2) : I did an upgrade on :ref:`lf`. Sorry if you had slow
+response times.
+
+
+Newbie documentation
+====================
+
+
+The :cmd:`inv test_sdist` command
+=================================
+
+The :cmd:`inv test_sdist` command is failing in :ref:`noi`.  The
+problem is that I don't know how to explain to pip what I want:
+
+- for all *my* projects, install the version at :attr:`inv.sdist_dir`
+- for all external projects, use PyPI
+
+I tried with::  
+  
+  $ pip install -f SDIST_DIR lino-noi
+
+which ``lino-noi`` from SDIST_DIR, but ``lino`` and ``lino-xl`` are
+installed from PyPI despite the fact that there is also an archive
+file for them in SDIST_DIR.
+
+I tried with::
+  
+  $ pip install --no-index -f SDIST_DIR --extra-index-url https://pypi.python.org/simple lino-noi
+
+which fails because it never looks up PyPI, even external packages::
+
+    Collecting lino-noi
+    Collecting lino-xl (from lino-noi)
+    Collecting appy (from lino-xl->lino-noi)
+      Could not find a version that satisfies the requirement appy (from lino-xl->lino-noi) (from versions: )
+    No matching distribution found for appy (from lino-xl->lino-noi)
+
+What else can I try?!
+
+I asked this on https://github.com/pypa/pip/issues/3959
+

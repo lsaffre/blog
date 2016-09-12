@@ -1,0 +1,125 @@
+:date: 2016-09-07
+
+============================
+Wednesday, September 7, 2016
+============================
+
+
+Oops, Travis `build #33
+<https://travis-ci.org/lino-framework/book/jobs/157973116>`__ of
+:ref:`book` failed because I didn't even run the test suite before
+checking in.
+
+
+Tonight I watched `a video on YouTube
+<https://www.youtube.com/watch?v=lzeN6WjYCu0>`__ which Hamza
+recommened. It is made by an Italian couple.  I also watched YouTube's
+`suggestion <https://www.youtube.com/watch?v=hvhO8DUirmY>`__
+thereafter and started to watch `La Tunisie est bel et bien est un
+pays à part du monde arabe . :)
+<https://www.youtube.com/watch?v=bGAZNnJH96k>`__...
+
+
+Tunisia is exciting, but yesterday I had a 90 minutes meeting with
+:ref:`annalisa` which generated yet another series of ideas for
+:ticket:`1128` which I should implement ASAP:
+
+DONE:
+
+- Should we add a new ticket state "dropped" or "withdrawn"
+  ("Verworfen", "Widerrufen") to indicate that the *reporter* decided
+  to cancel their plea? This is different from "refused".  -->
+  Solution seems to rename "refused" to "cancelled" because this is a
+  more general term.
+        
+- When opening text editor in own window, there are no TinyMCE buttons
+  at all. That was because I forget to update
+  :xfile:`tiny_mce_popup.js`.
+  
+- Cannot create new users using the web interface.
+  
+  :message:`AttributeError: 'SiteConfig' object has no attribute
+  :'site_company'` in
+  :class:`lino_xl.lib.countries.mixins.AddressLocation`.
+
+  I fixed this by moving the definition of the :attr:`site_company
+  <lino.modlib.system.models.SiteConfig.site_company>` field from
+  :mod:`lino_xl.lib.contacts` (where it was defined using
+  inject_field) to :mod:`lino.modlib.system.models`.  Note that I left
+  the definition of `next_partner_id` field in
+  :mod:`lino_xl.lib.contacts` because this field would be *really*
+  nonsense for somebody who does not have the
+  :mod:`lino_xl.lib.contacts` plugin installed.
+
+- Adapt Ticket.rate wording
+  
+- When there are notifications, display them directly as welcome
+  messages (including a checkbox for each of them to mark them as
+  seen)
+  
+SIDE EFFECTS:
+
+- I changed the general behaviour of :meth:`get_admin_main_items`
+  slightly: when a table contains no items, Lino no longer displays
+  the title and the "No data to display", it just skips that table.
+
+
+- New symbol 🗗 for opening an admin_main_item in its own window.
+  
+- :meth:`ar.show <lino.core.requests.BaseRequest.show>` no longer
+  spawns a new request when it receives a `BaseRequest` instance as
+  first parameter. A usage for this new feature is in
+  :xfile:`admin_main_base.html` where we create a request `sar`, call
+  its :meth:`get_total_count` method (which triggers a first database
+  request), and then (if there is data) we forward it to
+  :meth:`ar.show <lino.core.requests.BaseRequest.show>`.  Without the
+  new behaviour, Lino would do an additional SQL query for every item
+  of the main page.  This change required me to adapt some tested
+  documents (e.g.  :ref:`welfare.specs.debts`) which still were using
+  the deprectated form.
+
+- I fixed a bug in :xfile:`linoweb.js` which caused Lino to not
+  automatically refresh the screen when toggling between ☆ and ★.  The
+  :attr:`refresh_all
+  <lino.core.requests.ValidActionResponses.refresh_all>` by the action
+  was being ignored when the action had been called from the main
+  screen.
+
+TODO:
+
+- The window created by the `detail_layout` of
+  :class:`lino_noi.lib.users.models.OtherUsers` doesn't yet look well:
+
+  .. image:: 0907.png
+     
+  At least the comboboxes should be plain fields because the trigger
+  buttons make no sense in a readonly form.
+
+  The idea of such a a non editable detail_layout is that we abuse the
+  ExtJS form layout machinery for displaying read-only information.  I
+  started to work on this, but interrupted without success so far.  An
+  alternative would be use a template or manually constructed
+  xmlgen.html element tree, but that would be less Lino-like.
+  
+- Simple users may not edit the :attr:`assigned_to` field of a ticket
+- Simple users may not see AvailableWorkers of a ticket
+- Tickets should be duplicable
+- The ✉ button on a user (send welcome message) must be only for
+  SiteAdmin .
+
+- The ✉ button on a user should open a dialog window in order to send
+  a message to that user. That is, we might extend
+  :mod:`lino.modlib.notify` to become an instant messaging system. An
+  exciting idea.
+  I added already a field `Notification.from_user`.
+
+- Add an action for AnonymousUser to register as a new user. Probably
+  we will then also need a field User.state (requested, rejected,
+  accepted, confirmed, deactivated, banned, ...)
+
+- User story : two simple users A and B. A writes a plea #1. B clicks
+  AssignToMe, but then does not no what he promised. When A decides to
+  no longer wait for B, she should rate plea #1, giving it the lowest
+  rate, then duplicate it to submit the same text as a new plea.
+
+

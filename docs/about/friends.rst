@@ -129,6 +129,14 @@ Roger
 Steve
 -----
 
+.. _subha:
+
+Subha Bera
+----------
+
+Is a volunteer contributor and potential core team member living in
+India.
+
 
 .. _evea:
 

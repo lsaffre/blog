@@ -1,0 +1,59 @@
+:date: 2016-09-08
+
+===========================
+Thursday, September 8, 2016
+===========================
+
+Today I continued with my list of optimizations for :ticket:`1128`.
+
+Instant messaging is for later
+==============================
+
+Yesterday I added a field `Notification.from_user` because with Anna
+we had had that exciting idea:
+
+- The ✉ button on a user should open a dialog window in order to send
+  a message to that user. That is, we might extend
+  :mod:`lino.modlib.notify` to become an instant messaging system.
+
+I now removed that field again. Because messages between users are
+after all quite different from notifications.  One day we will maybe
+add an instant messaging system plugin, but that will be a different
+plugin.  And :ref:`care` should not try to replace existing social
+network systems.  For :ref:`care` I'd rather suggest a table where a
+user can enter her name in external internet sites. And other users
+would then get direct links to the user page on that site.
+
+Rename "User Profile" to "User type"
+====================================
+
+:ticket:`1031`.  I changed the `verbose_name` of `UserProfiles` from
+"User Profile" to "User type". IOW only the visible part. the internal
+naming still remains "profile" at many places. And no change in
+database structure.  This is a first careful test in order to see how
+users accept the new vocabulary.
+
+Miscellaneous
+=============
+
+The :mod:`lino.sphinxcontrib.help_texts_extractor` now uses an
+:class:`OrderedDict` because until now two subsequent runs on the same
+might still produce different files and cause useless `git`
+operations.
+
+Defining `required_roles` for a Panel
+=====================================
+
+In certain situations Lino failed to install the specified
+required_roles. I noticed it when I wanted to add a `required_roles`
+to the `history_tab` of `TicketDetail`::
+
+    class TicketDetail(dd.DetailLayout):
+        main = "general more history_tab"
+        ...
+        history_tab = dd.Panel("""
+        changes.ChangesByMaster:50 stars.StarsByController:20
+        """, label=_("History"), required_roles=dd.required(Triager))
+
+
+Lino simply ignored this.  It was a bug in :mod:`lino.utils.jsgen`.
