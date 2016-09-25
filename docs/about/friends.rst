@@ -131,11 +131,12 @@ Steve
 
 .. _subha:
 
-Subha Bera
-----------
+Subha
+-----
 
-Is a volunteer contributor and potential core team member living in
-India.
+Subha (pronounced *suvo*) is a volunteer contributor and potential
+core team member living in `Kolkata
+<https://en.wikipedia.org/wiki/Kolkata>`_ (India).
 
 
 .. _evea:

@@ -1,0 +1,42 @@
+:date: 2016-09-23
+
+==========================
+Friday, September 23, 2016
+==========================
+
+Testing the content of `dict` objects
+=====================================
+
+:ref:`grigorij` reported a test failure in :ref:`dev.site` which might
+be caused by the fact that :setting:`TEMPLATES` is a complex dict, and
+because ordering of dict items can differ. So I changed the document
+to use :func:`json.dumps` instead of :func:`atelier.utils.dict_py2`.
+Grigorij confirmed that his problem was fixed after this.
+
+Hamza, so this is yet another example of why I prefer
+:func:`json.dumps` over our selfmade :func:`dict_py2
+<atelier.utils.dict_py2>`!  See also this thread: `Any way to properly
+pretty-print ordered dictionaries in Python?
+<http://stackoverflow.com/questions/4301069/any-way-to-properly-pretty-print-ordered-dictionaries-in-python>`_.
+
+A ticket for Subha
+==================
+
+Last week in Douz (on `Fri Sep 16 10:56:24 2016 +0100
+<https://github.com/lino-framework/noi/commit/a430fdea402a39b6c4794de22dc12662b04ea5e0>`_),
+Hamza and I added 100 demo tickets to
+:mod:`lino_noi.projects.team.settings.fixtures.demo`, but we forgot to
+adapt the test suite accordingly. About 6 or 7 doctest files were
+failing.  I fixed a first file and started a second one before I
+realized that this might be a great job for :ref:`subha`. I called
+hime, and it took me only half an hour to explain him what it is about
+(he watched me finishing the failures in
+:ref:`noi.specs.clocking`). He then felt able to continue this work on
+the other files. So I `committed my two files
+<https://github.com/lino-framework/noi/commit/9e5bed6945ff943b405775008d32c531c61ee13d>`_,
+and now he is working on the remaining failures. We are looking
+forward to his first contribution.
+
+
+    
+

@@ -1,0 +1,69 @@
+:date: 2016-09-25
+
+==========================
+Sunday, September 25, 2016
+==========================
+
+Some ForeignKeys not being protected
+====================================
+
+I discovered and fixed :ticket:`1183`, a subtle problem which might
+cause unexpected data loss. Changes in :ref:`lino` (the bug itself)
+and :ref:`noi`, :ref:`book`, :ref:`voga` (test suites).
+
+The problem was a bug in
+:meth:`lino.core.ddh.DisableDeleteHandler.add_fk` : if a model had
+more than one pointers to a given other model. only the first FK was
+being collected, the others being ignored. As a consequence, these
+other pointers did *not* replace Django's default behaviour (cascaded
+delete) by Lino's default behaviour (protected).
+
+One symptom was that `tickets.Ticket.reporter` was not listed below in
+the output of analyzer.show_foreign_keys(). The following snippets
+helped to find out why:
+
+
+>>> for (model, fk) in rt.models.users.User._lino_ddh.fklist:
+...     print(fk)
+changes.Change.user
+clocking.ServiceReport.user
+clocking.Session.user
+comments.Comment.user
+excerpts.Excerpt.user
+faculties.Competence.user
+notify.Notification.user
+outbox.Mail.user
+stars.Star.user
+tickets.Project.assign_to
+tickets.Ticket.assigned_to
+tinymce.TextFieldTemplate.user
+uploads.Upload.user
+users.Authority.user
+
+>>> for f in rt.models.tickets.Ticket._meta.get_fields():
+...     if f.name == 'reporter':
+...         print(repr(f))
+<django.db.models.fields.related.ForeignKey: reporter>
+
+In order to evaluate the urgence of upgrading for :ref:`welfare`, here
+is a list of the most important `disable_delete_handlers` which were
+not being installed :
+
+- users.User : aids.Granting.signer, aids.IncomeConfirmation.signer,
+  aids.RefundConfirmation.signer, aids.SimpleConfirmation.signer,
+  art61.Contract.user_asd, cal.Event.assigned_to,
+  immersion.Contract.user_asd, isip.Contract.user_asd,
+  jobs.Contract.user_asd, users.Authority.authorized
+
+- countries.Place : addresses.Address.region contacts.Partner.region
+
+- countries.Country : pcsw.Client.birth_country
+
+- contacts.Person: aids.RefundConfirmation.doctor,
+  art61.Contract.contact_person, art61.Contract.signer2
+
+Which means that with versions older than today it is recommended to
+be careful when deleting users, places, countries, persons and
+companies. Because if no database object points to a user via the
+"first" FK, then Lino would silently delete database objects which
+point to that user, place, person or company using another FK.
