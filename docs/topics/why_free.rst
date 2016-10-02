@@ -48,34 +48,30 @@ following:
   another partner in case I am not satisfied?
 
 
-A software product is usually the result of the collaboration of many
-humans.  Free software means democracy, proprietary software means
-monocracy.
-
 .. Eric S. Raymond describes the democratic ("bazaar") and monocratic
    ("cathedral") models in his book `The Cathedral and the Bazaar
    <https://en.wikipedia.org/wiki/The_Cathedral_and_the_Bazaar>`_.
 
 Yes, it might seem dispairing to try to find partners who meet all
 criteria for maintaining the sovereignty and liberty of your
-enterprise.  It seems like a vicious circle. 
+enterprise.  It seems like a vicious circle. Some challenges:
 
-A fundamental property of free software is that it cannot serve as
-capital.  While this is the inevitable condition for remaining free,
-it also reduces the motivation of all kinds of companies of private
-law to invest into free software.  A good manager takes care of not
-wasting time or money into projects that are "useless" in regard to
-their primary goal, namely to create benefit for the owners.  And the
-chances of success of an enterprise increase with the competence of
-its managers.  And successful enterprises tend to grow in size and
-power. So one might come to the conclusion that free software projects
-have no chance of becoming big and powerful.
+- A fundamental property of free software is that it cannot serve as
+  capital.  While this is the inevitable condition for remaining free,
+  it also reduces the motivation of all kinds of companies of private
+  law to invest into free software.  A good manager takes care of not
+  wasting time or money into projects that are "useless" in regard to
+  their primary goal, namely to create benefit for the owners.  And
+  the chances of success of an enterprise increase with the competence
+  of its managers.  And successful enterprises tend to grow in size
+  and power. So one might come to the conclusion that free software
+  projects have no chance of becoming big and powerful.
 
-A widely spread attitude which I use to label `Uncle Tom's Advice
-<https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop to make
-your own life complicated!  In the end we are all slaves of somebody.
-Just let Microsoft or Google or Apple be your master and enjoy
-life!"[#eager]_.
+- A widely spread attitude which I use to label `Uncle Tom's Advice
+  <https://en.wikipedia.org/wiki/Uncle_Tom>`_ is "Come on!  Stop to
+  make your own life complicated!  In the end we are all slaves of
+  somebody.  Just let Microsoft or Google or Apple be your master and
+  enjoy life!"[#eager]_.
 
 My answer to this is yes, choosing free software *does* make our life
 more complicated, and yes, we need to find trustworthy *partners*

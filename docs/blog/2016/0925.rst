@@ -13,14 +13,14 @@ and :ref:`noi`, :ref:`book`, :ref:`voga` (test suites).
 
 The problem was a bug in
 :meth:`lino.core.ddh.DisableDeleteHandler.add_fk` : if a model had
-more than one pointers to a given other model. only the first FK was
-being collected, the others being ignored. As a consequence, these
-other pointers did *not* replace Django's default behaviour (cascaded
-delete) by Lino's default behaviour (protected).
+more than one pointers to a given other model. only the first of them
+was being collected, the others were ignored. As a consequence, Lino
+did *not* replace Django's default behaviour (cascaded delete) by
+Lino's default behaviour (protected) for them.
 
 One symptom was that `tickets.Ticket.reporter` was not listed below in
-the output of analyzer.show_foreign_keys(). The following snippets
-helped to find out why:
+the output of :func:`analyzer.show_foreign_keys`. The following
+snippets helped to find out why:
 
 
 >>> for (model, fk) in rt.models.users.User._lino_ddh.fklist:
@@ -45,9 +45,16 @@ users.Authority.user
 ...         print(repr(f))
 <django.db.models.fields.related.ForeignKey: reporter>
 
-In order to evaluate the urgence of upgrading for :ref:`welfare`, here
-is a list of the most important `disable_delete_handlers` which were
-not being installed :
+On :ref:`welfare` production sites running a version older than today
+it is recommended to be careful when deleting users, places,
+countries, persons and companies. Because if no database object points
+to a user via the "first" pointer, then Lino would silently delete
+database objects which point to that user, place, person or company
+using another pointer.
+
+In order to evaluate the urgence of upgrading here is a list of the
+most important `disable_delete_handlers` which were not being
+installed :
 
 - users.User : aids.Granting.signer, aids.IncomeConfirmation.signer,
   aids.RefundConfirmation.signer, aids.SimpleConfirmation.signer,
@@ -62,8 +69,20 @@ not being installed :
 - contacts.Person: aids.RefundConfirmation.doctor,
   art61.Contract.contact_person, art61.Contract.signer2
 
-Which means that with versions older than today it is recommended to
-be careful when deleting users, places, countries, persons and
-companies. Because if no database object points to a user via the
-"first" FK, then Lino would silently delete database objects which
-point to that user, place, person or company using another FK.
+Which means that the danger is rather theoretical. No reason to
+panic. But I made an unrequested upgrade in :ref:`welcht` to be
+sure. In :ref:`weleup` I must wait for their decision.
+
+
+:ref:`welfare` failure on Travis
+================================
+
+`Build #38
+<https://travis-ci.org/lino-framework/welfare/builds/162577374>`_ is
+failing because :class:`lino_xl.lib.cal.ui.EventsByDay` sorts the events by
+`start_date` and `start_time`, and when two events have the same value
+for both fields, the result is unpredictable.  To fix this, we might
+simply add the primary key::
+
+   order_by = ['start_date', 'start_time', 'id']
+

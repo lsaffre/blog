@@ -1,0 +1,69 @@
+:date: 2016-09-27
+
+===========================
+Tuesday, September 27, 2016
+===========================
+
+Optimierungen Lino Care September 2016
+======================================
+
+I created a new ticket :ticket:`1188` which actually groups the
+tickets I talked about with :ref:`annalisa` last week.
+
+- new and sticky are now being considered "active" states.
+
+
+Python 2to3 compatibilities
+===========================
+
+As a side effect of :ticket:`1157` I eliminated some more (not all)
+Python 3 incompatibilites in :ref:`noi`, :ref:`cosi`, :ref:`welfare`,
+:ref:`book` and some other projects.
+
+This was because a nice thing happened: Sandro reported that he had
+started to convert appy.pod to be compatible Python 2 and 3.
+
+But he had "started from the sources downloaded as tar.gz as he was
+not able to understand which is the URL of Gaetan's repository since
+the launchpad one is outdated."
+
+So I now did about the same work, but I did it on a clone of the
+currently official appy repository, using a fresh checkout by running
+"svn co https://svn.forge.pallavi.be/appy-python-3/luc appy" as Gaetan
+explained to me in his mail on 2016-09-06.  I committed my changes and
+they are now visible here:
+
+  https://forge.pallavi.be/projects/appy-python-3/repository/revisions/12
+
+But unlike Sandro I did not care about :cmd:`python Tester.py`, I only
+removed the things which caused my own test suites to fail. When I run
+:cmd:`inv test` in :ref:`noi` under Python3, then if fails because of
+a Syntax error in appy.pod.
+
+Sando created a repo on bitbucket to show his work:
+
+  https://bitbucket.org/jumboteam/appypod23
+
+The question now is: will Gaetan be able to merge our work into his
+official version?
+
+
+
+Lino and Docker
+================
+
+:ref:`subha` is working on :ticket:`1176`. Our idea is to provide some
+docker files on the `docker hub <https://hub.docker.com/>`__ so that
+independent Lino hosters can quickly create a new Lino instance.
+
+In a first step I suggest two dockerfiles with the following demo
+applications:
+
+- :mod:`lino_noi.projects.team`
+- :mod:`lino_voga.projects.roger`
+     
+When these dockerfiles are ready, we will need to write documentation
+on the Lino website about how to use them.  I started this
+documentation under :ref:`lino.hosters`.  (Subha, these files are in
+the :ref:`book` repository under :file:`docs/hosters`. Feel free to
+modify them.)

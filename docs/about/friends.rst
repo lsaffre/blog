@@ -49,8 +49,8 @@ Gerd is system administrator at :ref:`weleup`.
 Hamza
 -----
 
-Is my assistant since September 2015.
-He has his own blog at http://hamza.lino-framework.org/
+Is my assistant since September 2015.  He has his own (but not yet
+very active) blog at http://hamza.lino-framework.org/
 
 .. _james:
 
@@ -68,10 +68,22 @@ Grigorij
 Is a Lino fan living in Moscow.
 
 
+.. _rauno:
+
+Rauno
+-----
+
+Rauno is a Lino fan living in Estonia.
+
+
 .. _jt:
 
 Jüri
 ----
+
+Jüri is the system administrator of a school in our village. They
+don't (yet) use Lino, but he is interested.
+
 
 .. _joe:
 
@@ -80,8 +92,20 @@ Josef Kejzlar
 
 .. _sandeep:
 
-Sandeep Sawant
---------------
+Sandeep
+-------
+
+Sandeep is a Lino contributor living in India.
+
+.. _sante:
+
+Sante
+-----
+
+Sante Broccolo is project manager at the CBSS.  See a portrait in
+French by Nancy Boodts `Quand le pixel s'allie au décibel
+<https://www.smals.be/sites/default/files/assets/Symbiose/Symbiose56FR/files/basic-html/page28.html>`_
+
 
 .. _xmj:
 

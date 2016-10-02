@@ -56,12 +56,11 @@ It is about power
 =================
 
 The real issue with proprietary software is that its copyright holder
-inevitably tries to gain power over you.  Vendors of proprietary
+inevitably tries to gain power over its users.  Vendors of proprietary
 software are skillful in finding ever and ever new tricks and whole
-technologies whose single goal is to bind you to their product (an
-effect known as `vendor lock-in
-<https://en.wikipedia.org/wiki/Vendor_lock-in>`_).  They hide this
-fact more or less successfully, but it is a necessary part of the
-game.
+technologies whose ultimate goal is to bind you to their product
+(`vendor lock-in <https://en.wikipedia.org/wiki/Vendor_lock-in>`_).
+They hide this fact more or less successfully, but it is a necessary
+part of the game.
 
 

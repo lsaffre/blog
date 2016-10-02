@@ -1,0 +1,80 @@
+:date: 2016-10-02
+
+=======================
+Sunday, October 2, 2016
+=======================
+
+Starting work session
+=====================
+
+I worked on :ticket:`1194` (A developer cannot start a working session
+if he's not the author) which I discovered yesterday with
+:ref:`rauno`.
+
+The solution was easy: just set :attr:`readonly
+<lino.core.actions.Action.readonly>` of
+:class:`lino_noi.lib.clocking.actions.StartTicketSession` to `True`.
+
+I also changed the :attr:`sort_index
+<lino.core.actions.Action.sort_index>` of state actions (instances of
+:class:`ChangeStateAction <lino.core.workflows.ChangeStateAction>`)
+from `10 + i` to `200 + i`. Because state actions should come *after*
+custom actions.
+
+For example in the :attr:`workflow_buttons
+<lino.core.model.Model.workflow_buttons>` of a ticket, I want to have
+the [▶] button **after** the state change buttons. On a ticket whose
+state is "ToDo", the :attr:`workflow_buttons
+<lino.core.model.Model.workflow_buttons>` column said:
+
+    **ToDo** → [🗪] [🕸] [☐] [🗑] [▶] [☆]
+
+Now it says:
+
+    **ToDo** → [▶] [☆] [🗪] [🕸] [☐] [🗑]
+
+No --even better!-- it says:
+
+    [▶] [☆] **ToDo** → [🗪] [🕸] [☐] [🗑]
+
+
+Until now end-users were generally not aware about the difference
+between custom actions and state change actions. Now it is more
+visible for them.
+    
+A side effect is :class:`MyPendingGrantings
+<lino_welfare.modlib.aids.ui.MyPendingGrantings>` (shown in
+:ref:`welfare.specs.aids`): the :class:`SignConfirmation
+<lino_welfare.modlib.aids.mixins.SignConfirmation>` action is
+technically not implemented as a subclass of ChangeStateAction, but
+"conceptually" (for the end-user) it does nothing but change the
+state.
+
+Updated :ref:`lf`
+=================
+
+I updated all sites on :ref:`lf`.
+
+
+
+Unknown Township 'Nõmme'
+========================
+
+There was a non-fatal error when initializing the `vtp2014
+<http://vtp2014.lino-framework.org>`__ online demo database. It was
+not fatal because it happened only during the :manage:`garble_persons`
+after :manage:`initdb_demo`. It came because :manage:`garble_persons`
+required the :mod:`lino_xl.lib.countries.fixtures.eesti` fixture.
+
+I added a test case for this to :mod:`lino_book.projects.min2` and
+discovered that :manage:`garble_persons` was not available there
+because it uses :ref:`app_inheritance` to extend
+:mod:`lino_xl.lib.contacts` and forgot to add a module for this
+command.
+
+And then I fixed :manage:`garble_persons` so that it works also
+without the the :mod:`eesti <lino_xl.lib.countries.fixtures.eesti>`
+fixture (though it still requires at least :mod:`few_countries
+<lino_xl.lib.countries.fixtures.few_countries>` :mod:`few_cities
+<lino_xl.lib.countries.fixtures.few_cities>`, otherwise it makes no
+sense).
