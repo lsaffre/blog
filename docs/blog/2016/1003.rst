@@ -1,0 +1,124 @@
+:date: 2016-10-03
+
+=======================
+Monday, October 3, 2016
+=======================
+
+Failures on Travis
+==================
+
+I analyzed some failures on Travis and did lots of commits with
+changes to :xfile:`.travis.yml` and :xfile:`requirements.txt` files.
+
+I also started a new documentation page :ref:`lino.ci`.
+
+One error was :message:`/bin/bash: open: command not found` (after
+:message:`Writing html report to htmlcov`).  Explanation: when we run
+:cmd:`inv cov` on Travis, then we must specify the ``--no-html``
+option because :mod:`atelier.invlib`, after creating a html report,
+tries to interactively show the produced report. Which fails in a
+batch environment.
+  
+I removed coverage measuring from the :xfile:`.travis.yml` file of
+:ref:`xl` because IMO measuring coverage there makes no sense. We do
+one coverage in :ref:`book`, and this covers the three projects lino,
+xl and book.
+
+I removed usage of `coveralls` because I don't understand why we need
+it. (Hamza, don't hesitate to explain me why you added them if there
+is a chance that I missed something.)
+
+In the `install` section, I changed :cmd:`pip install .` to :cmd:`pip
+install -e .` (i.e. added the `-e` option) because I believe it is not
+necessary to to have :command:`pip copy` all the files.
+
+sorry, but this version only supports 100 named groups
+======================================================
+
+Now we still have an error :message:`AssertionError: sorry, but this
+version only supports 100 named groups`. This seems to be caused by
+cairocffi (needed by lino via weasyprint).
+
+
+
+I believed that it is caused by some external change (some new version
+somewhere) because it occurs in all projects which use weasyprint. Noi
+is an easy example, there it also failed:
+https://travis-ci.org/lino-framework/noi/builds/164577382
+
+Also :ref:`subha` reported it.
+
+16:30 : I can now reproduce it on my machine. And it is mysterious. I
+have two virtualenvs, one is my default working environment (called
+`py27`), the other one I created it from scratch just for this
+problem, it is called `ttt`.  I open two terminal windows (one for
+each virtualenv) and in both terminals I got to the directry of
+:mod:`lino_noi.projects.team` in my repository (both environments are
+using this code in development mode).  I then run the
+:xfile:`initdb_tmp` script, and in `py27` it works while in `ttt` it
+fails::
+
+
+    (ttt) luc@doll:~/work/noi/lino_noi/projects/team$ ./initdb_tmp 
+    Traceback (most recent call last):
+      File "/media/dell1tb/tmp/ttt/bin/django-admin.py", line 5, in <module>
+        management.execute_from_command_line()
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 353, in execute_from_command_line
+        utility.execute()
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 327, in execute
+        django.setup()
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/django/__init__.py", line 18, in setup
+        apps.populate(settings.INSTALLED_APPS)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/django/apps/registry.py", line 108, in populate
+        app_config.import_models(all_models)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/django/apps/config.py", line 202, in import_models
+        self.models_module = import_module(models_module_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/media/dell1tb/work/lino/lino/modlib/weasyprint/models.py", line 10, in <module>
+        from .choicelists import *
+      File "/media/dell1tb/work/lino/lino/modlib/weasyprint/choicelists.py", line 25, in <module>
+        from weasyprint import HTML
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/weasyprint/__init__.py", line 338, in <module>
+        from .css import PARSER, preprocess_stylesheet  # noqa
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/weasyprint/css/__init__.py", line 30, in <module>
+        from . import computed_values
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/weasyprint/css/computed_values.py", line 18, in <module>
+        from .. import text
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/weasyprint/text.py", line 201, in <module>
+        ''')
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/api.py", line 105, in cdef
+        self._cdef(csource, override=override, packed=packed)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/api.py", line 119, in _cdef
+        self._parser.parse(csource, override=override, **options)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/cparser.py", line 299, in parse
+        self._internal_parse(csource)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/cparser.py", line 304, in _internal_parse
+        ast, macros, csource = self._parse(csource)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/cparser.py", line 260, in _parse
+        ast = _get_parser().parse(csource)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/cffi/cparser.py", line 40, in _get_parser
+        _parser_cache = pycparser.CParser()
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/pycparser/c_parser.py", line 87, in __init__
+        outputdir=taboutputdir)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/pycparser/c_lexer.py", line 66, in build
+        self.lexer = lex.lex(object=self, **kwargs)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/pycparser/ply/lex.py", line 911, in lex
+        lexobj.readtab(lextab, ldict)
+      File "/media/dell1tb/tmp/ttt/local/lib/python2.7/site-packages/pycparser/ply/lex.py", line 233, in readtab
+        titem.append((re.compile(pat, lextab._lexreflags | re.VERBOSE), _names_to_funcs(func_name, fdict)))
+      File "/media/dell1tb/tmp/ttt/lib/python2.7/re.py", line 194, in compile
+        return _compile(pattern, flags)
+      File "/media/dell1tb/tmp/ttt/lib/python2.7/re.py", line 249, in _compile
+        p = sre_compile.compile(pattern, flags)
+      File "/media/dell1tb/tmp/ttt/lib/python2.7/sre_compile.py", line 583, in compile
+        "sorry, but this version only supports 100 named groups {}".format(p.pattern.groups)
+    AssertionError: sorry, but this version only supports 100 named groups 178
+  
+Both environments have exactly the same :cmd:`pip freeze`. I manually
+updated that of `ttt` one package at a time. Their PYTHONPATH and
+LINO_CACHE_ROOT are the same. They are both running the same script in
+the same working directory.  And still the problem occurs in one and
+does not occur in the other. What am I missing?!
+
+
