@@ -32,21 +32,15 @@ In the `install` section, I changed :cmd:`pip install .` to :cmd:`pip
 install -e .` (i.e. added the `-e` option) because I believe it is not
 necessary to to have :command:`pip copy` all the files.
 
-sorry, but this version only supports 100 named groups
-======================================================
+A tough one was :message:`AssertionError: sorry, but this version only
+supports 100 named groups`. It received its own ticket :ticket:`1198`
+when also :ref:`subha` reported it, he got it when installing a new
+docker container.
 
-Now we still have an error :message:`AssertionError: sorry, but this
-version only supports 100 named groups`. This seems to be caused by
-cairocffi (needed by lino via weasyprint).
-
-
-
-I believed that it is caused by some external change (some new version
-somewhere) because it occurs in all projects which use weasyprint. Noi
-is an easy example, there it also failed:
+This was obviously caused by some external change (some new version in
+some dependency) because it occurs in all projects which use
+weasyprint. Noi is an easy example, there it also failed:
 https://travis-ci.org/lino-framework/noi/builds/164577382
-
-Also :ref:`subha` reported it.
 
 16:30 : I can now reproduce it on my machine. And it is mysterious. I
 have two virtualenvs, one is my default working environment (called
@@ -121,4 +115,39 @@ LINO_CACHE_ROOT are the same. They are both running the same script in
 the same working directory.  And still the problem occurs in one and
 does not occur in the other. What am I missing?!
 
+The solution was here:
 
+  http://stackoverflow.com/questions/39829473/cryptography-assertionerror-sorry-but-this-version-only-supports-100-named-gro
+
+So it was a bug in pycparser which occurred only with the *binary*
+version. This is why pip freeze was not enough to see the difference!
+
+Anyway the problem in `ttt` disappeared when I did::
+  
+    $ pip install git+https://github.com/eliben/pycparser@release_v2.14
+
+And so I added the following line to the :xfile:`requirements.txt`
+files of concerned projects::
+  
+    -e git+https://github.com/eliben/pycparser@release_v2.14#egg=pycparser
+  
+Last steps for supporting Python 3
+==================================
+
+We are approaching another historical milestone: our `page on Travis
+<https://travis-ci.org/lino-framework>`_ is almost green!
+
+Until now this milestone was waiting for ticket :ticket:`1157` the
+most important show stopper.  This :ticket:`1157` is currently waiting
+for Gaetans answers to some questions about the general strategy.  But
+thanks to Sandro I know that there is a workaround: Stefan Klug has
+ported a fork of `appy` to Python 3:
+https://pypi.python.org/pypi/appypod/0.9.6 So our milestone, no longer
+needs to wait for Gaetan.
+
+Now that the "appy.pod and Python 3" problem is solved, there are --of
+course-- quite some some more "trivial" problems in :ref:`xl` and
+:ref:`book`.
+
+I started to fix some of them, but then stopped it because this might
+be a good task for :ref:`subha`: :ticket:`1199`.
