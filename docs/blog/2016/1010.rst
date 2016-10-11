@@ -1,0 +1,93 @@
+:date: 2016-10-10
+
+========================
+Monday, October 10, 2016
+========================
+
+
+Moving from AGPL to BSD
+=======================
+
+I worked for ticket :ticket:`1213` (Change license of applications
+from AGPL to BSD) and switched :ref:`xl` and :ref:`noi` from AGPL to
+BSD.  This is another step in our general move from AGPL to BSD.  Lino
+itself (the core and the book) were already BSD licensed.
+
+TODO: Note that :ref:`cosi`, :ref:`voga`, :ref:`presto` and
+:ref:`welfare` must remain under AGPL because of the
+:mod:`lino_cosi.lib.b2c.camt` module which was originally copied from
+Odoo.  We should maybe move this module from :ref:`cosi` to
+:ref:`welfare` some day so that :ref:`cosi`, :ref:`voga` and
+:ref:`presto` can become BSD as well.
+
+
+An example of permission management à la Lino
+=============================================
+
+Ticket :ticket:`1214` is an example to illustrate :ref:`permissions`.
+
+The `contracts` tab of
+:class:`lino_welfare.projects.eupen.modlib.pcsw.models.ClientDetail`
+is defined as follows::
+
+    contracts = dd.Panel("""
+    isip.ContractsByClient
+    jobs.CandidaturesByPerson
+    jobs.ContractsByClient
+    """, label=_("Contracts"))
+
+Exercise: find the definitions of these tables, and which is their
+:attr:`lino.core.permissions.Permittable.required_roles`.
+
+Basically I just replaced :class:`IntegrationAgent
+<lino_welfare.modlib.integ.roles.IntegrationAgent>` by
+:class:`SocialAgent <lino_welfare.modlib.pcsw.roles.SocialAgent>`
+for certain tables.
+
+:ref:`welfare.specs.eupen`
+:ref:`welfare.specs.clients.eupen`
+:ref:`welfare.specs.chatelet`
+
+This ticket reveals that the :class:`DebtsUser` role (Debt mediation
+agent) currently inherits from :class:`SocialAgent`, and that this is
+maybe not what they want.  I guess that the customer does not want the
+Contracts panel to become visible also for `DebtsUser`. But I am not
+sure. I must ask them.
+
+
+Hide calendar events before a configurable date
+===============================================
+
+Alexa and Monique will soon start with scheduling their events
+for 2017.  That's why they asked (or we decided that they want) that
+EventsByCourse should show only the events within a configurable date
+range. In a first step I think that we don't want a date *range* but
+just a single global configurable date labeled "Hide calendar events
+before".  This is ticket :ticket:`1202`.
+
+They asked it only for :class:`EventsByCourse
+<lino_voga.lib.courses.desktop.EventsByCourse>`, but I am tempted to say they
+other people will also want such a feature.
+
+- :mod:`lino_xl.lib.cal.models` now injects a field
+  :attr:`hide_events_before` to their :class:`SiteConfig
+  <lino.modlib.system.models.SiteConfig>`.
+
+- The :class:`Events <lino_xl.lib.cal.ui.Events>` table (and therefore
+  all tables of calendar events which don't set this value themselves)
+  now sets its :attr:`start_date
+  <lino_xl.lib.cal.ui.Events.start_date>` to the value given by this
+  SiteConfig field.
+
+- I adapted the `detail_layout` for
+  `SiteConfig` of :ref:`voga`.
+
+This was for the change itself.
+
+Then I had to decide how to test the new fixture. The obvious way is
+to set a non-empty value for this field in some demo database and to
+see whether it is being taken into account.  This is now done in the
+:mod:`lino_xl.lib.cal.fixtures.std` fixture, i.e. for all applications
+which use :mod:`lino_xl.lib.cal`.  As expected, this caused changes in
+the test suites of several projects (not only :ref:`voga` but also
+:ref:`welfare`, :ref:`cosi` and :ref:`book`).

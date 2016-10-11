@@ -11,7 +11,7 @@ rows = []
 headers = ["Profile"]
 for r in roles:
     headers.append(r.__name__)
-for p in users.UserProfiles.objects():
+for p in users.UserTypes.objects():
     row = [p.text]
     for r in roles:
         row.append("X" if p.has_required_roles([r]) else "")

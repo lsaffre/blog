@@ -1,0 +1,95 @@
+:date: 2016-10-08
+
+=========================
+Saturday, October 8, 2016
+=========================
+
+There was an error occuring on a production server. The
+:xfile:`lino.log` file reported the following sequence every 15
+seconds::
+
+    201610-08 20:34:17 INFO kernel : Started /.../xxx/manage.py linod (using lino_sites.xxx.settings) --> PID 16859
+    201610-08 20:34:18 INFO linod : 2 scheduled jobs:
+    201610-08 20:34:18 INFO linod : [1] Every 10 seconds do send_pending_emails() (last run: [never], next run: 2016-10-08 20:34:25)
+    201610-08 20:34:18 INFO linod : [2] Every 1 day at 20:00:00 do clear_seen_notifications() (last run: [never], next run: 2016-10-09 20:00:00)
+    201610-08 20:34:26 INFO site : Send email '[xxx] Luc commented on #923 (Display live notifications even when the browser is minimized)' from noreply@lino-framework.org to [u'joe.doe@gmail.com']
+    201610-08 20:34:26 INFO kernel : Done /.../xxx/manage.py linod (PID 16859)
+
+The sequence repeated every 15 seconds because supervisor
+automatically restarts a process when it sees that it has ended.  The
+:manage:`linod` process ended because of a traceback which I could see
+in the
+:file:`/var/log/supervisor/linod_xxx-stderr---supervisor-tjT8LK.log`
+file)::
+
+    Traceback (most recent call last):
+      File "/.../xxx/manage.py", line 6, in <module>
+        from djangosite_local import manage ; manage(__file__)
+      File "/home/luc/mypy/djangosite_local.py", line 32, in manage
+        execute_from_command_line(sys.argv)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 353, in execute_from_command_line
+        utility.execute()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 345, in execute
+        self.fetch_command(subcommand).run_from_argv(self.argv)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/management/base.py", line 348, in run_from_argv
+        self.execute(*args, **cmd_options)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/management/base.py", line 399, in execute
+        output = self.handle(*args, **options)
+      File "/home/luc/repositories/lino/lino/modlib/lino_startup/management/commands/linod.py", line 68, in handle
+        schedule.run_pending()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/schedule/__init__.py", line 367, in run_pending
+        default_scheduler.run_pending()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/schedule/__init__.py", line 64, in run_pending
+        self._run_job(job)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/schedule/__init__.py", line 96, in _run_job
+        ret = job.run()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/schedule/__init__.py", line 293, in run
+        ret = self.job_func()
+      File "/home/luc/repositories/lino/lino/modlib/notify/models.py", line 367, in send_pending_emails
+        obj.send_email()
+      File "/home/luc/repositories/lino/lino/modlib/notify/models.py", line 208, in send_email
+        rt.send_email(subject, sender, body, [self.user.email])
+      File "/home/luc/repositories/lino/lino/api/rt.py", line 69, in send_email
+        return settings.SITE.send_email(*args, **kw)
+      File "/home/luc/repositories/lino/lino/core/site.py", line 3430, in send_email
+        send_mail(subject, body, sender, recipients, **kw)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/__init__.py", line 61, in send_mail
+        return mail.send()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/message.py", line 292, in send
+        return self.get_connection(fail_silently).send_messages([self])
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/backends/smtp.py", line 107, in send_messages
+        sent = self._send(message)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/backends/smtp.py", line 121, in _send
+        message = email_message.message()
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/message.py", line 255, in message
+        msg = SafeMIMEText(self.body, self.content_subtype, encoding)
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/django/core/mail/message.py", line 173, in __init__
+        self.set_payload(_text, utf8_charset)
+      File "/usr/lib/python2.7/email/message.py", line 226, in set_payload
+        self.set_charset(charset)
+      File "/usr/lib/python2.7/email/message.py", line 268, in set_charset
+        cte(self)
+      File "/usr/lib/python2.7/email/encoders.py", line 73, in encode_7or8bit
+        orig.encode('ascii')
+      File "/usr/local/pythonenv/demo/local/lib/python2.7/site-packages/future/types/newbytes.py", line 366, in __getattribute__
+        raise AttributeError("encode method has been disabled in newbytes")
+    AttributeError: encode method has been disabled in newbytes
+
+
+The explanation was that :mod:`lino.utils.html2text` (my almost
+unmodified copy of Aaron Swartz's `html2text
+<http://www.aaronsw.com/2002/html2text/>`) returned a string of type
+`newbytes` in certain circumstances (here it was probably because the
+original text contained a non-breaking space).  `newbytes` is
+something very hackerish defined by the future package.
+
+The solution was to remove our module and make Lino use the `html2text
+<https://pypi.python.org/pypi/html2text/>`__ package published on PyPI
+and maintained by Alireza Savand (who obviously invested more energy
+than Hamza and I for porting it to Python 3).
+
+I deployed these changes to :ref:`lf`.
+
+TODO: make supervisor behave differently when there is a
+traceback. Instead of restarting the process it should send me an
+email or just leave the process rest in peace.
