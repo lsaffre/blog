@@ -1,0 +1,50 @@
+:date: 2016-10-20
+
+==========================
+Thursday, October 20, 2016
+==========================
+
+Coping with overrich HTML
+=========================
+
+We have a new model mixin :class:`lino.mixins.bleached.Bleached`, used
+to automatically "bleach" the content of `RichTextField` even before
+saving them to the database. This is to avoid problems like
+:ticket:`1239`, which were possible after pasting text from certain MS
+applications into a Lino RichTextField.
+
+This mixin is now used by :class:`lino.modlib.comments.models.Comment`
+(where :ticket:`1239` occured).
+
+I don't yet dare to use it on the text fields in
+:mod:`lino_welfare.modlib.isip` and children. Because it causes the
+bleached fields to get permanently stripped of any tags that are not
+allowed. And in case this would cause problems, users would report
+them only when it is too late. For these fields we will need a kind of
+special migration which keeps track of every change so that we can
+eventually roll it back later.
+
+But I *do* dare to use it on
+:class:`lino_cosi.lib.sales.models.ProductDocItem`, which itself is
+used in only one production site, and AFAIK they did not yet start to
+use HTML descriptions.
+
+One question was how to define the default value for this list of
+allowed tags?  Actually Lino already has such a list, it is in the
+:class:`names <lino.utils.xmlgen.Namespace.names>` field of
+:data:`lino.utils.xmlgen.html.E`. I slightly changed the API for
+:class:`lino.utils.xmlgen.Namespace` to make this data more
+intuitive. Note that most other subpackages of
+:mod:`lino.utils.xmlgen` are rather obsolete (except maybe
+:mod:`lino.utils.xmlgen.intervat`).
+       
+The new :mod:`lino.modlib.comments.fixtures.demo` fixture adds a few
+comments which contain such hackerish HTML.
+
+
+Referring to the source code of a Python object
+===============================================
+
+I added the :ref:`memo.py` memo command as a solution (or at least a
+first draft thereof) for :ticket:`943` (which we need as part of
+:ticket:`1237`).

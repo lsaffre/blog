@@ -1,0 +1,80 @@
+:date: 2016-10-17
+
+========================
+Monday, October 17, 2016
+========================
+
+Lino failed to generate until the end
+=====================================
+
+I fixed :ticket:`1220`. This was a subtle one.  I had to change the
+algorithm for re-generating automatic events.  Lino until now built
+the "wanted events" also for events which which had already taken
+place. This was not only useless, it also disturbed in the following
+situation (example):
+
+    Course #1 happened in 2016 every Friday at 9:30, course #2 at
+    13:30. In 2017 course #2 happens at 9:30 (and course #2 on
+    Thursday).
+
+I did not write a test case for reproducing this problem because that
+takes time and because the client had a concrete example in their
+database. But I extended
+:mod:`lino_voga.projects.roger.tests.test_faggio` to make sure that
+superfluous events get removed when `max_events` is changed.
+
+A ticket for Rauno
+==================
+
+I opened :ticket:`1225` for this (Write a test case which reproduces
+:ticket:`1220`) and assigned it to :ref:`rauno`.
+
+Rauno, here are some first hints:
+
+- Make sure you understand the original problem (:ticket:`1220`).  The
+  ticket has been fixed by `3bcbd30
+  <https://github.com/lino-framework/xl/commit/3bcbd30bb39226a3423eafd94aa8a203309a9ee9>`__,
+  so you need to checkout some older version, e.g. `7b63c2f
+  <https://github.com/lino-framework/xl/commit/7b63c2f487cc2b1d2516df4e41c64f820e9da1ce>`__::
+
+    $ go xl
+    $ git checkout 7b63c2f
+
+- Start by manually reproducing it in the web interface.    
+  
+- Extend the :mod:`lino_voga.projects.roger.tests.test_faggio` case
+  (or create a new test case, starting from a copy of this file) in
+  order to get the problem. Verify your changes by running that test
+  until you have the problem reproduced and the test case passing::
+
+      $ go voga
+      $ cd lino_voga/projects/roger
+      $ python manage.py test
+
+  IOW you simulate the situation before we knew about #1220.
+
+- Switch back to the master (where the ticket should be fixed)::
+
+    $ go xl
+    $ git checkout master
+
+  And then change :mod:`test_faggio
+  <lino_voga.projects.roger.tests.test_faggio>` so it passes with the
+  new version.
+
+
+Aurélie reported :ticket:`1226`:
+
+  Actuellement seul un administratuer ou la personne qui a orienté un
+  bénéficiaire dans un Atelier peut modifier l'état: "demandé",
+  "confirmé", "commencé", "terminé".  Mais c'est la personne en charge
+  de l'Atelier qui doit pouvoir le modifier.
+
+She speaks about the :class:`Enrolment.state
+<lino_cosi.lib.courses.models.Enrolment.state>`.  Actually it is not
+only about this field, I guess that she means all fields of the
+enrolment.  The default behaviour is because `Enrolment` inherits from
+`UserAuthored`. In :ref:`welcht` they want to keep track about who
+created an enrolment, but the permission to write should go also to
+the course's teacher.
+

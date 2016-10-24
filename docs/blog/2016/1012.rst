@@ -1,0 +1,53 @@
+:date: 2016-10-12
+
+===========================
+Wednesday, October 12, 2016
+===========================
+
+Contributions from three continents
+===================================
+
+Today I reviewed two pull requests, one submitted by :ref:`hamza`, the
+other by :ref:`subha`.  I am glad that the Lino team has a third
+active contributor. Subha is less experienced than Hamza and me, but
+that's no problem, the important thing is that we have the same
+wavelength so we can learn from each other, and I am optimistic about
+this.
+
+Lino Voga
+=========
+
+I added a new field :attr:`Course.paper_type
+<lino_voga.lib.courses.models.Course.paper_type>` (needed for
+:ticket:`1203`)
+
+I installed the latest version at :ref:`eiche`.  And I set their
+:attr:`ignore_dates_after <lino_xl.lib.cal.Plugin.ignore_dates_after>`
+to `i2d(20171231)`
+
+The following error occured (of course) when restoring the snapshot::
+   
+    Traceback (most recent call last):
+      File "manage.py", line 6, in <module>
+      ...
+      File "snapshot/restore.py", line 1157, in <module>
+      File "snapshot/restore.py", line 1114, in main
+      File "users_user.py", line 4, in <module>
+        loader.save(create_users_user(u'5',dt(2016,5,2,11,29,32),dt(2016,1,25,17,39,47),... None,True))
+      File "snapshot/restore.py", line 556, in create_users_user
+    AttributeError: 'module' object has no attribute 'UserProfiles'
+
+I did not write a migrator for this because I just needed to modify
+the :file:`snapshot/restore.py` script at the given line, replacing
+UserProfiles by UserTypes.
+      
+Five enrolments had a little problem::
+  
+    201610-12 23:03:20 INFO courses_enrolment : Loading 1927 objects to table courses_enrolment...
+    201610-12 23:03:37 WARNING models : 81.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+    201610-12 23:03:37 WARNING models : 81.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+    201610-12 23:03:37 WARNING models : 81.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+    201610-12 23:03:37 WARNING models : 81.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+    201610-12 23:03:38 WARNING models : 45.00 * 1 -> can't multiply sequence by non-int of type 'Decimal'
+
+I did not investigate this further... 
