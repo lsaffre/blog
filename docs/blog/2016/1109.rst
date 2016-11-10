@@ -1,0 +1,52 @@
+:date: 2016-11-09
+
+======================================
+20161109 (Wednesday, 09 November 2016)
+======================================
+
+Lino uses websockets
+====================
+
+Hamza and I started to work on :ticket:`923`. I merged a first proof
+of concept into master.  Looks promising.  Our simple test case is:
+
+- Run a devserver in the :mod:`lino_noi.projects.team` project
+- Log in as robin in one browser window and as jean in another
+  (private) window.
+- Make sure that jean has no unseen notifications
+- In the robin window, modify a ticket reported by jean
+- As soon as you save your changes as robin, jean gets a notification
+  alert.
+
+Note that :mod:`lino.modlib.notify` now requires `Django channels
+<https://channels.readthedocs.io/en/stable/>`__, so existing
+development installations must manually do::
+
+  $ pip install channels
+
+  
+Miscellaneous
+=============
+
+When :manage:`linod` tried to send an email on a server with problems
+at SMTP level (e.g. an `smtplib.SMTPConnectError`), then the daemon
+process exited with a traceback. Now
+:meth:`lino.core.sitre.Site.send_email` logs a warning instead.
+
+I opened ticket :ticket:`1260` in the hope of getting ideas from
+others. The problem is that Lino has three commands which do different
+things but sound similar:
+
+- :cmd:`inv initdb`
+- :manage:`initdb`
+- :manage:`initdb_demo`
+
+Newbies often mix them up and then stumble. My first spontaneous
+suggestion is to rename
+
+- :cmd:`inv initdb` to :cmd:`inv prep`
+- :manage:`initdb_demo` to :manage:`prep`
+
+IOW to 'prepare' a project means to run :manage:`initdb` using the
+default demo fixtures (those defined in :attr:`demo_fixtures
+<lino.core.site.Site.demo_fixtures>`).

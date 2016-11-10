@@ -60,6 +60,15 @@ James
 Is a Lino fan living in Japan.
 
 
+.. _leena:
+
+Leena
+-----
+
+Is the first woman in the world who managed to follow the
+:ref:`lino.dev`. She lives in California.
+
+
 .. _grigorij:
 
 Grigorij
@@ -74,6 +83,14 @@ Rauno
 -----
 
 Rauno is a Lino fan living in Estonia.
+
+
+.. _tanel:
+
+Tanel
+-----
+
+Tanel is a Lino fan living in Estonia.
 
 
 .. _jt:
@@ -263,6 +280,14 @@ SPZ Eupen
 ---------
 
 Website: http://www.spz.be/
+
+
+.. _abakus:
+
+Abakus
+---------
+
+Website: http://www.abakusitsolutions.eu/
 
 
 
