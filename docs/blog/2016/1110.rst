@@ -35,4 +35,36 @@ I worked on :ticket:`1227`.
      suppress_warnings = ['image.nonlocal_uri']
   
 
-I worked on :ticket:`1249`.
+I worked on :ticket:`1249`. How to reproduce:
+
+- get the latest development version (see below)
+- start runserver in :mod:`lino_welfare.projects.chatelet`
+- log in as robin
+- open the kitchen workshop, generate automatic events, then try to
+  edit presences of the participants.
+  
+
+The problem came indirectly because the system for defining the
+reception and calendar worflows was still using an obsolete scheme.
+
+
+Code changes:  
+
+- The
+  :mod:`lino_welfare.projects.chatelet.modlib.courses.fixtures.demo`
+  fixture now creates a kitchen workshop with some events.
+- :class:`ChangeStateAction` now automatically refuses to run on an
+  instance whose state is already the target state.
+- I reorganized how the workflow for GuestStates is being defined. I
+  converted :ref:`welfare` to use :attr:`workflows_module`.
+- The state change actions [Excused] [Absent] and [Present] are no
+  longer available on presences of a events which did not yet take
+  place.
+- :class:`CloseMeeting` moved from :mod:`lino_welfare.modlib.cal` to
+  :mod:`lino_xl.modlib.reception`.
+
+In the evening I had a Hangouts meeting with :ref:`rauno`, and
+together we added some content to :ref:`welfare.specs.courses2` in
+order to cover the situation of :ticket:`1249`.
+
+
