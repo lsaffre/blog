@@ -1,0 +1,54 @@
+:date: 2016-11-12
+
+===========================
+Saturday, November 12, 2016
+===========================
+
+About bleach and html5lib
+=========================
+
+I noticed that bleach (see :mod:`lino.mixin.bleached`) requires
+html5lib version `0.9999999` (7*"9") while the current version of
+html5lib is `0.999999999` (9*"9").
+
+Which means that you might inadvertedly break bleach when you ask to
+update html5lib::
+
+    $ pip install -U html5lib
+    ...
+    Successfully installed html5lib-0.999999999
+    $ python -m bleach
+    Traceback (most recent call last):
+      File "/usr/lib/python2.7/runpy.py", line 163, in _run_module_as_main
+        mod_name, _Error)
+      File "/usr/lib/python2.7/runpy.py", line 111, in _get_module_details
+        __import__(mod_name)  # Do not catch exceptions initializing package
+      File "/site-packages/bleach/__init__.py", line 14, in <module>
+        from html5lib.sanitizer import HTMLSanitizer
+    ImportError: No module named sanitizer
+
+Or you might inadvertedly downgrade html5lib when you ask to
+update bleach::
+
+    $ pip install -U bleach
+    ...
+    Successfully installed html5lib-0.9999999
+
+I changed :mod:`lino.mixins.bleached` to be more severe: until now it
+silently became inactive when bleach was not installed or broken.
+
+Documentation
+=============
+
+- I integrated first suggestions by :ref:`rauno` 
+  for :ticket:`40`.
+
+- I started a presentation which I plan to use for several
+  presentations during the coming weeks.  `The Lino framework
+  <../../dl/talk/lino.html>`__
+  
+  Made using `landslide`. I also tried `hieroglyph` and would have
+  enjoyed to have it integrated into my blog (including reflinks for
+  example), but didn't get it there.
+
+

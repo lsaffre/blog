@@ -334,3 +334,6 @@ feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"
 feed_field_name = 'date'
 
+extensions += ['hieroglyph']
+# autoslides = False
+# slide_numbers = True

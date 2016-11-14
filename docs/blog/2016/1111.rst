@@ -1,0 +1,139 @@
+:date: 2016-11-11
+
+=========================
+Friday, November 11, 2016
+=========================
+
+Open letter to Donald Trump
+===========================
+
+I signed the `Global Open Letter to Donald Trump
+<https://www.avaaz.org/campaign/en/president_trump_letter_loc/>`__
+which says:
+
+    Dear Mr. Trump, 
+
+    This is not what greatness looks like. 
+
+    The world rejects your fear, hate-mongering, and bigotry. We reject
+    your support for torture, your calls for murdering civilians, and your
+    general encouragement of violence. We reject your denigration of
+    women, Muslims, Mexicans, and millions of others who don’t look like
+    you, talk like you, or pray to the same god as you.
+
+    Facing your fear we choose compassion. Hearing your despair we choose
+    hope. Seeing your ignorance we choose understanding.
+
+    As citizens of the world, we stand united against your brand of
+    division.
+
+    | Sincerely,
+    | Luc Saffre
+
+I also join the hopes and warnings expressed in the `statement of
+Archbishop Joseph E. Kurtz of Louisville, Kentucky
+<http://www.usccb.org/news/2016/16-147.cfm>`__.
+
+Let's pray:
+
+- May our politicians propagate the values of compassion, hope,
+  love for our ennemies, and unity of humans.
+
+- May our polititians have the courage to learn, to grow in spirit and
+  to change their convictions where needed.
+
+- Let us see the face of God in our neighbors, especially the
+  suffering or those with whom we may disagree.
+
+
+Desktop notifications
+=====================
+
+I merged `Hamza's work
+<https://github.com/lino-framework/lino/pull/62>`__ on :ticket:`923`
+into :ref:`lino` (the `channels` branch).
+
+Applications with :mod:`lino.modlib.notify` now use `Tyler Nickerson's
+<https://tylernickerson.com/>`__ the `Push.js
+<https://nickersoft.github.io/push.js/>`__ library for displaying
+"desktop notifications" instead of plain JavaScript "alert" messages.
+
+
+My own mail server
+==================
+
+It is already more than a week that `smtp.elisa.ee` refuses to talk to
+the postfix on :ref:`lf` when it tries to relay an outbound mail::
+
+  host smtp.elisa.ee[194.150.66.204] refused to talk to me:
+  554 5.7.1 <unknown[194.204.31.42]>: Client host rejected: Access denied
+
+Now I started to convert :ref:`lf` into a `stand-alone mail server
+<http://www.postfix.org/STANDARD_CONFIGURATION_README.html#stand_alone>`__
+
+Excerpts of my :file:`/etc/postfix/main.cf` file::
+
+    # relayhost = smtp.elisa.ee
+
+    # LS 20161111       
+    # Alternative 1: don't relay mail from other hosts.
+    mynetworks_style = host
+    relay_domains =
+
+
+Now of course the situation changed. The other side still refuses to
+talk to me, but now it is `gmx.net`, and they give an explanation
+which I can understand::
+  
+  Nov 11 13:06:30 vps postfix/smtp[1281]: 761A82A684F:
+  to=<luc.saffre@gmx.net>, relay=mx00.emig.gmx.net[212.227.15.9]:25,
+  delay=1.3, delays=0.08/0.01/1.2/0, dsn=4.0.0, status=deferred (host
+  mx00.emig.gmx.net[212.227.15.9] refused to talk to me: 554-gmx.net
+  (mxgmx005) Nemesis ESMTP Service not available 554-No SMTP service
+  554 invalid DNS PTR resource record, IP=194.204.31.42)
+
+Yes, this is my problem::
+
+    $ host 194.204.31.42
+    Host 42.31.204.194.in-addr.arpa. not found: 3(NXDOMAIN)
+
+I must setup a correct reverse DNS zone.  `How to setup Reverse DNS
+and PTR records
+<http://www.itworld.com/article/2833006/networking/how-to-setup-reverse-dns-and-ptr-records.html>`__
+
+Desktop notifications continued
+===============================
+
+Hamza and I played around and discussed about desktop notifications.
+
+- Messages should no longer automatically get marked as seen as soon
+  as they are displayed by the browser (because the user might be away
+  from their computer).
+  
+- The current behaviour when clicking a desktop notification is to
+  focus the browser window. That's perfect.
+
+- It seems that "rich" desktop notifications (i.e. which contain
+  clickable links or formatted text) are not recommended:
+  https://developer.chrome.com/extensions/desktop_notifications
+
+TODO Hamza:
+
+- don't mark messages as read in routing.py
+- Remove HTML tags from notification body before sending the message
+- Merge channels into master
+- release to noi  
+
+TODO Luc:  
+
+- The :func:`lino_xl.lib.reception.models.create_prompt_event`
+  function must emit a notification.
+
+TO TALK:
+
+- Add an automatic refresh of the main window when the browser window
+  receives focus?
+
+- We can now completely remove the [autorefresh] functionality.
+  
+  
