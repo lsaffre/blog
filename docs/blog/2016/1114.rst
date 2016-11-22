@@ -20,6 +20,18 @@ I had asked Hamza to do the folllowing:
 Now I merged his work into master and started to adapt tests in other
 projects after these changes.
 
+I changed the label of `notify_silent` from "Don't send email message"
+to "Don't notify others" ("Keine Mitteilung an andere", "Ne pas
+avertir les autres").
+
+In the evening we deployed to :ref:`lf`, did the migration together
+(which required a manual change in :file:`restore.py` because we
+didn't write a migrator yet) and then explored the problem of our
+websocket connection::
+  
+    reconnecting-websocket.min.js:1 WebSocket connection to 'wss://xxxxx.lino-framework.org/websocket/' failed: Error during WebSocket handshake: Unexpected response code: 404
+
+
 pkg_resources.VersionConflict
 =============================
 
@@ -108,8 +120,8 @@ Lino and Django 1.9.11
 
 `Django 1.9.11
 <https://docs.djangoproject.com/en/1.10/releases/1.9.11/>`__ validates
-the Host header against `settings.ALLOWED_HOSTS` also when
-`settings.DEBUG=True`.  It gives me a warning::
+the Host header against :setting:`ALLOWED_HOSTS` also when
+:setting:`DEBUG` is `True`.  It gives me a warning::
 
   Invalid HTTP_HOST header: 'testserver'. You may need to add u'testserver' to ALLOWED_HOSTS.
 
@@ -118,7 +130,3 @@ To get our test suites pass again, I now defined a default
 
     ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1', '::1']
 
-
-
-Changed the label of `notify_silent` from "Don't send email message"
-to "Don't notify others" ("Keine Mitteilung an andere")
