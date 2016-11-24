@@ -1,0 +1,20 @@
+:date: 2016-11-19
+
+===========================
+Saturday, November 19, 2016
+===========================
+
+Ticket :ticket:`1273` was caused by an unused virtual field `result`
+(used by no layout). The solution was simple: remove that vrtual
+field.
+
+But why did the error happen on the production site and not in our
+test suite?  I verified that the `polls.Polls` table is being shown in
+:ref:`welfare.specs.polls`.  So why did it not happen there? Answer:
+because the dangling field was not being evaluated there. But it *is*
+being evaluated by the :mod:`lino.modlib.extjs` renderer.  So I wrote
+a new utility function :func:`walk_menu_items
+<lino.api.doctests.walk_menu_items>` which would have seen this error
+I added to the specs of :ref:`voga` and :ref:`welfare`.
+
+

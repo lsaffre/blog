@@ -1,0 +1,79 @@
+:date: 2016-11-23
+
+============================
+Wednesday, November 23, 2016
+============================
+
+A quick link for creating new tickets
+=====================================
+
+I started to work on :ticket:`1281`, a series of optimizations for
+:ref:`care` which we discovered on Monday:
+
+- Shortcuts „neue Bitte erfassen“, „meine Einstellungen“
+- Mitteilung „Du hast noch keine Fähigkeiten, klicke hier“
+- Automatische Mitteilung per E-Mail, wenn „Wo ich helfen kann“ unleer ist.
+- Benachrichtungen abschalten können pro Benutzer
+- Feld „Thema“ ist unklar
+- Completely remove working hours from :ref:`care`
+
+Already the first item revealed two bugs:
+
+- Bugfix: it was not possible to override the label of a quick
+  link. :xfile:`admin_main_base.html` no longer calls
+  :meth:`lino.core.requests.BaseRequest.window_action_button` for
+  generating the "Quick links" but the new
+  :meth:`lino.core.requests.BaseRequest.menu_item_button`
+        
+- Bugfix: When invoking an insert action using a quick link, then the
+  window was not editable. This required changes in
+  :xfile:`linoweb.js` and :mod:`lino.modlib.extjs.ext_renderer` : I
+  introduced a new class attribute `default_record_id` which contains
+  the magic value -99999 for InsertFormPanel subclasses.
+
+I also renamed the label of AllTickets from "Tickets" to "All tickets"
+and removed some quicklinks in :ref:`care`.
+
+The controller of a notifiction message
+=======================================
+
+On 22/11/16 14:51, Mathieu Jacqmin wrote:
+
+    Peux-tu enlever de la page d’accueil le panneau « Mes messages » ?
+    Ca fait double emploi avec la réception des mails et la panneau
+    salle d’attente.
+
+Mathieu a absolument raison en observant que cela fait double emploi.
+Il faut différencier deux types de messages:
+
+- "Client X a été modifié par user Y"
+- "Client X t'attend dans la salle d'attente"
+  
+Le premier a besoin d'un méchanisme pour éviter d'envoyer dix mails
+quand un collègue fait dix petites modifications successives dans le
+dossier d'un bénéficiaire donné, pour le deuxième ce méchanisme n'a
+pas de sens.
+
+This "mechanism" is exactly why we have the :attr:`owner
+lino.modlib.notify.models.Message.owner>` field.
+
+:class:`CheckinVisitor <lino_xl.lib.reception.models.CheckinVisitor>`
+should not create a "controlled" message because we don't want that
+mechanism there.
+
+:class:`CheckinVisitor <lino_xl.lib.reception.models.CheckinVisitor>`
+inherits from :class:`NotifyingAction
+<lino.modlib.notify.actions.NotifyingAction>`.  It seems that the
+normal situation *is* to have *no* controller.  So I changed
+:meth:`lino.modlib.notify.actions.NotifyingAction.get_notify_owner` to
+return `None` (i.e. no longer the object on which the action was
+triggered).
+
+That's a little change, and I am trying to document what I am
+learning, but the notification system is still not finished.  We are
+learning by doing here.  For example `User.notifyme_mode` must not be
+a checkbox but a ChoiceList (Never, Instantly, Daily summary, Weekly
+summary, ...)
+
+And both daily and often email sender tasks should always run (this
+should not depend on whether :attr:`use_websockets` is set or not.

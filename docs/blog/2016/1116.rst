@@ -1,0 +1,24 @@
+:date: 2016-11-16
+
+============================
+Wednesday, November 16, 2016
+============================
+
+I integrated more feedback from :ref:`rauno` into the :ref:`lino.dev`.
+
+Ticket :ticket:`1262` is still causing trouble. Rauno stumbled over
+it, Travis stumbles over it... now it seems that I finally got it: The
+real problem is that `bleach
+<https://github.com/mozilla/bleach/blob/master/setup.py>`__ requires
+version <0.99999999 of html5lib while `weasyprint
+<https://github.com/Kozea/WeasyPrint/blob/master/setup.py>`__ requires
+version >=0.999999999 of that same library. So you cannot currently
+use both bleach and weasyprint. The good solution for this is to
+update bleach so that it works with the newes version of html5lib.
+
+Workaround for now: remove all version requirements, and make
+:mod:`lino.mixins.bleached` again less strict: don't raise an
+exception, just log a warning when bleach is not installed. This is as
+it was until last week. The problem with this workaround is that it
+might be a time bomb because bleach is currently inactive and might
+become active at some unexpected moment in the future.

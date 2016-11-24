@@ -1,0 +1,30 @@
+:date: 2016-11-22
+
+==========================
+Tuesday, November 22, 2016
+==========================
+
+I repaired the test suites after miscellaneous changes of the last
+days. All failures were trivial, except one, in
+:ref:`noi.specs.as_pdf`, for which is don't yet see the explanation::
+
+  $ go noi
+  $ python setup.py test -s tests.SpecsTests.test_as_pdf  
+    (...)
+    Traceback (most recent call last):
+      File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+        import sys, os, os.path, time, signal
+      File "/usr/lib/python3.5/signal.py", line 3, in <module>
+        from functools import wraps as _wraps
+      File "/usr/lib/python3.5/functools.py", line 21, in <module>
+        from collections import namedtuple
+      File "/usr/lib/python3.5/collections/__init__.py", line 32, in <module>
+        from reprlib import recursive_repr as _recursive_repr
+      File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/reprlib/__init__.py", line 7, in <module>
+        raise ImportError('This package should not be accessible on Python 3. '
+    ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+This looks as if the python3 executable (which is called by
+:term:`appy.pod` for converting the document using UNO) gets a wrong
+PYTHONPATH.  I could not reproduce the problem within a real browser.
+I marked these tests as SKIP and wrote :ticket:`1282`.

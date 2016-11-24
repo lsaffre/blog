@@ -1,0 +1,32 @@
+:date: 2016-11-20
+
+=========================
+Sunday, November 20, 2016
+=========================
+
+I worked on :ticket:`1227` and did a rather radical change in
+:mod:`lino.modlib.notify` which I shortly mentioned in a comment to
+:ticket:`923`:
+
+     remove the Message.subject field. A notification message has just
+     a body. This fixes our design problem of having redundant text in
+     subject and body.
+
+Testing these things is time-consuming because many situations are not
+yet covered by automated tests.
+
+
+Found and fixed a bug: The actions RefuseClient and MarkClientFormer
+did not actually change the new client_state.
+
+In :mod:`lino.modlib.notify.fixtures` renamed demo to demo2 because
+not all users were being notified.
+
+Message.body is now a RichTextField and
+
+TextFieldElement.value2html now uses :meth:`E.raw` instead of
+:meth:`E.fromstring` in order to display HTML content correctly also
+in a html summary.
+
+Added :meth:`Textfieldelement.format_value` in order to render HTML
+content in a rst table.
