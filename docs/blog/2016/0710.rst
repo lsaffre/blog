@@ -74,11 +74,11 @@ Note that there are different ways of running the
 
       $ django-admin.py initdb_demo --settings=lino_book.projects.max.settings.demo
 
-3. cd to the root of a repository and run the :cmd:`inv initdb`
+3. cd to the root of a repository and run the :cmd:`inv prep`
    command (which runs :manage:`initdb_demo` for all demo projects::
 
       $ cd ~/repositories/book
-      $ inv initdb
+      $ inv prep
     
 The error was so difficult to reproduce because it does not occur in
 cases 1 and 2, and even in case 3 only when :setting:`LINO_CACHE_ROOT`
@@ -98,7 +98,7 @@ The reason for this error is complex:
   project directory.
 
 - If we look at the code of :mod:`atelier.invlib` we can see the
-  :cmd:`inv initdb` command sets the current directory as follows::
+  :cmd:`inv prep` command sets the current directory as follows::
 
     for mod in ctx.demo_projects:
         m = import_module(mod)
@@ -112,7 +112,7 @@ The reason for this error is complex:
 
 Code changes:
 
-- The :cmd:`inv initdb` command now always runs in the
+- The :cmd:`inv prep` command now always runs in the
   :attr:`project_dir <lino.core.site.Site.project_dir>` and no longer
   depends on :setting:`LINO_CACHE_ROOT`.
 
