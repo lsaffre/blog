@@ -20,13 +20,21 @@ Changed :cmd:`inv initdb` to :cmd:`inv prep`
 I did ticket :ticket:`1260` and renamed :cmd:`inv initdb` to :cmd:`inv
 prep`.
 
-TODO: update documentation
-
 Miscellaneous
 =============
 
 I fixed yet another case of :message:`'NoneType' object has no
 attribute 'splitlines'` AttributeError in :mod:`lino.core.diff`.
+
+:ticket:`1258` : I still cannot reproduce the problem, but now I added
+an `insert_layout` to `cv.StudiesByPerson` and
+`cv.ExperiencesByPerson`. Maybe the problem disappears with this
+change.
+
+I discovered how to reproduce a :message:`'VirtualField' object has no
+attribute 'get_col'` AttributeError. This came because remote fields
+were rendered as sortable columns, and the error happened when then a
+user tried to sort on them.
 
 
 Optimizations for :ref:`care`
@@ -40,3 +48,63 @@ And another bugfix in the core: :meth:`add_instance_action
 <lino.core.menus.Menu.add_instance_action>` did not work when used as
 a quick link (:meth:`setup_quicklinks
 <lino.core.site.Site.setup_quicklinks>`)
+
+
+
+Permissions problem
+===================
+
+When releasing to :ref:`oikos` I had a new permissions problem. The
+website reported a 500::
+
+    Traceback (most recent call last):
+      File "PRJDIR/env/local/lib/python2.7/site-packages/django/core/handlers/wsgi.py", line 158, in __call__
+        self.load_middleware()
+      File "PRJDIR/env/local/lib/python2.7/site-packages/django/core/handlers/base.py", line 50, in load_middleware
+        for middleware_path in settings.MIDDLEWARE_CLASSES:
+      File "PRJDIR/env/local/lib/python2.7/site-packages/django/conf/__init__.py", line 55, in __getattr__
+        self._setup(name)
+      File "PRJDIR/env/local/lib/python2.7/site-packages/django/conf/__init__.py", line 43, in _setup
+        self._wrapped = Settings(settings_module)
+      File "PRJDIR/env/local/lib/python2.7/site-packages/django/conf/__init__.py", line 99, in __init__
+        mod = importlib.import_module(self.SETTINGS_MODULE)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "PRJDIR/settings.py", line 4, in <module>
+        from lino_noi.projects.care.settings import *
+      File "ENVDIR/repositories/noi/lino_noi/projects/care/settings/__init__.py", line 22, in <module>
+        from lino_noi.projects.team.settings import *
+      File "ENVDIR/repositories/noi/lino_noi/projects/team/settings/__init__.py", line 20, in <module>
+        from lino.projects.std.settings import *
+      File "ENVDIR/repositories/lino/lino/projects/std/settings.py", line 11, in <module>
+        from lino.api.ad import Site, configure_plugin, _
+      File "ENVDIR/repositories/lino/lino/api/ad.py", line 20, in <module>
+        from lino.core.site import Site, TestSite, configure_plugin
+      File "ENVDIR/repositories/lino/lino/core/site.py", line 58, in <module>
+        from html2text import HTML2Text
+    ImportError: No module named html2text
+
+But when I manually activated the environment, I did not have that
+problem. The problem occurred only when running as www-data. It was
+because newly installed packages (using ``pip install`` as user admin)
+were not group-owned www-data and not executable by other users::
+
+  $ cd env/lib
+  $ find -type d ! -perm /o=x
+
+gave a long list of directories. Also this one::
+
+  $ find ! -perm /o=r
+
+I fixed it using::  
+  
+  $ find -type d ! -perm /o=x -exec chmod o+x '{}' +
+  $ find ! -perm /o=r -exec chmod o+r '{}' +
+
+
+
+User widgets
+============
+  
+I started to prepare for :ticket:`1284`.
+New class :class:`lino.core.permissions.UserPrefs`.
