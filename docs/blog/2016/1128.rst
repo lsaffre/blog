@@ -1,0 +1,85 @@
+:date: 2016-11-28
+
+=========================
+Monday, November 28, 2016
+=========================
+
+About dashboard widgets and user preferences
+============================================
+
+Now finally I can write a bit more about :ticket:`1284`.
+
+It was triggered by a simple request from Aurélie: they wanted to make
+it configurable per user whether
+:class:`lino.modlib.notify.models.MyMessages` is to be visible in the
+main admin screen or not.
+
+My first idea was to add an option "Display messages in main screen".
+But in a discussion with Hamza I understood:
+
+    I am reluctant to add this option because it makes the user
+    preferences more complex.  Simple users wiil be irritated because
+    they don't know what to put there...
+
+    Actually my feeling is deeper: I doubt whether this option makes
+    sense *at all*.  This option is not only irritating for *simple*
+    users.
+    
+    I also think that even those people who did not want to see "Mes
+    messages" (because they rely on their emails), even these people
+    sometimes want to see their messages in the main screen. The real
+    solution is to make *all* those admin main items configurable.
+
+    The admin main items are like the "widgets" used sometimes by CMS
+    frameworks.
+
+    Actually we should not have an option "Display messages in main
+    screen", but a panel where every user can customize which widgets they
+    want to see, and in which order. And maybe whether they should be
+    initially collapsed... or whether there should be several columns...
+
+The idea caused a little series of changes:
+
+- Lino now has the notion of "user preferences"
+  (:mod:`lino.core.userprefs`).  Required a little APi extension
+  :meth:`lino.core.plugin.Plugin.setup_user_prefs`.
+
+- I started to rename the "admin main page" to "dashboard", wrote a
+  :mod:`lino.core.dashboard` module for encapsulating the concept and a
+  new plugin :mod:`lino.modlib.dashboard` for letting users define
+  "widgets" for (optinally) configuring their dashboard.
+
+As a side effect of this, the
+:class:`lino_xl.lib.blogs.models.LatestEntries` table now also has a
+slave summary panel. Also note that this table is actually not a slave
+table (it has no master). I extended the slave summary panel so that
+it works also on master tables.
+
+En passant I discovered and fixed a subtle bug: The
+:attr:`use_websockets <lino.core.site.Site.use_websockets>` option
+must be a class attribute of :class:`lino.core.site.Site` (and not of
+:class:`lino.modlib.notify.Plugin`). The problem caused `channels` to
+be installed even when `use_websockets` was set to `False`.  It is
+analog to :attr:`use_java <lino.core.site.Site.use_java>`.
+
+Also en passant some more optimizations for :ticket:`923`: The
+:class:`lino.modlib.notify.models.MyMessages` table now has a custom
+summary so that the messages are being displayed as list items. And
+when you open it in its own window (where you have an ExtJS grid),
+then you now have an action to mark all messages as seen. It is
+currently not possible to render that action as a html link in the
+slave summary. And it is now labelled "My notification messages"
+(instead of just "My messages").
+
+
+TODO:
+
+- (:ref:`welfare.specs.chatelet` or :ref:`welfare.specs.eupen`)
+  Explorateur --> Système --> All dashboard widgets : 'NoneType'
+  object has no attribute 'get_request_queryset'
+
+- rename :meth:`get_slave_summary` to `get_summar_html`.
+
+  
+
+ 

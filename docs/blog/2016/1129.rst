@@ -1,0 +1,51 @@
+:date: 2016-11-29
+
+==========================
+Tuesday, November 29, 2016
+==========================
+
+The art of reproducing other people's problems
+==============================================
+
+This morning I saw a `failing build
+<https://travis-ci.org/lino-framework/noi/jobs/179583139>`__ for
+:ref:`noi` on :ref:`travis` (indentation added for readability)::
+
+       EvaluationError: Problem installing fixture
+       '/home/travis/virtualenv/python2.7.9/src/lino-xl/lino_xl/lib/excerpts/fixtures/demo2.py':
+       Error while evaluating the expression "html(body)" defined in
+       the "from" part of a statement.
+       Exception: 20150923 html2xhtml(u'Release notes for milestone
+           <b>welket:2015-05-03</b>.\n\n\nReleased on 3 May
+           2015.\n\n\nPlanned for 3 May 2015.\n\n\n\n\n<div><h2>Deployed
+           tickets</h2><table><tbody>No data to
+           display</tbody></table></div>\n\n<div><h2>Other
+           tickets</h2><table><tbody>No data to
+           display</tbody></table></div>\n\n') failed:
+       Could not load libtidy using any of these names:
+       libtidy,libtidy.so,libtidy-0.99.so.0,cygtidy-0-99-0,tidylib,libtidy.dylib,tidy
+
+Which told me that the :xfile:`.travis.yml` file for :ref:`noi` did
+not install `tidy`.
+
+That error reminds me a problem which :ref:`grigorij` is having when
+running the test suite for :ref:`welfare`.  His problem looks as if
+something is going wrong during the generation of the .odt files.
+Lino produces them using :term:`appy.pod` (which creates temporary
+directories and deletes them afterwards if everything went well). And
+when something went wrong, it can happen with :term:`appy.pod` that the
+original error message is difficult to find.
+
+I noticed that the instructions for installing `tidy` were missing
+under `System requirements` in :ref:`lino.dev.install`.
+
+So, Grigorij, I recommend to run this::
+
+      $ sudo apt-get install tidy
+
+And then note the new note in :ref:`dev.git_pull`:
+      
+    it can happen that Lino's *dependencies* change. And simply
+    pulling new sources won't update these. To prevent problems caused
+    by obsolete or missing dependencies, the easiest way can be to
+    create a new virtualenv (as explained in :ref:`lino.dev.env`).
