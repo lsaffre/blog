@@ -1,0 +1,81 @@
+:date: 2016-12-01
+
+==========================
+Thursday, December 1, 2016
+==========================
+
+Voting
+======
+
+I wrote a new plugin :mod:`lino_noi.lib.votes` which is going to
+replace :mod:`lino_xl.lib.stars` (:ticket:`831`).  And it is also
+going to implement what Johannes and I called "ticket help offers"
+(:ticket:`1285`) on :doc:`last Friday <1125>`.
+
+The first description of this idea was:
+
+    A new plugin "votes" : users can manage their "wish lists". A wish
+    is when a given user has an opinion about a given ticket (a
+    personal priority and an optional remark). There is at most 1 wish
+    per user and ticket. This is similar to the existing stars
+    plugin. But unlike a star it is not a simple on/off toggle. And
+    then I wouldn't use a GFK but a simple FK to an app-specific model
+    (the Plugin.voted_model).  Also a new field `voting_weight` per
+    user - this would enable us to automatically compute the
+    priorities of a todo list!
+
+Code changes:
+
+- New package :mod:`lino_noi.lib.votes`
+- Moved the :attr:`rating <lino_noi.lib.votes.models.Vote.rating>`
+  field from Ticket to Vote.
+- Adapted some dependencies and test suites in :ref:`presto`.
+- Wrote a migrator which converts existing `stars.Star` objects into
+  `votes.Vote` objects.
+  
+- Started using new date-based versioning system: 2016.12.0
+  
+TODO:
+
+- Voters should be notification recipients.
+  
+Miscellaneous
+=============
+
+- Fixed a bug causing an error message after creating Enrolment
+- Fixed a bug in new dashboard caused by StatusReport not having
+  preview_limit
+- The :manage:`initdb` command now works on InnoDB tables (sets
+  `foreign_key_checks` to 0 before running :manage:`migrate` and
+  :manage:`loaddata`).
+
+
+Fixed the duplicate entry bug
+=============================
+
+I reproduced (in :mod:`lino_voga.projects.roger.tests.test_faggio`)
+and fixed a bug which was probably the main reason for :ticket:`1280`:
+when the *first* automatic event of a series had been manually
+rescheduled to another date, then the second lesson came on that date
+a well (instead of getting the next available date).
+
+Deployed :ref:`voga` 2016.12.0 to :ref:`eiche`.
+
+In order to reproduce it, I also tried to run their data on my
+machine. Which revealed :ticket:`1293`::
+  
+  django.db.utils.OperationalError: (1193, "Unknown system variable 'storage_engine'")
+
+
+Setting up a new VPS
+====================
+
+:ticket:`1294` (AH01630: client denied by server configuration) :
+        
+This message in the Apache :xfile:`error.log` came because I had
+copied an Apache 2.2 config file to an Apache 2.4 system.  With Apache
+2.4 the conf files need upgrading.  See [url
+http://httpd.apache.org/docs/2.4/upgrading.html#run-time].
+
+
+  

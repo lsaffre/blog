@@ -1,0 +1,190 @@
+:date: 2016-12-02
+
+========================
+Friday, December 2, 2016
+========================
+
+Two deployments at the same time
+================================
+
+My mum always tells me to never run two deployments at the same time,
+at least not when you have only 15 minutes. Yesterday I did exactly
+this.
+
+Now I noticed that the deployment on our own :ref:`noi` database had a
+problem:
+
+- votes.Vote (1048, "Column 'created' cannot be null") (58 object(s)
+  with primary key 41, 73, 100, 96, 97, 98, 99, 58, 59, 86, 87, 39,
+  102, 53, 25, 64, 56
+
+So my starred tickets had not been migrated correctly.  I decided to
+re-run the :xfile:`restore.py` now because the few changes I did after
+this upgrade are less work than restoring the votes manually.
+
+I did not see this problem yesterday because of an old logging
+problem: the warnings emitted are written to :xfile:`lino.log` but not
+to the console. This problem had arrived with some Django upgrade.  I
+now found the reason and fixed it: I must remove the
+'require_debug_true' filter from the 'console' handler in Django's
+default logging config.  I have no idea why Django has such a strange
+behaviour as default... :ticket:`1295`.
+
+This fix for :ticket:`1295` probably caused the following warnings to
+no longer pass unseen::
+
+    .../django/db/models/fields/__init__.py:1393: RuntimeWarning: DateTimeField Ticket.created received a naive datetime (2015-02-22 00:00:00) while time zone support is active.
+
+    Cannot update unresolved field <class 'lino_xl.lib.excerpts.models.Excerpt'>.company
+
+
+This package should not be accessible on Python 3
+=================================================
+
+A mysterious error happens::
+  
+    $ go voga
+    $ python setup.py test -s tests.DocsTests.test_voga
+    running test
+    running egg_info
+    writing requirements to lino_voga.egg-info/requires.txt
+    writing lino_voga.egg-info/PKG-INFO
+    writing top-level names to lino_voga.egg-info/top_level.txt
+    writing dependency_links to lino_voga.egg-info/dependency_links.txt
+    reading manifest file 'lino_voga.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    writing manifest file 'lino_voga.egg-info/SOURCES.txt'
+    running build_ext
+    test_voga (tests.DocsTests) ... FAIL
+
+    ======================================================================
+    FAIL: test_voga (tests.DocsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/work/voga/tests/__init__.py", line 76, in test_voga
+        return self.run_simple_doctests('docs/specs/voga.rst')
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 109, in run_simple_doctests
+        self.run_subprocess(args, **kw)
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 92, in run_subprocess
+        self.fail(msg)
+    AssertionError: /media/dell1tb/virtualenvs/py27/bin/python -m atelier.doctest_utf8 docs/specs/voga.rst ({}) returned 1:
+    -----
+    **********************************************************************
+    File "/media/dell1tb/work/voga/docs/specs/voga.rst", line 53, in voga.rst
+    Failed example:
+        rv = ses.run(obj.do_print)
+    Exception raised:
+        Traceback (most recent call last):
+          File "/usr/lib/python2.7/doctest.py", line 1315, in __run
+            compileflags, 1) in test.globs
+          File "<doctest voga.rst[19]>", line 1, in <module>
+            rv = ses.run(obj.do_print)
+          File "/media/dell1tb/work/lino/lino/core/requests.py", line 631, in run
+            return thing.run_from_session(self, *args, **kw)
+          File "/media/dell1tb/work/lino/lino/core/utils.py", line 669, in run_from_session
+            self.bound_action.action.run_from_code(ar)
+          File "/media/dell1tb/work/lino/lino/core/actions.py", line 613, in run_from_code
+            self.run_from_ui(ar, *args, **kw)
+          File "/media/dell1tb/work/xl/lino_xl/lib/excerpts/models.py", line 340, in run_from_ui
+            ex.do_print.run_from_ui(ar, **kw)
+          File "/media/dell1tb/work/lino/lino/core/utils.py", line 659, in run_from_ui
+            self.bound_action.action.run_from_ui(ar)
+          File "/media/dell1tb/work/lino/lino/modlib/printing/actions.py", line 158, in run_from_ui
+            obj.build_target(ar)
+          File "/media/dell1tb/work/lino/lino/modlib/printing/mixins.py", line 209, in build_target
+            t = bm.build(ar, elem.__class__.do_print, elem)
+          File "/media/dell1tb/work/lino/lino/modlib/printing/choicelists.py", line 245, in build
+            return self.simple_build(ar, elem, tplfile, target)
+          File "/media/dell1tb/work/xl/lino_xl/lib/appypod/choicelists.py", line 59, in simple_build
+            **settings.SITE.appy_params).run()
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/renderer.py", line 428, in run
+            self.finalize()
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/renderer.py", line 565, in finalize
+            raise PodError(CONVERT_ERROR % output)
+        PodError: An error occurred during the conversion. Traceback (most recent call last):
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+            import sys, os, os.path, time, signal
+          File "/usr/lib/python3.5/signal.py", line 3, in <module>
+            from functools import wraps as _wraps
+          File "/usr/lib/python3.5/functools.py", line 21, in <module>
+            from collections import namedtuple
+          File "/usr/lib/python3.5/collections/__init__.py", line 32, in <module>
+            from reprlib import recursive_repr as _recursive_repr
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/reprlib/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+        Error in sys.excepthook:
+        Traceback (most recent call last):
+          File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 53, in apport_excepthook
+            if not enabled():
+          File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 24, in enabled
+            import re
+          File "/usr/lib/python3.5/re.py", line 335, in <module>
+            import copyreg
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/copyreg/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+        Original exception was:
+        Traceback (most recent call last):
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+            import sys, os, os.path, time, signal
+          File "/usr/lib/python3.5/signal.py", line 3, in <module>
+            from functools import wraps as _wraps
+          File "/usr/lib/python3.5/functools.py", line 21, in <module>
+            from collections import namedtuple
+          File "/usr/lib/python3.5/collections/__init__.py", line 32, in <module>
+            from reprlib import recursive_repr as _recursive_repr
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/reprlib/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+    **********************************************************************
+    1 items had failures:
+       7 of  29 in voga.rst
+    ***Test Failed*** 7 failures.
+
+    -----
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 3.834s
+
+    FAILED (failures=1)
+
+But when I test that same file using py.test, then it passes::
+
+    $ py.test -k test_voga
+    ============================= test session starts ==============================
+    platform linux2 -- Python 2.7.12, pytest-3.0.4, py-1.4.31, pluggy-0.4.0
+    rootdir: /media/dell1tb/work/voga, inifile: pytest.ini
+    plugins: cov-2.4.0
+    collected 18 items 
+
+    tests/__init__.py .
+
+    ============================= 17 tests deselected ==============================
+    =================== 1 passed, 17 deselected in 4.89 seconds ====================
+
+The problem seems to be caused by my good old enemy `future
+<https://pypi.python.org/pypi/future>`__, especially when I read
+things like this:
+
+  https://github.com/PythonCharmers/python-future/issues/148
+
+I removed the following lines::
+
+    from future import standard_library
+    standard_library.install_aliases()
+
+But to be honest, I must add that the `newtr` trick of `future
+<https://pypi.python.org/pypi/future>`__ is AFAICS still the only
+solution for getting our doctests to pass on both Py 2 and 3.
+
+Adapting the tests
+==================
+
+The changes in output behaviour during test due to the console output
+being visible at places where it wasn't before, the "This package
+should not be accessible on Python 3" problem, caused me another 3
+hours over midnight session for adapting the tests suites...
+

@@ -4,8 +4,8 @@
 Tuesday, November 29, 2016
 ==========================
 
-The art of reproducing other people's problems
-==============================================
+Reproducing problems under `appy.pod`
+=====================================
 
 This morning I saw a `failing build
 <https://travis-ci.org/lino-framework/noi/jobs/179583139>`__ for
@@ -33,8 +33,8 @@ running the test suite for :ref:`welfare`.  His problem looks as if
 something is going wrong during the generation of the .odt files.
 Lino produces them using :term:`appy.pod` (which creates temporary
 directories and deletes them afterwards if everything went well). And
-when something went wrong, it can happen with :term:`appy.pod` that the
-original error message is difficult to find.
+with :term:`appy.pod`, when something goes wrong, it can happen that
+the original error message is difficult to find.
 
 I noticed that the instructions for installing `tidy` were missing
 under `System requirements` in :ref:`lino.dev.install`.
@@ -43,9 +43,58 @@ So, Grigorij, I recommend to run this::
 
       $ sudo apt-get install tidy
 
-And then note the new note in :ref:`dev.git_pull`:
+And also note the new note in :ref:`dev.git_pull`:
       
     it can happen that Lino's *dependencies* change. And simply
     pulling new sources won't update these. To prevent problems caused
     by obsolete or missing dependencies, the easiest way can be to
     create a new virtualenv (as explained in :ref:`lino.dev.env`).
+
+
+Rumma & Ko participates in MobiliseSME
+======================================
+
+
+I registered Rumma & Ko at `MobiliseSME
+<http://matchmaking.mobilisesme.eu>`__ in the hope of finding a
+matching company. After some general description copied from `our
+website <http://www.saffre-rumma.net/about/>`__ I added:
+
+    We would welcome (1) system administrators who want to learn how
+    to install and maintain a Lino site or (2) independent developers
+    who want to develop a Lino application for themselves or their
+    employer. Or (3) you can ask us to come to your place and help
+    your IT team getting started with Lino. Sessions should not be
+    longer than two weeks.
+
+
+Wake up :mod:`lino.api.selenium`
+================================
+
+I tried to reactivate the :ref:`welfare.fr.tour`. This document is (or
+rather was) being automatically generated using
+:mod:`lino.api.selenium` by the :xfile:`make_screenshots.py` script.
+That script stopped to work at some version of Selenium.
+
+One problem is that :meth:`driver.get` does not wait if the server is
+just starting up and therefore not even yet responding to connection
+requests.  The only workaround is currently to run the
+webserver process in a different terminal.
+
+And even then, the :meth:`lino.api.selenium.Album.activate` method now
+seems to fail. It does not wait until the page has been rendered.
+Yes, this is tricky magic. And now something has broken.
+
+No, I will give this up for now. Somebody will have to manually make
+screenshots for the coming presentations. We should make a kind of
+central collection, though.
+
+Code changes:
+
+- :mod:`lino.api.selenium`
+
+- I added a new :envvar:`LINO_BUILD_CACHE_ON_STARTUP` so that I can
+  easily ask Lino to set
+  :attr:`lino.core.site.Site.build_js_cache_on_startup` to True.  But
+  that didn't help.
+
