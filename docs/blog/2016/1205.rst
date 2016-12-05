@@ -1,0 +1,36 @@
+:date: 2016-12-05
+
+========================
+Monday, December 5, 2016
+========================
+
+I continued to work on :ticket:`897`.
+        
+I had an AttributeError :message:`'Person' object has no attribute
+'standby'` when opening a table of partners. The a traceback ended
+with::
+  
+  ...
+  File ".../lino/core/boundaction.py", line 139, in get_bound_action_permission
+    if not self.action.get_action_permission(ar, obj, state):
+  File ".../lino_noi/lib/clocking/actions.py", line 113, in get_action_permission
+    if obj.standby or obj.closed:
+
+Yes, of course. This was because in :ref:`psico` we use partners
+instead of tickets as the
+:attr:`lino_noi.lib.clocking.Plugin.ticket_model`.
+
+Solution was to define a new class
+:class:`lino_noi.lib.clocking.mixins.Workable` with a
+
+
+Before pushing this to master, I ran the test suite and discovered a
+few trivial failures caused by the fact that certain warning messages
+no longer pass unseen (see :doc:`1202`).
+
+Note that you cannot simply call
+:func:`django.utils.timezone.make_aware` on *every* timestamp to be
+stored in a DateTimeField.  You must check whether :setting:`USE_TZ`
+is True, otherwise you may get a :message:`SQLite backend does not
+support timezone-aware datetimes when USE_TZ is False.`
+       
