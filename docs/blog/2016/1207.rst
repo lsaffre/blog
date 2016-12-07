@@ -1,0 +1,143 @@
+:date: 2016-12-07
+
+===========================
+Wednesday, December 7, 2016
+===========================
+
+Fixed several bugs in :file:`tinymce.js` which caused a JavaScript
+errors when calling a dialog action (which needs a
+`ParameterActionForm`) from a href action link in the dashboard
+(i.e. with `containing_panel` being null).  One of them was already in
+:meth:`refresh_with_after`, another came when trying to save because
+the `Lino.RichTextPanel` class defined there had no method
+:meth:`getValue`, which caused a :message:`Uncaught TypeError:
+f.getValue is not a function` in :func:`Lino.fields2array`.
+
+In :func:`lino.utils.jsgen.py2js` I had a problem with a dict
+containing a mixture of unicode and :class:`future.types.newstr`
+objects.  This was probably caused by my changes last week
+(:doc:`1202`), but obvioulsy not covered by any test.
+
+
+Specifying default value of a ChoiceList field
+==============================================
+
+The new :mod:`lino_noi.lib.noi.workflows` module is an interesting
+example of a subtle problem. When defining workflows, it is good to
+have them (a) defined in a place where it makes sense and (b) have
+them replaceable. Keep in mind that some future application of your
+code might want to replace your workflow.
+
+There is a new possibility for specifying the *default* default value
+for *all* :class:`ChoiceListField
+<lino.core.choicelists.ChoiceListField>` of a :class:`ChoiceList
+<lino.core.choicelists.ChoiceList>`: by setting a
+:attr:`lino.core.choicelists.ChoiceList.default_value`.  But I don't
+recommend it.
+      
+I also added a new meth :meth:`as_callable
+<lino.core.choicelists.ChoiceList.as_callable>` on the *ChoiceList*
+class (not on the *Choice*).  Instead of saying::
+
+    state = MyStates.field(default=MyStates.foo.as_callable)
+
+I now recommend saying::
+  
+    state = MyStates.field(default=MyStates.as_callable('foo'))
+
+The advantage is that the application code does not need to define a
+default items for a choicelist.
+
+I changed the default value for
+:attr:`lino.core.choicelists.ChoiceList.max_length` from 1 to 10.
+
+I worked on :ticket:`1286`: The new site attribute
+:attr:`lino.core.site.Site.use_new_unicode_symbols` enables us to
+easily toggle between two series of symbols.
+
+
+Getting websockets to run on a production server
+================================================
+
+Hamza and I worked on :ticket:`923`.  While the ticket seems to be
+solved on a development server, there is still the problem that
+django-channels and websockets is a lot of configuration work on a
+production server. It starts `here
+<https://channels.readthedocs.io/en/stable/deploying.html>`__, but we
+did not yet reach the end.
+
+Install the Redis backend::
+
+    $ pip install -U asgi_redis
+
+Install the redis server::
+  
+    $ sudo apt-get install redis-server
+
+Install two more supervisor jobs.
+
+Everything seems to work, but then Apache...
+
+    $ sudo a2enmod proxy_wstunnel
+
+We now still have Javascript errors::    
+
+    WebSocket connection to 'wss://mysite.lino-framework.org/websocket/' failed: Error during WebSocket handshake: Invalid status line    
+
+
+Or their equivalent on the apache :xfile:`error.log`::
+  
+    [Wed Dec 07 11:03:01.966228 2016] [ssl:error] [pid 13093] [remote 194.204.31.42:443] AH01961: SSL Proxy requested for mysite.lino-framework.org:443 but not enabled [Hint: SSLProxyEngine]
+    [Wed Dec 07 11:03:01.966294 2016] [proxy:error] [pid 13093] AH00961: WSS: failed to enable ssl support for 194.204.31.42:443 (mysite.lino-framework.org)
+
+
+:func:`py2js` and `dict` with `newstr` keys
+===========================================
+
+:ticket:`1300` (:func:`py2js` and `dict` with `newstr` keys) was not
+yet fixed. Now it seems to be fixed.  Here is a script I wrote in
+order to understand:
+
+.. literalinclude:: 1207.py
+
+
+Default `button_text` for workflow actions
+==========================================
+
+Yet another little optimization: workflow transition actions
+(:class:`ChangeStateAction <lino.core.workflows.ChangeStateAction>`)
+now inherit the `button_text` of their target state.
+
+There is at least one side effect: the :attr:`workflow_actions` column
+of a calendar event now also uses symbols and no longer the action
+label. For example
+
+  **Notified** → [Close meeting] [Cancel] [Reset]
+
+becomes  
+
+  **Notified** → [☑] [☉] [☐]
+
+
+
+Checked in first draft of new workflow for :ref:`noi`
+=====================================================
+
+Before flying to Malta I wanted to have it published: I committed my
+first draft of the new workflow for :ref:`noi`.  I pushed it directly
+to master, without defining a branch
+
+There are some known problems:
+
+- :ref:`welfare` test suite needs to be adapted
+
+- we need to write a migrator before we can deploy this to our own
+  Noi.
+
+- We must review :class:`lino.modlib.users.mixins.Assignable` because
+  the `AssignToMe` action no longer works like this. Or at least we
+  don't need this in :ref:`care`. Maybe they need it in
+  :ref:`welfare`. Maybe rename `Assignable` to `Takeable` and leave
+  only the `TakeAuthorship` action.
+
+  - 

@@ -1,0 +1,120 @@
+:date: 2016-12-06
+
+=========================
+Tuesday, December 6, 2016
+=========================
+
+
+New workflow for :ref:`noi`
+===========================
+
+I continued to work on :ticket:`1285`. As I wrote earlier
+(:doc:`1125`), my meeting with the new Johannes made us discover that
+we need a new model (Vote) in :ref:`noi` in order to manage the
+workflow for :ref:`care` which is somewhat more complex than in the
+team version (:mod:`lino_noi.projects.team`) because there will be
+more users.
+
+**What's to do**
+
+Now that we have the concept of votes (see :doc:`1201`), we can have
+several users wanting to work on a ticket. And only one of them "gets
+the job".
+
+We need to review the general workflow.  That new workflow is
+meaningful for the team version as well, so we are going to change
+both at once.
+
+The `Ticket.assigned_to` field will no longer be used. Until now this
+field pointed to the user who is supposed to work on that ticket. This
+information is now stored in the votes of that ticket.
+
+Migration will probably be a bit tricky, but Lino will manage it.
+
+**New states of tickets and votes:**
+
+- A **Vote** (Angebot) can have the following states:
+  
+  - *watching* (Interesse) : I want to get notified about changes
+    in this ticket (but I won't work on it myself).
+  - *candidate* (Angebot) : I offer my help and am ready to take
+    responsibility.
+  - *assigned* (Zugewiesen) : I have been assigned responsibility and am
+    supposed to work on that ticket
+  - *ready* (bereit) : I think that my job has been done
+  - *done* (erledigt) : The ticket author has confirmed that my job is
+    done
+
+- A **ticket** (Bitte) can have the following states:
+  
+  - new (Neu) : the reporter is still formulating the
+    ticket. Not all required data has been entered.
+  - opened (Offen) : ticket is waiting for help offers
+  - active (Aktiv) : All helpers have been assigned and can start
+    working. No further help offers wanted.
+  - closed (Abgeschlossen) : all help offers are done
+  - sticky (Permanent) : similar to `opened` and `active`, but knowing
+    that the ticket will never close. Stick tickets don't show in the
+    tasks list.
+    
+**New views** to show in the dashboard:
+
+- MyOfferedVotes (Meine Aufgaben) : list my votes which need my
+  attention. help offers
+  
+- MyRequestedVotes (Meine Anfragen) : list of votes (of other users) on my
+  tickets which need my attention.
+  
+**Life cycle of a ticket and its votes**
+
+1. Create a ticket. When all required data has been entered, the
+   ticket can move to state "open".
+2. One or more other users offer their help by creating a Vote
+   instance on that ticket.
+3. Ticket author accepts one or several help offers. Lino notifies
+   these users and they see the ticket in their tasks list.
+4. When the actual work is done, the helper sets its vote to
+   "ready". Lino notifies the ticket author.
+5. The ticket author rates the vote and puts the ticket to "closed".
+
+**Difference between author and reporter**
+
+There will be a new field `user`, similar to `reporter`.  All existing
+tickets will be migrated to have both fields with the same value
+(i.e. `user` gets the value of `reporter` for every existing ticket).
+This is because we must differentiate between the *author* and the
+*reporter* on tickets whose original reporter is not a system user. In
+that case the `reporter` will point to the external user while the
+`user` is the user who entered the ticket.
+
+**Migration notes**
+
+- for tickets with non-empty assigned_to field : create a vote whose
+  state depends o the ticket state.
+
+
+dist-upgrade on :ref:`lf`
+=========================
+
+Today we upgraded :ref:`lf` from 7 to 8 (wheezy to jessie).
+
+Some errors encountered::
+  
+    [....] Restarting web server: apache2AH02559: The SSLCertificateChainFile directive (/etc/apache2/sites-enabled/default-ssl.conf:39) is deprecated, SSLCertificateFile should be used instead
+
+    Errors were encountered while processing:
+     libjson0:amd64
+    E: Sub-process /usr/bin/dpkg returned an error code (1)
+
+This one is still open::  
+
+    $ python -m datetime
+    /usr/local/pythonenv/demo/bin/python: No module named datetime
+
+(I guess that we must re-create a virtualenv)
+
+
+Window actions from dashboard
+=============================
+
+Uncaught TypeError: this.containing_panel.get_current_record is not a function
