@@ -1,0 +1,23 @@
+:date: 2016-12-15
+
+===========================
+Thursday, December 15, 2016
+===========================
+
+I adapted the calendar event workflow in :ref:`welfare` to the new
+look using `button_text` instead of `icon_name`. This became necessary
+now that the button_text of a state is inherited by transition action.
+
+And another little challenge which lead to yet another magic feature:
+I would like to remove the ticket state "sticky" from :ref:`care`.
+This is a situation where it is clear that we do not want to rewrite
+the whole workflow. We really just want to remove that one state. So I
+added a :meth:`remove <lino.core.choicelists.Choice.remove>` method to
+:class:`lino.core.choicelists.Choice`.  This approach is less trivial
+than it might sound.  For example we need to avoid error messages when
+adding a workflow action which specifies "sticky" in `allowed_states`.
+
+I wrote (in :mod:`lino_noi.lib.noi.migrate`) the migrator for
+converting `assigned_to` into vote objects.
+
+I comitted and pushed the changes of the last days.

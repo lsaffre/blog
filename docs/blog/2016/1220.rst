@@ -1,0 +1,155 @@
+:date: 2016-12-20
+
+==========================
+Tuesday, December 20, 2016
+==========================
+
+A mysterious failure (:ticket:`1296`) is still happening here and
+there::
+
+    $ go welfare
+    $ python setup.py test -s tests.SpecsTests.test_integ
+    running test
+    running egg_info
+    writing requirements to lino_welfare.egg-info/requires.txt
+    writing lino_welfare.egg-info/PKG-INFO
+    writing top-level names to lino_welfare.egg-info/top_level.txt
+    writing dependency_links to lino_welfare.egg-info/dependency_links.txt
+    reading manifest file 'lino_welfare.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    writing manifest file 'lino_welfare.egg-info/SOURCES.txt'
+    running build_ext
+    test_integ (tests.SpecsTests) ... FAIL
+
+    ======================================================================
+    FAIL: test_integ (tests.SpecsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/work/welfare/tests/__init__.py", line 102, in test_integ
+        return self.run_simple_doctests('docs/specs/integ.rst')
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 109, in run_simple_doctests
+        self.run_subprocess(args, **kw)
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 92, in run_subprocess
+        self.fail(msg)
+    AssertionError: /media/dell1tb/virtualenvs/py27/bin/python -m atelier.doctest_utf8 docs/specs/integ.rst ({}) returned 1:
+    -----
+    **********************************************************************
+    File "/media/dell1tb/work/welfare/docs/specs/integ.rst", line 317, in integ.rst
+    Failed example:
+        res = test_client.get(url, REMOTE_USER='rolf')  #doctest: -SKIP
+    Exception raised:
+        Traceback (most recent call last):
+          File "/usr/lib/python2.7/doctest.py", line 1315, in __run
+            compileflags, 1) in test.globs
+          File "<doctest integ.rst[16]>", line 1, in <module>
+            res = test_client.get(url, REMOTE_USER='rolf')  #doctest: -SKIP
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/test/client.py", line 503, in get
+            **extra)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/test/client.py", line 304, in get
+            return self.generic('GET', path, secure=secure, **r)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/test/client.py", line 380, in generic
+            return self.request(**r)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/test/client.py", line 467, in request
+            six.reraise(*exc_info)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/core/handlers/base.py", line 149, in get_response
+            response = self.process_exception_by_middleware(e, request)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/core/handlers/base.py", line 147, in get_response
+            response = wrapped_callback(request, *callback_args, **callback_kwargs)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/views/generic/base.py", line 68, in view
+            return self.dispatch(request, *args, **kwargs)
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+            return handler(request, *args, **kwargs)
+          File "/media/dell1tb/work/lino/lino/modlib/extjs/views.py", line 630, in get
+            return settings.SITE.kernel.run_action(ar)
+          File "/media/dell1tb/work/lino/lino/core/kernel.py", line 831, in run_action
+            a.run_from_ui(ar)
+          File "/media/dell1tb/work/xl/lino_xl/lib/appypod/mixins.py", line 49, in run_from_ui
+            self.appy_render(ar, mf.name)
+          File "/media/dell1tb/work/xl/lino_xl/lib/appypod/mixins.py", line 74, in appy_render
+            renderer.run()
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/renderer.py", line 428, in run
+            self.finalize()
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/renderer.py", line 565, in finalize
+            raise PodError(CONVERT_ERROR % output)
+        PodError: An error occurred during the conversion. Traceback (most recent call last):
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+            import sys, os, os.path, time, signal
+          File "/usr/lib/python3.5/signal.py", line 3, in <module>
+            from functools import wraps as _wraps
+          File "/usr/lib/python3.5/functools.py", line 21, in <module>
+            from collections import namedtuple
+          File "/usr/lib/python3.5/collections/__init__.py", line 32, in <module>
+            from reprlib import recursive_repr as _recursive_repr
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/reprlib/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+        Error in sys.excepthook:
+        Traceback (most recent call last):
+          File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 53, in apport_excepthook
+            if not enabled():
+          File "/usr/lib/python3/dist-packages/apport_python_hook.py", line 24, in enabled
+            import re
+          File "/usr/lib/python3.5/re.py", line 335, in <module>
+            import copyreg
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/copyreg/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+        Original exception was:
+        Traceback (most recent call last):
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+            import sys, os, os.path, time, signal
+          File "/usr/lib/python3.5/signal.py", line 3, in <module>
+            from functools import wraps as _wraps
+          File "/usr/lib/python3.5/functools.py", line 21, in <module>
+            from collections import namedtuple
+          File "/usr/lib/python3.5/collections/__init__.py", line 32, in <module>
+            from reprlib import recursive_repr as _recursive_repr
+          File "/media/dell1tb/virtualenvs/py27/lib/python2.7/site-packages/reprlib/__init__.py", line 7, in <module>
+            raise ImportError('This package should not be accessible on Python 3. '
+        ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+    **********************************************************************
+    1 items had failures:
+       4 of  20 in integ.rst
+    ***Test Failed*** 4 failures.
+
+    -----
+
+    ----------------------------------------------------------------------
+    Ran 1 test in 15.952s
+
+    FAILED (failures=1)
+
+
+
+A new data checker
+==================
+
+I wrote :class:`lino_xl.lib.cal.models.EventChecker` because
+:ref:`welcht` are having calendar events with invalid durations
+(:ticket:`1310`).
+
+This includes a little change in the database structure: we have a new
+field :attr:`max_days <lino_xl.lib.cal.models.EventType.max_days>`
+
+
+A collection of screenshots
+===========================
+
+I started some first attemps for :ticket:`1311` in the
+:file:`docs_fr/screenshots` directory of :ref:`welfare`.
+
+It also contains a LibreOffice presentation which does not embed the
+images (because we need the files also from outside, and because that
+would be waste of disk space).
+
+A first problem is that we should 
+
+Miscellaneous
+=============
+
+I changed the loglevel of :message:`X not being bleached because
+`bleach` is broken or not installed." emitted by
+:mod:`lino.mixins.bleacher` from *warning* to *debug* so that at least
+the test suites don't break just because of that warning.

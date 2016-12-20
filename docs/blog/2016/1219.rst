@@ -1,0 +1,148 @@
+:date: 2016-12-19
+
+=========================
+Monday, December 19, 2016
+=========================
+
+During the weekend I worked on :ticket:`1307` (register new users).
+
+Online registration
+===================
+
+In :xfile:`admin_main_base.html`, the sentence "You will now probably
+want to *log in* using the **Log in** button in the upper right
+corner" is now extended by an "Or _register_ as a new user."
+
+This action link was a challenge because we don't simply want an
+action with a dialog window because we don't want to redefine every
+field. It is actually just a customized insert_layout.
+
+To solve this, I added a new class method :meth:`get_insert_action`
+which I override in :class:`lino.modlib.users.desktop.RegisterUsers`.
+
+Another question was: how to handle the fact that anonymous users
+are -at least until now- readonly and therefore have no permission to
+insert records into the database.  Current answer: The new online
+:ref:`online_registration` feature is available only on sites whose
+`AnonymousUser` has `readonly=False` (which is currently done only in
+:mod:`lino_noi.projects.care.roles`).
+
+>>> from lino import startup
+>>> startup('lino_noi.projects.care.settings.demo')
+>>> from lino.api.doctest import *
+>>> rt.modules.users.RegisterNewUser.editable
+True
+>>> rt.modules.users.RegisterUsers.update_action
+<BoundAction(users.RegisterUsers, <SaveRow grid_put>)>
+
+
+TODO:
+
+- In :xfile:`admin_main_base.html` we test whether anonymous user is
+  readonly when me actually should test whether the online
+  registration feature is installed. A more explicit option would be
+  better, e.g. a plugin attribute.
+
+- Move the logics implemented in
+  :meth:`lino.modlib.extjs.ext_renderer.ExtRenderer.html_page_user` from there to :mod:`lino.modlib.users`.
+
+
+
+
+Workflow for managing new users
+===============================
+
+I added a workflow for managing users. System administrators now can
+"activate", "deactivate" or "reset" users. They have a list of new
+users to be activated. Activating a user requires the user type to be
+set. Currently there is no way to define a default user type.
+
+.. currentmodule:: lino.modlib.users.models
+                   
+Two new database fields :attr:`User.verification_code` and
+:attr:`User.user_state`.  A new choicelist
+:class:`lino.modlib.users.choicelists.UserStates`.
+       
+
+Duplicate welcome messages
+===========================
+
+I observed :ticket:`1309` which causes welcome messages to be
+duplicated.  The :class:`Site` object is being initialized *twice*,
+and each time the whole startup process is being called::
+
+    $ go min1
+    $ runserver 
+    20161219 do_site_startup() <lino_book.projects.min1.settings.demo.Site object at 0x7fbb52272a90>
+    20161219 do_site_startup() done
+    20161219 do_site_startup() <lino_book.projects.min1.settings.demo.Site object at 0x7f7a2483cad0>
+    20161219 do_site_startup() done
+    Performing system checks...
+
+    System check identified no issues (0 silenced).
+    December 18, 2016 - 06:02:35
+    Django version 1.9.11, using settings 'lino_book.projects.min1.settings.demo'
+    Starting development server at http://127.0.0.1:8000/
+    Quit the server with CONTROL-C.
+  
+Explanation: the reason was not the double import (which is just a
+traditional and `well documented
+<http://blog.dscpl.com.au/2010/03/improved-wsgi-script-for-use-with.html>`__
+Django oddness), the reason was a bug in the code which collects
+welcome message handlers for tables having
+:attr:`welcome_message_when_count` set. If a site has more than one
+such tables, then the last of them was being called once for each of
+them. I saw a double message "You have 8 items in New user
+applications", the first one should have been "You have 7 items in
+Tickets to triage".
+
+
+Miscellaneous
+=============
+
+- I started using a :xfile:`desktop.py` file for
+  :mod:`lino.modlib.users` (which required to define that module for all
+  `users` plugins).
+  
+- Now that :mod:`lino.modlib.users` has an isolated desktop design,
+  the difference between :attr:`rt.actors
+  <lino.core.site.Site.actors>` and :attr:`rt.models` becomes
+  important.
+
+  UndefinedError: 'module object' has no attribute 'RegisterUsers'
+
+- I removed the `tinymce` and `clocking` plugins from :ref:`care`.
+
+- The :class:`lino_xl.lib.countries.models.Countries` table should
+  *not* be visible for simple users in :ref:`care`. I changed its
+  required roles from ContactsUser to ContactsStaff.
+
+Changed logging behaviour
+=========================
+
+I slightly changed some details of the logging behaviour:
+
+- :meth:`lino.core.site.Site.setup_logging`:
+
+  - The :envvar:`LINO_LOGLEVEL` no longer goes to the
+    :xfile:`lino.log` file but to the console.
+           
+  - The `django.db.backends
+    <https://docs.djangoproject.com/en/1.10/topics/logging/#django-db-backends>`__
+    explicitly gets level WARNING. (TODO: how to make SQL statements
+    visible)
+  
+- On my development machine I have a `runserver` script which does::
+
+    set LINO_LOGLEVEL=DEBUG
+    python manage.py runserver  
+  
+
+Unsaved Évènement 1 (14.12.2021) conflicts with ...
+===================================================
+
+Unsaved Évènement 1 (14.12.2021) conflicts with Évènement #29650 5
+(05.08.2016 09:00), Évènement #29653 8 (16.09.2016 09:00), Évènement
+#29654 9 (30.09.2016 09:00), Évènement #29655 10 (14.10.2016 09:00),
+Évènement #29657 12 (18.11.2016 09:00), Évènement #29658 13
+(02.12.2016 09:00).

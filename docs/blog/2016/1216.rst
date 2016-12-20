@@ -1,0 +1,26 @@
+:date: 2016-12-16
+
+=========================
+Friday, December 16, 2016
+=========================
+
+I fixed a bug which I introduced on :doc:`1123` and which caused the
+insert window to be read-only in certain cases. More precisely the
+insert window of tables which had no separate `insert_layout`,
+i.e. which use their `detail_layout` for both detail window and insert
+window.
+
+The bug was in :mod:`lino.modlib.extjs.ext_renderer`::
+
+    if dh.layout._formpanel_name.endswith('.InsertFormPanel'):
+        yield "  default_record_id: -99999,"
+
+
+This test was in :meth:`js_render_FormPanelSubclass`, which was one
+step too early. It is now in :meth:`js_render_detail_action_FormPanel`
+where it looks at the action, and not at the name of the panel::
+
+    if isinstance(action.action, InsertRow):
+        yield "  default_record_id: -99999,"
+      
+

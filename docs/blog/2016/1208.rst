@@ -1,0 +1,41 @@
+:date: 2016-12-08
+
+==========================
+Thursday, December 8, 2016
+==========================
+
+A ticket is no longer assignable
+(:class:`lino.modlib.users.mixins.Assignable`), the `assigned_to`
+field and the two actions defined there can go away.  And we get a new
+pair of actions, defined on
+:class:`lino_noi.lib.votes.mixins.Votable`:
+
+- ☆ (an empty star) is visible only when this user does not yet have a
+  vote on this object. Clicking it will create a default vote object
+  and show that object in a detail window.
+- ★ (a filled star) is visible only when this user does already have a
+  vote on this object. Clicking it will show that existing object in a
+  detail window.
+
+This behaviour reminds that of :mod:`lino_xl.lib.stars`. There is
+always at most one vote object per user and ticket.
+
+New feature : it is now possible to say::
+
+    class Votes(dd.Table):
+        model = 'votes.Vote'
+        ...
+
+        @classmethod
+        def do_setup(self):
+            self.detail_action.hide_top_toolbar = True
+
+This is different from saying::
+
+    class Votes(dd.Table):
+        model = 'votes.Vote'
+        hide_top_toolbar = True
+
+We want it for Votes because the *grid* view should have a normal top
+toolbar, but the *detail window* whould be minimal (in order to make
+its usage intuitive).
