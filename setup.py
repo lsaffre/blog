@@ -1,6 +1,7 @@
 from setuptools import setup
-kw = dict()
-kw.update(test_suite='tests')
+SETUP_INFO = dict()
+SETUP_INFO.update(test_suite='tests')
+SETUP_INFO.update(url='http://luc.lino-framework.org')
 if __name__ == '__main__':
-    setup(**kw)
+    setup(**SETUP_INFO)
 
