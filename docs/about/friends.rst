@@ -90,7 +90,16 @@ Rauno is a Lino fan living in Estonia.
 Tanel
 -----
 
-Tanel is a Lino fan living in Estonia.
+**Tanel Saimre** is a Lino fan living in Vigala.  He is maybe going to
+write a book about Lino.  He has translated several books to Estonian.
+He has been living in Norway and wrote a book about it (`Minu Norra
+<https://petroneprint.ee/raamatud/minu-norra/>`__. If you understand
+Estonian, then here are two excerpts: `Aga täna ma pole üksik. Oh
+ei. Täna olen ma üks neist
+<http://naistekas.delfi.ee/kirevmaailm/uudised/minu-norra-aga-tana-ma-pole-uksik-oh-ei-tana-olen-ma-uks-neist?id=76548952>`__
+or `Religioon ja rahvatraditsioonid on vastuoluline ja ebaloogiline
+valdkond
+<http://elutark.delfi.ee/raamatud/minu-norra-religioon-ja-rahvatraditsioonid-on-vastuoluline-ja-ebaloogiline-valdkond?id=76622476>`__).
 
 
 .. _jt:
@@ -106,6 +115,14 @@ don't (yet) use Lino, but he is interested.
 
 Josef Kejzlar
 -------------
+
+.. _jo:
+
+Jo
+--
+
+**Jo** (actually Johannes Nießen) is a web designer who helps us with
+:ref:`care`. See :blogref:`20161107`.
 
 .. _sandeep:
 

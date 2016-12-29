@@ -1,0 +1,63 @@
+:date: 2016-12-28
+
+============================
+Wednesday, December 28, 2016
+============================
+
+I continued to work for :ticket:`1285`, but did not yet
+commit. Details later.
+
+About packages
+==============
+
+:ref:`james` asked:
+
+    As I work through the tutorials, I like to see with my own eyes
+    the module and class/attribute that I am inheriting from calling
+    or assigning.  However, I went to the right place, but the files
+    seem to be missing.  For example, in Django tutorial Part 1::
+
+          from django.conf.urls import include urls
+
+    So I go to Github django code and I find:
+
+        `django/django/conf/urls <https://github.com/django/django/tree/master/django/urls>`__
+
+    What I find is that urls is a directory with only files :
+    :file:`__init__.py`, :file:`i18n.py` and :file:`static.py`.  There
+    is no urls.py file which might have url() or include() methods.
+
+    Same with :class:`models.Models`. I see some code line ``from
+    django.db import models`` and on django Github site I navigate
+    until `django/django/db/models
+    <https://github.com/django/django/tree/master/django/db/models>`__.
+    I see that ``models`` is a directory, not a file with a class
+    :class:`Model`.
+
+    So, what am I missing here?
+     
+
+What you are missing is related to packages.  Admittedly the
+`corresponding doc section
+<https://docs.python.org/2/tutorial/modules.html#packages>`__ is not
+very clear about your problem. I make a summary:
+
+- A package is a module which can contain submodules
+- A package consists of a directory containing a file
+  :file:`__init__.py` and optinally other .py files (which are then
+  submodules of that package).
+- Everything defined in the :file:`__init__.py` file is considered
+  part of the package.
+
+This last point is important in your case. When using ``from package
+import item``, the ``item`` can be *either* a submodule (or
+subpackage) of the package, *or* some other name defined in the
+package.
+
+Rule of thumb : when you want to see the code which defines a.b.c,
+then it can be *either* in a file :file:`a/b/c.py` *or* in a file
+:file:`a/b/c/__init__.py`.
+
+
+
+

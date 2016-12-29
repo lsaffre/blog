@@ -1,0 +1,31 @@
+:date: 2016-12-24
+
+===========================
+Saturday, December 24, 2016
+===========================
+
+:ref:`jo` asked me to build a http service for accessing the data in a
+:ref:`care` database so that he can build a sexy and reactive user
+interface around it.
+
+I wrote :mod:`lino.modlib.restful`, an adapter to the `Django REST
+framework <http://www.django-rest-framework.org/>`_.  A first usage is
+:mod:`lino_noi.projects.team.urls` (currently exposing just a few
+fields as a proof of concept).
+
+As a side effect, we have a new field `last_login
+<https://docs.djangoproject.com/en/1.10/ref/contrib/auth/#django.contrib.auth.models.User.last_login>`_
+because Lino now inherits from Django's `AbstractBaseUser`. I have no
+idea why we would need this field, but I could remove three methods
+from my code which I previously had copied from Django's User model.
+http://stackoverflow.com/questions/21349418/django-1-6-where-is-the-user-field-last-login-updated
+
+As expected, the authentication does not work out of the box since
+Lino replaces Django's permission model. This will require more
+investigation.
+
+TODO:
+
+- Write a :meth:`ChoiceListField.serialize` method.
+- Get authentication and permissions to work. 
+
