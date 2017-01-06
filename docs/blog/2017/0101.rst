@@ -1,0 +1,55 @@
+:date: 2017-01-01
+
+=======================
+Sunday, January 1, 2017
+=======================
+
+The action for verifying a new user request did not yet work at all.
+
+This action is a list action with a parameter dialog.
+
+It must be executable by anonymous since the user account is
+not yet active.
+
+And it must be invokeable using a permalink of type
+http://127.0.0.1:8000/api/users/Register?an=verify
+
+Unfortunately this (until now) showed the login window, despite the
+fact that :class:`users.Register` actor does not require
+authentication. That was because in :xfile:`extjs/index.html` we have
+this::
+
+        {# anonymous request using permalink: forward request.path as "on_login" URL #}
+        {%- if settings.SITE.user_model and not request.user.authenticated and on_ready -%}
+            {%- set on_ready = "Lino.show_login_window(" + py2js(request.path) + ")" -%}
+        {%- endif -%}
+
+This feature is needed in order to make permalinks work also when the
+user needs to reconnect.
+
+I added `and not settings.SITE.plugins.users.online_registration` to
+the ``if`` condition.  That's of course just a cheating workaround
+because it disables the permalink login feature on sites with online
+registration.
+
+And that wasn't not all. The next challenge was that I got a
+:message:`Sorry, dialog action without base_params.mk` error when
+trying to submit that dialog. Because this was the first dialog action
+which does not require a current row. I fixed this by a little change
+in :xfile:`linoweb.js` which needs to be ported to extjs6 as well.
+
+TODO: verify per email? or per username? or per internal id?
+
+Change the submit_insert per table, not per model
+=================================================
+
+After submitting the insert window of users.Register, users should get
+a message "Your registration has been submitted. You should now check
+your inbox and verify."
+
+We have several cases of customized submit_insert actions.
+
+Until now it was enough to define them per model.
+
+It seems that now we want to do this per table as well.
+

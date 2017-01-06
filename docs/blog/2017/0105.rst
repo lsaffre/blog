@@ -1,0 +1,31 @@
+:date: 2017-01-05
+
+=========================
+Thursday, January 5, 2017
+=========================
+
+I continued to work on :ticket:`1189`. This ticket is advancing slowly
+because our way of communicating.  The customer wants to increase the
+foolproofness of their releases, so they ask to release to a testing
+site first, which they review when I tell them that it is ready. Their
+production site is running a Welfare version from January 2016. In
+December 2016 they started to want some new features and asked me to
+deploy a new version to their testlino. It took them some weeks to
+test it and report a series of problems. It took me another few weeks
+before diving back into this.
+
+The first thing I did was an new upgrade of their testlino. This is a
+kind of routine process where I simply pull the latest repository
+versions and then restore a snapshot of their production data.  But
+last time I did this, I obviously did a few migrations manually. So
+now I have to do them again (Lino of course reminded me this in
+e.g. :ticket:`1353`). In order to avoid to do them a third time in the
+future, I now wrote migrators for this.  Writing a migrator takes a
+bit more time than doing it manually, but it has the obvious advantage
+of being reusable.  Note that this advantage is only an advantage when
+reusability makes sense. All our production sites are currently in
+"development mode" and therefore it is rather overkill to write
+migrators.  OTOH this is a good test for :ref:`stable hosting
+<stable_hosting>` scenarios which are likely to come soon.
+
+

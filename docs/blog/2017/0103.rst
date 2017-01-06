@@ -1,0 +1,150 @@
+:date: 2017-01-03
+
+========================
+Tuesday, January 3, 2017
+========================
+
+Online registration
+===================
+
+The welcome mail to a new user must contain a link which should open
+the dialog window of the Verify action. But Lino currently has no good
+way for generating a permalink for this.
+
+http://127.0.0.1:8000/api/users/NewUsers?pv=&pv=10&sp=true
+
+The tedious work of maintaining servers
+=======================================
+
+Oh, how I would love to have a system administrator! One who would
+care about problems like the following one!
+
+I had my inbox bombed every 30 seconds with the following message::
+
+    Subject: Cron <root@vps>   [ -x /usr/lib/php5/sessionclean ] && /usr/lib/php5/sessionclean
+
+    PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/lib/php5/20131226/json.so' - /usr/lib/php5/20131226/json.so: undefined symbol:
+    +json_c_version in Unknown on line 0
+
+It started after our dist-upgrade on that server.  
+Yes, it seems that the PHP is broken::
+
+    $ php5
+    PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/lib/php5/20131226/json.so' - /usr/lib/php5/20131226/json.so: undefined symbol: json_c_version in Unknown on line 0
+
+I had the folllowing in :file:`/etc/cron.d/php5`::
+  
+    # Look for and purge old sessions every 30 minutes
+    09,39 *     * * *     root   [ -x /usr/lib/php5/sessionclean ] && /usr/lib/php5/sessionclean
+
+Actually I think that I once uninstalled PHP completely there.
+Command to verify whether it is installed::
+
+    $ apt list --installed | grep php
+    php5-common/now 5.6.27+dfsg-0+deb8u1 amd64 [installed,upgradable to: 5.6.29+dfsg-0+deb8u1]
+    php5-curl/now 5.6.27+dfsg-0+deb8u1 amd64 [installed,upgradable to: 5.6.29+dfsg-0+deb8u1]
+    php5-gd/now 5.6.27+dfsg-0+deb8u1 amd64 [installed,upgradable to: 5.6.29+dfsg-0+deb8u1]
+    php5-mysql/now 5.6.27+dfsg-0+deb8u1 amd64 [installed,upgradable to: 5.6.29+dfsg-0+deb8u1]
+
+I removed these packages.
+
+I am still having another series of warnings::
+
+    dpkg: warning: files list file for package 'libffi5:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libopenjpeg2:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'gcc-4.4-base:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libdb5.1:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libtiff4:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'librtmp0:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libjpeg8:amd64' missing; assuming package has no files currently installed
+
+When I try to reinstall them, I get::  
+
+    $ sudo apt-get install --reinstall libffi5
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    Reinstallation of libffi5 is not possible, it cannot be downloaded.
+    0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
+    (demo)luc@vps:~$
+
+A quick surf revealed that they are probably just obsolete packages,
+so I removed them as well::
+
+    $ sudo apt-get remove ... libdb5.1 libtiff4 librtmp0 libjpeg8
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    The following package was automatically installed and is no longer required:
+      liblcms1
+    Use 'apt-get autoremove' to remove it.
+    The following packages will be REMOVED:
+      libdb5.1 libgd2-xpm libgvc5 libjpeg8 libmagickcore5 libmagickcore5-extra libmagickwand5 libpython2.6 librtmp0 libtiff4 openjdk-6-jre
+      openjdk-6-jre-headless openjdk-6-jre-lib python2.6 python2.6-dev
+    0 upgraded, 0 newly installed, 15 to remove and 23 not upgraded.
+    After this operation, 92.7 MB disk space will be freed.
+    Do you want to continue? [Y/n] 
+    dpkg: warning: files list file for package 'libdb5.1:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libtiff4:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'librtmp0:amd64' missing; assuming package has no files currently installed
+    dpkg: warning: files list file for package 'libjpeg8:amd64' missing; assuming package has no files currently installed
+    (Reading database ... 170289 files and directories currently installed.)
+    Removing python2.6-dev (2.6.8-1.1) ...
+    Removing libpython2.6 (2.6.8-1.1) ...
+    Removing python2.6 (2.6.8-1.1) ...
+    Removing libdb5.1:amd64 (5.1.29-5) ...
+    Removing libgvc5 (2.26.3-14+deb7u2) ...
+    Removing libgd2-xpm:amd64 (2.0.36~rc1~dfsg-6.1+deb7u4) ...
+    Removing libmagickcore5-extra:amd64 (8:6.7.7.10-5+deb7u7) ...
+    Removing libmagickwand5:amd64 (8:6.7.7.10-5+deb7u7) ...
+    Removing libmagickcore5:amd64 (8:6.7.7.10-5+deb7u7) ...
+    Removing libtiff4:amd64 (3.9.6-11) ...
+    Removing librtmp0:amd64 (2.4+20111222.git4e06e21-1) ...
+    Removing openjdk-6-jre:amd64 (6b38-1.13.10-1~deb7u1) ...
+    update-alternatives: using /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/policytool to provide /usr/bin/policytool (policytool) in auto mode
+    Removing openjdk-6-jre-lib (6b38-1.13.10-1~deb7u1) ...
+    Removing openjdk-6-jre-headless:amd64 (6b38-1.13.10-1~deb7u1) ...
+    Removing libjpeg8:amd64 (8d-1+deb7u1) ...
+    Processing triggers for libc-bin (2.19-18+deb8u6) ...
+    /sbin/ldconfig.real: /usr/lib/x86_64-linux-gnu/libjbig.so.0 is not a symbolic link
+
+    Processing triggers for desktop-file-utils (0.22-1) ...
+    Processing triggers for mime-support (3.58) ...
+    Processing triggers for man-db (2.7.0.2-5) ...
+    Processing triggers for hicolor-icon-theme (0.13-1) ...
+    
+I then stopped at 6:05 after rebooting the server.  At 10:28 I noticed
+that the server still hadn't restarted.  :ref:`andi` got it up and
+running again. He said that `systemd
+<https://en.wikipedia.org/wiki/Systemd>`__ was the guilty and that I
+am `not the first one to get disturbed
+<http://imgur.com/gallery/D1XK8nk>`__ by this.
+
+Oh, how I would love to have a `system administrator
+<http://www.saffre-rumma.net/jobs/admin/>`_! One who would care about
+problems like this!
+
+
+:ref:`noi` now requires `rest_framework`
+======================================== 
+
+:ref:`grigorij` reported that :ref:`noi` now (after
+:blogref:`20161229`) needs `rest_framework
+<http://www.django-rest-framework.org/>`__.
+
+It's of course a shame that newbies must stumble over such
+problems. Actually we have :ref:`travis` for this.  But :ref:`travis`
+is currently kind of disabled because it is failing all the time, I
+simply ignore these failures. This in turn is because most of these
+problems are "just" some environment problem which does not occur on a
+production site, and because it takes time to fix them, and (last but
+not least) because I believe that this is a good job for a volunteer.
+I dare to hope that we will soon find a volunteer who cares about
+"quality control":
+
+As a *Lino Quality Supervisor* you are going to watch the builds done
+by our :ref:`travis` account and try to fix them when appropriate.
+You learn a lot about Python in general, continuous integration and
+the development workflow of an open source project. You will have
+write access to the Lino repositories, so this responsibility requires
+a certain experience.

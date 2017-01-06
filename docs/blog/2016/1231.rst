@@ -1,0 +1,96 @@
+:date: 2016-12-31
+
+===========================
+Saturday, December 31, 2016
+===========================
+
+I continued on :ticket:`1307`.
+
+New attribute :attr:`lino.modlib.users.Plugin.online_registration`.
+
+I removed the :attr:`anonymous_user_type` attribute of
+:class:`lino.core.site.Site` whose need was quite obscure. The new
+rule is that on a site without :attr:`user_types_module
+<lino.core.site.Site.user_types_module>` the `profile` of
+`AnonymousUser` is `None` and "everything is permitted".
+
+I removed an unused module named :mod:`choicelists` in
+:mod:`lino_xl.lib.polls`.
+
+About the :class:`SendWelcomeMail
+<lino.modlib.users.actions.SendWelcomeMail>` action. Until recently
+this action had no dialog window at all. Clicking on the button simply
+sent an email without any confirmation. This was suboptimal. Now it
+has a parameter window which asks for the email address and the
+subject (and which is a confirmation dialog).
+
+I tried to also put the body of the welcome mail into that window,
+but (1) Lino does not yet correctly fill the default value into rich
+text fields of an action dialog: HTML markup gets escaped, which is
+not what we would want here, and (2) I realized that this would be a
+quite useless thing because system administrators won't start to write
+welcome messages.  The only reason for having a dialog window instead
+of a simple Yes/No confirmation is that they can give their own email
+address in order to test whether the mail works well.
+
+TODO:
+
+- Put useful content into the :xfile:`users/welcome_email.html`
+  template.
+
+- The :class:`VerifyUser <lino_noi.lib.users.models.VerifyUser>`
+  action doesn't yet work.
+  
+- When there is an "Actions" column, then all row actions should be
+  there. Currently we have send_welcome_mail in the actions column but
+  change_password and verify in the toolbar...
+
+A mysterious problem
+====================
+
+Grigory reported :ticket:`1323` on his machine.
+I tried to reproduce it on my machine, without success.
+
+I created a new virgin virtual environment and activated it.
+Then I ran the following script::
+
+    #!/bin/bash
+
+    set -e  # exit on error
+
+    pip install -e atelier
+    pip install -e lino
+    pip install -e xl
+    pip install -e noi
+    pip install -e cosi
+    pip install -e presto
+    pip install -e welfare
+    pip install -e voga
+    pip install -e book
+
+Then I ran the complete test suite of Lino Welfare::
+
+  $ go welfare
+  $ inv prep test
+
+No error.
+So I am still unable to reproduce the problem.
+
+I tried to add the following line to the :xfile:`requirements.txt`
+file (as in book... I don't remember why it is there) ::
+  
+  -e git+https://github.com/eliben/pycparser@release_v2.14#egg=pycparser
+
+A last possibility is that some system package needs to be
+installed. Some package which would be installed on my machine and not
+on the travis machine.
+
+The explanation is difficult to find because the error messages
+(:message:`Failed to save SiteConfig #1 ('Site-Parameter')` and the
+ValidationError traceback) are only consequences of some earlier
+problem.
+
+I leave this open and hope for new ideas next year.
+
+
+

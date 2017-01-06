@@ -1,0 +1,116 @@
+:date: 2017-01-06
+
+==================================
+20170106 (Friday, 06 January 2017)
+==================================
+
+Yesterday I had a first Hangouts session with :ref:`tonis`, a cute
+young man in Tallinn who is maybe going to work for us.
+
+The :class:`MarkTicketClosed
+<lino_noi.lib.noi.workflows.MarkTicketClosed>` action is now allowed
+when a ticket is `ready`:
+
+- 2017-01-06 02:39 : `lino_noi <http://noi.lino-framework.org>`__
+  `5aae53c <https://github.com/lino-framework/noi/commit/2493a775db8b8a8e98bdcf2cd10fe821c5aae53c>`__ adapt doctest
+
+- 2017-01-06 03:08 : `lino_noi <http://noi.lino-framework.org>`__
+  `57b9bf7 <https://github.com/lino-framework/noi/commit/cd248d22774faf2c73fd4d2001e30abbf57b9bf7>`__ ticket transition ready to closed
+
+
+
+I fixed :ticket:`1356`.  The demo site was failing (showing an empty
+page) and the following error message in the console::
+
+  GET http://demo1.lino-framework.org/media/cache/js/lino_en-us.js 404 (Not Found)
+
+The reason was server-side configuration. The config for this example
+is a bit tricky since I try to do as little local modifications as
+possible. The problem had to do with how Lino sets the default value
+for :setting:`MEDIA_ROOT`. I repeatedly ran the following::
+
+    cd /home/luc/mypy/demo_sites/demo1
+    $ python manage.py shell
+    >>> from django.conf import settings; print(settings.MEDIA_ROOT)
+    Path('/home/luc/mypy/demo_sites/mysite/media')
+
+  
+I observed that :meth:`get_notify_message
+<lino.modlib.notify.mixins.ChangeObservable.get_notify_message>`
+should be called *in the language of the recipient* and fixed this on
+the spot:
+
+- 2017-01-06 04:14 : `lino <http://www.lino-framework.org>`__
+  `d834bfd <https://github.com/lino-framework/lino/commit/762d3e4905a97e7626307820f2018f859d834bfd>`__ notification message in language of recipient
+
+- 2017-01-06 04:14 : `lino_welfare <http://welfare.lino-framework.org>`__
+  `7ca1cb7 <https://github.com/lino-framework/welfare/commit/8da854ee984c7ada9e28f4c71640755827ca1cb7>`__ notification message in language of recipient
+
+
+I merged Hamza's work on ExtJS 6:
+
+- 2017-01-06 03:44 : `lino_extjs6 <http://www.lino-framework.org>`__
+  `5f0458f <https://github.com/lino-framework/extjs6/commit/4d63b9e5e8d53b566d66a32c44b0545b15f0458f>`__ Merge pull request #70 from khchine5/master
+  
+  Fix all "Please wait" messages #1340
+
+
+
+
+
+
+Optimizations in tickets and votes
+==================================
+
+I did a series of miscellaneous changes mostly for :ticket:`1285` but
+with other tickets in the back of my mind.
+
+The column layout of the `MyVotes` and `MyOffers` tables
+(:mod:`lino_noi.lib.votes`) were suboptimal.  I removed the
+:class:`VoteViews` choicelist because it was nonsense.
+
+The "Author" of a vote is now called the "Voter".  But how to
+translate "Votable" to German?
+
+We now differentiate more visible between *Author* and *Reporter* of a
+ticket. They can differ when a connector user (e.g. a helpdesk
+operator) records a ticket in behalf of another user.
+
+I removed the :class:`lino.modlib.users.mixins.ByUser` mixin and
+replaced all usages by :class:`My <lino.modlib.users.mixins.My>`.
+For example in :mod:`lino.modlib.comments`, 
+:mod:`lino.modlib.tinymce`,
+:mod:`lino_xl.lib.notes`,
+:mod:`lino_xl.lib.polls`,
+:mod:`lino_xl.lib.projects`,
+:mod:`lino_xl.lib.stars`,
+:mod:`lino_xl.lib.postings` and others.
+
+I removed the :attr:`author_field_name` attribute :class:`UserAuthored
+<lino.modlib.users.mixins.UserAuthored>` because it was not used
+anymore and because it was a rather hackerish thing.
+       
+It is probable that this has unexpected side effects in places which
+are not covered by the test suites.  One side-effect (which seems
+positive) is that :class:`pcsw.Coaching
+<lino_welfare.modlib.pcsw.coaching.Coaching>` is now a
+:class:`UserAuthored <lino.modlib.users.mixins.UserAuthored>` instead
+of defining itself a :attr:`user` field.
+
+I also stumbled over the explanation for a series of error messages
+which I had been receiving occasionally from :ref:`welfare` production
+servers::
+
+    AjaxExceptionResponse
+    TypeError: 'NoneType' object has no attribute '__getitem__'
+    in request PUT /api/humanlinks/LinksByHuman/2563
+    
+These errors came because
+:meth:`lino_xl.lib.humanlinks.LinksByHuman.get_request_queryset`
+returned `None` (instead of an empty queryset) when there was no
+master instance.  :ref:`welfare.specs.households` now covers that
+particular case.  :meth:`lino.core.tablerequest.TableRequest.execute`
+now raises a clear error message ("No data iterator for {actor_name}")
+if similar situations would occur.
+
+I wrote a new utility function :func:`lino.core.utils.lazy_format`.

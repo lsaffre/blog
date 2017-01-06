@@ -196,6 +196,14 @@ Subha (pronounced *suvo*) is a volunteer contributor and potential
 core team member living in `Kolkata
 <https://en.wikipedia.org/wiki/Kolkata>`_ (India).
 
+.. _tonis:
+
+Tonis
+-------
+
+Tonis is a Lino contributor living in Tallinn.
+
+
 
 .. _evea:
 
