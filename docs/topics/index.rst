@@ -2,8 +2,8 @@
 Topics
 ======
 
-Debian
-======
+Technical
+=========
 
 .. toctree::
    :maxdepth: 2
@@ -19,3 +19,4 @@ Philosophy
    :maxdepth: 2
 
    why_free
+   ck
