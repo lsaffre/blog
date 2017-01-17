@@ -1,0 +1,86 @@
+:date: 2017-01-13
+
+========================
+Friday, January 13, 2017
+========================
+
+After our yesterday's work session, 
+
+There is more to do for :ticket:`1378`. The `[ticket 1]` links in
+notifications are now correctly stored as memo markup (and no longer
+as plain html), but I now need to write a subclass of HtmlRenderer
+which renders them as ExtJS permalinks (and not as javascript calls)
+because otherwise they won't work when clicked in an email.
+
+This caused quite an internal avalanche of code changes in
+:mod:`lino.core.requests` and :mod:`lino.core.renderer`.
+
+A first series of commits does not yet change anything, it is just a
+reorganisation of code in order to prepare my coup. There is danger
+that these changes introduced bugs which are not covered by the test
+suite (but *Wer nichts wagt, der nichts gewinnt*).  Here is an
+uncomplete list of these changes:
+
+- new class :class:`lino.core.renderer.JsRenderer` contains things
+  needed by both extjs3 and extjs6 renderer. The extjs6 renderer is a
+  modified copy of the extjs3 renderer, and this will reduce the
+  amount of duplicated code.
+
+- New method `obj2url`.
+
+- :meth:`goto_instance` now implemented by the renderer, not by the
+  request.
+
+- :mod:`lino_xl.lib.countries` now depends on :mod:`lino_xl.lib.xl`
+  (that's why belref didn't translate strings like "Countries" or
+  "Places" to German and French.
+
+List of changes:
+
+- 2017-01-13 13:57 in `lino <http://www.lino-framework.org>`__:
+  `1a04668 <https://github.com/lino-framework/lino/commit/5716fae9fb1df32cd72a0fa1189a546b81a04668>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 13:57 in `lino_xl <http://www.lino-framework.org>`__:
+  `fa66940 <https://github.com/lino-framework/xl/commit/062e3caa847170ada84f8115a6ec95543fa66940>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 13:57 in `lino_noi <http://noi.lino-framework.org>`__:
+  `4c0eccc <https://github.com/lino-framework/noi/commit/4484d4768064840e9f1a9b5ba13d661794c0eccc>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 13:57 in `lino_cosi <http://cosi.lino-framework.org>`__:
+  `b89165a <https://github.com/lino-framework/cosi/commit/c046824203a43203670da1997be5ab73ab89165a>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 13:57 in `lino_voga <http://voga.lino-framework.org>`__:
+  `fa0f1ea <https://github.com/lino-framework/voga/commit/02a9b91c5a605b6fff02642217b3cf2c8fa0f1ea>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 13:58 in `lino_extjs6 <http://www.lino-framework.org>`__:
+  `f06f596 <https://github.com/lino-framework/extjs6/commit/8ba4bea08be3f9feb6296ae5f4f806b31f06f596>`__
+  (Merge branch 'master' of git+ssh://github.com/lino-framework/extjs6)
+- 2017-01-13 13:58 in `lino_extjs6 <http://www.lino-framework.org>`__:
+  `2210e7a <https://github.com/lino-framework/extjs6/commit/26174359812656e62e301b882eef1bbc82210e7a>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 14:03 in `lino_book <http://www.lino-framework.org>`__:
+  `b41b721 <https://github.com/lino-framework/book/commit/458e63e62f8ff7680c03dc7d027fe24c0b41b721>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 14:04 in `lino_welfare <http://welfare.lino-framework.org>`__:
+  `f105455 <https://github.com/lino-framework/welfare/commit/d9cf8029ccf53b725d4545978914bc255f105455>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+
+
+I then started to do what I actually wanted to do: get the links right
+for emails. Yet another series of dangerous code changes.  For
+example, I changed signature of
+:meth:`lino.core.rednerer.Renderer.get_detail_url`: no longer an
+`obj`, but the `actor` and the `pk`.  Here are these changes:
+
+- 2017-01-13 19:23 in `lino <http://www.lino-framework.org>`__:
+  `b531615 <https://github.com/lino-framework/lino/commit/b9b865ade54bbcffff485de2c3b26fd2fb531615>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 19:23 in `lino_noi <http://noi.lino-framework.org>`__:
+  `2d12194 <https://github.com/lino-framework/noi/commit/4da2125e8bf439ac69fb62d1eb49e513c2d12194>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 19:23 in `lino_cosi <http://cosi.lino-framework.org>`__:
+  `83f6b03 <https://github.com/lino-framework/cosi/commit/5519ec37ab179e8361a050247ecc3000083f6b03>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)
+- 2017-01-13 19:23 in `lino_extjs6 <http://www.lino-framework.org>`__:
+  `f7894ab <https://github.com/lino-framework/extjs6/commit/e1b9c11690e98e1ee489c93ace3135681f7894ab>`__
+  (http://luc.lino-framework.org/blog/2017/0113.html)

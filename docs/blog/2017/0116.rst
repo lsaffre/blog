@@ -1,0 +1,88 @@
+:date: 2017-01-16
+
+========================
+Monday, January 16, 2017
+========================
+
+Worked on the Developer's Guide
+===============================
+
+I have been working a few hours in the Developer's Guide.  My goal was
+to collect "everything you need to know about actions" into one place,
+namely :ref:`dev.actions`.  I moved quite some docstrings from
+:mod:`lino.core.actions` to that document.
+
+Yes, it seems that links :class:`lino.core.actions.Action` or
+:meth:`lino.core.actions.Action.is_window_action` still work.  I like
+this approach. Yes, it seems that complex topics like actions should
+not rely on `autodoc` for documenting the API, they should use
+hand-written prosa documentation.
+
+Otherwise, as usual when I have been working on the documentation, I
+stop working on it because there are so much other things to do and
+without the feeling of having been efficient.
+
+
+A demo tour into Lino Care
+==========================
+
+This weekend I started :ticket:`1392`: write a "quick introductive
+demo tour" of :ref:`care` in German.  This is theoretically not my job
+(I usually convince my customers that they must write their end-user
+documentation themselves).
+
+An important task when writing end-user documentation is **collecting
+screenshots**.  Hint: Before a screenshot take session I set an exact
+window size for my browser::
+
+  $ wmctrl -r Firefox -e 0,10,10,800,600
+
+There is some visible result: :ref:`care.tour.de`.  As expected, I
+didn't get very far with that document. But as a positive surprise to
+me, I found, without the help of Anna and Johannes, a lot of details
+to optimize. And of course I fixed them on the spot.
+
+
+Pitfall when defining actions with a dialog window
+==================================================
+
+I discovered a cool pitfall (by falling into the pit, and it took me
+more than an hour to understand my mistake).
+
+When you define an action with a dialog window, then you must specify
+the parameters. And usually you also specify a `params_layout`. Which
+usually is a simple multi-line template string::
+
+    class MarkVoteRated(VoteAction):
+        parameters = dict(
+            rating=Ratings.field(),
+            comment=dd.RichTextField(_("Comment"), blank=True))
+        params_layout = dd.Panel("""
+        rating
+        comment
+        """, window_size=(50, 12))
+
+The pitfall is to use :class:`ParamsLayout` instead of :class:`Panel`::
+
+    class MarkVoteRated(VoteAction):
+        parameters = dict(
+            rating=Ratings.field(),
+            comment=dd.RichTextField(_("Comment"), blank=True))
+        params_layout = dd.ParamsLayout("""
+        rating
+        comment
+        """, window_size=(50, 12))
+
+In that case, until today, you got no error message, everything seems
+to work, except that the parameters entered by the user into the
+dialog window never made it into the action's code. The action is
+being executed as if the default values had not been changed.
+
+I added a test to cover this pitfall. As a side effect, Lino is now
+more severe and requires the developer to be specific when defining
+detail_layout and insert_layout: I removed :class:`dd.FormLayout`, we
+must now use :class:`dd.DetailLayout` or :class:`dd.InsertLayout`.
+
+
+
+

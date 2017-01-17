@@ -1,0 +1,34 @@
+:date: 2017-01-11
+
+===========================
+Wednesday, January 11, 2017
+===========================
+
+I did a release in :ref:`welcht` and worked on :ticket:`1317`,
+:ticket:`1318` and :ticket:`1301`.
+
+I am in an observation phase: should I abandon this blog and write
+everything as comments and sessions into our ticket management
+instead?
+
+
+I continued optimizing the tickets and votes workflow
+(:ticket:`1359`).
+
+New tables `MyVotes` and `MyWatched`.
+
+I extended the :attr:`votable_overview` field which now uses
+:meth:`get_overview_elems <lino.core.model.Model.get_overview_elems>`.
+
+I added a new class attribute :attr:`filter_ticket_states
+<lino_noi.lib.votes.models.Votes.filter_ticket_states>` on
+:class:`Votes <lino_noi.lib.votes.models.Votes>`.  This is used by the
+`MyTasks` and `MyOffers` tables.
+
+An internal optimization: until today the :attr:`workflow_state_field`
+of a `Model` was always a string with the name of a field. Now this
+name is being resolved during startup and converted into a field.
+
+:meth:`lino.core.model.Model.do_setup`
+:meth:`lino.core.plugin.on_site_startup`
+      

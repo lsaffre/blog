@@ -1,0 +1,64 @@
+:date: 2017-01-10
+
+=========================
+Tuesday, January 10, 2017
+=========================
+
+As we start to use the :cmd:`py` memo command, we hit some more edge
+cases. I received an ImportError "No module named &nbsp;lino".
+
+I fixed
+
+- the error handling when a non-existing Python object is
+  specified. In that case it's not the system admin who should get
+  notified, so this must not be considered a real error.
+
+- the HTML editor can insert non-breaking spaces at random
+  positions. These were not well swallowed by the memo parser.
+
+I think that the handling of non-breaking spaces should rather happen
+at the parser level, not in every command. So I did this in
+:mod:`lino.utils.memo`.
+
+  
+
+>>> from lino import startup
+>>> startup('lino_noi.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+>>> ses = rt.login('robin')
+>>> print(ses.parse_memo(u"[py\u00A0lino]."))
+<a href="https://github.com/lsaffre/lino/blob/master/lino/__init__.py" target="_blank">lino</a>.
+
+>>> print(ses.parse_memo(u"[url\u00A0http://example.com]."))
+<a href="http://example.com" target="_blank">http://example.com</a>.
+
+Side effect: non-breaking, leading and trailing spaces are now always
+removed from command text:
+
+>>> print(ses.parse_memo(u"[py lino My\u00A0favourite\u00A0framework]."))
+<a href="https://github.com/lsaffre/lino/blob/master/lino/__init__.py" target="_blank">My favourite framework</a>.
+
+
+>>> print(ses.parse_memo("[url http://example.com Trailing space  ]."))
+<a href="http://example.com" target="_blank">Trailing space</a>.
+
+>>> print(ses.parse_memo("[url http://example.com   Leading space]."))
+<a href="http://example.com" target="_blank">Leading space</a>.
+
+
+A quick update
+==============
+
+I did a "quick" update to our ticket database. Actually it was not
+that quick, I had to migrate the remove of topics from faculties and
+the new end_user field and the removal of `reporter`.  I also ran the
+following manual routine::
+
+    from lino.api.shell import *
+    for t in tickets.Ticket.objects.filter(user__isnull=True):
+        t.user = t.reporter
+        t.full_clean()
+        t.save()
+
+I start to realize that I should *always* announce production upgrades
+one day before and invite the core developers to watch.
