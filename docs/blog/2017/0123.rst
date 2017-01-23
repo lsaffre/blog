@@ -4,10 +4,15 @@
 Monday, January 23, 2017
 ========================
 
-I continued working on :ref:`avanti`.
+A new Lino application is born ;-)
+It's name is :ref:`avanti`.
+I had been working on it since
+Thursday and now published it:
 
-My work on :ref:`avanti` caused some changes to existing projects:
+- Website http://avanti.lino-framework.org
+- New GitHub project https://github.com/lino-framework/avanti
 
+:ref:`avanti` caused some changes to existing projects:
 
 - I moved :class:`CivilStates` and :class:`ResidenceTypes` from
   :mod:`lino_welfare.modlib.pcsw` to :mod:`lino_xl.lib.beid`. (The
@@ -19,13 +24,9 @@ My work on :ref:`avanti` caused some changes to existing projects:
 
 - :mod:`lino_xl.lib.notes` now supports being used without contacts.
 
-- lino.core.site.Site.is_abstract_model
-
-- Contactable now includes fields `email` and
-  `language`.
-  
-- And :class:`lino.modlib.users.models.User` now inherits from
-  it.
+- Fixed a bug in :meth:`lino.core.site.Site.is_abstract_model` which
+  caused it to fail on plugins without their own Plugin class
+  definition.
 
 - I moved ``lino_cosi.lib.courses`` to
   :mod:`lino_xl.lib.courses`, and this plugin now works 
@@ -34,12 +35,12 @@ My work on :ref:`avanti` caused some changes to existing projects:
 - :class:`lino_xl.lib.countries.mixins.AddressLocation` now inherits
   from :class:`lino.utils.addressable.Addressable`
 
-- We now have two mixins :class:`lino.mixins.Contactable`
-  and :class:`lino.mixins.Phonable`.
+- We now have two mixins :class:`lino.mixins.Contactable` and
+  :class:`lino.mixins.Phonable`.
+  :class:`lino.modlib.users.models.User` now inherits from the latter.
 
-  
-- One user type can now have more than one role. This makes it more
-  easy to define the user types of an application. A
+- One user type can now have more than one role. This makes it easier
+  to define the user types of an application. This required a
   backwards-incompatible API change: code of the following style must
   get adapted.
 
@@ -57,8 +58,7 @@ My work on :ref:`avanti` caused some changes to existing projects:
   <lino.core.roles.UserRole.satisfies_requirement>`.
 
 - :mod:`lino_xl.lib.excerpts` no longer needs
-  :mod:`lino_xl.lib.outbox` (I think that actually nobody uses the
-  outbox module).
+  :mod:`lino_xl.lib.outbox` (AFAIK nobody uses the outbox module).
 
 - I renamed ``lino_welfare.modlib.courses`` to
   :mod:`lino_welfare.modlib.xcourses`.
@@ -66,6 +66,11 @@ My work on :ref:`avanti` caused some changes to existing projects:
 - I removed usage of `past.builtins` after stumbling once more over
   :ticket:`1296`. The problem is still there, but I documented its
   workaround.
+
+- I fixed some broken links to the source of Sphinx pages
+  (:file:`docs/.templates/layout.html`) in several projects.
+
+- `LanguageKnowledgesByPerson` now has a summary view.
 
 
 Some specs about Avanti:
@@ -77,15 +82,50 @@ Some specs about Avanti:
   lediglich in :menuselection:`Konfiguration --> Kalender --> Räume`
   die Kursanbieter als *Räume* erfassen.
 
-- Die Lehrer (Kursleiter) werden momentan als Benutzer erfasst. Für
-  Lino ist eigentlich nicht wichtig, wer den Kurs tatsächlich gibt,
-  sondern wer sich um das Erfassen Anwesenheiten kümmert.
+- Die **Lehrer** (Kursleiter) werden momentan als Benutzer
+  erfasst. Für Lino ist eigentlich nicht wichtig, wer den Kurs
+  tatsächlich gibt, sondern wer sich um das Erfassen der Anwesenheiten
+  kümmert.
   
 - the calendar module is needed for registering the presences at courses
 - they use tickets, bot not clocking
 
+  
+
+En passant I fixed two tickets for :ref:`voga`: :ticket:`1417` and
+:ticket:`1419`. For the former (:ticket:`1417`) I did a change which
+will also require changes in :ref:`welfare`:
+        
+-  I removed the virtual column
+  `info` because it was functionally redundant with
+  :meth:`get_overview_elems`.
+
+And the second ticket revealed a bug which had been living for a long
+time in :mod:`lino.modlib.extjs.ext_renderer`.  At first I suspected
+the cause somewhere in :meth:`setup_quicklink`, that's why I optimized
+the API for :meth:`lino.core.site.Site.setup_quicklink` (it is called
+with a `user` parameter and no longer with the action request. This is
+in preparation for :ticket:`1420`.
+
+The actual culprit was :meth:`window_action_button
+<lino.modlib.extjs.ext_renderer.ExtRenderer.window_action_button>`.
+It had the following signature::
 
 
->>> from lino import startup
->>> startup('lino_welfare.projects.eupen.settings.doctests')
->>> import lino_welfare.projects.chatelet.modlib.courses.models
+    def window_action_button(
+            self, ar, ba, status={},
+            label=None, title=None, **kw):
+  
+
+and then it passed the `status` dict to :meth:`action_call` which
+modified that dict!
+
+It's a well-known pitfall: you may not modify the dict specified as
+default value in a signature because your modification will modify the
+default value itself. The result was a magic behaviour because my
+quicklink was generated correctly only once during the first request
+after a server reload, and for all remaining calls it had a `{
+record_id: -999998 }` value.
+
+The :ref:`welfare` test suite is still broken, I am going to repair it
+tomorrow.
