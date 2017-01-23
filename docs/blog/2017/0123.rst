@@ -1,0 +1,91 @@
+:date: 2017-01-23
+
+========================
+Monday, January 23, 2017
+========================
+
+I continued working on :ref:`avanti`.
+
+My work on :ref:`avanti` caused some changes to existing projects:
+
+
+- I moved :class:`CivilStates` and :class:`ResidenceTypes` from
+  :mod:`lino_welfare.modlib.pcsw` to :mod:`lino_xl.lib.beid`. (The
+  biggest challenge there is to not lose the translations).
+
+- New method :meth:`lino.core.plugin.Plugin.on_site_init` used by
+  :class:`lino_xl.lib.beid.Plugin` to instantiate its
+  :attr:`holder_model <lino_xl.lib.beid.Plugin.holder_model>`.
+
+- :mod:`lino_xl.lib.notes` now supports being used without contacts.
+
+- lino.core.site.Site.is_abstract_model
+
+- Contactable now includes fields `email` and
+  `language`.
+  
+- And :class:`lino.modlib.users.models.User` now inherits from
+  it.
+
+- I moved ``lino_cosi.lib.courses`` to
+  :mod:`lino_xl.lib.courses`, and this plugin now works 
+  when `contacts` is not installed.
+
+- :class:`lino_xl.lib.countries.mixins.AddressLocation` now inherits
+  from :class:`lino.utils.addressable.Addressable`
+
+- We now have two mixins :class:`lino.mixins.Contactable`
+  and :class:`lino.mixins.Phonable`.
+
+  
+- One user type can now have more than one role. This makes it more
+  easy to define the user types of an application. A
+  backwards-incompatible API change: code of the following style must
+  get adapted.
+
+  Before::
+
+    if isinstance(p.role, OfficeUser):
+
+   After::
+  
+    if p.has_required_roles([OfficeUser]):
+  
+
+- In :class:`lino.core.roles.UserRole` I renamed
+  :meth:`has_required_roles` to :meth:`satisfies_requirement
+  <lino.core.roles.UserRole.satisfies_requirement>`.
+
+- :mod:`lino_xl.lib.excerpts` no longer needs
+  :mod:`lino_xl.lib.outbox` (I think that actually nobody uses the
+  outbox module).
+
+- I renamed ``lino_welfare.modlib.courses`` to
+  :mod:`lino_welfare.modlib.xcourses`.
+
+- I removed usage of `past.builtins` after stumbling once more over
+  :ticket:`1296`. The problem is still there, but I documented its
+  workaround.
+
+
+Some specs about Avanti:
+
+- Ansprechpartner ÖSHZ and Soziale Kontakte könnten als
+  "Klientenkontakte" gemacht werden.
+  
+- Kursanbieter und Lehrer : in einer ersten Version werde ich
+  lediglich in :menuselection:`Konfiguration --> Kalender --> Räume`
+  die Kursanbieter als *Räume* erfassen.
+
+- Die Lehrer (Kursleiter) werden momentan als Benutzer erfasst. Für
+  Lino ist eigentlich nicht wichtig, wer den Kurs tatsächlich gibt,
+  sondern wer sich um das Erfassen Anwesenheiten kümmert.
+  
+- the calendar module is needed for registering the presences at courses
+- they use tickets, bot not clocking
+
+
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.doctests')
+>>> import lino_welfare.projects.chatelet.modlib.courses.models
