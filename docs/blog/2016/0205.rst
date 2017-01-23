@@ -10,9 +10,9 @@ which are definitively limited to their concrete case.
 So I created the new plugin 
 :mod:`lino_voga.projects.roger.lib.courses`,
 which extends :mod:`lino_voga.lib.courses`,
-which in turn extends :mod:`lino_cosi.lib.courses`.
+which in turn extends :mod:`lino_xl.lib.courses`.
 
-- :mod:`lino_cosi.lib.courses` defines the `Enrolment` model with
+- :mod:`lino_xl.lib.courses` defines the `Enrolment` model with
   fields like course, pupil, request_date, state, ...
 
 - :mod:`lino_voga.lib.courses` does not change anything on the
@@ -36,7 +36,7 @@ A surprise
 But now I get the following runtime error::
 
   RuntimeError: Conflicting 'enrolment' models in application 'courses': 
-  <class 'lino_cosi.lib.courses.models.Enrolment'> and
+  <class 'lino_xl.lib.courses.models.Enrolment'> and
   <class 'lino_voga.projects.roger.lib.courses.models.Enrolment'>.
 
 Both model definitions correctly have defined the following `Meta`
@@ -52,7 +52,7 @@ reason which don't yet fully understand.
 
 And indeed, :meth:`is_abstract_model
 <lino.core.site.Site.is_abstract_model>` returns `False` for both
-`Enrolment` models. But the one in :mod:`lino_cosi.lib.courses` should
+`Enrolment` models. But the one in :mod:`lino_xl.lib.courses` should
 be abstract.  That was a bug in Lino, more precisely in the logic
 responsible for automatically filling :attr:`override_modlib_models
 <lino.core.site.Site.override_modlib_models>` at startup. Fixed.

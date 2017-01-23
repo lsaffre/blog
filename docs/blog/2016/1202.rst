@@ -151,7 +151,27 @@ A mysterious error happens::
 
     FAILED (failures=1)
 
-But when I test that same file using py.test, then it passes::
+The problem seems to be caused by my good old enemy `future
+<https://pypi.python.org/pypi/future>`__, especially when I read
+things like this:
+
+  https://github.com/PythonCharmers/python-future/issues/148
+
+I removed the following lines from most places::
+
+    from future import standard_library
+    standard_library.install_aliases()
+
+To be honest, I must admit that above changes did not help, and that
+the `newstr` trick of `future <https://pypi.python.org/pypi/future>`__
+is AFAICS still the only solution for getting our doctests to pass on
+both Py 2 and 3.
+
+Note also that I did not run the full test suite under Python 3 (I
+stopped when it had a problem with appy).
+
+There is a workaround: when I test that same file using py.test, then
+it passes::
 
     $ py.test -k test_voga
     ============================= test session starts ==============================
@@ -165,23 +185,7 @@ But when I test that same file using py.test, then it passes::
     ============================= 17 tests deselected ==============================
     =================== 1 passed, 17 deselected in 4.89 seconds ====================
 
-The problem seems to be caused by my good old enemy `future
-<https://pypi.python.org/pypi/future>`__, especially when I read
-things like this:
 
-  https://github.com/PythonCharmers/python-future/issues/148
-
-I removed the following lines from most places::
-
-    from future import standard_library
-    standard_library.install_aliases()
-
-To be honest, I must admit that the `newstr` trick of `future
-<https://pypi.python.org/pypi/future>`__ is AFAICS still the only
-solution for getting our doctests to pass on both Py 2 and 3.
-
-Note also that I did not run the full test suite under Python 3 (I
-stopped when it had a problem with appy).
 
 
 Adapting the tests
