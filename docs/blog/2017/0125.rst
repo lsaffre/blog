@@ -1,0 +1,103 @@
+:date: 2017-01-25
+
+===========================
+Wednesday, January 25, 2017
+===========================
+
+Upgrade on :ref:`eiche`
+=======================
+
+A quick routine upgrade which required a snapshot & restore, but no
+explicit data migration.
+
+I used the following a trick for checking whether the database needs
+migration or not:
+
+- Make a snapshot::
+  
+      $ ./make_snapshot.sh
+  
+- Update the code repositories::
+    
+      $ ./pull.sh
+  
+- run :manage:`dump2py` into a temporary directory::
+
+      $ python manage.py dump2py -o t 
+
+- If there is an error (e.g. today I had a :message:`OperationalError:
+  (1054, "Unknown column 'cal_eventtype.max_days' in 'field list'")`,
+  then you need to :manage:`run` the :xfile:`restore.py` of your
+  snapshot::
+
+      $ python manage.py run snapshot/restore.py
+
+I quickly fixed :ticket:`1422` *en passant* (or at least one part of
+the request: the `free_places` column is now an IntegerField and
+therefore right-aligned)
+
+
+Moving translations from one package to another
+================================================
+
+I did :cmd:`inv mm` in every project and ran the test suite once more,
+and it seems that the translations have correctly been moved from
+welfare to xl (after :ticket:`1421`).
+
+When you move some code from one package to another (e.g. from `a` to
+`b`) :
+
+- run :cmd:`inv mm` in both projects before starting
+  
+- Move the code. Get it more or less running, but don't worry for the
+  test suite.
+  
+- With your editor, manually copy the content of the
+  :xfile:`django.po` file of every language from project `a` and paste
+  it to the end of its equivalent file in `b`. Do not copy the header
+  fields.
+
+- run :cmd:`inv mm` again in both projects
+  
+
+Preparing a demo on Thursday
+============================
+
+Gerd and Mathieu will give a demo of :ref:`welfare` on Thursday. I did
+a last upgrade of the online demos.
+
+- The symbol used by :meth:`ActorItem.render
+  <lino.core.dashboard.ActorItem.render>` for representing the button
+  which opens a dashboard item in its own window is no longer 🗗 but
+  ⍐. The problem with the former was that it is not yet supported on
+  many browsers.
+
+
+More Avanti
+===========
+
+I continued to work on the :ref:`avanti` prototype (:ticket:`1400`).
+
+The :mod:`households <lino_xl.lib.households>` module has a cool
+feature: you can enter members by either (1) selecting an existing
+client or (2) manually entering their names, birth date and sex.  And
+when you enter all four manual fields (first name, last name, birth
+date and sex) for a member, then Lino automatically creates a client
+for that member and links them.
+
+This feature is probably important for :ref:`avanti`.  I think that
+Johanna will want the :mod:`humanlinks <lino_xl.lib.humanlinks>` and
+:mod:`households <lino_xl.lib.households>` modules (although their
+first reaction in our meeting was different).
+
+I now realized that this feature was only in the :ref:`welfare`
+version. So I moved it to :mod:`lino_xl` and left only some really
+PCSW-specific things in :mod:`lino_welfare.modlib.hourseholds`.
+
+
+This change caused an interesting failure in
+:ref:`lino.specs.households`. That was because household memberships
+automatically create human links when necessary, and new households
+are automatically populated from the children of the head of
+households and her or his partner.
+
