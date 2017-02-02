@@ -1,0 +1,42 @@
+:date: 2017-01-30
+
+========================
+Monday, January 30, 2017
+========================
+
+I worked on :ticket:`1438` : I plan Tanel to become the webmaster of
+our `company website <http://www.saffre-rumma.net/>`__
+
+The site is made using Nikola, and I am satisfied with it. The main
+reason for not using Sphinx for our site is that Nikola handles
+multilingual sites better and is more user-friendly.
+
+First step was to put the source files to public GitHub repository
+https://github.com/saffre-rumma/www
+
+The only little issue was: my username was hard-coded in the Nikola
+config file.  How are we going to make that username configurable?
+This was less trivial than expected because there are so many ways to
+do it.
+
+We explored whether we should use GH pages for hosting these pages
+instead of wasting our expensive server space.  But our pages take
+only about 6 MB, and I prefer to remain independent at that level.
+
+The final answer (or at least I hope so) came last night: I extended
+:mod:`atelier.invlib` so that it supports also Nikola doc trees.
+So Tanel must just configure his `~/.invoke.py` file.
+
+I like this solution, but --yes as usual-- it needs more
+documentation.
+
+
+
+>>> from lino import startup
+>>> startup('lino_avanti.projects.avanti.settings.demo')
+>>> from lino.api.shell import *
+>>> ses = rt.login("rolf")
+>>> ba = avanti.Clients.get_action_by_name('read_beid')
+
+>>> u = ses.user
+>>> ba.get_view_permission(u.profile)

@@ -1,0 +1,34 @@
+:date: 2017-02-02
+
+==========================
+Thursday, February 2, 2017
+==========================
+
+In a hangouts session with :ref:`tonis` we observed a funny test
+failure in :ref:`noi.specs.tickets`. The :func:`py2rst
+<lino.utils.diag.py2rst>` in "The detail layout of a ticket" printed a
+nearly empty string. And I had been working on the permissions system
+yesterday! So it was obviously caused by these changes!
+
+But (after some debugging) it turned out that the reason was much
+simpler: this morning I had temporarily changed :attr:`default_ui
+<lino.core.site.Site.default_ui>` in
+:mod:`lino_noi.projects.team.settings.demo` from its default
+(:mod:`lino.modlib.extjs`) to :mod:`lino_extjs.extjs6` in order to
+test Hamza's work...  And :func:`py2rst <lino.utils.diag.py2rst>`
+doesn't yet work in this case.  I recorded this as :ticket:`1459`.
+This is related to :ticket:`951`.
+    
+I also realized that the page about :ref:`dev.permissions` is
+important.  I reviewed it and moved it from the "Drafts" section to
+the "Design chocies" section.
+
+Monique reported :ticket:`1458`, which turned out to be a real subtle
+bug in how Lino computes whether there are still available places in a
+course. That computation can be complex in long-running courses where
+participants come and go. I wrote a test case to cover it:
+:mod:`lino_voga.projects.roger.tests.test_max_places`.
+
+I did a deploy on :ref:`eiche` because Monique wants to write her
+invoice and because I wanted to see whether my explanation was correct
+(it was).

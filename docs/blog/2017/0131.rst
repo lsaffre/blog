@@ -1,0 +1,40 @@
+:date: 2017-01-31
+
+=========================
+Tuesday, January 31, 2017
+=========================
+
+I worked on :ticket:`1442`.  A first problem was that the actions
+didn't even become visible. It took me one hour to understand that my
+new idea of having multiple roles per UserType does not work as I
+expected.
+
+Bruno tested on the production site, and thanks to this I fixed quite
+some problems which occured after reading an eid card. I cannot
+currently test these things from my machine because it seems that my
+card reader doesn't work with Belgian cards.
+
+One of the problems was a :message:`TypeError: 'birth_place' is an
+invalid keyword argument for this function`.
+
+This was because `contacts.Person` also inherited from
+:class:`BeIdCardHolder <lino_xl.lib.beid.mixins.BeIdCardHolder>` (just
+because when I wrote this I believed that they will manage only
+clients and no normal persons).  And
+:func:`lino.core.utils.models_by_base` seems to not work as expected
+when the `toplevel_only` option is `True`. I'd have expected it to
+raise a warning when it finds more than one models implementing
+:class:`BeIdCardHolder <lino_xl.lib.beid.mixins.BeIdCardHolder>`...
+Not urgent.  But now :attr:`lino_xl.xl.lib.beid.Plugin.holder_model`
+contains :class:`lino_avanti.lib.avanti.models.Client`. That's what I
+expect it to be.
+
+The `birth_place` field must indeed be in :class:`BeIdCardHolder
+<lino_xl.lib.beid.mixins.BeIdCardHolder>`, not in every implementing
+class.
+
+Several similar trivial problems.
+
+I renamed `UserType.roles` to `UserTypes.role`. En passant I also now
+differentiate roles modules from user_types modules.
+

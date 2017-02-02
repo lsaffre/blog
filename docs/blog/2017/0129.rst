@@ -1,0 +1,88 @@
+:date: 2017-01-29
+
+========================
+Sunday, January 29, 2017
+========================
+
+I returned back to using both subject and body in notification
+messages.  This is part of :ticket:`1322`. I had removed the `subject`
+sometime in December 2016 because I thought that it is more clean to
+think about notifications as "one message to be sent to one user", and
+that the distinction between "subject" and "body" was nonsense for
+notifications. But it isn't: we need it e.g. when sending
+notifications as individual emails, or in grids where we want a quick
+overview of all notifications. only the application code.
+
+These changes caused some failures in
+:file:`lino_welfare/projects/std/tests/test_notify.py` when it calls
+the checkin action on a Guest (i.e. an instance of CheckinVisitor
+which inherits from NotifyingAction)::
+
+        res = ses.run(guest.checkin)
+        self.assertEqual(res, {
+            'message': '', 'success': True, 'refresh': True})
+
+        # it has caused a notification message:
+        self.assertEqual(Message.objects.count(), 1)
+
+That test had passed until now, but this was wrong because the checkin
+action should not return an empty message.
+
+This revealed a subtle bug which I called :ticket:`1440`.  It is about
+parameter actions, i.e. actions which have a dialog window to be
+displayed before running the action.  The :meth:`action_param_values
+<lino.core.actions.Action.action_param_values>` method of these
+actions is expected to return the default values for the parameters of
+the dialog window.  When it is called, it is given the object on which
+it is being called. This object was `None` here.  I added a new
+keyword argument `selected_rows` to :meth:`BaseRequest.setup`.
+
+This bug is maybe related to :ticket:`1366`.
+
+Fixing this bug required also a change in lino.modlib.extjs which I
+did in ext6 as well.
+
+
+Upgrade on :ref:`lf`
+====================
+
+A routine upgrade, mostly in order to test whether my yesterday's
+changes didn't introduce any regression.
+
+This is a quick routine upgrade. There are no release notes. But an
+important question in this situation is "Do I need to run a migration?
+Were there any changes since last time which require a database
+migration?".
+
+We are Sunday evening and you might threaten to kill me, I still would
+not be able to say when was our last upgrade on that site or whether I
+did some changes to the database schema of :ref:`noi` since that
+moment.
+
+The important thing to not forget is to make a snapshot of your
+database before pulling the new sources.
+
+The trick for quickly testing whether you need to restore the snapshot
+is to run a temporary dump::
+
+
+  $ python manage.py dump2py t -o
+
+This time it gave me the following error message::  
+
+  django.db.utils.OperationalError: (1054, "Unknown column 'changes_change.changed_fields' in 'field list'")
+
+Yes, of course. Now I remember that I added that field.
+
+Usually this simply means that You now must restore your snapshot::
+
+  $ python manage.py run snapshots/restore.py
+
+Voilà.
+
+And then I adapted
+:meth:`lino.modlib.comments.models.Comment.get_change_subject` and
+:meth:`lino.modlib.notify.models.Message.send_summary_emails` so that
+the subject of emails are now more meaningful: "Luc commented on #1440
+(...)" is a more meaningful subject than "You have 1 notifications".
+
