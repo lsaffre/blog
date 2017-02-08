@@ -1,0 +1,55 @@
+:date: 2017-02-07
+
+=========================
+Tuesday, February 7, 2017
+=========================
+
+There was one place where I forgot to change "initdb_demo" to "prep":
+the :xfile:`initdb_tmp` scripts.
+
+I checked in my yesterday's work for :ticket:`1466` and then continued
+working on that ticket.  My manual German to-do list is done, but
+there are some evident fine-tuning.
+
+For example the calendar panel didn't work out of the box. Users must
+edit calendar subscriptions in order to use it. So I had to adapt the
+detail layout for users.User.
+
+The MyEvents table needed revision. At least the first cell should
+open the detail window on that event when clicked.  I changed the
+:meth:`__str__` method of :class:`lino_xl.lib.cal.models.Event`. And
+MyEvents now uses :attr:`overview` instead of :attr:`html_text`.
+
+I also noted that the detail layout for :class:`system.SiteConfig`
+needs to be done. I optimized Lino here by adding the
+:attr:`custom_layouts_module
+<lino.core.site.Site.custom_layouts_module>` attribute for doing such
+layout customizations.  A custom layouts module is useful when you
+want to modify a layout in a plugin which you don't want to override
+otherwise.  For example, many applications want to define their own
+detail_layout for SiteConfig, and they don't customize anything else
+in that plugin. In this case it feels like overhead to create a
+subplugin of :mod:`lino.modlib.system`.
+
+The first applications which use this new feature are 
+:mod:`lino_avanti.lib.avanti.layouts`
+:mod:`lino_voga.lib.voga.layouts`.
+     
+Hangout with :ref:`tonis`. Tonis observed that in :ref:`cosi` there is
+no sales price in the detail of a product. We fixed that together
+(Tonis watching me), using the new feature. That, we now have a module
+:mod:`lino_cosi.lib.cosi.layouts` which adds the sales price to the
+prodct detail window.
+
+Tonis said that it is a quite hackerish way of doing things, and that
+in Odoo you simply modify some xml file when you want to change a
+layout.  It is an understandable reaction. But this is one of the
+important design choices I made for Lino: the UI layouts are done
+using Python, and not in XML or some other additional format.
+
+
+About 10 minutes later he understood why Lino does it this way, and
+that :ref:`thinking in Python <lino.think_python>` is actually cool,
+and maybe even better. At least if you are a developer and want to
+reuse your work.
+

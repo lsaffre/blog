@@ -1,0 +1,122 @@
+:date: 2017-02-03
+
+========================
+Friday, February 3, 2017
+========================
+
+
+Trying Lino on PythonAnywhere
+=============================
+
+I opened an account on `PythonAnywhere
+<https://www.pythonanywhere.com/user/lsaffre/>`__ and tried to install
+a :ref:`noi` demo instance (as explained :ref:`here <noi.install>`)::
+ 
+    $ git clone https://github.com/lsaffre/noi
+    $ pip install -r noi/requirements.txt
+
+Oops, this tried to install into the system-wide Python environment
+for which I obviously have no write permission::
+
+    Successfully built pytidylib clint django-localflavor html2text reportlab odfpy appy args
+    Installing collected packages: invoke, unipath, py, pytest, pytest-cov, atelier, django, pytidylib, args, clint, django-localflavor, html2text, schedule, django-wkhtmltopdf, reportlab, lino, odfpy, appy, lino-xl
+    ...
+    Exception:
+    Traceback (most recent call last):
+      ...
+      File "/usr/lib/python2.7/os.py", line 157, in makedirs
+        mkdir(name, mode)
+    OSError: [Errno 13] Permission denied: '/usr/local/lib/python2.7/dist-packages/invoke-0.14.0.dist-info'
+
+So here we go in a virtual environment::  
+
+    $ virtualenv env
+    $ . env/bin/activate
+
+And once more::
+
+    $ pip install -r noi/requirements.txt
+
+This fixes above problem well and leads to the next one::
+  
+    Obtaining atelier from git+https://github.com/lino-framework/atelier.git#egg=atelier (from -r noi/requirements
+    .txt (line 1))
+      Cloning https://github.com/lino-framework/atelier.git to ./env/src/atelier
+    Obtaining lino from git+https://github.com/lino-framework/lino.git#egg=lino (from -r noi/requirements.txt (lin
+    e 2))
+      Cloning https://github.com/lino-framework/lino.git to ./env/src/lino
+    fatal: cannot create directory at 'lino/modlib/extjs/static/ext-3.3.1/resources': Disk quota exceeded
+    warning: Clone succeeded, but checkout failed.
+    You can inspect what was checked out with 'git status'
+    and retry the checkout with 'git checkout -f HEAD'
+    Command "git clone -q https://github.com/lino-framework/lino.git /home/lsaffre/env/src/lino" failed with error
+     code 128 in None
+
+
+Disk quota exceeded.  Okay, I see. The free account is quite limited.
+Or Lino Noi needs more disk space than they give for free.
+Understandable.  They also want to get money from their work.
+
+I won't investigate into this further right now because I don't have
+any immediate use case, but now I have tried it and my general
+impression is: wow, well done!
+
+
+More Avanti
+============
+
+More code changes for :ticket:`1466`.
+
+DONE:
+
+- Termine generieren geht nicht (Mo, Di, Do, Fr) : Das war nur ein
+  Benutzungsfehler: man muss in diesem Fall die Wiederholungsrate
+  natürlich auf "täglich" statt "wöchentlich" stellen.
+
+- Komplette Länderliste (all_countries)
+  
+- Kann keine Begleitung erstellen.
+  Kann keine Klientenkontakte  erstellen. Da fehlten die user roles.
+
+- Tabelle "Begleitungen" nicht auf erster Seite. Dort nur den primären
+  Begleiter
+  
+- Kalenderansicht aktivieren. :mod:`lino_xl.lib.cal.extensible`
+  
+- Fenster Einfügen in Räume zu groß
+  
+- national_id, birth_date and gender nach "Person"
+
+- Beendigungsgrund "Erfolgreich abgeschlossen"
+
+- Neue Benutzerarten "Sozialarbeiter" und "Kursleiter".
+  
+  Sozialarbeiter dürfen ungefähr alles außer Konfigurierung und neue
+  Benutzer anlegen.
+
+  Kursleiter dürfen nur ihre eigenen Kurse sehen und dort auch keine
+  neuen Teilnehmer einfügen, sondern nur die Anwesenheiten der
+  Teilnehmer eingeben.
+
+TODO:  
+
+- Anwesenheiten erfassen : kann Gastrollen nicht konfigurieren
+- Anzahl Plätze pro Einschreibung kann weg
+- Autor kann seinen Kurs nicht registrieren
+- Verwalter kann keine Benutzer anlegen
+- Übersetzer : mehrzeiliges Textfeld
+- Eine weitere Benutzerart könnte sein "Kursplaner". Das sind Leute,
+  die Termine generieren lassen können und Teilnehmer erfassen können
+  (also auch die Liste aller Klienten sehen)
+  
+  
+
+Miscellaneous
+=============
+
+- I renamed :manage:`initdb_demo` to :manage:`prep`
+- `UserTypes` now includes the class name of the `role`.
+  
+- The fields coaching_type and client_contact_type are now injected
+  from other places, that's why the internal order of the fields
+  changed.
