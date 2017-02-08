@@ -13,3 +13,20 @@ new specs document :ref:`avanti.specs.courses`.
 
 I moved the workflows module from Voga to XL because I want to use
 that workflow in Avanti as well.
+
+A stupid UnicodeException took me 1h30::
+
+    AjaxExceptionResponse UnicodeEncodeError: 'ascii' codec can't encode character u'\xe9' in position 2: ordinal not in range(128)
+
+    in request PUT /api/tickets/AllTickets/1473 (data: <QueryDict: {u'end_user': [u'Select a User...'], u'duplicate_of': [u'Select a Ticket...'], u'ticket_type': [u'Select a Ticket type...'], u'site': [u'welcht'], u'private': [u'off'], u'an': [u'submit_de...)
+    TRACEBACK:
+      File ".../lino/lino/modlib/notify/mixins.py", line 89, in msg
+        subject = self.get_change_subject(ar, cw)
+      File ".../lino/lino/modlib/notify/mixins.py", line 28, in get_change_subject
+        return "{} {}".format(self, msg)
+
+The error itself was evident: it came because I did not `from
+__future__ import unicode_literals` in that file
+(:mod:`lino.modlib.notify.mixins`).  The difficulty was to reproduce
+it.  But finally I got it...  (in
+:mod:`lino_noi.projects.team.tests.test_notify`).
