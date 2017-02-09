@@ -4,6 +4,9 @@
 Wednesday, February 8, 2017
 ===========================
 
+Avanti
+======
+
 More changes in :ticket:`1466`. I am still fiddling with presences and
 who is responsible for the generated events. I had to extend the
 :class:`EventGenerator <lino_xl.lib.cal.mixins.EventGenerator>` API
@@ -13,6 +16,9 @@ new specs document :ref:`avanti.specs.courses`.
 
 I moved the workflows module from Voga to XL because I want to use
 that workflow in Avanti as well.
+
+UnicodeException
+================
 
 A stupid UnicodeException took me 1h30::
 
@@ -30,3 +36,23 @@ __future__ import unicode_literals` in that file
 (:mod:`lino.modlib.notify.mixins`).  The difficulty was to reproduce
 it.  But finally I got it...  (in
 :mod:`lino_noi.projects.team.tests.test_notify`).
+
+Working with Tonis
+==================
+
+We added the RecentComments table.
+
+As a side effect, Comment.owner is no longer a GFK but configurable as
+:attr:`commentable_model
+<lino.modlib.comments.Plugins.commentable_model>`.
+Renamed RFC to `Commentable`.
+
+
+TODO:
+
+- Adapt test suite and verify that no comments on private tickets are
+
+- Rename :meth:`get_slave_summary` to :meth:`get_table_summary` or
+  something similar.
+  
+- 
