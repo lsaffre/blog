@@ -14,7 +14,7 @@
 # from __future__ import unicode_literals
 
 import lino
-from atelier.sphinxconf import configure
+from lino.sphinxcontrib import configure
 
 extlinks = {}
 extensions = []
