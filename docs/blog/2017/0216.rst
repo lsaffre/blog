@@ -1,0 +1,61 @@
+:date: 2017-02-16
+
+===========================
+Thursday, February 16, 2017
+===========================
+
+Repairing failures on Travis
+============================
+
+Tonis and I released :ref:`atelier` 1.0.5. Mainly for some subtle
+issues with Python 3 which caused failures on Travis.
+
+Tonis asked me whether I can see an explanation for the `failing voga
+build 78
+<https://travis-ci.org/lino-framework/voga/builds/201405300>`__.
+Indeed a surprising effect. It looks as if the numbering of some
+invoices were different on Travis than on my machine.
+
+We added a list of all invoices to the :ref:`voga.specs.sales`
+document which lead to `build 79 on travis
+<https://travis-ci.org/lino-framework/voga/builds/202331998>`_ This is
+where Tonis had to leave.
+
+Looking at this failure made me guess a probable reason for this
+failure:
+:meth:`lino_voga.lib.courses.models.Enrolment.get_invoiceables_for_plan`
+(i.e. the :meth:`get_invoiceables_for_plan
+<lino_cosi.lib.invoicing.mixins.get_invoiceables_for_plan>`
+implementation of an :class:`Enrolment
+<lino_voga.lib.courses.models.Enrolment>`) sorted the suggestions only
+by date. And the demo data has cases with more than one suggestion on
+a same day, so the ordering was unpredictable in these cases.  So I
+was exited after the `commit
+<https://github.com/lino-framework/voga/commit/97782e8f054384a2231b629f1c6af9d96c5eb7f1>`__
+(that's one of the psychological challenges when fixing a failing
+travis build: you need to wait more than a minute before seeing the
+result.  But after 5 min 17 sec: `yes!
+<https://travis-ci.org/lino-framework/voga/builds/202353035>`__
+
+I can imagine that Tonis had no chance of finding this because he
+knows not enough about what Voga does.
+
+Maybe we should organize a Vigala Code Camp : a whole day just for an
+in-depth Lino Voga *end-user* training. I would also invite Jüri and
+maybe some non-programmers who might be interested in Voga.
+
+
+Some subtle documentation issues
+======================================
+
+There was at least one circular references in our doctrees: `book`
+referred to some project doctrees (`presto`, `extjs`), but `cosi`
+referred to `book`. Should :ref:`book` be able to refer to
+:ref:`cosi`?  Or rather the other way round?  I think the latter.
+
+Note that this blog "knows" all projects, can refer to them. That's
+why it must build last.
+
+Code change: :func:`atelier.sphinxconf.interproject.configure` now has
+a new optional parameter `prjspec`. This is used by `book` because we
+want it to intersphinx only to atelier.

@@ -1,0 +1,33 @@
+:date: 2017-02-09
+
+==========================
+Thursday, February 9, 2017
+==========================
+
+Miscellaneous
+=============
+
+Yesterday, when reproducing that UnicodeException, I also changed an
+API detail in the :attr:`on_ui_updated
+<lino.core.signals.on_ui_updated>` signals: the `request` is now an
+ActionRequest (and no longer a HttpRequest).
+
+And with this I discovered (in
+:mod:`lino_welfare.projects.chatelet.modlib.pcsw.models`) an old and
+forgotten :attr:`on_ui_updated <lino.core.signals.on_ui_updated>`
+handler which was sending an email each time somebody modified a
+:class:`notes.Note`. I removed that handler.
+
+And today I saw :ticket:`1475`, which is exactly the problem which
+matches this change.
+
+To replace that handler, I now changed :mod:`lino_xl.lib.notes` so
+that a Note is now also a :class:`ChangeObservable
+<lino.modlib.notify.mixins.ChangeObservable>` who sends notifications
+to the client's coaches.
+
+I adapted the test suites after our yesterday's changes.
+
+I continued to work with Tonis on the RecentComments list. It is not
+yet what I would call an elegant API, but the result looks satisfying
+for the moment.

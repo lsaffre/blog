@@ -1,0 +1,53 @@
+:date: 2017-02-10
+
+=========================
+Friday, February 10, 2017
+=========================
+
+I did an upgrade in :ref:`welcht`, mostly for :ticket:`1475`.  But
+before doing this, I fixed :ticket:`1473`. In Chatelet the reception
+clerks have user type 220 while in Eupen they have 200. That's because
+the two centres have different distribution of responsibilities.
+
+
+I noted that :ref:`logos` is a application which used *two*
+commentable models (users could post comments per *edition* or per
+*verse* of a translation). But I removed that CommentsByRFC from
+Editions.detail_layout. This application was just a proof of concept
+and nobody uses it.
+
+There was a follow-up of :ticket:`1473`.
+:mod:`lino_welfare.modlib.welfare.user_types` was no longer importable
+by Sphinx. Sphinx doesn't report such problems very clearly, I have to
+import it myself::
+
+    $ export DJANGO_SETTINGS_MODULE=lino_welfare.projects.std.settings.doctests
+    $ python -m lino_welfare.modlib.welfare.user_types
+
+    Traceback (most recent call last):
+    ...
+    django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+  
+I removed the deprecated aliases for
+:func:`lino.core.roles.login_required` (`dd.Required` and
+`dd.required`) and replaced all usages by `dd.login_required`. (Yes,
+dd.required was handy because it was less to type, but "required"
+alone simply makes no sense...). I did this also because I believed
+that it would work around the problem. But nope.
+
+I moved some code from :func:`atelier.sphinxconf.configure` to a new
+function :func:`lino.sphinxcontrib.configure` because Atelier should
+not depend on Lino.
+
+
+It turned out that the users in Chatelet had been using quite much
+those emails sent by the old and forgotten :attr:`on_ui_updated
+<lino.core.signals.on_ui_updated>` handler. They are glad that now
+they obey the general notifications rules, but they would like to have
+the content optimized. That's why I added a :meth:`get_change_info`
+method and an obj2memo handler for [client 123] and [note 123]. Which
+I did by generalizing some code and moving it from `lino_noi` to
+:meth:`lino.utils.memo.Parser.register_django_model`.
+
+I ran :command:`pp inv mm` and then all the tests again, in order to
+make sure whether translations are still good.
