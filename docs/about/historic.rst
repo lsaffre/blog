@@ -55,7 +55,10 @@ end-users in our training center or at the customers' offices.
 In **1995** I started to work on a "TIM for Windows", using *Borland
 C++*. In **March 1999** I switched to *Java*.
 
-In **January 1999** I met my future wife.
+In **August 1998** I met my future wife for the first time in Taizé,
+in **January 1999** I met her again in Milano.  In **April 1999** we
+met for the third time for three days in Eupen and I fell seriously in
+love with her. In **June** we met the fourth time in Tallinn. (...)
 
 In **February 1999** I passed the "Ausbilder-Eignungsprüfung" in
 Aachen (Germany) and became responsible for the training of a

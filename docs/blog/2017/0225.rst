@@ -1,0 +1,55 @@
+:date: 2017-02-25
+
+===========================
+Saturday, February 25, 2017
+===========================
+
+Bleach and html5lib
+===================
+
+Good news for :ticket:`1262` : Will Kahn-Greene (author of bleach) has
+fixed `issue229
+<https://github.com/mozilla/bleach/issues/229#issuecomment-282367178>`__. He
+asked me to test whether it works now. Here we go::
+
+    $ pip uninstall -y weasyprint html5lib bleach
+    $ pip install https://github.com/mozilla/bleach/archive/543984c.tar.gz#egg=bleach
+    $ pip install -U weasyprint html5lib
+
+Yes, the import itself now works::
+  
+    $ python -m bleach
+
+That is, the incompatability is fixed. We can close :ticket:`1262`.
+
+I modified :mod:`lino.mixins.bleached` (which was deactivated until
+now) so that now the module should be active. I also extended the
+docstring. I activated it for
+:mod:`lino.modlib.comments.models.Comment`.  That is, every comment is
+going to be bleached.
+
+Now we should test whether this is actually what we want. New ticket
+:ticket:`1522`.
+
+For example it is possible that I forgot to specify in
+:attr:`allowed_tags <lino.mixins.bleached.Bleacher.allowed_tags>` some
+tags that we do *not* want to remove.
+
+I think the best test is to use it on the battle field.
+
+One challenge here is that the usage is currently "destructive": when
+we deploy it to our production site, all comments will automatically
+get bleached with our data migration. And we won't even get a
+notification of which rows are concerned. We need at least a kind of
+"bleach logger".
+
+Almost all test suites seem to be passing now when Lino branch
+``Comment.reply_to_common_work`` is activated. An exeception is still
+:ref:`presto` which says :message:`Exception: TicketDetail on
+tickets.Tickets has no data element 'changes.ChangesByMaster'`. It is
+technically trivial, but conceptually complex: we need to decide
+whether :ref:`presto` wants :mod:`lino.modlib.changes` or not...
+
+
+
+     

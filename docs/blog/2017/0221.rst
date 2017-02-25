@@ -1,0 +1,93 @@
+:date: 2017-02-21
+
+==========================
+Tuesday, February 21, 2017
+==========================
+
+Another market for Lino Care
+============================
+
+Do you know this surprising effect when you are working at something
+for quite a while already, you believe that you have quite a complete
+grasp of it, and then by some random idea you shift your viewpoint a
+little bit, and the seemingly well-known something suddenly changes,
+before your eyes, into something completely new.
+
+That's what I had this morning with our two :ref:`care` project (Oikos
+and Vilma). Until now I had always imagined that the people that are
+going to be put into these databases were living in the same place,
+and this place is what unites them. A local network of people who care
+for their neighbours.
+
+But you can shift that viewpoint, saying that *the person who entered*
+them into the database, not the place where they live, is the uniting
+element. Lino Care as a *network of friends*.  Different scenarios,
+one application: :ref:`care`.
+
+
+A series of changes in Lino Noi
+===============================
+
+A series of ideas have been in my mind since Sunday when I started
+interviewing my friends for the Vilma project.  Now finally
+"everything became clear" (at least to me, at least for the moment). I
+did the following changes:
+
+- :class:`users.User` now *inherits* from Person (instead of just
+  *pointing* to it or inheriting from `Addressable`).
+  This adds :mod:`lino_noi.lib.contacts` also to :ref:`care`.
+  `Ticket.end_user` now points to a Person, not a User (this was
+  already possible by setting
+  :attr:`lino_noi.lib.tickets.Plugin.end_user_model`.
+  
+- Same for `faculties.Competence` : users don't edit only their own
+  competences but also those of the Persons they are coaching. A
+  Competence still remains UserAuthored because it can be important to
+  know which user declares a given person to offer a given skill.  New
+  attribute :attr:`lino_noi.lib.faculties.Plugin.end_user_model`.
+  
+- I am now convinced that we need a possibility of having *more* than
+  one "required faculty" per ticket. So we remove Ticket.faculty and
+  add a new model `faculties.Demand`.
+
+- I removed the `User.user_site` field which was no longer used
+
+TODO:
+
+- Check the "Where can I help" table.
+
+- Write a migrator which converts the users to persons and
+  Ticket.faculty into an instance of faculties.Demand.
+
+- Check whether :mod:`lino_xl.lib.coachings` is interesting for
+  :ref:`care`.  I first thought that :class:`Partner` might inherit from
+  :class:`UserAuthored` : every partner is managed by one and only one
+  responsible user, its "author". I thought that this concept might be
+  useful for replacing the "primary coach" of
+  :mod:`lino_xl.lib.coachings`. But nope. Because a same end user can
+  potentially be "managed" (coached) by several system users. That's
+  perfectly possible in a network of friends.
+  
+  
+- support for User as subclass of Person
+
+
+
+Worked on RecentComments
+========================
+
+Tonis and I had a voice session were we explored a subtle problem:
+:meth:`RecentComments.get_slave_summary
+<lino.modlib.comments.ui.RecentComments.get_slave_summary>` was
+showing *all* the comments, but we wanted it to show only a
+configurable number of the most recent comments.
+
+We discovered that we must indeed specify the `limit` explicitly as a
+keyword to our subrequest in :meth:`get_slave_summary` because
+Lino has no way to know whether we want to use the actor's
+:attr:`preview_limit <lino.core.tables.AbstractTable.preview_limit>`.
+
+We added some tested code snippets to :ref:`dev.ar` (and added that
+document to the test suite).
+
+

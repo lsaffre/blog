@@ -1,0 +1,124 @@
+:date: 2017-02-20
+
+=========================
+Monday, February 20, 2017
+=========================
+
+Moved saffre-rumma.net to a new server
+======================================
+
+Uff, I moved `bugs` (the read-only view to our ticketing database)
+from lino-framework.org to saffre-rumma.net.  This was another part of
+:ticket:`1271`.
+
+The "only" problem here was that yesterday (with Hamza) I tried it and
+discovered that we probably do need to return to the system with
+lino_local.setup(). We cannot have every site run with the same
+DJANGO_SETTINGS_MODULE 'settings' because bugs wants to import the
+settings of jane.
+
+I started a new document :ref:`hosting.setup` (which is fare from
+being finished).
+
+I changed the :file:`conf.py` in the doctrees of all projects.
+
+
+A central bash log
+==================
+
+
+A think that we should have a "central bash log" where we can see
+every command issued in a shell, with user and timestamp.
+
+The discussion under `How to save terminal history manually?
+<http://askubuntu.com/questions/261407/how-to-save-terminal-history-manually>`__
+is interesting, but not a solution for us.
+
+Bash 4.1 has a compile-time configuration option to enable logging all
+commands through syslog(3). (found `here
+<http://mywiki.wooledge.org/BashFAQ/077>`__), but I don't see how to
+"activate" it for our server. I have never compiled a system command.
+
+`Here
+<http://backdrift.org/logging-bash-history-to-syslog-using-traps>`__ a
+trick that might work::
+
+    # copied from 
+    function log2syslog
+    {
+       declare COMMAND
+       COMMAND=$(fc -ln -0)
+       logger -p local1.notice -t bash -i -- "${USER}:${COMMAND}"
+    }
+    trap log2syslog DEBUG
+
+
+Headless libreoffice failing
+============================
+  
+We still have the problem that the headless libreoffice fails (i.e. we
+cannot print to pdf, it says "PodError: An error occurred during the
+conversion. Could not connect to LibreOffice on port 8100. UNO
+(LibreOffice API) says: Connector : couldn't connect to socket
+(Success)."
+
+Supervisor reports with this error message at startup::
+  
+    [Java framework] Error in function createSettingsDocument (elements.cxx).
+    javaldx failed!
+    Warning: failed to read path from javaldx
+
+I checked whether java is installed::
+
+    $ java -version
+    java version "1.7.0_121"
+    OpenJDK Runtime Environment (IcedTea 2.6.8) (7u121-2.6.8-2~deb8u1)
+    OpenJDK 64-Bit Server VM (build 24.121-b00, mixed mode)
+
+I read somewhere that the www-data user must own :file:`~/.config` and
+everything in it.  The home dir of `www-data` is :file:`/var/www`::
+
+  $ grep www-data /etc/passwd
+
+  $ sudo find / -type d -name .config
+
+And that directory is indeed not writable for www-data. But that's
+normal, and it should be unsecure to make it writable for www-data. On
+our other sites it is the same, so I don't think that this would be a
+solution.
+
+
+
+The two agreements
+==================
+
+Uff! After a consultation with Bruno and Thomas, I started to write a
+Maintenance SLA template, which also brought a series of changes to to
+Hosting SLA template. I start to be satisfied:
+
+- http://saffre-rumma.net/dl/Lino_Maintenance_SLA.pdf
+- http://saffre-rumma.net/dl/Lino_Hosting_SLA.pdf
+
+Miscellaneous
+=============
+
+I received an error message from :ref:`welcht`, reproduced it and
+wrote a test case in :ref:`welfare.specs.coachings`.  :ticket:`1508` :
+
+I maybe fixed another error from :ref:`welcht`, a DjangoUnicodeError
+which was very probably caused because I had the following code in
+:mod:`lino_xl.lib.cal.models`::
+
+        elif self.event_type:
+            s = str(self.event_type)
+
+but had fogotten to add ``from builtins import str``. :ticket:`1510`.
+
+
+Upgrade on jane
+===============
+
+I did a deploy on jane and then discovered that Tonis's changes aren't
+yet merged into master (so we cannot see them in action yet). And also
+the test suite is broken due to several changes of last week. That's
+for tomorrow.

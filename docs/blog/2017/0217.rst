@@ -1,0 +1,84 @@
+:date: 2017-02-17
+
+=========================
+Friday, February 17, 2017
+=========================
+
+Miscellaneous
+=============
+
+I worked on :ticket:`1496` (remove the ticket state "Sticky") by
+changing all sticky tickets in our own database to another state.  A
+sleeping ticket might wake up at any time.
+
+Should we rename the ticket state "Started" to "Active"? But "active"
+is used as group designation in the Tickets table parameters (boolean
+attribute of TicketState).
+
+
+Avanti
+======
+
+We had our second site visit (:ticket:`1492`). Here is my tasks list
+after that visit.
+
+DONE:
+
+- Benutzer verpflichten können, ihr Passwort zu ändern: interessant,
+  aber für Avanti momentan nicht nötig.
+- Fehlermeldung nach Eingabe Coaching HB (was war das?)
+
+- (voraussichtlich doch nicht nötig) Neue Benutzerart "Auditor"
+  (Janina) : kann alles außer ganz private Daten sehen aber nichts
+  ändern.
+
+TODO:  
+  
+- Kommentare nicht öffentlich zeigen.
+  
+- Kommentare so umbauen, dass sie nicht pro Ticket sondern pro Klient
+  (anstelle der Notizen) stehen. Neues Feld `CommentType`
+  (z.B. Telefongespräch, ...)
+
+- Wenn es keinen Benutzer gibt, der auf den Kursleiter zeigt, dann
+  muss der Kursverwalter zum Terminverwantwortlichen werden.
+
+- Bilanzgespräche alle 3 Monate : Termine automatisch generieren.
+- Die Anfragen sind eigentlich nur eine Liste der Themen, mit denen
+  der Sozi mit dem Klienten reden will.
+- Neues Feld "Aufenthaltstitel" pro Klient
+  
+- New user type Coordinator ("Kurskoordinator") has permission to edit
+  calendar events of everybody without seeing contact data of
+  participants.
+  
+- Es gibt zwei Grade von Privatdaten : (a) z.B. Kursleiter sollen nur
+  die Namen ihrer Teilnehmer sehen, aber nicht mehr, und natürlich
+  auch keine Liste der anderen Klienten. (b) Bemerkungen, Notizen,
+  Anfragen des Klienten sind nur für Benutzer mit Schweigepflicht
+  sichtbar. Selbst der Auditor will die nicht sehen.
+
+- Remove field `Event.assigned_to`
+- Remove field `Course.end_date`
+- Remove fields `Course.every_unit` and `Course.every`
+- Remove `num_places` from `Enrolments.insert_layout`
+- Use the Voga StatusReport also for Avanti
+  
+- Primärbegleiter : Lino zeigt nur die Nummer
+- 3 Dienste in Demo-Datenbank anlegen
+- CoachingTypes : drei überflüssige Felder rausholen
+- Make Partner inherit from `UserAuthored`, and add a checker to
+  verify whether `Client.user` is the current primary coach.
+  
+- params_panel default hidden for Clients
+- ClientContactsByOrganisation
+  
+
+
+Vilma
+=====
+
+- New model FacultyType
+- New field Competence.description
+- New field Faculty.remarks
+- Rename "faculty" to "skill"
