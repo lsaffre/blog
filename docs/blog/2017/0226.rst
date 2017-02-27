@@ -1,0 +1,136 @@
+:date: 2017-02-26
+
+=========================
+Sunday, February 26, 2017
+=========================
+
+Oops, I realized only now that I forgot to check in yestedday my idea
+of overriding :meth:`after_ui_save` instead of :meth:`full_clean`.
+
+I invested some more time into understand why :ref:`presto` was broken
+after changes for :ticket:`1512`:
+
+- Added a :meth:`__repr__` for Actor which is used by the
+  :meth:`__str__` of a :class:`Layout`.
+- The exception "Tried to install X where Y is already installed" now
+  gives more details.
+  
+- :mod:`lino.modlib.comments` now support the case of
+  :attr:`commentable_model` being `None`.
+
+- And :mod:`lino_noi.lib.faculties` no longer requires
+  :mod:`lino_noi.lib.tickets`, and the default value for
+  :attr:`lino_noi.lib.faculties.Plugin.demander_model` if
+  `'contacts.Person'`.
+        
+    
+Organizing tests
+================
+
+Tonis observed that having the tests of :mod:`lino` and :mod:`lino_xl`
+in another repo (namely `book`) causes a problem because `book` does
+not "know" about our `Comment.reply_to_common_work` feature which we
+are developing in a separate branch. So there is no way of testing it.
+
+OTOH the whole `book` is needed "just" for testing and documenting the
+code in `lino` and `xl`.  It is the reason of being for the separate
+`book` repository. It is not possible to test all Lino features
+without having at least a minimal application which uses it, and we
+don't want to force every production site to download the source code
+of these minimal applications.  Also we don't want to force Lino
+application developers to use :mod:`lino_xl`.
+        
+I guess that the solution is a convention to add a new branch in every
+project whose name would be either `testing` or `stable`. If that
+additional branch is named `testing`, then `master` would contain the
+stable code.  If it is named `stable`, then `master` would contain the
+`testing` code.  And then we need to always have the same branch
+checked out in every project when running tests or building docs.
+
+I suggest to have `testing` as that additional branch, and `master`
+(the default) becomes the stable code.
+
+I guess that *three* such conventional branch names (stable, testing
+and unstable as they have in Debian) would be overkill in our case
+because Lino does not yet have a big community of developers, testers
+and maintainers.
+
+We also need a way to switch all projects between `master` and
+`testing`.  A simple ``pp git checkout testing`` won't work at least
+for me because I have projects which aren't under version control. And
+I guess some projects, even if they are under version control, won't
+want to take part in that game of switching versions, they would just
+use the master.
+
+Maybe add a new command `inv co` in :mod:`atelier.invlib.tasks` which
+do *nothing* in such projects. This would assume a new project config
+variable. My first suggestion is `common_branches`, a list of set of
+branch names. If I say `pp inv co testing`, then all projects which
+have `testing` in their common_branches would switch to `testing`, all
+other projects remain unchanged.
+
+I opened ticket :ticket:`1524` for this.
+
+
+Reserve
+=======
+
+I worked on ticket :ticket:`1418`.  This was probably just about
+adding a new enrolment state "Trying" to
+:class:`lino_xl.lib.courses.choicelists.EnrolmentStates`.  A possible
+problem is that our "requested" corresponds to their "reserve", and
+our "trying" corresponds to their "angefragt".  I am still discussing
+with Roger and Monique about the correct designations. Their current
+definition is roughly:
+
+- "Angefragt" sind Leute, die sich zum Kurs anmelden, aber erst
+  "Bestätigt" werden, nachdem sie eine Teststunde besucht haben.
+
+- "Reserve" sind Leute, die sich für den Kurs interessieren, aber
+  nicht "Bestätigt" werden können, weil zum Zeitpunkt der Anfrage kein
+  Platz im Kurs mehr frei ist.
+
+Here is my answer:
+
+Ich erlaube mir, eure Definitionen noch ein wenig umzubiegen in der
+Hoffnung, dass diese Formulierung für alle Beteiligten intuitiv
+verständlich ist:
+
+- **Angefragt** (=das was ihr bisher "Reserve" nennt) bedeutet, dass
+  die Person teilnehmen will aber nicht darf, weil kein Platz ist.
+
+- **Probe** (=das, was ihr bisher "Angefragt" nennt) bedeutet , dass
+  die Person eine Teststunde oder Schnupperwoche absolviert.  Zu
+  klären: nehmen diese Leute dann einen Platz weg oder nicht?
+
+
+About service reports in Lino Noi
+=================================
+
+I understood a few things around :ticket:`1526`. With the new
+Maintenance SLA we will need to write more and more service reports.
+But the
+:class:`lino_noi.projects.team.lib.clocking.models.ServiceReport` is
+not the right approach because it does not help making sure that every
+invoiceable session is being reported once and only once. Actually we
+need :mod:`lino_xl.lib.invoicing` and make :class:`clocking.Session`
+inherit from :class:`lino_xl.lib.invoicing.mixins.Invoiceable`.
+
+The "only" problem with this is that `invoicing` is currently part of
+`cosi`. Until now I had been thinking about Lino Noi as an application
+without any accounting.
+
+My conclusion is that I should move yet another series of plugins from
+cosi and noi to xl, making the overall structure of the Lino project
+more "flat". Instead of having several plugin libraries
+(:mod:`lino.modlib` for system plugins, :mod:`lino_xl.lib` for
+extended plugins, :mod:`lino_noi.lib` for groupware stuff, and
+:mod:`lino_cosi.lib` for accounting stuff) we would have just two of
+them : :mod:`lino.modlib` for minimalists and :mod:`lino_xl.lib` for
+everything else.
+
+I moved the following plugins from :mod:`lino_cosi.lib` to
+:mod:`lino_xl.lib`: accounts, finan, invoicing, ledger, vat, vatless,
+sepa, sales and tim2lino.
+
+TODO: change file headers from AGPL to BSD
