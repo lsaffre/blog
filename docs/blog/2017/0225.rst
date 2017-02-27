@@ -43,6 +43,15 @@ get bleached with our data migration. And we won't even get a
 notification of which rows are concerned. We need at least a kind of
 "bleach logger".
 
+A first idea is to override :meth:`after_ui_save` instead of
+:meth:`full_clean`. This makes everything less destructive.
+(I forgot to check this in, so it is visible only in 20170226)
+
+TODO: Lino should log at least a bit of bleach's "activity". I mean
+for example that :meth:`Bleached.before_ui_save
+<lino.mixins.bleached.Bleached.before_ui_save>` should log an info
+message saying "removed tags x, y, z from short_text"
+
 Almost all test suites seem to be passing now when Lino branch
 ``Comment.reply_to_common_work`` is activated. An exeception is still
 :ref:`presto` which says :message:`Exception: TicketDetail on
@@ -50,6 +59,4 @@ tickets.Tickets has no data element 'changes.ChangesByMaster'`. It is
 technically trivial, but conceptually complex: we need to decide
 whether :ref:`presto` wants :mod:`lino.modlib.changes` or not...
 
-
-
-     
+    

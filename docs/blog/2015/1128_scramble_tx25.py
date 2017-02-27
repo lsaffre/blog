@@ -4,7 +4,7 @@ from lino.api.shell import contacts
 from lxml import etree
 from lino.utils import Cycler
 
-from lino_cosi.lib.sepa.fixtures.sample_ibans import IBANS
+from lino_xl.lib.sepa.fixtures.sample_ibans import IBANS
 
 PERSONS = Cycler(contacts.Person.objects.exclude(national_id=''))
 

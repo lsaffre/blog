@@ -3,19 +3,19 @@ Friday, February 26, 2016
 =========================
 
 I started to write documentation for the new module
-:mod:`lino_cosi.lib.invoicing`.
+:mod:`lino_xl.lib.invoicing`.
 
 A first problem is that this plugin is not used by
 :mod:`lino_cosi.projects.std`, so autosummary fails to import it::
 
-    WARNING: [autosummary] failed to import u'lino_cosi.lib.invoicing.models': no module named lino_cosi.lib.invoicing.models
+    WARNING: [autosummary] failed to import u'lino_xl.lib.invoicing.models': no module named lino_xl.lib.invoicing.models
 
 Since autosummary itself does not show me the error. In order to see
 this message I had to simulate what autosummary does:
 
 >>> from lino import startup
 >>> startup('lino_cosi.projects.std.settings.doctests')
->>> import lino_cosi.lib.invoicing.models  #doctest: +ELLIPSIS
+>>> import lino_xl.lib.invoicing.models  #doctest: +ELLIPSIS
 Traceback (most recent call last):
 ...
 AttributeError: AttrDict instance has no key 'invoicing' (keys are ...)
@@ -31,13 +31,13 @@ are (often) not importable by a process which has activated Django
 using a settings module that does not include the module in its
 :setting:`INSTALLED_APPS`.
 
-A quick workaround is to add :mod:`lino_cosi.lib.invoicing` to the
+A quick workaround is to add :mod:`lino_xl.lib.invoicing` to the
 :meth:`get_installed_apps <lino.core.site.Site.get_installed_apps>` of
 :mod:`lino_cosi.projects.std`. 
 
 This solution has the disadvantage (or advantage?) that every
 :ref:`cosi` site will have these two tables (:class:`invoicing.Plan
-<lino_cosi.lib.invoicing.models.Plan>` and :class:`invoicing.Item
-<lino_cosi.lib.invoicing.models.Item>`) in their database, even if
+<lino_xl.lib.invoicing.models.Plan>` and :class:`invoicing.Item
+<lino_xl.lib.invoicing.models.Item>`) in their database, even if
 they don't use the automatic invoicing feature.
 

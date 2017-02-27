@@ -134,9 +134,9 @@ Thoughts about payment terms
 The following are fragments of my thoughts...
 
 We have two mixins 
-:class:`PartnerRelated <lino_cosi.lib.ledger.mixins.PartnerRelated>`
+:class:`PartnerRelated <lino_xl.lib.ledger.mixins.PartnerRelated>`
 and
-:class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`.
+:class:`Payable <lino_xl.lib.sepa.mixins.Payable>`.
 Shouldn't be Payable a subclass of PartnerRelated?
 Or rather PartnerRelated a subclass of Payable?
 Are there PartnerRelated models which are not Payable?
@@ -149,26 +149,26 @@ There are vouchers which have a due_date and are payable (must get
 cleared by some other transaction), but their due_date is not computed
 automatically using a PaymentTerm
 
-There are 3 :class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`
+There are 3 :class:`Payable <lino_xl.lib.sepa.mixins.Payable>`
 concrete models: :class:`VatAccountInvoice
-<lino_cosi.lib.vat.models.VatAccountInvoice>`,
+<lino_xl.lib.vat.models.VatAccountInvoice>`,
 :class:`VatProductInvoice
-<lino_cosi.lib.sales.models.VatProductInvoice>` and
-:class:`AccountInvoice <lino_cosi.lib.vatless.models.AccountInvoice>`.
+<lino_xl.lib.sales.models.VatProductInvoice>` and
+:class:`AccountInvoice <lino_xl.lib.vatless.models.AccountInvoice>`.
 
 All of these are also :class:`PartnerRelated
-<lino_cosi.lib.ledger.mixins.PartnerRelated>`, but they don't inherit
+<lino_xl.lib.ledger.mixins.PartnerRelated>`, but they don't inherit
 it directly:
 
-- :class:`VatDocument <lino_cosi.lib.vat.mixins.VatDocument>`
+- :class:`VatDocument <lino_xl.lib.vat.mixins.VatDocument>`
     
-  - :class:`VatAccountInvoice <lino_cosi.lib.vat.models.VatAccountInvoice>`
-  - :class:`SalesDocument <lino_cosi.lib.sales.models.SalesDocument>`
+  - :class:`VatAccountInvoice <lino_xl.lib.vat.models.VatAccountInvoice>`
+  - :class:`SalesDocument <lino_xl.lib.sales.models.SalesDocument>`
         
-    - :class:`VatProductInvoice <lino_cosi.lib.sales.models.VatProductInvoice>`
+    - :class:`VatProductInvoice <lino_xl.lib.sales.models.VatProductInvoice>`
     - :class:`Order <lino_cosi.lib.orders.models.Order>`
             
-- :class:`AccountInvoice <lino_cosi.lib.vatless.models.AccountInvoice>`
+- :class:`AccountInvoice <lino_xl.lib.vatless.models.AccountInvoice>`
 - :class:`VoucherItem <lino_welfare.modlib.client_vouchers.models.VoucherItem>`
 
 
@@ -181,13 +181,13 @@ An order has a payment_term (as a sales invoice) but is not payable.
 Changes
 -------
 
-- :class:`Payable <lino_cosi.lib.sepa.mixins.Payable>`
+- :class:`Payable <lino_xl.lib.sepa.mixins.Payable>`
   now inherits from 
-  :class:`PartnerRelated <lino_cosi.lib.ledger.mixins.PartnerRelated>`
-- :class:`VatDocument <lino_cosi.lib.vat.mixins.VatDocument>` is no longer PartnerRelated
+  :class:`PartnerRelated <lino_xl.lib.ledger.mixins.PartnerRelated>`
+- :class:`VatDocument <lino_xl.lib.vat.mixins.VatDocument>` is no longer PartnerRelated
 - Until now the `payment_term` field was injected by
-  :mod:`lino_cosi.lib.vat.models`, but now this is done by
-  :mod:`lino_cosi.lib.ledger.models`.  
+  :mod:`lino_xl.lib.vat.models`, but now this is done by
+  :mod:`lino_xl.lib.ledger.models`.  
 
   A consequence of this is that now
   also in :ref:`welfare` all partners have this field. Which is indeed

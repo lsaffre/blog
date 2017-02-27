@@ -4,7 +4,7 @@ from lino.api.shell import contacts
 from lxml import etree
 from lino.utils import Cycler
 
-from lino_cosi.lib.sepa.fixtures.sample_ibans import IBANS
+from lino_xl.lib.sepa.fixtures.sample_ibans import IBANS
 
 IBANS = Cycler(IBANS)
 PARTNERS = Cycler(contacts.Partner.objects.all())
