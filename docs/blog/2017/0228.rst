@@ -8,3 +8,26 @@ I finished ticket :ticket:`780` and :ticket:`1428` and then deployed
 to :ref:`eiche`.  :ticket:`780` required a few new user role
 definitions.  :ticket:`1428` required a new virtual field to
 :attr:`lino_xl.lib.courses.models.Course.trying`.
+
+
+I had a problem because Lino reported :message:`Exception: <class
+'lino_voga.lib.sales.models.InvoiceItem'> has bleached fields but
+`bleach` is not installed.`.  First I had to update bleach as
+described on :doc:`0225`, and then I still had the problem under
+Apache and not when running on the command line::
+
+    $ python
+    Python 2.7.9 (default, Mar  1 2015, 12:57:24) 
+    [GCC 4.9.2] on linux2
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import bleach
+
+This was caused by a missing python-path spec in their
+WSGIDaemonProcess directive.
+
+I did a few optimization for :ticket:`1513` in :mod:`lino.core.auth`:
+The user message should state clearly that authentication is failing
+because the IP has been blacklisted. Unfortunately this is not
+trivial, so I abandoned for today. At least users now get an "Ajax
+communication failed", and Lino logs a PermissionDenied when it
+happens.
