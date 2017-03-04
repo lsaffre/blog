@@ -1,0 +1,60 @@
+:date: 2017-03-01
+
+========================
+Wednesday, March 1, 2017
+========================
+
+I changed how Lino implements the
+:attr:`lino.modlib.users.models.User.partner` field because the old
+implementation didn't work when :class:`users.User` inherits from
+:class:`contacts.Person` (in which case it must be a DummyField even
+though `contacts` is installed)
+
+I will probably abandon the `invoiceable_clocking_Session` branch
+because I realized that even when I implement service reports as
+:class:`Invoiceable <lino_xl.lib.invoicing.mixins.Invoiceable>` this
+won't be the solution for my problem.  My problem (:ticket:`1526`) is
+that I must write at least few invoices based on service reports, and
+that I am myself still discovering how to do it.
+
+So maybe the existing service reports aren't that bad.  But I must to
+an upgrade to Jane because the currently running version does not show
+the partners and their interests.
+
+release@jane
+============
+
+I did the release (i.e. the upgrade on jane after my series of
+fundamental changes). This was a rather feared one because of the
+database migration. But everything seems okay. Just a few surprises
+after the upgrade:
+
+- A UnicodeDecodeError in file "lino/modlib/comments/ui.py", line 133,
+  in as_li::
+    
+    UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 39: ordinal not in range(128)
+
+- Added SkillsByDemander to ticket detail layout.
+  
+The biggest problem now is maybe just that I cannot print anything
+usable because of :ticket:`1533`.
+
+Maybe it is easier to get the Duration field summable in export_excel?
+
+I finally decided to work on the ServiceReport. The most important was
+how it selects the tickets to include. Until now it was based on the
+partners interests, but this approach seems not usable. We must just
+assign Project.company and basta.
+
+
+Releases @oikos and @vilma
+==========================
+
+I knew that the data migrations would not work out of the box, so I
+decided to upgrade also the other production sites which use Noi.
+
+The basic problem with data migrations à la Lino is that they are per
+application and not per plugin. When I do a database change in
+:mod:`lino.modlib.users` (for example), then I must write one migrator
+for every application which uses this plugin.
+

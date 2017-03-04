@@ -1,0 +1,110 @@
+:date: 2017-03-03
+
+=====================
+Friday, March 3, 2017
+=====================
+
+Lino Care
+=========
+
+I added a table :class:`lino_noi.lib.faculties.ui.OffersByDemander`
+and did some minor optimizations (e.g. TopLevelSkills) for
+:ticket:`1540`.
+
+I committed everything, including my yesterday's half-done work for
+:ticket:`1492` (Avanti), and did a quick release to vilma.
+
+Publishing code changes without first verifying whether all test
+suites are passing might seem questionnable, but sometimes it is more
+efficient to use this approach. Namely when the customer wants quick
+releases, and when reliability is not yet a priority.  That's why we
+need :ticket:`1524`. And now I have the feeling that `master` should
+really be for active development branch (the equivalent of unstable or
+testing) while one common branch named "stable" should represent the
+latest stable version.
+
+Welfare
+=======
+
+I saw Aurélie's feedback on :ticket:`1518`, saw that she is absolutely
+right, modified the code and did a quick manual test. Seems to
+work. We should write a unit test for this, but there are some many
+things that we should do...
+
+
+Avanti
+======
+
+I continued to work on my to-do list for :ticket:`1492`.
+
+Side effects:
+
+- New method :meth:`lino.mixins.Contactable.get_as_user`
+
+- New table :class:`lino_xl.lib.xl.cal.models.EventPolicy`
+
+- Optimized the API of :class:`EventGenerator`.
+
+
+DONE:
+
+- Benutzer verpflichten können, ihr Passwort zu ändern: interessant,
+  aber für Avanti momentan nicht nötig.
+- Fehlermeldung nach Eingabe Coaching HB (was war das?)
+
+- 3 Dienste in Demo-Datenbank anlegen
+
+- Cancelled: Make Partner inherit from `UserAuthored`, and add a
+  checker to verify whether `Client.user` is the current primary
+  coach.
+  
+- Kommentare nicht öffentlich zeigen.
+  
+- Neue Benutzerart "Auditor" (Janina) : kann alles außer ganz private
+  Daten sehen aber nichts ändern.
+
+- New user type "Coordinator" ("Kurskoordinator") has permission to
+  edit calendar events of everybody without seeing contact data of
+  participants.
+  
+- Es gibt zwei Grade von Privatdaten : (a) z.B. Kursleiter sollen nur
+  die Namen ihrer Teilnehmer sehen, aber nicht mehr, und natürlich
+  auch keine Liste der anderen Klienten. (b) Bemerkungen, Notizen,
+  Anfragen des Klienten sind nur für Benutzer mit Schweigepflicht
+  sichtbar. Selbst der Auditor will die nicht sehen.
+
+- Use the Voga StatusReport also for Avanti
+  
+- Bilanzgespräche alle 3 Monate : Termine automatisch generieren.
+  
+- Kommentare so umbauen, dass sie nicht pro Ticket sondern pro Klient
+  (anstelle der Notizen) stehen. Neues Feld `CommentType`
+  (z.B. Telefongespräch, ...)
+  
+- Wenn es keinen Benutzer gibt, der auf den Kursleiter zeigt, dann
+  muss der Kursverwalter zum Terminverantwortlichen werden.
+
+- Die Anfragen sind eigentlich nur eine Liste der Themen, über die der
+  Sozi mit dem Klienten reden will.
+  
+- Primärbegleiter : Lino zeigt nur die Nummer
+  
+- params_panel default hidden for Clients
+  
+- ClientContactsByOrganisation
+  
+TODO:  
+  
+- Statt nur einen Link "Write Comment" pro CommentType ein Link.
+  
+- Neues Feld "Aufenthaltstitel" pro Klient
+  
+- Remove field `Event.assigned_to`
+- Remove field `Course.end_date`
+- Remove fields `Course.every_unit` and `Course.every`
+- Remove `num_places` from `Enrolments.insert_layout`
+  
+- CoachingTypes : drei überflüssige Felder rausholen
+  
+  
+

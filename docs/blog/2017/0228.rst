@@ -4,17 +4,26 @@
 Tuesday, February 28, 2017
 ==========================
 
-I finished ticket :ticket:`780` and :ticket:`1428` and then deployed
-to :ref:`eiche`.  :ticket:`780` required a few new user role
-definitions.  :ticket:`1428` required a new virtual field to
-:attr:`lino_xl.lib.courses.models.Course.trying`.
+An urgent upgrade for Roger
+===========================
 
+I finished two urgent tickets :ticket:`780` and :ticket:`1428` and
+then deployed to :ref:`eiche`.  :ticket:`780` required a few new user
+role definitions.  :ticket:`1428` required a new virtual field
+:attr:`trying <lino_xl.lib.courses.models.Course.trying>` on a course.
 
-I had a problem because Lino reported :message:`Exception: <class
-'lino_voga.lib.sales.models.InvoiceItem'> has bleached fields but
-`bleach` is not installed.`.  First I had to update bleach as
-described on :doc:`0225`, and then I still had the problem under
-Apache and not when running on the command line::
+After upgrading on the server Lino reported :message:`Exception:
+<class 'lino_voga.lib.sales.models.InvoiceItem'> has bleached fields
+but `bleach` is not installed.`.  Oops, aha, so
+:mod:`lino.utils.bleached` *is* being used in :ref:`voga`, I had
+forgotten that. Maybe we would have done more testing if we had known
+that.  But don't worry, they almost never write anything themselves in
+the descriptions of their invoice items.
+
+Of course I had to update bleach as described on :doc:`0225`,
+
+And then I still had the problem under Apache and not when running on
+the command line::
 
     $ python
     Python 2.7.9 (default, Mar  1 2015, 12:57:24) 
@@ -22,8 +31,8 @@ Apache and not when running on the command line::
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import bleach
 
-This was caused by a missing python-path spec in their
-WSGIDaemonProcess directive.
+This was caused by a missing `python-path` spec in their
+`WSGIDaemonProcess` directive.
 
 I did a few optimization for :ticket:`1513` in :mod:`lino.core.auth`:
 The user message should state clearly that authentication is failing
@@ -31,3 +40,23 @@ because the IP has been blacklisted. Unfortunately this is not
 trivial, so I abandoned for today. At least users now get an "Ajax
 communication failed", and Lino logs a PermissionDenied when it
 happens.
+
+
+
+Writing service reports in Lino Noi
+===================================
+
+The idea of :ticket:`1526` is that we can throw away what we currently
+call service reports, and then we implement them correctly using
+:class:`Invoiceable <lino_xl.lib.invoicing.mixins.Invoiceable>`.
+
+First code changes are in a branch named `invoiceable_clocking_Session`.
+
+It also caused a few optimizations in :ref:`cosi`.
+
+A review of authenticate
+========================
+
+Tonis and I had a hangout where we accidentally started to write a new
+plugin :mod:`lino.modlib.ipdict`.
+     
