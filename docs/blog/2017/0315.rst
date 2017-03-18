@@ -1,0 +1,76 @@
+:date: 2017-03-15
+
+=========================
+Wednesday, March 15, 2017
+=========================
+
+Avanti, es geht los!
+====================
+
+I did last changes in Avanti for :ticket:`1547` and then upgraded
+their server.
+
+I also moved them into "production service", i.e. I set
+:attr:`lino.core.site.Site.is_demo_site` to `False` and I ran the
+following script::
+
+    from lino.api import rt
+    rt.models.comments.Comment.objects.all().delete()
+    rt.models.contacts.Role.objects.all().delete()
+    rt.models.households.Member.objects.all().delete()
+    rt.models.households.Household.objects.all().delete()
+    rt.models.cal.Event.objects.all().delete()
+    rt.models.courses.Enrolment.objects.all().delete()
+    rt.models.avanti.Client.objects.all().delete()
+
+Plans for today
+===============
+
+I suggest that Tonis and I will work together today (as
+far as possible) in order to
+
+- (mainly Luc) make some more optimizations in Jane for project
+  management (new tables Wishes and Duties)
+- (mainly Tonis) update the SSL certificates on mylino.net
+- (mainly Tonis) configure postfix on SR so that our mails@SR (luc,
+  tonis, hamza, tanel) make it into the database (I guess by calling
+  getmail on each incoming mail)
+  
+- release@jane
+- (Hamza) get ready to switch Jane to ext6 when we have released Noi on Jane    
+
+
+Competences
+===========
+
+I added a database model "Competence" to
+:mod:`lino_noi.lib.tickets`. A competence is when a given user is
+responsible for a given project. Users see a new table "My
+competences", which gives an overview of the projects you are working
+on. The list is sorted by priority.  It is even a quick link.
+
+A vote now has a mandatory pointer to project. That is, when a user
+votes for a ticket, this vote is always in the context of a given
+project. The default value for the project of a vote is the user's
+top-most competence.
+
+Side effect: We have a new overridable standard model method
+:meth:`obj2href <lino.core.model.Model.obj2href>`.  Application code
+should replace `ar.obj2html(obj)` by `obj.obj2href(ar)` when it wants
+to use the default text. See also :ticket:`1504`. But this here is
+even more because now we can specify per model a default value for the
+text and title to use for building a clickable HTML link to that
+object.
+
+
+release@jane
+============
+
+I did the release to Jane with Tonis watching. He is learning quickly.
+It seems that the new things (competences and vote.project pointer)
+are what I wanted. I'll continue to discover this tomorrow.
+
+And then another HO with Hamza where we activated extjs6 and did tests
+on Jane. We discovered two more issues, so we had to switch back once
+more. Hamza liked the new structure competences and vote.project
+pointer.

@@ -1,0 +1,147 @@
+:date: 2017-03-11
+
+========================
+Saturday, March 11, 2017
+========================
+
+I added explanations to my yesterday's blog entry (because of
+:ticket:`1564`).  I optimized the output of the :cmd:`inv ct` command.
+
+Avanti
+======
+
+I continued on Avanti (:ticket:`1547`). For this ticket I have my todo
+list in German (see below) which I will show to the customer when I am
+done. I leave yesterday's list as it was yesterday evening and copied
+it here before continuing on it.
+
+Avanti required an internal API change in
+:meth:`lino.core.store.StoreField.get_value_text` with consequences to
+:ref:`extjs6` as well: a ForeignKey store field now always uses
+:meth:`lino.core.model.Model.get_choices_text` for rendering its
+value. That's because we need the requesting user in order to decide
+whether to show the client's name or not. First usage example is
+:class:`lino_avanti.lib.avanti.models.Client` as documented in
+:ref:`avanti.specs.courses`.  The changes in
+:ref:`voga.tested.cal`, 
+:ref:`book.specs.countries` and :ref:`dev.ar` were a surprise to
+myself, and a nice confirmation that this API change makes sense.
+
+
+Avanti Aufgabenliste
+====================
+
+
+DONE:  
+
+- Coachings raus. Nur ein einziges Feld "Primärbegleiter". Und die
+  Sozis im ÖSHZ kommen als Klientenkontakte rein.
+  Das Panel für Klientenkontakte muss wohl größer werden.
+  Client now inherts from UserAuthored. New table MyClients.
+  
+- New plugin :mod:`lino_xl.lib.trends`.
+
+- Summary panel für EventsByCourse. New method
+  :meth:`EventGenerator.get_date_formatter`
+
+- Dashboard aktivieren.
+
+- Neue Aufgaben müssen Status "todo" haben.
+
+- Koordinator darf keine Namen der Teilnehmer sehen, lediglich
+  Nummern und Wohnort.
+
+TODO:  
+
+- Auditor ist wie der Koordinator, nur dass er zusätzlich die Berichte
+  als Spreadsheets runterladen kann: Klienten, Kurse, Teilnehmer,
+  Anwesenheiten.
+
+- Im Detail eines Termins fehlt der Klient. Und die action buttons.
+  Und assigned_to ist zu viel.
+
+- Termine generieren pro Klient : da kommt nichts.
+
+- Terminstatus "Stattgefunden" verweigern, wenn es noch Teilnehmer
+  gibt, die noch auf "Eingeladen" stehen.
+
+- Kursleiter und Sozialarbeiter sollen keine Termine generieren können.
+  
+- Teilnehmerliste drucken können.
+
+- Diverse Übersetzungen
+  
+- Text "Tags" im Feld "Wann" eines Kurses wenn Mo, Di, Do und Fr.
+
+- Feldbezeichnungen cal.Task : "Zahlungsziel" -> "Frist". "Autor" ->
+  "Verantwortlicher"
+
+- Klick in Event.overview zeigt alle Termine an diesem Tag. Unnötig.
+
+- Produktionsbetrieb aufnehmen (Demo-Modus abschalten und fiktive
+  Daten löschen)
+
+- Hide field Course.end_date
+- Hide fields Course.every_unit and Course.every
+- Hide num_places from Enrolments.insert_layout
+
+
+Zu klären:
+    
+- Jeder darf nur seine Kommentare sehen.  Aber sind Kommentare
+  überhaupt das Richtige? Jedenfalls brauchen wir keine
+  Diskussionen. Zu klären, wenn Johanna mir eine Liste mit Beispielen
+  "Entwicklungsverlauf" geschickt hat. Kommentar-Arten fehlt im Menü
+  Konfigurierung.
+  
+- (?) EnrolmentStates : Bestanden / Nicht bestanden.  
+  
+- Neues Feld "Aufenthaltstitel" pro Klient. Wie war das noch mal?
+
+
+  
+        
+Chatter
+========
+
+I worked on :ticket:`1331`:
+I read
+https://realpython.com/blog/python/getting-started-with-django-channels/
+and tried to get the notifications running at least on my machine.
+
+I played around::
+
+    $ sudo apt install redis-server
+    $ pip install redis
+
+>>> import redis
+>>> rs = redis.Redis("localhost")
+>>> lst = rs.client_list()
+>>> print(lst[0]['addr'])
+127.0.0.1:49226
+
+I removed the automagic configuration for redis because that was a bit
+too complex. I also optimized usage of
+:meth:`lino.core.site.Site.get_used_libs` so that the
+:menuselection:`Site --> About` window indicates whether channels is
+installed and whether :attr:`use_websockets
+<lino.core.site.Site.use_websockets>` is `True`.
+
+I started a new specs document about :ref:`book.specs.notify`,
+a new sample application "Lino Chatter" in the Lino Book
+(:mod:`lino_book.projects.chatter`), and for this application a new
+plugin :mod:`lino_xl.lib.groups`.
+
+TODO:
+
+- currently the desktop notifications do not work, even on a
+  development server. The JS console says :message:`WebSocket
+  connection to 'ws://127.0.0.1:8000/lino' failed: Error during
+  WebSocket handshake: net::ERR_CONNECTION_RESET`
+
+- MyMemberships instead of MyGroups. Add a field Membership.mail_mode
+  
+- write documentation
+  
+
+

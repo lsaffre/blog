@@ -314,6 +314,14 @@ Abakus
 
 Website: http://www.abakusitsolutions.eu/
 
+.. _vilma:
+
+The Vilma project
+-----------------
+
+Website: http://abiring.saffre-rumma.net/
+
+
 
 
 Other

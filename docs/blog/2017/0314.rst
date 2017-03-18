@@ -1,0 +1,51 @@
+:date: 2017-03-14
+
+=======================
+Tuesday, March 14, 2017
+=======================
+
+Tonis and I had our first live extreme programing session (sitting
+together in front of one computer).
+
+We worked on :mod:`lino_xl.lib.mailbox`.
+
+Note::
+  
+    warning: CRLF will be replaced by LF in lino_xl/lib/mailbox/fixtures/team.mbox.
+    The file will have its original line endings in your working directory.
+
+Running git operations on more than one repository
+==================================================
+
+With Tonis we discovered the need for :ticket:`1575`. I had work for
+Avanti (:ticket:`1575`) started and now wanted to put this work into a
+branch in order to work with Tonis on :ticket:`1556`. Basically
+nothing easier that his::
+
+  $ git checkout -b working_on_1547
+  $ git status
+  $ git add ...
+  $ git ci -m "20170313"
+  $ git checkout master
+  
+The problem is that I had to do this in 7 repositories.
+
+My first implementation is a special handling in :cmd:`per_project` :
+when the first command to execute is ``git``, then :cmd:`per_project`
+now skips all projects which don't have their
+:envvar:`revision_control_system` set to ``'git'``.
+
+
+Merge working_on_1547 to master
+===============================
+
+I merged the `working_on_1547` branches of 7 projects to master.
+
+Seeing the status of my projects
+================================
+
+I changed the output of the :cmd:`pp -l` command so that it now shows
+the "Status" of each project: which branch is active, and an "!" if
+the repository is dirty (has local modifications).  The status is
+empty for projects having :envvar:`revision_control_system` something
+else than git.

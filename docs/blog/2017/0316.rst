@@ -1,0 +1,90 @@
+:date: 2017-03-16
+
+========================
+Thursday, March 16, 2017
+========================
+
+
+Competences in Noi
+==================
+
+I did one change which I realized yesterday
+
+- I added the new table `TicketsByCompetence` and a detail_layout for
+  Competence (and no list of tickets in the grid).
+
+While working, I realized that we cannot use Votes.project, we do need
+a separate model Wish.  And a bit later I realized that these shared
+projects are maybe not really what we want. Actually I did not find
+many tickets for which we need it.  But the competences table is a
+great new feature.  So :ticket:`1563` (the original idea) goes to
+sleep until we have serious need, and I opened new ticket
+:ticket:`1584` and marked it ready.
+
+A side effect:  
+
+- I opened :ticket:`1583` (detail_layout without insert_layout). Until
+  now had the behaviour of using the detail_layout when no
+  insert_layout was defined.
+
+Django's `auto_now_add` feature
+===============================
+
+Another quick release to jane revealed that our usage of
+:mod:`lino.modlib.mailbox` causes a nice challenge::
+
+    $ ./make_snapshot.sh 
+    Started manage.py dump2py snapshot (using lino_sites.jane.settings) --> PID 7090
+    Writing /snapshot/restore.py...
+    Traceback (most recent call last):
+      File "manage.py", line 10, in <module>
+        from lino_local import manage ; manage(__file__)
+      File "/usr/local/python/lino_local.py", line 10, in manage
+        execute_from_command_line(sys.argv)
+      File "/env/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 353, in execute_from_command_line
+        utility.execute()
+      File "/env/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 345, in execute
+        self.fetch_command(subcommand).run_from_argv(self.argv)
+      File "/env/local/lib/python2.7/site-packages/django/core/management/base.py", line 348, in run_from_argv
+        self.execute(*args, **cmd_options)
+      File "/env/local/lib/python2.7/site-packages/django/core/management/base.py", line 399, in execute
+        output = self.handle(*args, **options)
+      File "/env/repositories/lino/lino/modlib/lino_startup/management/commands/dump2py.py", line 458, in handle
+        self.write_files()
+      File "/env/repositories/lino/lino/modlib/lino_startup/management/commands/dump2py.py", line 203, in write_files
+        full_model_name(model), f.name))
+    Exception: django_mailbox.Message.processed.auto_now_add is True : values will be lost!
+    Done manage.py dump2py snapshot (PID 7090)
+
+I "fixed" Lino so that it just logs a warning instead of aborting the
+dump as a whole. But the problem is not really solved. Django's
+`auto_now_add` feature is what I count into Django's oddnesses.  And
+`I am not alone <https://code.djangoproject.com/ticket/22995>`_.  It
+means that the `Message.processed` field will lose its value on each
+dump/restore. I guess that this is not acceptable in the long run. We
+should ask the mailbox project whether they agree to change their code
+(and how we can use the new development version).  This is
+:ticket:`1587`.
+
+Miscellaneous
+=============
+
+One quick push and pull was for an AttributeError :message:`'NoneType'
+object has no attribute 'project'` caused by
+:mod:`lino_noi.lib.tickets.ui`.
+
+
+inv bd fails in book
+====================
+
+As a preparation of the big release@weleup tonight, I tried to get the
+test suite and the docs build.  Especially :ticket:`1460` was a tough
+one::
+
+  /lino/utils/xmlgen/__init__.py:docstring of lino.utils.xmlgen:0: WARNING: Inline emphasis start-string without end-string.
+     
+It seems that this comes only when the package does ``from functools
+import partial``. I fixed our problem with this by not importing
+:func:`functools.partial` into the global namespace of any module.
+
+  

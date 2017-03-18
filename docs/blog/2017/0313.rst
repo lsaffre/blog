@@ -1,0 +1,170 @@
+:date: 2017-03-13
+
+======================
+Monday, March 13, 2017
+======================
+
+Avanti
+======
+
+I continued to work on the Avanti tasks list (:ticket:`1547`).
+
+General code changes:
+
+- New general user role :class:`lino.core.roles.Explorer`
+  
+- Calendar events no longer automatically inherit from
+  :class: `Assignable <lino.modlib.users.mixins.Assignable>`.  Only
+  Welfare uses this (until now).  This change will require a database
+  migrator (or manually commenting out that field in the
+  :xfile:`restore.py`) for Voga. (This change is not yet finished. If
+  we decide that we need it, then we must also redefine the parameters
+  handling of that field)
+
+- The ResetEvent action in :mod:`cal.workflows.voga` was defined
+  twice.
+
+Little problems encountered:
+
+- AttributeError: 'WSGIRequest' object has no attribute 'get_user' :
+  yes, the `request` in
+  :func:`lino.modlib.extjs.views.choices_for_field` is a plain Django
+  request, not an action request. That's because I don't yet decide
+  how to specify the actor when calling the list of choices for a
+  dialog action or a parameter field. Has to do with :ticket:`232`.
+
+- After moving config from lino_voga.lib.courses to
+  lino_xl.lib.courses I did :cmd:`inv mm` and saw a surprising error
+  message::
+
+    extracting messages from lino_xl/lib/blogs/config/blogs/entry.html
+    Traceback (most recent call last):
+      File "setup.py", line 5, in <module>
+        setup(**SETUP_INFO)
+      ...
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/pkg_resources/_vendor/packaging/markers.py", line 185, in _get_env
+        "{0!r} does not exist in evaluation environment.".format(name)
+    pkg_resources._vendor.packaging.markers.UndefinedEnvironmentName: 'extra' does not exist in evaluation environment.
+
+  It seems that this was a `bug in setuptools
+  <https://github.com/pypa/setuptools/issues/523>`_ because after
+  ``pip install -U setuptools`` the problem disappeared.
+
+  
+  
+         
+
+DONE:  
+
+- Coachings raus. Nur ein einziges Feld "Primärbegleiter". Und die
+  Sozis im ÖSHZ kommen als Klientenkontakte rein.
+  Das Panel für Klientenkontakte muss wohl größer werden.
+  Client now inherts from UserAuthored. New table MyClients.
+  
+- New plugin :mod:`lino_xl.lib.trends`.
+
+- Summary panel für EventsByCourse. New method
+  :meth:`EventGenerator.get_date_formatter`
+
+- Dashboard aktivieren.
+
+- Neue Aufgaben müssen Status "todo" haben.
+
+- Koordinator darf keine Namen der Teilnehmer sehen, lediglich
+  Nummern und Wohnort.
+
+- Auditor ist wie der Koordinator, nur dass er zusätzlich die Berichte
+  als Spreadsheets runterladen kann: Klienten, Kurse, Teilnehmer,
+  Anwesenheiten.
+
+- Im Detail eines Termins fehlt der Klient. Und die action buttons.
+  
+- Im Menü Konfigurierung fehlt Kommentar-Arten
+
+- Terminstatus "Stattgefunden" verweigern, wenn es noch Teilnehmer
+  gibt, die noch auf "Eingeladen" stehen.
+
+- Teilnehmerliste drucken können.
+
+- Termine generieren pro Klient : da kommt nichts.
+
+- Hide field Course.end_date
+  
+TODO:  
+
+- Hide num_places from Enrolments.insert_layout
+  
+- Diverse Übersetzungen
+  
+- Text "Tags" im Feld "Wann" eines Kurses wenn Mo, Di, Do und Fr.
+
+- Feldbezeichnungen cal.Task : "Zahlungsziel" -> "Frist". "Autor" ->
+  "Verantwortlicher"
+
+- Klick in Event.overview zeigt alle Termine an diesem Tag. Unnötig
+  und irritierend.
+
+- Produktionsbetrieb aufnehmen (Demo-Modus abschalten und fiktive
+  Daten löschen)
+
+- Hide fields Course.every_unit and Course.every
+
+Zu klären:
+    
+- Kursleiter und Sozialarbeiter sollen keine Termine generieren können.
+  
+- Jeder darf nur seine Kommentare sehen.  Aber sind Kommentare
+  überhaupt das Richtige? Jedenfalls brauchen wir keine
+  "Diskussionen" i.e.S. Vielleicht reicht schon das neue Modul 
+  "Entwicklungsverlauf"
+  
+- (?) EnrolmentStates : Bestanden / Nicht bestanden.  
+  
+- Neues Feld "Aufenthaltstitel" pro Klient. Wie war das noch mal?
+
+
+- Feld `assigned_to` : das habe ich drin gelassen, denn vielleicht
+  braucht ihr es doch: nämlich falls ein Koordinator Termine verlegt
+  oder plant, dann würden die Kursleiter in diesem Feld stehen (statt
+  schon gleich als Verwantwortliche), und das
+
+
+
+Welfare production release scheduled for Thursday night
+=======================================================
+
+Gerd and I scheduled a production release on :ref:`weleup` for
+Thursday night. They have been running on their old version for almost
+one year (since 23.03.2016).
+
+I started the final sprint for this release with some manual tests.
+
+About :ticket:`1553`: Eine Konsequenz ist, dass das Feld "Begleiter im
+DSBE" eines Vertrags jetzt "Autor" heißt. In diesem Feld steht der
+Benutzer, der den Vertrag erstellt hat (entweder DSBE oder ASD). Der
+Autor kann in egal welchem Dienst sein.  Wenn der Autor den Kunden
+nicht im ASD begleitet und es einen einzigen aktiven Begleiter im ASD
+gibt, dann wird dieser zusätzlich automatisch ins Feld `user_asd`
+("Verantwortlicher (ASD)") eingetragen.
+
+Tonis in Vigala
+===============
+
+Tonis arrived today at noon in Vigala and will stay here for one
+day. It is his first visit here, and the first time after 6 weeks of
+being colleagues that we work *physically* together. It was a good
+experience for both of us. 
+
+In the afternoon Tonis and I worked on :ticket:`1556`. We worked next
+to each other in "decoupled" mode: I continued with :ticket:`1189` and
+:ticket:`1547`, sometimes watching Tonis or answering questions like
+"How to inject a virtual field into a model of another plugin"::
+
+    def f(obj, ar):
+       return obj.get_body()
+
+    dd.inject_field('django_mailbox.Message', 'preview',
+      dd.VirtualField(dd.HtmlBox(_("Preview"), f))
+
+In the evening Tanel joined us for a sauna, and of course we spoke
+about the Vilma project then.

@@ -1,0 +1,212 @@
+:date: 2017-03-09
+
+=======================
+Thursday, March 9, 2017
+=======================
+
+About this blog
+===============
+
+One of the things I ask from other team members is that they should
+read this blog. (And since you are reading this, you are a good team
+member :-)
+
+This blog is currently our central channel for "official" team-wide
+announcements.  At least developers should be able to understand what
+I am writing about.  So please, when you read this blog and see
+something you *do not understand*, then please ask me to reformulate
+it.  Or if you understand it but *disagree* with me (e.g. about some
+priority or design decision), then you should inform me about your
+disagreement.
+
+Reacting to my blog is active work.  As a result I created
+:ticket:`1564` (Review Luc's blog) where you can track your working
+time on this.
+
+Integrating emails into Lino
+============================
+
+Tonis has been working on :ticket:`1374` (Reply to comments via
+email).  This helped me to realize that this ticket is the wrong
+direction and that we should rather work on :ticket:`1556`.
+
+Replying to comments via a `mailto` link (1) is far from covering all
+use cases and (2) does not work on my machine. We rather need to store
+every incoming and outgoing mail on saffre-rumma.net to the Jane
+database. Linking mail messages to a ticket (or to several tickets)
+might be automated in some way, but anyway these links must be
+reviewable by humans through the web interface.  A parser might triage
+certain mails (and suggest mail-to-ticket links), but that's not the
+most important.
+
+There should be a table UnreviewedMails which shows a list of that
+user's mails which have been added to the database and for which the
+user should check whether they are linked to the right ticket(s). And
+there should be a possibility to mark individual mails as private,
+maybe even to delete them if they accidentally contain confidential
+information.
+
+I guess that we can use `django-mailbox
+<http://django-mailbox.readthedocs.io>`__ for this.
+
+The biggest challenge will be displaying the content (body and
+attachments) of these mail messages correctly. But this is not the
+most urgent thing. In a first approach it's enough to see date, time,
+sender, recipients and subject, plus a link for downloading the raw
+message as an :file:`.eml` file. Later we can add a bleached version
+of the body, and attachments should become entries in
+:mod:`lino.modlib.uploads`.
+
+Tonis, I suggest that you leave :mod:`lino_xl.lib.inbox` as is and
+start a new plugin :mod:`lino_xl.lib.mailbox`.
+
+
+Bleach now works with weasyprint
+================================
+
+Cool: Will Kahn-Greene released the new version of :mod:`bleach` which
+`works with recent versions of html5lib.
+<https://github.com/mozilla/bleach/issues/229#issuecomment-285060949>`_
+This should fix our :ticket:`1262`.
+
+I tested it by reinstalling my default Python environment.  As a side
+effect I worked on :ticket:`1494` and updated :ref:`dev.env`.  This
+revealed a few dependency issues. For example :ref:`noi` uses
+:mod:`pytest` for testing, and therefore the `tests_require` in
+:xfile:`setup_info.py` is ignored.
+
+Another example was more complex. In `book` there was a series of
+problems with the following documents:
+
+- docs/specs/sales.rst
+- docs/specs/ledger.rst
+- docs/specs/invoicing.rst
+- docs/specs/finan.rst
+- docs/specs/contacts.rst
+
+These documents are part of the test suite, but they required the
+:mod:`lino_cosi` demo databases to be installed and initialized. This
+was of course from the time when these modules and docs were in
+:ref:`cosi` and not in :ref:`xl` (i.e. before :ticket:`1529`).
+
+Strange : runserver in the `cosi_ee` project gives a white browser
+screen because it cannotfind static files.  The `pierre` project is
+technically very similar but does not have the problem.
+
+>>> from lino.api.shell import settings ; print settings.STATIC_ROOT
+/media/dell1tb/work/book/lino_book/projects/cosi_ee/settings/static
+/media/dell1tb/work/book/lino_book/projects/pierre/settings/static
+
+>>> from lino.api.shell import settings ; print settings.SITE.cache_dir
+
+
+The due_date in DebtsByPartner was empty for providers.
+
+An interesting example of a pitfall about configuring plugin settings
+and their default values is the :attr:`start_year
+<lino_xl.lib.ledger.Plugin.start_year>` for pierre :
+:ref:`xl.specs.ledger` fails when it uses
+:mod:`lino_book.projects.pierre.settings.doctests` and not
+:mod:`lino_book.projects.pierre.settings.demo`.
+
+
+Also I had the following::
+
+    $ pywhich commondata
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+    AttributeError: 'module' object has no attribute '__file__'
+
+Do we have a new rule that namespace packages don't have a
+:attr:`__file__` attribute? I have no explanation for this error
+yet. I did a little change in atelier so that at least :cmd:`inv
+clean` failed.
+
+
+Avanti
+======
+
+I had a two hours meeting with Johanna, Janina, and Thomas.  Here is
+my next to-do list for Avanti (:ticket:`1547`).
+
+- Statt die Namen zu verstecken für Janina (Auditor), ist es
+  eigentlich eher so, dass der Auditor überhaupt nicht direkt die
+  detailierten Daten sehen kann, sondern nur einen einzigen Menüpunkt
+  "Berichte" hat. Janina wird die Berichte als Excel-Dateien
+  runterladen: Klienten, Kurse, Teilnehmer, Anwesenheiten.
+
+- Coachings raus. Nur ein einziges Feld "Primärbegleiter". Und die
+  Sozis im ÖSHZ kommen als Klientenkontakte rein.
+  Das Panel für Klientenkontakte muss wohl größer werden.
+  
+- Neue Aufgabe muss Status "todo" haben.
+
+- Dashboard aktivieren.
+
+- Im Detail eines Termins fehlt der Klient. Und die action buttons.
+  Und assigned_to ist zu viel.
+
+- Termine generieren pro Klient : da kommt nichts.
+
+- Terminstatus "Stattgefunden" verweigern, wenn es noch Teilnehmer
+  gibt, die noch auf "Eingeladen" stehen.
+
+- Summary panel für EventsByCourse
+
+- Kursleiter und Sozialarbeiter sollen keine Termine generieren können.
+  
+- Teilnehmerliste drucken können.
+
+- Diverse Übersetzungen
+  
+- Text "Tags" im Feld "Wann" eines Kurses wenn Mo, Di, Do und Fr.
+
+- Feldbezeichnungen cal.Task : "Zahlungsziel" -> "Frist". "Autor" ->
+  "Verantwortlicher"
+
+- Klick in Event.overview zeigt alle Termine an diesem Tag. Unnötig.
+
+- Produktionsbetrieb aufnehmen (Demo-Modus abschalten und fiktive
+  Daten löschen)
+
+Zu klären:
+    
+- Jeder darf nur seine Kommentare sehen.  Aber sind Kommentare
+  überhaupt das Richtige? Jedenfalls brauchen wir keine
+  Diskussionen. Zu klären, wenn Johanna mir eine Liste mit Beispielen
+  "Entwicklungsverlauf" geschickt hat. Kommentar-Arten fehlt im Menü
+  Konfigurierung.
+  
+- (?) EnrolmentStates : Bestanden / Nicht bestanden.  
+  
+- Neues Feld "Aufenthaltstitel" pro Klient. Wie war das noch mal?
+- Hide field Course.end_date
+- Hide fields Course.every_unit and Course.every
+- Hide num_places from Enrolments.insert_layout
+
+
+
+fk_renderer
+===========
+
+Hamza and I explored three possible strategies for fixing
+:ticket:`1382`:
+
+- prioritize the click event so that the a href gets it and not the
+  cellediting plugin. See also `Wrapper with onclick takes priority
+  over child with href
+  <http://stackoverflow.com/questions/5168319/wrapper-with-onclick-takes-priority-over-child-with-href>`__
+  which links to `this
+  <http://www.quirksmode.org/js/events_order.html>`__.
+  http://stackoverflow.com/questions/9512551/the-order-of-multiple-event-listeners
+  
+- use the context menu and add a classmethod
+  Actor.get_cell_context_actions() which returns a dict which maps
+  field names to some kind of action handlers. This would be the best
+  solution because it extends the API (application designers could
+  define custom cell context handlers). But it looks quite difficult
+  to implement.
+  
+- toggle the cellediting plugin on and off. Because the problem occurs
+  only when cellediting is enabled. But it seems that this is not
+  possible in ExtJS without reinstantiating the grid.

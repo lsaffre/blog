@@ -1,0 +1,130 @@
+:date: 2017-03-10
+
+======================
+Friday, March 10, 2017
+======================
+
+Avanti
+======
+
+I continued on Avanti (:ticket:`1547`).
+
+DONE:  
+
+- Coachings raus. Nur ein einziges Feld "Primärbegleiter". Und die
+  Sozis im ÖSHZ kommen als Klientenkontakte rein.
+  Das Panel für Klientenkontakte muss wohl größer werden.
+  Client now inherts from UserAuthored. New table MyClients.
+  
+- New plugin :mod:`lino_xl.lib.trends`.
+
+- Summary panel für EventsByCourse. New method
+  :meth:`EventGenerator.get_date_formatter`
+
+- Dashboard aktivieren.
+
+- Neue Aufgaben müssen Status "todo" haben.
+
+TODO:  
+
+- Koordinator darf keine Namen der Teilnehmer sehen, lediglich
+  Nummern.
+
+  Changed the API for :meth:`StoreField.get_value_text` because a
+  ForeignKey needs the action request in order to decide whether the
+  user can see the client's name or not.
+
+- Auditor ist wie der Koordinator, nur dass er zusätzlich die Berichte
+  als Spreadsheet-Dateien runterladen: Klienten, Kurse, Teilnehmer,
+  Anwesenheiten. 
+
+- Im Detail eines Termins fehlt der Klient. Und die action buttons.
+  Und assigned_to ist zu viel.
+
+- Termine generieren pro Klient : da kommt nichts.
+
+- Terminstatus "Stattgefunden" verweigern, wenn es noch Teilnehmer
+  gibt, die noch auf "Eingeladen" stehen.
+
+- Kursleiter und Sozialarbeiter sollen keine Termine generieren können.
+  
+- Teilnehmerliste drucken können.
+
+- Diverse Übersetzungen
+  
+- Text "Tags" im Feld "Wann" eines Kurses wenn Mo, Di, Do und Fr.
+
+- Feldbezeichnungen cal.Task : "Zahlungsziel" -> "Frist". "Autor" ->
+  "Verantwortlicher"
+
+- Klick in Event.overview zeigt alle Termine an diesem Tag. Unnötig.
+
+- Produktionsbetrieb aufnehmen (Demo-Modus abschalten und fiktive
+  Daten löschen)
+
+- Hide field Course.end_date
+- Hide fields Course.every_unit and Course.every
+- Hide num_places from Enrolments.insert_layout
+
+
+Zu klären:
+    
+- Jeder darf nur seine Kommentare sehen.  Aber sind Kommentare
+  überhaupt das Richtige? Jedenfalls brauchen wir keine
+  Diskussionen. Zu klären, wenn Johanna mir eine Liste mit Beispielen
+  "Entwicklungsverlauf" geschickt hat. Kommentar-Arten fehlt im Menü
+  Konfigurierung.
+  
+- (?) EnrolmentStates : Bestanden / Nicht bestanden.  
+  
+- Neues Feld "Aufenthaltstitel" pro Klient. Wie war das noch mal?
+
+
+  
+Code changes
+============
+
+Here are my explanation for yesterday's changesets that refer to this
+blog page:
+
+- 2017-03-10 20:59 in `atelier <http://atelier.lino-framework.org>`__:
+  `db30216 <https://github.com/lino-framework/atelier/commit/f32c425b65cd040e1f224f6e8f589dacddb30216>`__
+  This was for :ticket:`1262`.
+
+- 2017-03-10 20:59 in `lino <http://www.lino-framework.org>`__:
+  `b8d588c
+  <https://github.com/lino-framework/lino/commit/0229b4864ca71a884d1142617d68fb692b8d588c>`__
+  was needed because an avant.Client inherits from Partner and from
+  UserAuthored
+  
+
+- 2017-03-10 20:59 in `lino_xl <http://www.lino-framework.org>`__:
+  `a16a2d4 <https://github.com/lino-framework/xl/commit/f90274bb0c11312d7211741e5bb411f0da16a2d4>`__
+  :meth:`get_date_formatter` and the new :mod:`lino_xl.lib.trends` plugin.
+        
+- 2017-03-10 21:00 in `lino_book <http://www.lino-framework.org>`__:
+  `df6e769 <https://github.com/lino-framework/book/commit/8c24b7a7ab72dfc48f6b896a98617f917df6e769>`__
+  adapted test suites after moving summary panel of
+  EventsByController from voga to xl.
+  
+- 2017-03-10 21:00 in `lino_voga <http://voga.lino-framework.org>`__:
+  `575d483 <https://github.com/lino-framework/voga/commit/debaee596a69c29e3d4d703b20385ec32575d483>`__
+  (http://luc.lino-framework.org/blog/2017/0310.html)
+  moved summary panel of
+  EventsByController from voga to xl
+  and adapted test suites accordingly.
+
+- 2017-03-10 21:01 in `lino_avanti <http://avanti.lino-framework.org/>`__:
+  `5c7a5a1 <https://github.com/lino-framework/avanti/commit/6cddf25a94c55a21a86fffa6730ab34d45c7a5a1>`__
+  Okay, these are obviously for above todo list.
+  
+  
+- 2017-03-10 21:01 in `lino_welfare <http://welfare.lino-framework.org>`__:
+  `a845bb8 <https://github.com/lino-framework/welfare/commit/49feffed2bbc42c5f6a5ba2625fa308eaa845bb8>`__
+  adapted test suites after moving summary panel of
+  EventsByController from voga to xl.
+
+- 21:04 `9e3e666 <https://github.com/lino-framework/xl/commit/01a7cc6b10ce3215f1e962c7ae8bb741f9e3e666>`__
+  and 21:10 `f8bf475 <https://github.com/lino-framework/xl/commit/5bd584bd315abe85bf81b332814d29d2ff8bf475>`__ :
+  Actually Tonis should have done these for :ticket:`1556`.
+  
