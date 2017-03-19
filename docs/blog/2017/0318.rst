@@ -1,0 +1,139 @@
+:date: 2017-03-18 22:24
+
+========================
+Saturday, March 18, 2017
+========================
+
+Nightly magics with Python dumps
+================================
+
+The following is a beautiful example of why I love Python fixtures.
+It is something I really wouldn't want to do with an SQL dump.
+
+I am repairing a loss of production data caused by :ticket:`1354`.
+The whole operation took about 2:30 hours.  This ticket was caused by
+the customer's internal communication problems, so it is not Lino's
+fault.
+
+It is about :mod:`lino_welfare.modlib.aids`.  The
+:meth:`Confirmation.full_clean` method has a :class:`ValidationError`
+"Date range X lies outside of granted period Y". There are three
+models which implement `Confirmation`.  This validator caused 320
+confirmations to not make it into the new database when I migrated
+yesterday.
+
+My first question was: how many confirmations did they issue on
+Friday? I saw this by looking into the corresponding files:
+
+- :class:`SimpleConfirmation` (:file:`aids_simpleconfirmation.py`) : 2372 and 2373
+- :class:`IncomeConfirmation` (:file:`aids_incomeconfirmation.py`) : 2810, 2811 and 2812
+- :class:`RefundConfirmation` (:file:`aids_refundconfirmation.py`) : no new rows
+
+I guess that loosing these 5 rows from yesterday wouldn't be that hard
+if they only get the 320 older confirmations back. But actually I can
+easily save these 5 rows as well.  I will reload the old files and
+then add the 5 rows from the new files.  Actually I will do it in the
+other order: first load the 5 rows from the new files, and then reload
+the old files.
+
+Here is how I did it::
+
+    # unpack the last snapshot before the migration
+    $ unzip /var/backups/lino/20170316_1909.zip a
+    
+    # make a snapshot of the current state
+    $ dump2py b
+
+    # use sed to remove almost all lines from two files:
+    $ sed -e '4,1941d' a/aids_incomeconfirmation.py > b/income_tail.py
+    $ sed -e '4,1984d' a/aids_simpleconfirmation.py > b/simple_tail
+
+    # make a importable:
+    $ touch a/__init__.py
+    
+    $ cp b/restore.py b/restore_new.py
+    $ nano b/restore_new.py
+
+Find the following three lines of :file:`b/restore.py`::
+
+    execfile("aids_incomeconfirmation.py")
+    execfile("aids_refundconfirmation.py")
+    execfile("aids_simpleconfirmation.py")
+
+Replace them by::
+
+    # load the last lines of evening backup:
+    execfile("income_tail.py")
+    execfile("simple_tail.py")
+    # load all other confirmations from morning backup
+    from a.restore import create_aids_simpleconfirmation, create_aids_incomeconfirmation, create_aids_refundconfirmation
+    execfile("../a/aids_incomeconfirmation.py")
+    execfile("../a/aids_refundconfirmation.py")
+    execfile("../a/aids_simpleconfirmation.py")
+
+Note how I must import the `create_aids_xxxconfirmation` functions
+from the old :file:`restore.py` file because the order of fields has
+changed.
+
+
+And then::
+
+      $ python manage.py run b/restore_new.py
+
+I verified using the web interface (Explorer menu) the number of rows
+before and after the operation:
+    
+==================== ==== ==== ====
+model                bef  aft  diff
+==================== ==== ==== ====
+IncomeConfirmation   2273 2539 266
+RefundConfirmation   2586 2616  30
+SimpleConfirmation   1984 2008  24
+-------------------- ---- ---- ----
+Total                6843 7163 320
+==================== ==== ==== ====
+
+Yes, 320 is the number which Lino reported when I migrated the
+database.  
+
+More optimizations in Noi
+=========================
+
+I explained to Iiris my work on Lino and the :ref:`vilma` project. She
+contributed two real tickets. That's where I discovered
+:ticket:`1593`.
+
+Other optimizations mainly for :ticket:`1526` and :ticket:`1549`.
+
+For example the MyCompetences and TicketsByCompetences views.
+
+TODO: Rename the :attr:`slave_grid_format` (of
+:attr:`lino.core.actor.Actor`) to `display_format` and make it work
+even when it is the main element of the window. It might be more
+intuitive for MyCompetences.
+
+I removed the `more_text` field from CommentDetail.
+
+I realized that Vote.end_user, Ticket.end_user and
+faculties.Competence.supplier must be the same model. I renamed
+faculties.Competence.supplier to faculties.Competence.end_user
+
+OffersByEndUser OffersBySupplier
+
+:func:`lino.core.fields.fields_list` now issues a clearer error
+message when something is not a field. And it is more severe,
+too. Trigger was a typo bug: I had written an accidental comma behind
+the field type::
+
+  class Foo(dd.Model):
+      x = ForeignKey(...),
+
+SuggestedTickets didn't work. I changed it to
+SuggestedTicketsByEndUser
+
+The whole thing currently would fail if end_user_model is not a
+subclass of user_model (which is the case in Noi where a User is just
+a special kind of Person).
+
+
+I reimplemented :mod:`lino_noi.projects.team.settings.fixtures.demo`
