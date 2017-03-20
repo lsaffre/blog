@@ -33,3 +33,93 @@ A possible workaround might be to switch from RSS to `Atom
 <https://en.wikipedia.org/wiki/Atom_(standard)>`_. My blog currently
 uses `sphinxfeed <https://pypi.python.org/pypi/sphinxfeed>`__ for
 creating the rss.xml file. Needs more investigation. Not very urgent.
+
+Inviting others to vote
+=======================
+
+I started :ticket:`1601`.  But before doing this, I will do
+:ticket:`1603` (Move the Noi plugins to XL).  Because :ticket:`1601`
+is going to cause new translatable messages.
+        
+
+Move the Noi plugins to XL
+==========================
+
+I did :ticket:`1603` (Move the Noi plugins to XL).
+
+That is, "lino_noi.lib.x" becomes "lino_xl.lib.x" for each x in 
+deploy, clocking, faculties, tickets and votes
+
+Mostly routine work. The biggest challenge was the following::
+
+    book/docs/api/lino_xl.lib.tickets.rst:6: WARNING:
+    undefined label: noi.specs.tickets
+    (if the link has no caption the label must precede a section header)
+
+The problem here is how to organize documentation.
+
+How to organize documentation
+=============================
+
+The docstring of the :mod:`lino_xl.lib.tickets` plugin cannot, for
+itself, contain very concrete usage documentation because that depends
+on where the plugin is being used. Any plugin might get extended. The
+plugin developer does not know it.  It is the application who should
+explain why and how it uses a given plugin.  So the plugin docstring
+can at most *refer* to such documentation using an external link.
+
+But here we are in a special situation where we *do* have actually one
+*pilot application* which has a kind of privilege and duty of
+documenting the plugin.
+
+Technically :ref:`noi` is a separate project and should remain
+separated because if somebody wants to fork it, they probably might
+not want to fork the :mod:`lino_xl.lib.tickets` plugin as well.
+
+Now imagine this fork is maintained by somebody who does not
+participate in Lino and uses other development and documentation
+methods.  And imagine that the fork becomes stronger than its origin
+and the Lino project would decide to discontinue Lino Noi. In that
+case these future Lino maintainers would have to decide what to do
+with their :mod:`lino_xl.lib.tickets` plugin. Do they continue to
+maintain it? If meanwhile it is being used by some other pilot
+application (which is part of Lino), then they must change their
+docstring to refer to that application. Otherwise they will probably
+discontinue the plugin together with Noi, and that stronger external
+fork of Noi will take over the maintenance of the plugin.
+
+This exaple illustrates that our pilot applications (noi, welfare,
+cosi, voga, avanti) have a special status. Lino also depends on
+*them*. It is a bidirectional dependency, a partnership. We cannot
+explain :mod:`tickets <lino_xl.lib.tickets>` without noi.  We cannot
+explain :mod:`ledger <lino_xl.lib.ledger>` without cosi.  We *might*
+do it (e.g. by creating an educational project in book or by creating
+another pilot application), but that's useless as long as there is no
+other application than the pilot.
+
+That's why I currently believe that actually we should include the
+docs of these pilot applications (including the doctest part of their
+test suites!) into Book.  I acted accordingly to this when I moved
+cosi plugins to xl.
+
+I am a bit afraid of this trend because it will make the Book even
+bigger. But I see no other solution. And it seems the right direction.
+Another observation is that this will remove documentation from the
+source repositories of these applications into book. Which is actually
+a good thing as long as we do not yet use eggs or wheels to provide
+use-only packaging.
+
+  
+11:05 : okay, this is now checked in. There is a t least one last
+thing to do: move also the team demo project from lino_noi to
+lino_book. Currently the Book is deemed to fail on travis because it
+requires Noi not only to be installed but also to have done
+:manage:`prep`.
+
+Miscellaneous
+=============
+
+Tanel noted that "lipik" is a better translation for "ticket" than
+"pilet". "Pilet" has a strong connotation of allowing access to
+something. Lipik is just a piece of paper.
+        
