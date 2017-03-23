@@ -1,0 +1,109 @@
+:date: 2017-03-22
+
+=========================
+Wednesday, March 22, 2017
+=========================
+
+I poked around in Jane and tidied up (:ticket:`268`).
+This includes a few more optimizations:
+projects are now sorted by reference.
+Deployment.remark now a plain textfield (instead of charfield).
+
+
+The end of the Vilma project?
+=============================
+
+Today I stumbled over `rahvaalgatus.ee
+<https://rahvaalgatus.ee/about>`__ and `CitizenOS
+<https://citizenos.com/en/about>`_.  And I am afraid that this means
+the end for the :ref:`vilma` project.
+
+The last weeks have shown that the :ref:`vilma` project is a full-time
+job. It takes a lot of time to find volunteers who would become
+village agents, explain them why they should help us, analyze their
+needs and optimize :ref:`noi` so that it can be used. And the first
+thing most people say is "I cannot operate it using my phone, then I
+will certainly not use it". This means that :ticket:`1078` and
+:ticket:`1078` need to come soon as well.  And there are at least a
+dozen of cool features in CitizenOS which we didn't even yet think
+about. Turning :ref:`noi` into something comparable to Uservoice will
+cost more than a man-year.  I am afraid that Rumma & Ko simply don't
+have the capital for investing all that work!
+
+And then the question *whether* it should be done at all. My personal
+answer is clear: CitizenOS is really cool, but it seems that it is
+implemented using proprietary software owned by `Uservoice
+<https://en.wikipedia.org/wiki/UserVoice>`__.  Tõnn London suggested
+already one year ago (in `April 2016
+<https://citizenos.uservoice.com/forums/303627-general/suggestions/13580892-v%C3%B5iksite-lisada-info-portaali-tarkvara-kohta>`__):
+"Võiksite lisada info tarkvara kohta, mida see portaal kasutab, et kas
+on avatud lähtekoodiga, kas saab kuskilt alla laadida jne" and he
+didn't get any answer.
+
+I introduced the following suggestion:
+
+    Nõuda rahvaalgatuse platvormi arendajalt lähtekoodi avalikustamine
+    vaba litsentsi all
+
+    Rahvaalgatus.ee platvorm on üles pandud avaliku rahaga, kuid tubli
+    osa sellest rahast läheb tarkvara tootjale Uservoice San
+    Franciscos. See ei ole iseenesest probleem, aga kuna tarkvara
+    lähtekood on ja jääb nende oma, siis läheb lõppude lõpuks kogu
+    know-how riigist välja.
+
+    Ettepanek - Me nõuame, et rahvaalgatuse platvormi arendaja
+    avalikustaks vaba litsentsi kogu lähtekoodi, mis platvormi
+    käivitamiseks vaja.  Kui nad sellega ei nõustu, siis tuleb uut
+    arandajat leida.
+
+    Põhjendus - Praeguse lahendusega annab Eesti rahvas oma raha, aega
+    ja energia selleks, et suurendada kellegi välismaa tarkvaraomaniku
+    võimekuse. Seda peaks võimalikult kiiresti lõpetada.
+
+It needs of course much courage and naiveness to hope that above
+petition might get 1000 votes. But such thoughts are not a reason to
+give up before you even tried...
+
+Technically the site uses `Raven.js
+<https://github.com/getsentry/raven-js>`__, the browser JavaScript
+client for `Sentry <https://sentry.io>`_.  Sentry is a nonfree
+solution for collecting and analyzing Javascript tracebacks.
+
+BTW it is funny to see how close their basic idea matches my basic
+idea of the :ref:`vilma` project : the processes used for developing
+software can be reused for making democratic decisions. So actually
+CitizenOS and rahvaalgatus are a confirmation that we are targeting
+the right thing.
+
+
+Miscellaneous optimizations
+===========================
+
+Today I continued to do occasional quick upgrades of our Jane.
+
+- height of insert_layout of a Deployment must no longer be 'auto'.
+  
+- Choosing a milestone with label 20171231 fails because Lino
+  interprets it as numeric.  I adapted a demo fixture and
+  :ref:`noi.specs.tickets` to document the effect.  I fixed this by
+  defining a `quick_search_filter` method as in Referrable.
+  
+
+More ideas todo:
+- Session action buttons : write comment
+- Start a new session on a ticket as soon as you start a comment.
+- Make sessions readonly when they are earlier than a given date.
+- Prevent ticket state "working" when nobody is assigned.
+- The notification about a comment, at least when displayed in the dashboard, might include a link for replying.  
+
+
+Double release Welfare in Chatelet and Eupen
+============================================
+
+An unexplained error message during the restore in welcht was this::
+
+  Loading 25244 objects to table esf_clientsummary...
+  /usr/local/virtualenvs/b/local/lib/python2.7/site-packages/django/db/backends/mysql/base.py:112:
+  Warning: Data truncated for column 'esf70' at row 1
+  return self.cursor.execute(query, args)
+  

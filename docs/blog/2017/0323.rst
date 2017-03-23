@@ -1,0 +1,101 @@
+:date: 2017-03-23
+
+========================
+Thursday, March 23, 2017
+========================
+
+I continued to explore :ticket:`1609`. The problem is easily
+reproduceable on weleup by setting Martha Mustermann to
+ClientStates.newcomer and then running RefuseClient with a
+:class:`lino_welfare.modlib.pcsw.choicelists.RefusalReason` that
+contains non-ascii characters. I adapted
+:mod:`lino_welfare.projects.eupen.tests.test_clients`.
+
+In order to see whether is fixes (or at least works around) our
+problem, I tried to change their :ref:`mysql.engine` from MyISAM to
+InnoDB by removing the `'OPTIONS': { "init_command": "SET
+storage_engine=MyISAM" }` from their :setting:`DATABASES` setting and
+restoring their last snapshot.
+
+Changing the engine is not very difficult, but restoring a snapshot
+runs about 25 minutes on their site. Here are some numbers::
+
+    Loading 13724 objects to table contacts_partner...
+    Loading 13074 objects to table addresses_address...
+    Loading 21777 objects to table b2c_transaction...
+    Loading 6950 objects to table pcsw_client...
+    Loading 19700 objects to table cal_event...
+    Loading 93915 objects to table changes_change...
+    Loading 35140 objects to table debts_entry...
+    Loading 18658 objects to table notes_note...
+
+The first restore failed because I had still a local change for
+:ticket:`1354` in their code.  Meanwhile I had realized that switching
+the engine might cause minor operation problems.  So I decided to ask
+their permission before doing this move.  It seems clear to me that we
+should do it one day (after reading e.g. `this article
+<https://www.percona.com/blog/2016/10/11/mysql-8-0-end-myisam/>`__),
+but they should decide which day suits them best.
+
+Actually I don't seriously believe I that this move will fix
+:ticket:`1609`, but it is not impossible, and I currently don't see
+any other explanation. Here is the traceback::
+
+      File "env/repositories/lino/lino/core/kernel.py", line 865, in run_action
+        a.run_from_ui(ar)
+      File "env/repositories/welfare/lino_welfare/modlib/pcsw/actions.py", line 89, in run_from_ui
+        ar, subject=subject, body=body)
+      File "env/repositories/xl/lino_xl/lib/notes/mixins.py", line 38, in emit_system_note
+        note.save()
+      File "env/repositories/lino/lino/modlib/gfks/mixins.py", line 128, in save
+        super(Controllable, self).save(*args, **kw)
+      File "env/lib/python2.7/site-packages/django/db/models/base.py", line 708, in save
+        force_update=force_update, update_fields=update_fields)
+      File "env/lib/python2.7/site-packages/django/db/models/base.py", line 736, in save_base
+        updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+      File "env/lib/python2.7/site-packages/django/db/models/base.py", line 820, in _save_table
+        result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+      File "env/lib/python2.7/site-packages/django/db/models/base.py", line 859, in _do_insert
+        using=using, raw=raw)
+      File "env/lib/python2.7/site-packages/django/db/models/manager.py", line 122, in manager_method
+        return getattr(self.get_queryset(), name)(*args, **kwargs)
+      File "env/lib/python2.7/site-packages/django/db/models/query.py", line 1039, in _insert
+        return query.get_compiler(using=using).execute_sql(return_id)
+      File "env/lib/python2.7/site-packages/django/db/models/sql/compiler.py", line 1060, in execute_sql
+        cursor.execute(sql, params)
+      File "env/lib/python2.7/site-packages/django/db/backends/utils.py", line 64, in execute
+        return self.cursor.execute(sql, params)
+      File "env/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 112, in execute
+        return self.cursor.execute(query, args)
+      File "env/lib/python2.7/site-packages/MySQLdb/cursors.py", line 187, in execute
+        query = query % tuple([db.literal(item) for item in args])
+      File "env/lib/python2.7/site-packages/MySQLdb/connections.py", line 278, in literal
+        return self.escape(o, self.encoders)
+      File "env/lib/python2.7/site-packages/MySQLdb/connections.py", line 203, in string_literal
+        return db.string_literal(obj)
+    UnicodeEncodeError: 'ascii' codec can't encode character u'\xd6' in position 0: ordinal not in range(128)
+
+
+I tried to log the value of body and see what it produces on their
+server. But it seems to be a valid unicode string.
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.demo')
+>>> from lino_welfare.modlib.pcsw.choicelists import RefusalReasons
+>>> ch = RefusalReasons.get_by_value('20')
+>>> from builtins import str
+>>> str(ch)
+'\xd6SHZ ist nicht zust\xe4ndig'
+>>> unicode(ch)
+'\xd6SHZ ist nicht zust\xe4ndig'
+
+About broken GFKs
+=================
+
+I removed gfks.BrokenGFKs from the menu and created :ticket:`1620`.
+
+
+Lino Avanti meeting
+===================
+
+- Translations

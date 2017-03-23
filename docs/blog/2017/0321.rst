@@ -1,0 +1,48 @@
+:date: 2017-03-21
+
+=======================
+Tuesday, March 21, 2017
+=======================
+
+
+I realized that we don't need to add a "Wishes" table (:ticket:`1607`)
+because we have it already. It is named "Deployments".  I just need to
+convert our sprint project into milestones.  The only difference is
+that a milestone is not a project.
+
+New field Project.milestone, i.e. every project has an optional
+current milestone whose wishes (deploiyments) are to be displayed in
+DeploymentsByProject and DeploymentsByCompetence.
+
+A "Deployment" is now Sequenced.
+
+These "competences" (linking a user and a project) should be renamed
+to "team memberships".
+
+
+Problems after relase in weleup
+===============================
+
+I had 1300 messages in my inbox because
+:meth:`lino.utils.memo.Parser.register_django_model` logged an
+`exception` and not just a `warning` when the memo parser's `note`
+command finds a non existing primary key.  :ticket:`1608`.  This even
+caused a minute of server downtime because I made a typo when
+inserting a local workaround.
+
+
+I tried to reproduce :ticket:`1609` in
+:mod:`lino_welfare.projects.eupen.tests.test_clients` but without
+success. I guess that it happens only on MySQL and not on SQLite.
+:attr:`lino.core.site.Site.history_aware_logging` no longer gets
+automatically activated when a xfile:`log` directory exists.
+
+
+Releases @jane
+==============
+
+I did a series of releases to Jane for :ticket:`1607`. Test suites are
+not yet adapted.
+
+Per customer I have one ticket "General discussion and releases" which
+is going to be deployed (wished) in every milestone of that customer.
