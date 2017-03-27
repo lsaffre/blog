@@ -98,4 +98,149 @@ I removed gfks.BrokenGFKs from the menu and created :ticket:`1620`.
 Lino Avanti meeting
 ===================
 
-- Translations
+Today was next meeting with the Avanti team.
+
+TODO:
+
+- Kann Hubert nicht als Klientenkontakt angeben
+  
+- nicht sichtbar für Janina:
+  NISS, Enrolment.pupil (Klient), `Enrolments *` 
+  
+- Kinderbetreuung : wieviele Kinder? Arten. Pro Haushaltsmitglied
+  könnte man noch die Betreuungsart eingeben.  Hier eventuell noch
+  unterscheiden zwischen (1) Ist-Situation und
+  (2) Bedarf.  Betreuungsarten wären z.B. Keine, Betreutes Kind,
+  Pfegebedürftiger Angehöriger, Behindert, Kleinkind, Kindergarten,
+  Schulkind, ...  Aber wahrscheinlich ist das alles zu detailiert und
+  nicht pflegbar.
+
+  Eher vielleicht eine allgemeinere Tabelle mit "Hindernisgründen"
+  (mangelnde Kinderbetreuung, Krankheit, pflegebedürftige Angehörige,
+  ...). Zu beobachten.
+
+- Die drei Felder (Wartezeit, Datum Arbeit) aus Lebenslauf können weg,
+  dafür neues Auswahlfeld "Berufliche Situation":
+  
+  Student
+  Arbeitslos
+  Eingeschrieben (Arbeitsamt)
+  Angestellt
+  Selbstständig
+  
+- Feldbezeichnung "Sprache" -> "Kontaktsprache"
+- Zwei neue Felder "Niveau DE" und "Niveau FR".
+- LanguageKnowledgesByPerson :
+  (1) von Lebenslauf nach Person (oder eher sogar als eigener Reiter statt summary)
+  (2) Zusammenfassung : lediglich das CEF-Level der Kontaktsprachen + alle Muttersprachen
+- Janina will eigentlich nur drei virtuelle Felder
+  - ein Feld "Muttersprachen", in dem alle als MS markierten Sprachen (space-separated iso3) stehen
+  - CEF-Level DE und FR und EN
+  
+- Janina will die Entwicklungsetappen *nicht* sehen.
+- Partnernummer aus den Excel-Daten raus
+
+- Drei Klientenstatuus: Eingeschrieben, Beendet und Abgebrochen. Kreuzt sich
+  bewusst ein bisschen mit dem Beendigungsgrund.
+  
+- Neues Feld "Referenz" (Dossiernummer, Aktenreferenz). Client should inherit from Referrable.
+  
+- Eigentlich wollen wir immer nur einen Haushalt pro Klient. Und
+  diesen Haushalt wollen wir gar nicht erstellen müssen.  Zumindest
+  stay_in_grid for MembersByPerson.
+
+- Lebenslauf in Ordnung  
+- Wissen über Bewerbungsverfahren in Belgien
+- Führerschein
+- eigenes Fahrzeug
+
+- Entwicklungsbereich Detail --> Alle Etappen dieses Bereichs erfassen
+
+- Neues Feld "Kursbedarf" (Auswahlfeld -> Kursreihe")
+- Neues Feld "Verfügbarkeit" (freies Textfeld)
+
+- Möglichkeit, gewisse Notizen im Reiter "Person" anzuzeigen, damit
+  jeder Mitarbeiter sofort sieht, (nicht im Startbildschirm, sondern
+  nur beim Klienten).  Beispiele: "Diplomanerkennung anfragen!" "Wie
+  ist es mit der Führerscheinprüfung?"
+  New checkbox cal.Task.important which akts like Note.important.
+
+
+- Aufenthaltstitel: das ist eines der Felder im BeIdCardHolder. All
+  diese Felder sollten irgendwo manuell eingebbar sein.
+
+
+Miscellaneous
+=============
+
+I had a problem :ticket:`1624` (AttrDict instance has no key 'pcsw'
+during inv bd in book) because
+:mod:`lino_welfare.modlib.welfare.user_types` since recently was
+installing the merge actions to some models.  This code fails when the
+:mod:`lino_welfare.modlib.pcsw` plugin is not installed. When I moved
+this code there, I wasn't aware that the book also imports this module
+for displaying the inheritence diagram (in order to explain
+:ref:`dev.permissions`).
+
+So I added :mod:`lino_welfare` to the dependencies of book. And
+:mod:`lino_voga` as well while we are there. I think this is the right
+direction. Yes, the Lino book requires all those "pilot applications".
+
+I removed the unused method :meth:`Site.setup_choicelists`.
+
+
+Reorganizing tested docs and demo projects
+==========================================
+
+The Lino project is organized into *code repositories*, *test suites*,
+*demo projects* and *documentation trees*. These don't overlap
+exactly.
+
+- The book sometimes needs some applications in order to explain some
+  framework feature. For example it is difficult to explain the
+  tickets plugin without having some application that uses it. And it
+  would be a waste of energy to create a demo application since we
+  have a full-fledged application which we can use as demo.
+
+- Some parts of the documentation are being tested using doctest and
+  therefore rely a demo project to be preparaed. These pages must be
+  in the same repository as the demo projects they use.
+
+- The application docs should document only the application-specific
+  things and should be able to refer to parts of the book for every
+  shared feature. For example end-user documentation about user
+  management can be shared because many concepts are common to all
+  Lino applications.
+  
+- We first must build the book docs and then the docs of the
+  individual applications.
+  
+- Installing the book and building its docs requires the applications
+  to be installed.
+  
+- Installing an application does not need to install any demo
+  project. These are part of the book.
+
+- We need the demo projects of an application for writing tested docs
+  about that application.
+  
+- The application repositories will have only a very basic test suite.
+  
+- Coverage can be measured only for all projects together as a whole.
+  
+- The ordering for code installation is not the same as the ordering
+  for building the docs:
+
+  - pip installation : atelier lino xl noi voga ... book
+  - Sphinx build : book noi voga ...
+
+I think that this means for now that
+
+- We should do the following first with Noi, then evaluate it before
+  doing it with Cosi, Voga and finally Welfare (the biggest one): move
+  all the demo projects and all tested docs (e.g. everything below
+  :ref:`noi.specs`) from the application repo to the book.
+
+Pooh, that's a big series of changes! I created :ticket:`1626` for
+it. Any comment about my plan are welcome. Tonis might work on this
+until Sunday.
