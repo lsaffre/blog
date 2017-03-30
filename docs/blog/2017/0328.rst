@@ -1,0 +1,164 @@
+:date: 2017-03-28
+
+=======================
+Tuesday, March 28, 2017
+=======================
+
+Installing a moin wiki
+======================
+
+I opened :ticket:`1637`. This wiki would be used as a service for our
+customers so that we can help them with the task of maintaining a user
+manual(s). Concretely I think about Monique for Voga and Tanel for
+Vilma. And also two sections for ourselves: a Jane user guide and our
+"Internal Howto" (about server administration). This latter one should
+be readable only for authenticated users so that it can contain more
+sensible information about the servers maintained by us.
+
+First question : which Wiki engine to use? WikiMedia should be the
+first choice because everybody knows how to use it. But it is written
+in PHP. Isn't there anythin in Python? Yes, it seems that MoinMoin is
+the leader there.
+
+I think we should use the new 2.0 branch (`installation instructions
+<https://moin-20.readthedocs.io/en/latest/admin/install.html>`_)
+despite the fact that "no migration tool has been developed to migrate
+data between moin2 versions. In its current alpha state, there may be
+code changes that impact the structure of the wiki data or
+indexes. Should this occur, you must start over with an empty wiki and
+somehow copy and paste the contents of all the old wiki items into the
+new wiki. While no such changes are planned, they have happened in the
+past and may happen in the future."
+
+First we need mercurial::
+
+    $ sudo apt install mercurial
+
+Note that our directory `lino_sites` (in `/usr/local/python/` should
+theoretically get renamed to `wsgi_sites`. We are probably never going
+to do this because it is only our own site and because it would be
+quite some work.
+
+Create a project directory and install moin::
+
+    $ cd /usr/local/python/lino_sites
+    $ mkdir moin
+    $ cd moin
+    $ hg clone http://hg.moinmo.in/moin/2.0 moin-2.0
+    $ cd moin-2.0
+    $ python quickinstall.py ../env
+    ...
+    449 successfully created or updated venv at /usr/local/python/lino_sites/moin/env
+
+Create a new wiki::
+
+    $ go moin
+    $ cd moin-2.0
+    $ ./m sample
+    Creating a new wiki populated with sample data...
+    Output messages redirected to m-new-wiki.txt.
+
+    Success: a new wiki has been created.
+    
+
+Then I created a file :file:`wikiconfig_local.py` in my clone of the
+moin repo::
+
+    from wikiconfig import *
+    class LocalConfig(Config):
+        configuration_item_1 = 'value1'  # overlay this with local customizations
+    MOINCFG = LocalConfig
+    SECRET_KEY = 'My secret key'
+    DEBUG = True
+  
+Now I read the instructions on
+https://moin-20.readthedocs.io/en/latest/admin/serve.html and created
+a file :file:`/usr/local/python/lino_sites/moin/wsgi.py` for the
+apache config::
+
+    from MoinMoin.app import create_app
+    application = create_app('/usr/local/python/moin/moin-2.0/wikiconfig_local.py')
+
+  
+And in my Apache config there must be comething like::
+
+  WSGIScriptAlias / /usr/local/python/moin/wsgi.py 
+  WSGIDaemonProcess jane threads=15 python-path=/usr/local/python/moin/moin-2.0-venv-python/local/lib/python2.7/site-packages
+  WSGIProcessGroup moin
+
+My next step is how to create a new subdomain (including a https
+version) using certbot.
+
+    $ cd /etc/apache2/sites-available/
+
+
+Release@vilma
+=============
+
+I upgraded vilma because I wanted to activate the courses workflow.
+
+
+
+What is a field visit?
+======================
+
+I created two milestones mailbox@jane (author Tonis) and ext3to6@jane
+(author Hamza).  Both milestones are meant as what I call a **field
+visit** when working with my clients.  A field visit
+(Baustellenbesichtigung, visite de chantier) is a meeting with me as
+the developer and the contact person of the client.  A field visit is
+not a demo, we both know that the work is not finished.  During a
+field visit we review together the work that has been done (i.e. I
+show it to the client), and at the same time I collect new items that
+need to be fixed. So after a field visit I usually have a new list of
+items to do.
+
+The developer is responsible for deciding when it is time for a field
+visit. A field visit makes sense only when the developer has
+"finished" his to-do list of the last visit. This does not necessarily
+mean that every problem is fixed. It may simply mean that I need some
+feedback because have some more questions, that I am stuck, that I am
+unsure about how important that problem is...
+
+For these two milestones mailbox@jane and ext3to6@jane I imagine that
+*I* am the "client" and *Tonis* (or *Hamza*) is the developer. Hamza
+and Tonis, so I ask *you* to decide when it is time for this visit and
+to invite me then. The milestone reminds you know that I am waiting
+for them.
+
+
+Avanti goes on
+==============
+
+I finally calmed down and can do some actual work: My tasklist for
+:ticket:`1621` had been waiting since last Thursday.
+
+Side effects:
+
+- There was a bug in
+  :meth:`lino_xl.lib.contacts.models.Partner.get_as_user` which caused
+  it to mix up :attr:`partner` and :attr:`partner_ptr`.
+
+- :class:`lino.utils.mldbc.fields.BabelVirtualField`
+
+DONE:
+
+- Folgende Felder sollen nicht sichtbar sein für Janina
+  (d.h. :class:`lino_avanti.lib.avanti.AllClients`): NISS,
+  Enrolment.pupil (Klient), `Enrolments *`
+
+- Die drei Felder (Wartezeit, Datum Arbeit) aus Lebenslauf können weg,
+  dafür neues Auswahlfeld "Berufliche Situation":
+  
+  Student
+  Arbeitslos
+  Eingeschrieben (Arbeitsamt)
+  Angestellt
+  Selbstständig
+  
+- Feldbezeichnung "Sprache" -> "Kontaktsprache"
+  
+I committed to master without adapting the test suites because things
+seem to work and I wanted a commit (and because I am too lazy to
+create a new branch in 5 repositories..).
+

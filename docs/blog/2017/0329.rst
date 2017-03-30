@@ -1,0 +1,112 @@
+:date: 2017-03-29
+
+=========================
+Wednesday, March 29, 2017
+=========================
+
+I continued on :ticket:`1621` (Avanti).
+Details are mostly in German (see next section).
+The following changes are for this ticket.
+
+- 10:51 in *lino*:
+  `ec5c8ab <https://github.com/lino-framework/lino/commit/f1c7e6db206a5375f4203e579bd932bacec5c8ab>`__
+- 10:51 in *lino_xl*:
+  `10fde75 <https://github.com/lino-framework/xl/commit/86389ea8abb62200a0d6ad1b544cb639110fde75>`__
+- 10:51 in *lino_extjs6*:
+  `85a8c08 <https://github.com/lino-framework/extjs6/commit/6a88756fa5e192e4de0fe88e3f118c4c885a8c08>`__
+- 10:51 in *lino_avanti*:
+  `e68e237 <https://github.com/lino-framework/avanti/commit/e2a53fd42ee1b65c4c4ac14b4dd601ad7e68e237>`__
+
+(12:23) I upgraded their production site and made manual tests,
+translations and a last bugfix.  Everything seems to work now, I can
+invite them to the next field visit.  (I still need to adapt the test
+suites after all my changes of the last days).
+
+
+Lino Avanti Änderungen 20170329
+===============================
+
+DONE:
+
+- Folgende Felder sollen nicht sichtbar sein für Janina
+  (d.h. :class:`lino_avanti.lib.avanti.AllClients`): NISS,
+  Enrolment.pupil (Klient), `Enrolments *`
+
+- Die drei Felder (Wartezeit, Datum Arbeit) aus Lebenslauf können weg,
+  dafür neues Auswahlfeld "Berufliche Situation":
+  
+  Student
+  Arbeitslos
+  Eingeschrieben (Arbeitsamt)
+  Angestellt
+  Selbstständig
+  
+- Feldbezeichnung "Sprache" -> "Kontaktsprache"
+  
+- LanguageKnowledgesByPerson steht jetzt in einem eigenem Reiter
+  "Sprachen". Zusammen mit den Kurseeinschreibungen.  Explorer sieht
+  nur folgende virtuelle Felder:
+  
+  - ein Feld "Muttersprachen", in dem alle als Muttersprache
+    markierten Sprachen stehen. Momentan nicht als space-separated
+    iso3 codes sondern die volle Bezeichnung jeder Muttersprache.
+    
+  - CEF-Level DE und FR und EN
+ 
+- Neues Feld "Referenz" (Dossiernummer, Aktenreferenz). Doppelte
+  Referenzen sollte Lino nicht zulassen. IOW Client now inherits from
+  Referrable.
+  
+- Neues Feld "Kursbedarf" (Auswahlfeld -> Kursreihe")
+- Neues Feld "Verfügbarkeit" (freies Textfeld)
+
+- Eigentlich wollen wir immer nur einen Haushalt pro Klient. Und
+  diesen Haushalt wollen wir gar nicht erstellen müssen.  Zumindest
+  stay_in_grid for MembersByPerson.
+
+- Aufenthaltstitel: das ist eines der Felder im BeIdCardHolder. All
+  diese Felder sollten irgendwo manuell eingebbar sein.
+
+- Drei Klientenstatuus: Eingeschrieben, Beendet und
+  Abgebrochen. Kreuzt sich bewusst ein bisschen mit dem
+  Beendigungsgrund.
+  
+- Entwicklungsbereich Detail --> Alle Etappen dieses Bereichs sehen
+  können (und neue erfassen).
+
+- Partnernummer aus den Excel-Daten raus, damit man keine Verknüpfung
+  zwischen Klienten und Einschreibungen machen kann.
+
+- Möglichkeit, gewisse Notizen im Reiter "Person" anzuzeigen, damit
+  jeder Mitarbeiter diese sofort sieht. Nicht im Startbildschirm,
+  sondern nur beim Klienten.  Beispiele: "Diplomanerkennung anfragen!"
+  "Wie ist es mit der Führerscheinprüfung?"
+  
+  --> Added a new state "important" to cal.TaskStates. And
+  :meth:`lino_avanti.lib.avanti.models.Client.get_overview_elems`
+  displays these in yellow. Added lino-info-yellow class to
+  :xfile:`lino.css`
+
+- Man konnte Hubert nicht als Klientenkontakt angeben
+  
+TALK:
+
+- Kinderbetreuung : wieviele Kinder? Arten. Pro Haushaltsmitglied
+  könnte man noch die Betreuungsart eingeben.  Hier eventuell noch
+  unterscheiden zwischen (1) Ist-Situation und
+  (2) Bedarf.  Betreuungsarten wären z.B. Keine, Betreutes Kind,
+  Pfegebedürftiger Angehöriger, Behindert, Kleinkind, Kindergarten,
+  Schulkind, ...  Aber wahrscheinlich ist das alles zu detailiert und
+  nicht pflegbar.
+
+  Eher vielleicht eine allgemeinere Tabelle mit "Hindernisgründen"
+  (mangelnde Kinderbetreuung, Krankheit, pflegebedürftige Angehörige,
+  ...). Zu beobachten.
+
+- Neue Entwicklungsetappen gemeinsam konfigurieren:
+
+    - Lebenslauf in Ordnung 
+    - Wissen über Bewerbungsverfahren in Belgien
+    - Führerschein
+    - eigenes Fahrzeug
+
