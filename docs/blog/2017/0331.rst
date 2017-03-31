@@ -5,15 +5,71 @@ Friday, March 31, 2017
 ======================
 
 
-I did the code changes for :ticket:`1546` (Use courses.Course as
-milestone_model).
+Implement milestones as activities
+==================================
 
-I removed the models deploy.Milestone and tickets.Site.  Existing
-deploy.Milestone objects must be migrated to courses.Course, existing
-tickets.Site to cal.Room
+I did :ticket:`1546` (Use courses.Course as milestone_model). This is
+a great example of how flexible Lino applications are.
 
-I also removed tickets.Comptence (existing rows can be thrown away).
+Some days ago I added the :mod:`courses <lino_xl.lib.courses>` and
+:mod:`cal <lino_xl.lib.cal>` plugins into :ref:`noi`. That was for my
+quick demo last Saturday for :ref:`vilma`. This made me realize that
+an "activity" (or "course" or "workshop") in
+:mod:`lino_xl.lib.courses` is equivalent to what we have been calling
+a milestone until now. And that the "room" of the calendar module is
+equivalent to what we called a "site" until now.
+
+So now I removed the models `deploy.Milestone` and `tickets.Site`.
+Existing `deploy.Milestone` objects must be migrated to
+`courses.Course`, existing `tickets.Site` to `cal.Room`.
+
+I also removed `tickets.Competence` because that notion is not
+useful. Existing rows can be thrown away.  Note that I plan to change
+the verbose_name of `tickets.Project` from "project" to "mission".
+
+Side effect I stumbled over a little bug which caused a
+:message:`TypeError: unorderable types: str() and <type 'str'>`. And I
+fixed it.
 
 
 
-    TypeError: unorderable types: str() and <type 'str'>
+About economic democracy
+========================
+
+I read parts of `A wealth of possibilities: Alternatives to Growth
+<http://gef.eu/wp-content/uploads/2017/02/GEF_BackgroundStudy-screen-ok.pdf>`__
+(found via `this
+<http://gef.eu/publication/wealth-possibilities-alternatives-growth/>`__). My
+quotation:
+
+
+    In general, a post-growth economy should resemble what Johanishova
+    and Wolf (2012) describe as **"economic democracy"**, a concept
+    that advances the **right of citizens to participate in the
+    economy, shifting their role from passive consumers to engaged and
+    productive subjects** with access to a new typology of means of
+    production. In this way, employment opportunities would shift from
+    capitalist corporations to cooperatives; that is to say, social,
+    individual and informal enterprises fomenting local economies.
+
+    Put differently but implying similar ideas, Christian Felber
+    defines the `Economy of the Common Good
+    <https://www.ecogood.org/en>`__ as an attempt to create an
+    alternative economic system to both the planned and the capitalist
+    economy, seeking implementation from the bottom up directed at
+    individuals, enterprises or municipalities.
+
+    (...) Since a specific answer cannot be given concerning the
+    future outcome, **we can only acknowledge that we face a
+    bifurcation where the global outcome will be the result of many
+    different local outcomes, and prepare for successes as well as
+    tragedies**.  The policy-makers should therefore adopt a flexible
+    role in devising policies that facilitate the creation of
+    democratic processes and can, in parallel with technological
+    innovation, foment social innovation which, in turn, will
+    instigate the post-growth economy and its new institutions.
+
+This confirms to me that :ref:`vilma` is something that the world
+needs. One of the key points in Vilma is a new style of
+democracy. Unlike many projects Vilma encourages volunteer agents to
+become qualified representatives for their neighbors.
