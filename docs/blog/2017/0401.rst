@@ -1,0 +1,49 @@
+:date: 2017-04-01
+
+=======================
+Saturday, April 1, 2017
+=======================
+
+Inviting others to vote
+=======================
+
+Lino can now automatically create "vote invitations" (i.e. votes
+having a new state "invited").  I added two other new vote states
+"pro" and "con".  And we have a new table "My vote invitations" which
+basically asks the user to choose one of four options:
+
+- Cancelled : not interested. You declare that you don't want to be
+  bothered with this ticket.
+- Watching : You are interested, you are neutral and did not
+  yet declare your opinion. You want to be notified when
+  something happens in this ticket.
+- Pro : optimistically watching. You declare that you want this ticket
+  to get *done*. You support this ticket.
+- Con : skeptically watching. You declare that you want this ticket to
+  get *refused*.
+
+The pro and con states are not yet used, but I plan to also make the
+number of pro, con and watching votes visible in the WishesByMilestone
+view. So you can do polls in Noi by formulating your questions as
+tickets, creating an activity and adding them as tickets, and then
+adding enrolments to your activity. The participants will
+automatically be invited to vote. Note that you must click the Save
+button of the activity for Lino to create vote invitations.
+
+I updated the specs about this: :ref:`specs.noi.votes`.
+
+
+- I added a new method :meth:`Commentable.on_commented
+  <lino.modlib.comments.mixins.Commentable.on_commented>`.  And
+  :class:`Votable <lino_xl.lib.votes.mixins.Votable>` now invites the
+  comment's author to vote on this votable.
+
+- Similar system for :meth:`Workable.on_worked
+  <lino_xl.lib.clocking.mixins.Workable.on_worked>`.
+
+- I changed the label of the ticket state "Cancelled" to "Refused".
+
+- The label of a :class:`lino.core.workflows.ChangeStateAction` is now
+  being inherited from its :attr:`target_state`. Don't ask me why I
+  didn't see this earlier.
+
