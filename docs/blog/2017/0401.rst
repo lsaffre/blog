@@ -1,4 +1,4 @@
-:date: 2017-04-01
+:date: 2017-04-01 15:14
 
 =======================
 Saturday, April 1, 2017
@@ -47,3 +47,48 @@ I updated the specs about this: :ref:`specs.noi.votes`.
   being inherited from its :attr:`target_state`. Don't ask me why I
   didn't see this earlier.
 
+
+Vocabulary and translations
+===========================
+
+I did a series of renames, without (yet) changing any model names.
+
+Especially in the :mod:`lino_xl.lib.cal` plugin I started to tidy up
+with the obsolete term "calendar event". This word is still being used
+in many places for what should actually be called a "calendar
+entry". For example::
+
+    MyEvents -> MyEntries
+    AllEvents  -> AllEntries
+    PublicEvents -> PublicEntries
+    EventsByRoom -> EntriesByRoom
+    Events -> Entries
+    EventsByDay -> EntriesByDay
+
+    EventStates -> CalendarEntryStates
+
+    MoveEventNext -> MoveEntryNext
+
+    ConflictingEvents -> ConflictingEntries
+
+    EventChecker -> EntryChecker
+
+I also changed some translatable messages::
+
+    Calendar Event Types -> Calendar entry types
+    Event label -> Entry label
+
+    Event Policy -> Recurrency policy
+    Recurrent event rule -> Recurring event
+
+
+And then our :mod:`lino_xl.lib.courses` plugin. The name "courses" is
+really wrong because already :ref:`voga` uses the :class:`Course`
+model also for "travels" and "hikes". They use the word "activities"
+(Aktivitäten) as the general term. In :ref:`welcht` they use almost
+the same thing and call it "workshops" (ateliers). Lino Noi uses it to
+organize sprints and meetings. Meanwhile I think that the best general
+term is "Events" (Veranstaltungen, Évènements, Üritused). I am now
+trying to evolve step by step towards my final goal which is to have
+"events" which generate "calendar entries". All in all it is still a
+big chaos, but only for the developer.
