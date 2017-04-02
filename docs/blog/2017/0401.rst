@@ -92,3 +92,21 @@ term is "Events" (Veranstaltungen, Évènements, Üritused). I am now
 trying to evolve step by step towards my final goal which is to have
 "events" which generate "calendar entries". All in all it is still a
 big chaos, but only for the developer.
+
+
+How to disable all fields except some::
+
+
+    class Message(dd.Model):
+
+        _disabled_fields = set('body sender subject ...'.split())
+
+        def disabled_fields(self, ar):
+            # fields = super(Message, self).disabled_fields(ar)
+            # fields |= self._disabled_fields
+            return self._disabled_fields
+
+
+
+Today I discovered a cool thing: I can override the label of a remote
+field using update_field. sed for `Session.ticket__id`.
