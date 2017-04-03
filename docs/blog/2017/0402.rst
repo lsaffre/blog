@@ -7,7 +7,8 @@ Sunday, April 2, 2017
 I did another series of small changes for Jane and Vilma.
 
 courses.MyActivities : now ordered by *increasing* start_date.
-Filter courses by room (courses.Course.room)
+
+It is now possible to filter courses by room (courses.Course.room)
 
 When filtering sessions by organization, Lino Noi now shows all
 sessions whose ticket has a wish in a milestone owned by that
@@ -20,6 +21,33 @@ now means anything that has a StartSession and an EndSession action.
 DeploymentsByTicket : clicking on a milestone now opens the milestone,
 not the wish.
 
-clocking.CoursesByReport is now ContactRelated.
-I am experimenting with this.
+clocking.ServiceReport is now ContactRelated.
+clocking.CoursesByReport replaces ProjectsByReport.  I am still
+discovering how I can send a meaningfull overview about "what has been
+done" to my customers.
 
+
+
+
+I was working in Vilma and had clicked on a button which had caused
+our well-known unreproductible Ajax error "ParameterStore of
+LayoutHandle for X expects a list of Y values but got Z"
+(:ticket:`358`).  But this time, instead of getting an alert box with
+that message, my client remained in "Please wait..." eternally. Also a
+:kbd:`Sh-Ctrl-R` did not bring it back to life.  Only 5 minutes later,
+everything worked as if nothing had happened.  An in the Apache
+error.log I see::
+
+    [Sun Apr 02 22:08:28.039318 2017] [wsgi:error] [pid 32548:tid 140011105117952] Exception: ParameterStore of LayoutHandle for lino.core.layouts.ParamsLayout on lino_xl.lib.courses.desktop.Activities expects a list of 10 values but got 9: [u'', u'', u'3', u'', u'', u'', u'', u'', u'y']
+    [Sun Apr 02 20:13:28.116146 2017] [wsgi:error] [pid 32550:tid 140011085223680] [client 123.456.789.123:58853] Timeout when reading response headers from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    extern "Python": function Cryptography_rand_bytes() called, but @ffi.def_extern() was not called in the current subinterpreter.  Returning 0.
+    [Sun Apr 02 20:13:33.236180 2017] [wsgi:error] [pid 32550:tid 140010959333120] [client 123.456.789.123:51101] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    [Sun Apr 02 20:13:33.237209 2017] [wsgi:error] [pid 32550:tid 140011060045568] [client 123.456.789.123:50933] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    [Sun Apr 02 20:13:33.237939 2017] [wsgi:error] [pid 32550:tid 140010917369600] [client 123.456.789.123:57514] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    [Sun Apr 02 20:13:33.238593 2017] [wsgi:error] [pid 32550:tid 140011001296640] [client 123.456.789.123:60512] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    [Sun Apr 02 20:13:33.239263 2017] [wsgi:error] [pid 32550:tid 140010934155008] [client 123.456.789.123:50993] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+    [Sun Apr 02 20:13:33.239923 2017] [wsgi:error] [pid 32550:tid 140011034867456] [client 123.456.789.123:61452] Truncated or oversized response headers received from daemon process 'vilma': /my/project/apache/wsgi.py, referer: https://example.com/
+
+Hmm... what does this mean?
+
+It seems that I can reproduce it by double-clicking on an event (mõtetalgud 23.03.2017) in Vilma.
