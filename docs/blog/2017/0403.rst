@@ -4,23 +4,88 @@
 Monday, April 3, 2017
 =====================
 
-
-Yet another release to jane and vilma
+Yet another release to Jane and Vilma
 with a few optimizations:
 :ticket:`1660` (Cannot specify an end_user),
 :ticket:`1659` (Display ticket's status together with summary),
-:ticket:`1662` (Some fields are missing in SiteConfig detail layout).
-:ticket:`1663` (Cannot mark a ticket as refused)
+:ticket:`1662` (Some fields are missing in SiteConfig detail layout),
+:ticket:`1663` (Cannot mark a ticket as refused).
 
 A less internal ticket is :ticket:`1661` (Sarkastische Fehlermeldung
 "Herzlichen Glückwunsch"). This is because Monique told me how Gaby
 had been working alone with Lino for the first time, and that was
 unfortunately exactly when I was working on another site on that
 server. At some moment she received a "Congratulations, you found an
-error in our system."
+error in our system."  In :xfile:`500.html` I changed the text
+"Congratulations, you found an error in our system."  to "Oops, you
+found an error in our system.  Don't panic, this is definitively not
+your fault. (...)", including a reference to the new site attribute
+:attr:`hoster_status_page <lino.core.site.Site.hoster_status_page>`.
 
-In :xfile:`500.html` I changed the text "Congratulations, you found an
-error in our system."  to "Oops, you found an error in our system.
-Don't panic, this is definitively not your fault. (...)", including a
-reference to the new site attribute :attr:`hoster_status_page
-<lino.core.site.Site.hoster_status_page>`.
+This was the first time that I did two simultaneous releases.
+
+
+Luc taking two tickets
+======================
+
+Tonis and I realized that I must now work a bit on :ticket:`1201` and
+:ticket:`1556`. Tonis explained me where is stopped and how to
+reproduce the problems he stumbled into.
+
+For :ticket:`1556` the problem is mostly how to inject a FK field (a
+pointer to ticket) into `django_mailbox.Message`. It seems that this
+fails because it is not a real Lino model.
+
+And for :ticket:`1201` I can reproduce the current problem as follows:
+
+- checkout mailbox branch on xl and noi
+- go team
+- dm prep ; runserver
+- in Evolution create a remote calendar with URL
+  http://127.0.0.1:8000/.rad/user/calendar.ics/
+
+- in Evolution create a new entry in that calendar.
+
+When Evolution sends the PUT to Lino, Lino seems to "freeze".
+After some timeout Evolution says:
+
+    Cannot create calendar object: Unexpected HTTP status code 7
+    returned (Connection terminated unexpectedly) for URI:
+    http://luc@127.0.0.1:8000/.rad/user/calendar.ics/20170403T075709Z-15537-1000-2126-0_doll-20170403T075719Z.ics
+
+I plan to dive into the Radicale docs
+(e.g. http://radicale.org/user_documentation/#idcomplex-configuration)
+and figure out how to integrate it into Lino. I currently believe that
+a fundamental question is the storage.
+
+
+Deployment strategy
+===================
+
+We discussed about our deployment workflow and decided:
+
+Tonis creates a "stable" branch on every repository and instructs
+Travis to focus on stable. The `master` branch is our development
+branch.  Luc continues to use `master` as usual.
+
+Tonis starts to be "reponsible" for the "stable" branch of all repos
+and will try to get them pass on Travis.
+
+All customers will continue to use the `master` branch.
+Except the demo sites LF which is going to use `stable`.
+And Tonis takes responibility of maintinaing these.
+
+And when Tonis does changes in the stable branch, Luc must of course
+merge them. Something like this::
+
+    $ go lino
+    $ git status # check that i am on master branch
+    $ git pull
+    $ git merge stable
+
+Why I stopped using GitKraken: because the community version told me
+that "for commercial u se, Git Pro is required". Now my question is
+"Do they consider my usage as commercial? I am making money with
+software development. But only using free software."  I guess that
+
+
