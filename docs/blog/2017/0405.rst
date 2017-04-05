@@ -1,0 +1,66 @@
+:date: 2017-04-05
+
+========================
+Wednesday, April 5, 2017
+========================
+
+Inserting TinyMCE text templates
+================================
+
+I tried to reproduce :ticket:`1630` : Uns ist aufgefallen dass die
+Vorlagen nicht überall funktionieren: das bedeutet, dass die
+Vorlagenliste nicht erscheint und man schon erstellte Vorlagen nicht
+auswählen kann.  Z.B. Wenn ich einen neuen VSE Vertrag mit einer
+Partnerorganisation erstelle und Aufgaben für diese
+Partnerorganisation mit Vorlagen erstellen will, kann ich nichts
+auswählen.
+
+I had to rediscover how the :mod:`lino.modlib.tinymce` plugin
+works. Every text editor instance, when initialized, sends a request
+like this::
+
+    http://127.0.0.1:8000/tinymce/templates/notes/MyNotes/21/body
+
+And Lino answers something like this::
+
+    var tinyMCETemplateList = [
+        [ "hello",
+          "/tinymce/templates/notes/MyNotes/21/body/1",
+          "Inserts 'Hello, world!'" ],
+        [ "mfg",
+           "/tinymce/templates/notes/MyNotes/21/body/2",
+          "None" ]
+      ];
+  
+I also created :ticket:`1674` (Find a better JS text editor)
+because we probably won't port tinymce to ExtJS6.
+
+Who is online?
+==============
+
+I did research for :ticket:`1673` and did some optimizations in
+:mod:`lino.modlib.ipdict`:
+
+- ipdict.models.Connections now shows one row per ip:username instead
+  of one row per ip and then all the usernames for that ip. Also the
+  whole blacklisting is done per ip:username.
+
+- when an IP was blacklisted, got unlocked after max_blacklist_time
+  and then received a successful login, then all sins of anonymous are
+  erased
+
+- ipdict now also works when using http authentication
+
+Above changes are probably already a satisfying answer for
+:ticket:`1673`.
+     
+Note that ipdict unlike normal plugins should not be acticated by
+adding it to your :meth:`get_installed_app` but by setting the
+:attr:`lino.core.site.Site.use_ipdict` attribute.
+
+Just out of curiosity I also started a new plugin
+:mod:`lino.modlib.blacklist` which (when finished) would do the same
+as ipdict except that it uses the Django session to store these data.
+Advantage would be that we don't need to worry what happens when a
+site has so many http connections that storing an IPRecord for each of
+them will cause a memory overflow.
