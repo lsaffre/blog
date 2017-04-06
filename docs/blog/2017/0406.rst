@@ -1,0 +1,148 @@
+:date: 2017-04-06
+
+=======================
+Thursday, April 6, 2017
+=======================
+
+About weasyprint, pango and cairo
+=================================
+
+I explored why we have these warnings (:ticket:`1462`)::
+
+    WARNING: @font-face support needs Pango
+    WARNING: There are known rendering problems with Cairo <= 1.14.0
+
+You can run the following to see them::
+
+    $ python -c "from weasyprint.text import pango; print(pango.pango_version())"
+    WARNING: There are known rendering problems with Cairo <= 1.14.0
+    WARNING: @font-face support needs Pango >= 1.38
+    13608
+
+It is true that the warnings do not appear on my machine
+anymore. On my machine I have::
+
+    $ python -c "from weasyprint.text import pango; print(pango.pango_version())"
+    13801
+
+I tried whether it is a solution to run "pip install -U cffi
+cairocffi" on that machine::
+  
+    $ pip install -U cffi
+    Collecting cffi
+      Downloading cffi-1.10.0-cp27-cp27mu-manylinux1_x86_64.whl (392kB)
+        100% |████████████████████████████████| 399kB 1.3MB/s 
+    Requirement already up-to-date: pycparser in ./env/lib/python2.7/site-packages (from cffi)
+    Installing collected packages: cffi
+      Found existing installation: cffi 1.9.1
+        Uninstalling cffi-1.9.1:
+          Successfully uninstalled cffi-1.9.1
+    Successfully installed cffi-1.10.0
+
+Nope, that doesn't change it.  On SR (jessie) I tried this::
+
+  $ sudo apt update
+  $ sudo apt upgrade
+
+Which also didn't help.
+So Debian Jessie is not enough, but Ubuntu Xenial is.
+
+
+Switch from MyISAM to InnoDB
+============================
+
+I ran :xfile:`make_snapshot.sh`, verified that they are currently
+using MyISAM (see :ref:`mysql.which.engine`), then uncommented the
+``OPTIONS`` from their :setting:`DATABASES` and then restored the
+snapshot.
+
+This first restore took 2 hours and a half.
+
+I think that this can be reduced drastically by temporarily disabling
+certain constraint checks. TODO: find out how to do this.
+
+
+
+Optimizations for Jane
+======================
+
+While waiting for the restore to finish, I worked on :ticket:`1685`.
+
+- I reorganized the WishTypes choicelist, adding new types "Agenda
+  item" and "Resolution".
+
+- "Activities" is better than "Events" (as verbose_name of courses.Course)
+
+- :class:`lino_xl.lib.deploy.desktop.DeploymentsByTicket` now shows
+  only active milestones.  To implement this, I added a new feature to
+  the model API: :meth:`add_param_filter
+  <lino.core.model.Model.add_param_filter>`. 
+
+- I started a new tested document :ref:`specs.noi.deploy`.
+
+I released these changes to Jane.
+
+
+Quick optimizations for weleup
+==============================
+
+When the restore had finally finished, I tried whether :ticket:`1649`
+is fixed, but stumbled into an AttributeError "'NoneType' object has
+no attribute 'mail_mode' in :mod:`lino_xl.lib.coachings.mixins`" (und
+Frau Marthà Musterfrau hat eine Begleitung 27.03.2017 DWEF ohne
+Begleiter).
+
+I fixed this bug, then pulled the newest version. Which caused
+another, more serious problem: cal.Room is now ContactRelated. So I
+have to restore my snapshot again! Another 2,5 hours? No, I preferred
+to find out how to make the restore quicker.
+
+At 6:00 I started a second restore with the new version, but this time
+with :envvar:`FOREIGN_KEY_CHECKS` disabled.
+
+- 12 additional minutes because I renamed EventStates to EntryStates.
+
+While this restore is still running, I tried on Jane how much time I
+would gain.  Ouch, a restore of Jane takes 4 minutes independently
+whether :envvar:`FOREIGN_KEY_CHECKS` is disable dor not::
+
+    real	3m55.933s
+    user	2m18.828s
+    sys	0m3.348s
+
+So my trick doesn't work.  After reading `this
+<https://docs.djangoproject.com/en/1.10/ref/databases/#mysql-db-api-drivers>`__,
+I changed the Python wrpper for mysql from mysql-python to
+mysqlclient::
+
+    $ pip uninstall mysql-python
+    $ pip install mysqlclient
+
+No difference.
+
+I started to worry, because at 6:25 their cron job starts a
+snapshot. So I disabled their :file:`/etc/cron.d/lino_backup`
+just in case...
+
+But then I was lucky. Despite my prognose the second restore went
+significantly faster::
+
+    real	42m20.987s
+    user	22m8.216s
+    sys 	0m25.992s
+
+I guess that actually I had bad luck the first time. Their nightly
+backup was running and had caused the restore to take 2,5 hours.
+
+TODO: find out whether we must/can optimize the speed of a database
+restore. 40 minutes is actually okay when you have a whole night. It
+seems that InnoDB is slower than MyISAM for appending new rows.
+
+
+HO with Tonis
+=============
+
+In our configuration, Luc is currently using master as development
+branch because he is old and lazy.  Normally the master branch is
+stable.
+
