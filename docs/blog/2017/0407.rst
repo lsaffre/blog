@@ -50,7 +50,6 @@ or skin you want to use by setting the `theme_name
 <https://github.com/lino-framework/extjs6/blob/master/lino_extjs6/extjs6/__init__.py#L126>`__
 config for your site.
 
-
 Spontaneously I would add that Joes "only" problem is the dashboard
 (the main page). This page is indeed built using plain html and does
 not use the ExtJS widgets, that's why everything looks so "small".
@@ -68,3 +67,36 @@ I guess that we must define a :meth:`table2story` method on
 :class:`lino_extjs6.extjs6.ext_renderer.Renderer` which overrides the
 default implementation in :class:`lino.core.renderer.HtmlRenderer`.
   
+Avanti weiter
+=============
+
+The seemingly innocent with of removing the
+:attr:`ClientStates.newcomer` state from their choicelist
+(:ticket:`1698`) turned out to be quite a challenge.
+
+The problem is that Django, when you define a field with a callable
+default value,
+
+        if choicelist.default_value:
+            defaults.update(
+                default=choicelist.as_callable(choicelist.default_value))
+
+
+Another stumblestone was a Sphinx warning
+:message:`book/docs/api/index.rst:3: WARNING: Duplicate explicit
+target name: "lino"` which appeared after merging the avanti api into
+the book.  This was because :ref:`avanti` had the following text in
+its long_description::
+
+    Lino Avanti is a free `Lino <http://www.lino-framework.org/>`_
+    application ...
+
+It must be::       
+    
+    Lino Avanti is a free `Lino <http://www.lino-framework.org/>`__
+    application ...
+
+Sphinx references ignore uppercase/lowercase, and the difference
+between ```foo <bar.html>`_`` and ```foo <bar.html>`__`` is that the
+latter inserts an "anonymous" link while the former also inserts a
+reference (which is built from the link text).
