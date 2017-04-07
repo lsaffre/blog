@@ -1,0 +1,56 @@
+:date: 2017-04-07
+
+=====================
+Friday, April 7, 2017
+=====================
+
+I created :ticket:`1694` and decided that it is time to write a test
+case :mod:`test_workflow
+<lino_book.projects.team.tests.test_workflow>`.  which covers the
+ticket and vote workflow.
+
+For this test case I optimized the actions API:
+
+- A subclass of Action can now define a hard-coded :attr:`action_name`.
+
+- The :meth:`run_from_ui` method of certain actions now pass keyword
+  arguments to :meth:`create_instance_from_request`
+
+
+
+
+Lino application with mobile-friendly interface
+===============================================
+
+Joe plans a new Lino project which requires a mobile-friendly
+interface. He wrote "What I have in mind is probably just changing the
+skin to look more "modern" and what is more important to have
+everything bigger - bigger buttons, windows, etc.  It is possible to
+use the same skin as for example `this example
+<http://examples.sencha.com/extjs/6.2.0/examples/classic/ticket-app/index.html>`__
+is using? I was hoping that Lino ExtJS 6 will have this skin by
+default.  In current "old style" everything is too small."
+
+Hamza already answered correctly that yes you can choose which theme
+or skin you want to use by setting the `theme_name
+<https://github.com/lino-framework/extjs6/blob/master/lino_extjs6/extjs6/__init__.py#L126>`__
+config for your site.
+
+
+Spontaneously I would add that Joes "only" problem is the dashboard
+(the main page). This page is indeed built using plain html and does
+not use the ExtJS widgets, that's why everything looks so "small".
+
+I suggest that you explore how Lino builds this page:
+
+- :meth:`lino.core.site.Site.get_dashboard_items`
+- :attr:`lino.core.userprefs.UserPrefs.dahboard_items`
+- :xfile:`admin_main_base.html`
+- :meth:`lino.core.dashboard.ActorItem.render`
+- :meth:`lino.core.requests.BaseRequest.show`
+- :meth:`lino_extjs6.extjs6.ext_renderer.Renderer.show_table`
+
+I guess that we must define a :meth:`table2story` method on
+:class:`lino_extjs6.extjs6.ext_renderer.Renderer` which overrides the
+default implementation in :class:`lino.core.renderer.HtmlRenderer`.
+  
