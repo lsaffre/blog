@@ -70,23 +70,34 @@ default implementation in :class:`lino.core.renderer.HtmlRenderer`.
 Avanti weiter
 =============
 
-The seemingly innocent with of removing the
-:attr:`ClientStates.newcomer` state from their choicelist
-(:ticket:`1698`) turned out to be quite a challenge.
+The seemingly innocent with of removing the :attr:`newcomer
+<lino_xl.lib.coachings.choicelists.ClientStates.newcomer>` state from
+their :class:`ClientStates
+<lino_xl.lib.coachings.choicelists.ClientStates>` (:ticket:`1698`)
+turned out to be quite a challenge.  I even merged the avanti demo
+project and specs into book (:ticket:`1626`) because .
 
-The problem is that Django, when you define a field with a callable
-default value,
+The problem here is that :class:`Coachable
+<lino_xl.lib.coachings.mixins.Coachable>` defined the
+:attr:`client_state` field with :attr:`newcomer` as default value, and
+we then removed that default value from our choicelist.  The current
+solution is to use the choicelist's :attr:`default_value
+<lino.core.choicelists.Coicelist.default_value>` which has the
+disadvantage that we must explicitly specify ``default=''`` when using
+:class:`ClientStates <lino_xl.lib.coachings.choicelists.ClientStates>`
+as a parameter field. Besides this it had a pitfall (which I now
+removed): the :attr:`default_value
+<lino.core.choicelists.Coicelist.default_value>` was being evaluated
+at the field's definition time. This was too early because we want to
+change them also later (e.g. during :attr:`workflows_module
+<lino.core.site.Site.workflows_module>`).
 
-        if choicelist.default_value:
-            defaults.update(
-                default=choicelist.as_callable(choicelist.default_value))
 
-
-Another stumblestone was a Sphinx warning
+A noteworthy stumblestone was a Sphinx warning
 :message:`book/docs/api/index.rst:3: WARNING: Duplicate explicit
-target name: "lino"` which appeared after merging the avanti api into
-the book.  This was because :ref:`avanti` had the following text in
-its long_description::
+target name: "lino"` which surprisingly appeared after merging the
+avanti api into the book.  This was because :ref:`avanti` had the
+following text in its `long_description`::
 
     Lino Avanti is a free `Lino <http://www.lino-framework.org/>`_
     application ...
