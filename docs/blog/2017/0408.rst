@@ -9,3 +9,83 @@ the :attr:`username <lino.modlib.users.User.username>` but the default
 :meth:`str` of the voters. And :meth:`lino.modlib.users.User.__str__`
 now displays the :attr:`initials <lino.modlib.users.User.initials>`
 field.
+
+I also moved most docstrings of :mod:`lino.modlib.users` from the code
+to the :ref:`specs`. I believe that this is now finally our
+prefererred way for structuring the documentation of a plugin. I
+created :ticket:`1708` for this and started :ref:`dev.docstrings`.
+
+DONE
+
+- Doppelklick auf Johanna --> [Wed Apr 05 14:30:21.939103 2017] [wsgi:error] [pid 18600:tid 140141732259584] UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 25:
+
+  :ticket:`1709`. This was caused by a missing "from builtins import
+  :str" in class:`lino_xl.lib.cv.mixins`. Fixed.
+  
+- Klientenstatus "Neuantrag" kann *wirklich* raus.
+  
+- Explorer : cf_level_de : "A2", nicht "Elementare Sprachverwendung"
+  
+- StudiesByPerson und ExperiencesByPerson : Beginndatum und Enddatum
+  unsichtbar. Bemerkungen sichtbar. Neues Feld "Dauer".
+  
+- Klienten column_names + "*"
+
+- Umfragen (polls) aktivieren.  
+  
+TODO:
+
+- Klienten filtern können nach "Kursbedarf" : wer mindestens eine
+  Anfrage in einem Kurs dieser Serie hat. Feld needed_course kann
+  wahrscheinlich dann raus.
+
+- Mit Johanna testen : Kandidatenlisten für Kursanbieter.
+  Erstgespräche.
+  
+- Kartennummer kann weg
+  
+- (à confirmer) Partnernummer wieder in die Excel-Daten rein, damit
+  man keine Verknüpfung zwischen Klienten und Einschreibungen machen
+  kann.  Stattdessen darf Janina im Kurs nur die Namen ohne Nummer
+  sehen.
+
+Side effects
+
+- allow_cascaded_copy
+
+
+Request data not supplied
+=========================
+  
+I experimented with Lino's behaviour when clients send invalid Ajax
+requests, e.g. because the user didn't refresh their browser after a
+server upgrade or database migration (which requires the user to
+authenticate again).  After an upgrade on a production server we
+sometimes get lots of emails which are probably caused by this.  One
+problem with these emails was that we cannot even see which user
+caused the problem because it said just :ticket:`1715` (Request data
+not supplied).  But also :ticket:`1605` (Force refresh of client's
+javascript after server upgrade) seems now solved. (We don't *force* a
+refresh but tell the user what's going on.)
+
+To simulate the situation, I wrote the following :manage:`run`
+script::
+
+    from lino.api import rt
+    rt.models.sessions.Session.objects.all().delete()
+
+I log in, open some window, then run above script.
+And then I try to do anythin a user might do.
+  
+:class:`lino.utils.ajax.AjaxExceptionResponse` no longer returns a
+HttpResponseForbidden or similar response from :mod:`django.http`
+because I have the feeling that when I return any of these responses
+here, Django does some processing which assumes they are HTML.  In
+Lino every AJAX request expects a JSON response.
+
+400 Bad Request : "The request could not be understood by the server
+due to malformed syntax. The client SHOULD NOT repeat the request
+without modifications." (`w3.org
+<https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10>`__)
+
+TODO: propagate changes in :xfile:`linoweb.js` to :ref:`extjs6`.
