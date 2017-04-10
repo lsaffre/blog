@@ -127,12 +127,16 @@ Personal views
 - I haven't watched television (other than occasionally) since
   about 1990.
 
-- I am not actively engaged in any political direction, but people
-  tend to classify me as green. I believe that finding ways for global
-  sustainable development is more important than keeping the consumer
-  society running.  If given the choice between a climate catastrophe
-  and a world-wide economic crisis, I'd chose the latter.  We need new
-  sociological methods in order to become really democratic.
+- I am not actively engaged in any political party. The
+  politicalcompass.org website classified me as `Economically rather
+  Left and Socially moderatedly Libertarian
+  <https://www.politicalcompass.org/analysis2?ec=-8.63&soc=-4.26>`__. I
+  believe that finding ways for global sustainable development is more
+  important than keeping the consumer society running.  If given the
+  choice between a a world-wide economic crisis and climate
+  catastrophe, I'd chose the former.  We need new sociological methods
+  in order to become rule this world.
+
 
 .. _AbAKUS: http://www.abakus.be
 .. _TIM: http://tim.saffre-rumma.net/129.html

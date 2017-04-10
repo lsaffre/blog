@@ -1,0 +1,32 @@
+:date: 2017-04-09
+
+=====================
+Sunday, April 9, 2017
+=====================
+
+
+The test suite in :mod:`lino_welfare.projects.std` was still failing
+(in the :mod:`test_debts` case) because
+:class:`lino.mixins.duplicable.Duplicate` now asks for a confirmation
+(:ticket:`1716`). Testing such a dialog was rather complicated until
+now. But I had done it at least once, namely in the :mod:`test_beid`
+case of that same test suite. Now I generalized that code into a new
+utility method :meth:`TestCase.check_callback_dialog
+<lino.utils.djangotest.DjangoManageTestCase.check_callback_dialog>`.
+
+And `test_notify` of the same suite was failing because Lino now
+checks permissions for every action request. This is a confirmation
+that my yesterday's changes are into the right direction. For example
+Lino executed state change actions like `mark_former` or
+`mark_refused` without verifying whether that action was permitted.
+
+I propagated the changes in :xfile:`linoweb.js` to :ref:`extjs6`.
+
+TODO:
+
+- There is a second dialog in `test_beid` which can be converted
+  to :meth:`check_callback_dialog`.
+  And another one in `test_notify` of the same suite.
+
+
+
