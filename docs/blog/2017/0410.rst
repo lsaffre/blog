@@ -81,3 +81,65 @@ TODO:
   kann.  Stattdessen darf Janina im Kurs nur die Namen ohne Nummer
   sehen.
 
+
+
+Duplicate tickets
+=================
+
+Imagine 4 tickets A (oldest), B, C and D
+
+Imagine that D is the most general description of the problem.
+
+With our current pointer `duplicate_of` we can for example have this
+dependency tree::
+
+    A -> B -> D
+    C -> D
+
+        D
+       / \
+      B   C
+     /
+    A
+
+We can not have e.g. something like this::  
+
+        D
+       / \
+      B   C
+       \ /
+        A
+
+
+If duplicate_of changes to a LinkType, then we could have it.
+But the question is: do we want it?
+My current opinion is: no, we don't want it.
+But I am open to suggestions.
+
+
+About calendars
+===============
+
+Notes about :ticket:`1722`.
+
+The HITSA calendar shows *activities* while the Raplamaa calender
+shows simple *calendar entries*.
+
+The current `start_date` is actually the date of the first automatic
+calendar entry to generate.  We should maybe add a field
+`overall_start_date` or `activity_start_date` which differs from the
+current `start_date`. Actually we already have such a field, it is
+called `enrolments_until`. Maybe we might simply rename this field to
+"Deadline" and make it the primary sort criteria. At least
+MyActivities and Activities should be sorted by this field and not by
+`start_date`.
+
+Another need in Lino Vilma might be to store "external" events. User
+see these as simple calendar entries. And then we don't want the
+overkill of creating an activity line and an activity for it. But we
+*do* want to store the responsible organization and a contact
+person. For the moment we can create a room for each case. But that's
+not enough. It seems that (for Vilma, not for Jane) we want a calendar
+entry to inherit from ContactRelated. I am a bit afraid of this
+step... to be observed when users start recording real external
+events.
