@@ -4,18 +4,74 @@
 Tuesday, April 11, 2017
 =======================
 
-I started a one-man sprint for Vilma.
+Vilma sprint
+============
 
-Wishes:
+I started a one-man sprint for Vilma and worked on the following
+tickets:
 
 - :ticket:`1745`
 - :ticket:`1744`
 - :ticket:`1743`
 - :ticket:`1692`
 - :ticket:`1747`
+- :ticket:`1748` cal.PublicEntries shows also private entries
   
 Side effects:
 
 - :ticket:`1746`
 
         
+
+Release in weleup
+=================
+
+I did a release in weleup, mainly because of :ticket:`1742`.
+
+Had to migrate their database because of at least one new field
+:attr:`cv.Experience.duration_text`.
+
+:ticket:`1742` is fixed. OK.
+
+Investigations for :ticket:`` (keine Systemnotiz nach RefreusClient)
+
+201704-11 21:52:36 INFO actions : 20170411 u'Luc Saffre hat MUSTERFRAU Marth\xe0 (200007) als <b>Abgelehnt</b> klassiert.' '\xd6SHZ ist nicht zust\xe4ndig
+\ntt'
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.demo')
+>>> from django.utils import translation
+>>> from builtins import str
+>>> from lino.api.shell import *
+>>> reason = pcsw.RefusalReasons.get_by_value('20')
+>>> translation.activate('de')
+>>> print reason
+ÖSHZ ist nicht zuständig
+
+
+A *hyggelig* team
+=================
+
+Great! While I was sleeping and without a precise instruction, Tonis
+did exactly what I most wanted to be done now: repair the test suites.
+Tubli poiss! That's the kind of things which indicate to me that we
+are a good *hyggelig* family.
+
+Oh, I see that `this one
+<https://github.com/lino-framework/book/commit/2ac30ac0b79afb253ad2e0ac5f1ab1bb59fc74f3>`__
+contains some useless work because I committed :ticket:`1746` a bit
+too quickly.  After my second commit for this ticket it is `failing
+again <https://travis-ci.org/lino-framework/book/jobs/221209269>`__
+and you must partly undo these changes. Sorry, Tonis.  Yes I should
+start working in my own development branch. :ticket:`1753`
+
+NB: In `this article
+<http://ostbelgiendirekt.be/gehen-sie-hygge-in-die-letzte-woche-vor-weihnachten-116959>`__
+I read some time ago some interesting characteristics of a *hyggelig*
+family (formulated by `Jessica Alexander <http://thedanishway.com>`__):
+
+- Be honest and upright. Don't try to be somebody else.
+- Discuss whenever necessary, but keep cool and don't 
+- Act as a team. Everybody does his part, even without being asked.
+
+Isn't it funny to see how much these apply

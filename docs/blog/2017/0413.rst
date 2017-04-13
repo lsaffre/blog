@@ -1,0 +1,82 @@
+:date: 2017-04-13
+
+========================
+Thursday, April 13, 2017
+========================
+
+Nightly ideas (#1760 and #1761)
+===============================
+
+It is 2 oclock in the morning. Today I will have two hangouts with
+customers (coming@welcht and coming@avanti). This inspired me to a few
+ideas. I wrote them down to a paper, but still could not sleep again.
+So I implemented two of them.
+
+I realized that actually I was starting to misuse the meetings concept
+for doing what is already done (but obviously not well enough) by the
+votes workflow.
+
+
+DONE:
+
+- :ticket:`1761` (Defer a wish to another milestone) :
+  We should add a new field Deployment.deferred_to (a FK pointing to
+  milestone_model). If that field is nonempty, Lino should
+  automatically check whether Deployment.ticket also has a wish in the
+  specified milestone. And of course it must not be the same as
+  Deployment.course. If there is no wish in the other activity, then
+  Lino should create one with the same wish_type.
+
+- :ticket:`1762` (Show assigned voters in ticket overview) :
+  Lino now also specifies the assigned voter(s) of a ticket in its
+  :attr:`overview` field. I tried adding two new virtual diplay fields
+  `assigned_voters` and `candidate_voters` on a ticket but was not
+  satisfied.
+
+TODO:  
+
+- We can deprecate boards because this is covered by lists. A board is
+  nothing else than a partner list.
+
+- Write a summary panel for TicketsReportedByMilestone
+
+- Yes, we do need multiple topics per ticket.  And remove the field
+  `Ticket.topic`.
+
+
+
+Release to Jane
+===============
+
+Now I have done above two ideas, including the test suites. And it
+would be *so* cool to try them tomorrow on the field when I am talking
+with the customers!
+
+But I just assigned Tonis to be the responsible maintainer for Jane.
+As a good team leader I should feel committed to what I declared and
+*not* deploy these changes now myself! Despite these thoughts I did it
+once more as usual: myself and without any branch directly using
+master.
+
+Oho, what's this::
+
+    $ go jane
+    $ ./pull.sh
+    rm: remove write-protected regular file './lino/modlib/notify/routing.pyc'?
+
+It seems that Hamza hasn't a correct umask::
+
+    $ ll ./lino/modlib/notify/routing.pyc
+    -rw-r----- 1 hamza www-data 656 Apr 11 21:27 ./lino/modlib/notify/routing.pyc
+
+    $ sudo su -l hamza
+    hamza@ovh2:~$ umask
+    0022
+
+Yes, indeed, the global umask on SR was not correctly set. Now it
+is::
+
+    $ sudo nano /etc/bash.bashrc
+
+
+  

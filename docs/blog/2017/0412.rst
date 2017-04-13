@@ -1,0 +1,23 @@
+:date: 2017-04-12
+
+=========================
+Wednesday, April 12, 2017
+=========================
+
+I continued to explore :ticket:`1649` which is really a tough one.  I
+added more debug messages in the hope of getting a clue.  I changed
+them from `mysql-python` to `mysqlclient`. No change.  And then
+finally I got it: it seems that the mysql client does not support
+`newstr`! At least the problem disappears when I explicitly convert it
+to a :func:`six.text_type` before. IOW this problem is yet another one
+caused by the future package! I created :ticket:`1751`.
+
+
+Hamza worked on :ticket:`1331`, so I tried to activate it on weleup:
+Installed redis and channels, did `pip install -U channels` followed
+by `pip install 'Django==1.9.12'`, set their
+:attr:`lino.core.site.Site.use_websockets` to True. But my browser
+continues to not ask me whether their site may send desktop
+notifications... so I deactivated it again. But it seems that they
+will get it soon!
+
