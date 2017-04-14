@@ -1,0 +1,116 @@
+:date: 2017-04-14
+
+======================
+Friday, April 14, 2017
+======================
+
+
+Government lock-in by Microsoft is alarming
+===========================================
+
+Why did I delete my Facebook account?  Why Rumma & Ko refuses to
+invest into proprietary knowledge?  Because I believe that the
+situation is alarming.  If you don't believe me, then read Adrian
+Offerman's `article on JoinUp
+<https://joinup.ec.europa.eu/community/osor/news/investigative-journalists-government-lock-microsoft-alarming>`_
+where he reports that journalists from Investigate Europe interviewed
+many competent people and conclude that the dependence on Microsoft:
+
+- causes costs to rise continuously, and blocks technical progress in
+  government organisations;
+  
+- systematically undermines European procurement and competition laws;
+  
+- gives Microsoft overwhelming political influence, culminating in
+  personal interdependence as well as penetration of schools and
+  universities; and
+  
+- puts government IT systems, together with their citizens' personal
+  information, at high risk both technologically and politically.
+  
+
+Checkin
+=======
+
+I checked in my yesterday's work for (ChangeObservable)
+
+I fixed a bug in :mod:`lino_xl.lib.votes.models` (missing `from
+builtins import str`). For example in the following line::
+
+   states[o.state].append(
+       ar.obj2html(o, o.user.initials or str(o.user), title=o.state))
+
+I released this to Jane because it was disturbing.
+
+I noticed that the xl repository on Jane had local commits::
+
+    $ git diff origin/master 
+    diff --git a/lino_xl/lib/tickets/models.py b/lino_xl/lib/tickets/models.py
+    index 513cd1e..c3bf9d7 100644
+    --- a/lino_xl/lib/tickets/models.py
+    +++ b/lino_xl/lib/tickets/models.py
+    @@ -555,7 +555,7 @@ class Ticket(UserAuthored, mixins.CreatedModified,
+
+             """
+             if self.user:
+    -            yield self.user
+    +            yield self.user.get_as_user()
+             if issubclass(
+                     settings.SITE.user_model,
+                     dd.plugins.faculties.end_user_model):
+    diff --git a/lino_xl/lib/votes/mixins.py b/lino_xl/lib/votes/mixins.py
+    index 0bcd10f..7dc382d 100644
+    --- a/lino_xl/lib/votes/mixins.py
+    +++ b/lino_xl/lib/votes/mixins.py
+    @@ -75,8 +75,8 @@ vote exists.
+             self.set_auto_vote(comment.user, VoteStates.invited)
+
+         def set_auto_vote(self, user, state):
+    -        # dd.logger.info("20170406 set_auto_vote %s %s", user, state)
+             vote = self.get_favourite(user)
+    +        dd.logger.info("20170406 set_auto_vote %s %s, current_vote |%s|", user, state, vote)
+             if vote is None:
+                 create_row(
+                     rt.models.votes.Vote, user=user,
+    @@ -86,5 +86,7 @@ vote exists.
+             """Automatically call :meth:`set_author_votes` after saving.
+
+             """
+    +        dd.logger.info("20170406 Pre-super")
+             super(Votable, self).after_ui_save(ar, cw)
+    +        dd.logger.info("20170406 Post-super")
+             self.set_author_votes()
+  
+I think we can throw them away. I guess that Tonis has been debugging.
+
+I did::
+
+    $ git checkout origin/master 
+    Note: checking out 'origin/master'.
+
+    You are in 'detached HEAD' state. You can look around, make experimental
+    changes and commit them, and you can discard any commits you make in this
+    state without impacting any branches by performing another checkout.
+
+    If you want to create a new branch to retain commits you create, you may
+    do so (now or later) by using -b with the checkout command again. Example:
+
+      git checkout -b new_branch_name
+
+    HEAD is now at 86f1afc... fixing #1757
+
+Pointing to a database object
+=============================
+
+I reviewed Tonis' work for :ticket:`1739`. Tonis used the following
+expression::
+  
+    o.obj2href(ar, text=getattr(o.wish_type,'text', _("Wish"))
+
+I optimized the signature of the
+:meth:`lino.core.model.Model.obj2href` method and added usage examples see :ref:`obj2href` so that you can now write::
+
+    o.obj2href(ar, o.wish_type or _("Wish"))
+   
+I changed the docstring: It does not not return a "tuple (text,
+attributes)" but an etree html element.
