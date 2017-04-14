@@ -8,10 +8,10 @@ Friday, April 14, 2017
 Government lock-in by Microsoft is alarming
 ===========================================
 
-Why did I delete my Facebook account?  Why Rumma & Ko refuses to
-invest into proprietary knowledge?  Because I believe that the
-situation is alarming.  If you don't believe me, then read Adrian
-Offerman's `article on JoinUp
+Why did I delete my Facebook account?  Why do I refuse to invest my
+time and that of my employees into proprietary knowledge?  Because I
+believe that the situation is alarming.  If you don't believe me, then
+read Adrian Offerman's `article on JoinUp
 <https://joinup.ec.europa.eu/community/osor/news/investigative-journalists-government-lock-microsoft-alarming>`_
 where he reports that journalists from Investigate Europe interviewed
 many competent people and conclude that the dependence on Microsoft:
@@ -32,13 +32,18 @@ many competent people and conclude that the dependence on Microsoft:
 Checkin
 =======
 
-I checked in my yesterday's work for (ChangeObservable)
+I checked in my yesterday's work for :ticket:`1765` (Calendar entries
+are now ChangeObservable).
 
-I fixed a bug in :mod:`lino_xl.lib.votes.models` (missing `from
-builtins import str`). For example in the following line::
+I fixed a bug in :mod:`lino_xl.lib.votes.models` which was probably
+introduced by Tonis. For example in the following line::
 
    states[o.state].append(
        ar.obj2html(o, o.user.initials or str(o.user), title=o.state))
+
+The problem is that you use the :meth:`str` (which is necessary), but
+you forgot to import `from builtins import str` (which we need for
+Python 2to3 compatibility).
 
 I released this to Jane because it was disturbing.
 
@@ -82,7 +87,6 @@ I noticed that the xl repository on Jane had local commits::
              self.set_author_votes()
   
 I think we can throw them away. I guess that Tonis has been debugging.
-
 I did::
 
     $ git checkout origin/master 
@@ -102,15 +106,16 @@ I did::
 Pointing to a database object
 =============================
 
-I reviewed Tonis' work for :ticket:`1739`. Tonis used the following
-expression::
+I reviewed Tonis' work for :ticket:`1739`. Bravo, Tonis! You used the
+following expression::
   
     o.obj2href(ar, text=getattr(o.wish_type,'text', _("Wish"))
 
 I optimized the signature of the
-:meth:`lino.core.model.Model.obj2href` method and added usage examples see :ref:`obj2href` so that you can now write::
+:meth:`lino.core.model.Model.obj2href` method and added usage examples
+in :ref:`obj2href` so that you should now be able to write::
 
-    o.obj2href(ar, o.wish_type or _("Wish"))
+    o.obj2href(ar, str(o.wish_type or _("Wish")))
    
-I changed the docstring: It does not not return a "tuple (text,
-attributes)" but an etree html element.
+Note that :meth:`lino.core.model.Model.obj2href` does not not return a
+"tuple (text, attributes)" but an etree html element.
