@@ -1,0 +1,112 @@
+:date: 2017-04-15
+
+========================
+Saturday, April 15, 2017
+========================
+
+About session reports, comments and notifications
+=================================================
+
+A **comment** is rather like a chat message while a session report is
+rather for keeping track of what you did.  A comment means that you
+would like to get some *feedback*.  Things like what I wrote yesterday
+about :ticket:`1706` are rather a **session report**. I don't expect
+any feedback, but want to share what I did with those who might be
+interested.
+
+Note: You might expect feedback to your comment either **from all**
+those who are watching the ticket (as we have it right now) or only
+**from a concrete person**. To express this difference, we might add a
+field `Comment.recipient` which, if non-empty, would mean that only
+the specified user should get *notified* about this comment. We
+*might*... but it sounds like trying to be better than GitHub.
+
+Session reports are **not notified** to anybody.  We might want to add
+a "notify" action.  You would use this to express that you want the
+ticket watchers to get notified about your report. This action would
+actually just be a helper for creating a comment.
+
+When something has been notified, then it's rather useless to change
+the text you wrote.
+
+**The problem with session reports** is that the Lino text editor is
+not good enough. I will probably never agree to write my session
+reports in some window of my browser. A browser can crash at any
+moment. A browser is available only when I am online.
+
+That's why I currently continue to use this blog. Note that it is not
+a normal blog but what I call a :ref:`developer blog <devblog>`.
+
+About blogging
+==============
+
+Hamza and Tonis started to try this style of reporting their work, but
+somehow they didn't yet get into speed with it.
+
+One possible obstacle for blogging is the fear of being visible.
+Everybody can see your stupid thoughts and your mistakes, your mental
+stumblings.  To solve this I recommend general self-confidence and
+honesty, but I agree that I may be naive there.
+
+Another possible obstacle for blogging is lack of patience. You want
+to continue your race, you don't see why you should have a break and
+waste your precious time for explaining to others what you have been
+doing. To solve this I recommend to consider that human brains are not
+suitable for long-term storage of work reports, and that I pay you
+while you are writing about what you did. **When working on a common
+project, documenting what you do is more important than actually doing
+it.**
+
+A third possible obstacle for blogging is confidentiality. It can be
+difficult to separate filter confidential information out of something
+you would like to share.  For example a traceback or the names of
+configuration files on a server.
+
+A fourth possible obstacle for blogging --finally something I can
+change!-- is that it does not (yet) automatically integrate into Jane.
+To solve this, I recommend that we teach Lino how to read a
+blog.
+
+
+Reading developer blogs into Lino
+=================================
+
+There are several possible approaches. For example Jane could watch
+the github repository of my blog, could run the Sphinx builder on it
+and then analyze the doctree pickle to automatically load every blog
+page into the database. Or we might do it more generally, Lino would
+learn to watch any website and just parse the online html version.
+
+But both of these approaches fail to solve the problem of our memo
+commands. The important advantage of a memo command like ``[ticket
+123]`` is that it is being parsed for each request, so that it can
+yield a different result depending on the renderer.
+
+We might implement this feature using the Spinx syntax
+(``:ticket\`123\```) by extending :mod:`lino.utils.restify`. This
+would also fix at least two disadvantages of the memo parser: (1) the
+memo parser has no future because it is just yet another a
+self-written simplistic solution and (2) it will never support bullet
+lists or headings. One fear is that this might slow down the rendering
+process.
+
+So my recommended plan is to extend :mod:`lino.utils.restify` so that
+it adds docutils directives for everything that is currently defined
+as memo commands (except `url` because that one is a built-in part of
+reStructuredText.
+
+And then?  For example restify requires a non-html source. So we would
+need to stop using the rich text editor.  Hmm no, I am not yet
+sure... To be meditated.
+
+
+New field Comment.first_paragraph
+=================================
+
+When I read discussions like `this one
+<https://github.com/SoCo/SoCo/issues/337>`__, then I realize that we
+cannot rely on a convention that comments are usually only one
+paragraph.  Instead of parsing the full body upon each request in
+order to get the first paragraph out of it, we should add a field
+`first_paragraph` which is invisble to the user and gets filled in
+each :meth:`save` or :meth:`full_clean`.

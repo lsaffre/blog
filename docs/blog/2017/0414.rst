@@ -119,3 +119,46 @@ in :ref:`obj2href` so that you should now be able to write::
    
 Note that :meth:`lino.core.model.Model.obj2href` does not not return a
 "tuple (text, attributes)" but an etree html element.
+
+
+Tx25 fails since 20170317
+=========================
+
+Investigating for :ticket:`1706`. Yes, the logging is now more
+detailed::
+
+
+    [2017-04-14 11:43:38.909691] Traceback (most recent call last):
+      File "/env/repositories/welfare/lino_welfare/modlib/cbss/mixins.py", line 248, in execute_request
+        retval = self.execute_request_(now, simulate_response)
+      File "/env/repositories/welfare/lino_welfare/modlib/cbss/mixins.py", line 553, in execute_request_
+        return self.execute_newstyle(client, info, simulate_response)
+      File "/env/repositories/welfare/lino_welfare/modlib/cbss/models.py", line 530, in execute_newstyle
+        reply = client.service.retrieveTI(infoCustomer, None, si)
+      File "/env/lib/python2.7/site-packages/suds/client.py", line 542, in __call__
+        return client.invoke(args, kwargs)
+      File "/env/lib/python2.7/site-packages/suds/client.py", line 602, in invoke
+        result = self.send(soapenv)
+      File "/env/lib/python2.7/site-packages/suds/client.py", line 637, in send
+        reply = transport.send(request)
+      File "/env/lib/python2.7/site-packages/suds/transport/http.py", line 177, in send
+        return HttpTransport.send(self, request)
+      File "/env/lib/python2.7/site-packages/suds/transport/http.py", line 77, in send
+        fp = self.u2open(u2request)
+      File "/env/lib/python2.7/site-packages/suds/transport/http.py", line 118, in u2open
+        return url.open(u2request, timeout=tm)
+      File "/usr/lib/python2.7/urllib2.py", line 431, in open
+        response = self._open(req, data)
+      File "/usr/lib/python2.7/urllib2.py", line 449, in _open
+        '_open', req)
+      File "/usr/lib/python2.7/urllib2.py", line 409, in _call_chain
+        result = func(*args)
+      File "/usr/lib/python2.7/urllib2.py", line 1240, in https_open
+        context=self._context)
+      File "/usr/lib/python2.7/urllib2.py", line 1197, in do_open
+        raise URLError(err)
+    URLError: <urlopen error [Errno -2] Name or service not known>
+
+
+It seems that the URL is stored in the
+:xfile:`lino_welfare/modlib/cbss/WSDL/RetrieveTIGroups.wsdl`.
