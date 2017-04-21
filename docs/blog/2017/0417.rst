@@ -35,3 +35,56 @@ Side effects:
   is more intuitive. A poll must be active, not published in order to
   appear as a choice for `Response.poll`.
 
+
+
+Disabling weasyprint warnings
+=============================
+
+A workaround for :ticket:`1462` is to disable warnings for the
+weasyprint logger in your :xfile:`settings.py` file::
+
+    import logging
+    logging.getLogger('weasyprint').setLevel("ERROR")
+
+I did this for avanti and eiche production sites on ML. And also for
+Jane (because every daily snapshot causes a useless email message).
+
+Miscellaneous
+=============
+
+I repaired the welfare test suite after this morning's changes.
+
+
+Welfare
+=======
+
+
+DONE:
+
+- Quand U1 crée un "prompt event" pour un bénéficiaire chez un
+  assistant U2 (afin de le mettre en file d'attente), alors U2 ne
+  reçoit pas de notification. De meme quand U1 crée un rdv pour un
+  autre utilisateur U2, alors U2 ne reçoit pas de notification.
+
+  --> :ticket:`1765` (Calendar entries are now ChangeObservable)
+
+- Activer "duration_text" pour les trois tables dans l'onglet "Parcours"
+
+TODO:
+
+- Mes RDV à confirmer n'apparait pas pour Richard E.
+
+- Dans "Mes rdv dépassés" il faut pouvour dire à Lino dans Site
+  parameters d'ignorer tous ce qui est avant une certaine date.
+
+- Kathy (#2487) a bien été présente le 31 mars 2017 (séance d'info)
+  Course id 150 calendar entry 34637, mais Lino ne l'affiche pas dans
+  le champ FSE en question. probablement parce que sa présence est à
+  l'état "Quitté" au lieu de "Présent". Mais on avait déjà dit que
+  "Quitté" équivaut à "Présent" pour les statistiques FSE
+
+- 1226 - Permission de modifier le participant d'un atelier : Toujours
+  d’actualité avec le profil 120. Pour l'instant tout le monde est en
+  profil "administrateur" car ca ne va pas autrement.
+
+

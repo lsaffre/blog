@@ -1,0 +1,190 @@
+:date: 2017-04-21
+
+======================
+Friday, April 21, 2017
+======================
+
+Fictive team meeting
+====================
+
+Here is what I would say in a team meeting if we had one now.
+
+**About named tickets (Reference tickets)**
+
+Yesterday I said to Tonis that our :ticket:`1320` (named
+"releases@jane") should be reserved for actual work on the Jane site
+and *not* e.g. for general discussion.  That was a mistake by
+distraction.  This ticket *is* for everything about Jane which "does
+not deserve a ticket on its own". We should rename it to "misc@jane".
+
+We have site-specific named tickets:  
+  
+- :ticket:`1320`  Releases@Jane
+- :ticket:`1335`  Releases@Vilma
+- :ticket:`169`  Releases@weleup
+- :ticket:`168`  Releases@welcht
+
+Some other named tickets:
+
+- :ticket:`268` Triage (write tickets, teamwork planning, accept pull requests, ...)
+- :ticket:`269` Travis (Getting Lino to pass on Travis CI)
+  
+I now see that Tonis started to use :ticket:`1672` (Stable branches
+for git) when working on what I would assign to :ticket:`269`. This
+shows that it was time to start having named tickets.
+
+I named the following tickets about "Investing into a given team
+member":
+        
+- :ticket:`502` Hamza
+- :ticket:`1348` Tonis
+- :ticket:`775` James
+- :ticket:`1116` Pierre
+- :ticket:`1228` Tanel
+
+Yes, there is no named ticket for "Luc" yet. That *does not* mean that
+I am perfect. It is rather because nobody ever explicitly invested
+time into teaching me something (at least not since our ticketing
+system exists). Im am looking forward to the day when this ticket will
+be created.
+  
+  
+Tonis, why did you choose "Reference tickets" as the label and
+`RefTickets` as internal name for that table which shows our named
+tickets.  I would have choosen "Named tickets" and `NamedTickets`
+respectively. Yes, it is possible that my usage of the words "name"
+and "reference" in Lino is a bit chaotic. Observations:
+
+- The words "name" and "reference" are almost synonym, they both are a
+  convention of a group of people who agree to use it when referring
+  to something.
+
+- A "reference" is usually an abbreviated or codified "name", and the
+  uniqueness is considered more important.
+
+- We have the :class:`BabelNamed <lino.utils.mldbc.mixins.BabelNamed>`
+  mixin which defines a field "name" whose `verbose_name` (label) is
+  "Description". That field is not required to be unique, and it is
+  not even a name (according to above definitions).
+
+  
+  
+**About workflow modules**
+
+Tonis wrote: "One strange thing is I have to manually import my
+workflows.py file, it looks as if it's done automatically in courses
+and other plugins, however not with meetings... If you have some
+insider knowledge about this please fill me in."
+
+I guess that this insider knowledge is :attr:`workflows_module
+<lino.core.site.Site.workflows_module>` site attribute. You can define
+one "workflows module" per application which "collects" predefined
+workflow definitions by importing them.
+  
+Yes, Lino does not automatically import any :xfile:`workflows.py`
+file.  Actually the only hard-coded magic names which Lino adds to
+Django's :xfile:`models.py` file are :xfile:`desktop.py` and
+:xfile:`mobile.py` (according to your :attr:`design_name
+<lino.core.site.Site.design_name>` attribute).
+
+Note that this :attr:`design_name <lino.core.site.Site.design_name>`
+attribute is a deprecation candidate because we will probably decide
+to rather implement mobile layouts using :attr:`mobile_view
+<lino.core.site.Site.mobile_view>`.
+
+Abortion and family planning
+============================
+
+I read `this article
+<https://c-fam.org/friday_fax/world-health-organization-says-abortion-family-planning/>`_
+by Austin Ruse (C-Fam) about abortion and the WHO.  Austin is of
+course definitively against abortion (that's what he is being employed
+for). I am rather on his side, but not as vehemently as he.  We know
+that a child (an "unwanted" one) is usually the result of some private
+moment between a man and a woman. Whether that moment of sex was
+unwanted or not, that's already a more complex question. We can assume
+that really unwanted moments of sex are more frequent for women than
+for men.  I would say that if the woman is sure that she had been
+forced to have sex, then we can continue to ask whether she has a
+right to abortion.  And even if she is sure, then I would say that she
+has as much right to abort that unwanted child as a married woman has
+right to euthanise her invalid husband...  I we permit the right to
+abort unwanted children, then we logically also must permit the right
+to euthanise useless elderly people and hopeless criminals.  If
+"murder" means killing a human being because it disturbs your own
+life, then explain me inhowfar abortion differs from murder.
+
+
+Why Tx25 is failing
+===================
+
+GitKraken helped me to find the probable reason for :ticket:`1706`. In
+file RetrieveTIGroups.wsdl the soap address has changed. Before commit
+`0782decb
+<https://github.com/lino-framework/welfare/commit/abd8fb76eeea0cd7de46849c498252010782decb>`__
+in Welfare (commit message "#739 (r:CourtName) tested and fixed") we
+had::
+  
+      <soap:address location="https://bcssksz-services-%(cbss_environment)s.smals.be:443/SOA4520/RetrieveTIGroupsService/retrieveTI"/>
+
+and since then we have::      
+
+      <soap:address location="https://b2b-%(cbss_environment)s.ksz-bcss.fgov.be:4520/RetrieveTIGroupsService/retrieveTI"/>
+      
+Note that in both cases, Lino will replace `%(cbss_environment)s` by
+"prod" or "accpt" or "test".
+
+I could find the responsible commit using the CLI::
+
+    $ git log lino_welfare/modlib/cbss/WSDL/RetrieveTIGroups.wsdl
+
+But how can I show the changes in a given file for a known commit? I
+tried the following::
+
+    $ git diff abd8fb76eeea0cd7de46849c498252010782decb lino_welfare/modlib/cbss/WSDL/RetrieveTIGroups.wsdl
+
+But this didn't show anything.  This is of course an old
+problem. Explanation and answer as usual `on stackoverflow
+<http://stackoverflow.com/questions/17563726/how-to-see-the-changes-in-a-commit>`__.
+
+
+Meeting with Johanna
+====================
+
+
+Meeting with Tonis
+===================
+
+::
+   
+    meetings.MembersByMeeting(lists.MembersByList):
+        master = 'lists.List'
+        master_key = None
+
+        @classmethod
+        def get_filter_kw(self, ar, **kw):
+            if ar.master_instance is None:
+                return
+            kw.update(list=ar.master_instance.partner_list)
+            return kw
+
+
+
+        
+Meeting with Tanel
+==================
+
+We decided that the Vilma project no longer uses :ref:`noi` but get
+its own application
+
+- I created a new project :ref:`vilma`.
+
+Side effect:
+
+- The Partners table is now in Explorer menu instead of under
+  Contacts. Because nobody actually needs this view, except i
+  exceptional situation.
+
+- Moved the online registration feature out of :ref:`noi` into
+  :mod:`lino_xl.lib.online.users`.  :mod:`lino_noi.lib.users` remains
+  but contains only the detail layout (which is specific to :ref:`noi`.
