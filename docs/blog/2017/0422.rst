@@ -1,0 +1,64 @@
+:date: 2017-04-22
+
+========================
+Saturday, April 22, 2017
+========================
+
+DONE:
+
+- Ich nenne den neuen Klientenzustand nicht "Sprachtest", sondern
+  "Neuzugang". Hauptsächlich weil ich kein englisches Wort für
+  "Sprachtest" einfiel.
+  
+- Reiter "Sprachen" umbenannt nach "Kurse".
+  
+- Felder "Verfügbarkeit" und "Kursbedarf" raus.
+
+- Neues Feld "Bericht Sprachtest". NB Statt dass nur dieses Feld für
+  alle Kollegen bearbeitbar ist, können jetzt momentan wieder alle
+  Sozialarbeiter alle Klienten bearbeiten.
+
+- Die BeID-Felder (Kartennummer, Ausstellungsort...) sind jetzt nicht
+  mehr schreibgeschützt.
+
+- Den Reiter "Umfragen" habe ich in den Reiter "Entwicklungen" integriert.
+
+- Uploads : hier kann man eingescannte Dateien hochladen. Sichtbar als
+  Panel pro Klient inm Reiter "Person", sowie alle meine Uploads im
+  Menü "Büro". Lino warnt, wenn ein registrierter Upload ein
+  Ablaufdatum hat, das demnächst ausläuft.
+
+- Frühere Wohnsitze : Nur ein Feld "Dauer" statt "Beginndatum" und
+  "Enddatum"
+  
+
+Technical notes:
+
+I moved the :mod:`lino_welfare.modlib.uploads` to
+:mod:`lino_xl.lib.uploads`. Translatable messages that moved from
+welfare to xl:
+
+    - "Identifying document"
+    - "Expiry warning (unit)"
+      _("Expiry warning (value)")
+    -  Needed
+    - _("%s expires")
+    - _("Issued by (Organization)")
+    - _("Issued by (Person)")  
+
+      
+I added a new field :attr:`language_notes` ("Bericht Sprachtest") to
+:class:`lino_avanti.lib.avanti.models.Client`.  They want that field
+to be editable by a given social worker who is responsible for all
+clients in that new state. Fieldwise authorship is not directly
+supported in Lino.  If you want certain fields to be editable and
+others not, then you need to make the whoe record editable and then
+"disable" the individual fields.  I added a `manager_roles_required`
+which causes every :class:`ClientsUser` to be allowed to edit the
+clients of their colleagues. Maybe that solution is even okay for
+them. I don't remember that they required Lino to prevent users from
+editing clients of their colleagues.
+
+
+There is currently an interdependency between coachings, beid and
+uploads. And in welfare we still have the 
