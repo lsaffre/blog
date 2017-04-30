@@ -46,3 +46,4 @@ village.
    sites
    jargon
    /topics/index
+   christian

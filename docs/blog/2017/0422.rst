@@ -4,6 +4,11 @@
 Saturday, April 22, 2017
 ========================
 
+Avanti advances
+===============
+
+I worked for :ticket:`1786`.
+
 DONE:
 
 - Ich nenne den neuen Klientenzustand nicht "Sprachtest", sondern
@@ -34,19 +39,6 @@ DONE:
 
 Technical notes:
 
-I moved the :mod:`lino_welfare.modlib.uploads` to
-:mod:`lino_xl.lib.uploads`. Translatable messages that moved from
-welfare to xl:
-
-    - "Identifying document"
-    - "Expiry warning (unit)"
-      _("Expiry warning (value)")
-    -  Needed
-    - _("%s expires")
-    - _("Issued by (Organization)")
-    - _("Issued by (Person)")  
-
-      
 I added a new field :attr:`language_notes` ("Bericht Sprachtest") to
 :class:`lino_avanti.lib.avanti.models.Client`.  They want that field
 to be editable by a given social worker who is responsible for all
@@ -59,6 +51,48 @@ clients of their colleagues. Maybe that solution is even okay for
 them. I don't remember that they required Lino to prevent users from
 editing clients of their colleagues.
 
+I moved the :mod:`lino_welfare.modlib.uploads` to
+:mod:`lino_xl.lib.uploads`. Translatable messages that moved from
+welfare to xl:
 
-There is currently an interdependency between coachings, beid and
-uploads. And in welfare we still have the 
+    - "Identifying document"
+    - "Expiry warning (unit)"
+      _("Expiry warning (value)")
+    -  Needed
+    - _("%s expires")
+    - _("Issued by (Organization)")
+    - _("Issued by (Person)")  
+      
+There is currently a little interdependency between coachings, beid
+and uploads. I leave it there because it won't be clear until there's
+another application wanting to use one of them.  The order of menu
+items (in Office) changed slightly because welfare must come before
+uploads and after excerpts.
+
+Vilma
+=====
+
+I did some Estonian translations for :ref:`vilma` in Lino and XL, then
+deployed the newest version to their production site. Vilma is now
+very simplistic: just a contact manager with a skills feature. No
+ticket management, no calendar, no meetings. This is the result of
+Tanel's and my observations with local people. We first try to get
+them use this simplistic Vilma, and maybe later add features. Special
+thanks to Ülle, Maie and Kaily.
+
+Welfare
+=======
+
+I did :ticket:`1291` and deployed it to the production site.  The
+enrolment states for Welfare are defined in
+:mod:`lino_welfare.projects.chatelet.modlib.courses.models`. They do
+not want the state "trying", so I changed the label of this state to
+"Never came"::
+
+    EnrolmentStates.trying.text = _("Never came")
+
+That's certainly not perfect, I first tried to remove it, but that
+caused a problem because we have a virtual field
+:attr:`lino_xl.lib.courses.models.Course.trying` which uses it. One
+day we will need to tidy up there: create those virtual fields
+automatically from the EnrolmentStates choicelist.

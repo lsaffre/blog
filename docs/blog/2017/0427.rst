@@ -1,0 +1,45 @@
+:date: 2017-04-27
+
+========================
+Thursday, April 27, 2017
+========================
+
+Vilma
+=====
+
+
+I realized that I should restore the functionality which I removed
+from :ref:`vilma` last :doc:`Friday <0421>`. With the subtle
+difference that users won't see it.  Only system administrators and
+project managers can see it, most users will be of user type
+:class:`Collector <lino_vilma.lib.vilma.user_types.Collector>`
+(koguja) which doesn't have the required roles.
+
+A side effect is that our collected tickets and comments and Tanel's
+worktime sessions are now back. Actually it was this side effect which
+triggered me to do that step back to the future (and to do it now,
+before people start working).  But the main reason for this move is
+that "my feeling" says that one day all this functionality will be
+useful.
+
+For now there is only one change in :ref:`xl` : I removed
+`PublicTickets` from dashboard.
+
+TODO: We will need some more changes in XL because currently the
+collector user does see some unwanted menu items:
+
+- new roles CalendarUser and BloggerUser
+- meetings should require the tickets.Triager role
+
+
+
+Welfare
+=======
+
+I fixed :ticket:`1789`. This was a side effect of a recent change in
+:meth:`lino.core.kernel.Kernel.run_action` which does now more severe
+permission checkin.  The reason was that `Guests` had a wrong
+`required_roles`::
+
+    +    # required_roles = dd.login_required(dd.SiteStaff, OfficeUser)
+    +    required_roles = dd.login_required((OfficeUser, OfficeOperator))
