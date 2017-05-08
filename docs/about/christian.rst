@@ -34,7 +34,7 @@ long ago.
 We can call that hypothetical world "Heaven" and "Kingdom of God" as
 the Christians do, or we can imagine a "Mother Earth" acting as a
 goddess, we can fit this into any religious teaching. The important
-thing to remember here is that it is a *hypothese*.  We don't *know
+thing to remember here is that it is a *hypothese*.  We don't *know*
 it.
 
 We really don't know
