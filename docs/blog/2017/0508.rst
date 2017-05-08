@@ -4,6 +4,9 @@
 Monday, May 8, 2017
 ===================
 
+Topics
+======
+
 I had an interesting article in my inbox and though that I would
 quickly note this in my internal blog in :ref:`amici`.  Basically it
 worked, but it caused a little chain reaction.
@@ -22,3 +25,39 @@ worked, but it caused a little chain reaction.
   (New feature : Writable virtual foreignkey fields)
 
 I checked in my work though some tests are still failing.
+
+
+UnicodeError
+============
+
+:ticket:`1825` was a subtle one.  In order to understand it, I had to
+patch my :file:`/usr/lib/python2.7/StringIO.py`. I replaced::
+
+    if self.buflist:
+        self.buf += ''.join(self.buflist)
+
+by this::            
+
+    if self.buflist:
+        try:
+          self.buf += ''.join(self.buflist)
+        except UnicodeError:
+          raise Exception("LS 20170508 Failed to join %r" % self.buflist)
+
+It was happening in :ref:`noi.specs.care`. There was this code:
+     
+>>> def show_votes(pk):
+...     obj = tickets.Ticket.objects.get(pk=pk)
+...     print(obj)
+
+The problem disappeared when I raplaced the third line by::
+
+...     print(str(obj))
+
+But why? No good explanation so far. I guess that it has to do with
+the `python_2_unicode_compatible` hack.
+
+NB while exploring this, I replaced several instances of "from
+builtins import str" to "import six ; str = six.text_type".  I believe
+that this is better because certain third-party libraries don't know
+about the `newstr` class (:ticket:`1751`).
