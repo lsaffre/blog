@@ -1,0 +1,40 @@
+:date: 2017-05-15
+
+====================
+Monday, May 15, 2017
+====================
+
+Here is an exception I received for :ticket:`1847`::
+
+  Exception: Failed to render {'navinfo': {'last': 15L, 'recno': 23,
+  'prev': 8L, 'message': u'Record 23 von 33', 'first': 9L, 'next':
+  3L}, 'disable_delete': u'Kann Activity Kursreihe Mittwoch nicht
+  l\xf6schen weil 11 Einschreibungen darauf verweisen.', 'data':
+  {'tuesday': False, 'disable_editing': False, 'description_fr': u'',
+  'max_events': 10L, 'print_actions': , 'id': 6L,
+  'EnrolmentsByCourse': , 'confirmed': 11, 'every_unit': ,
+  'workflow_buttons': , 'teacherHidden': None, 'userHidden': 3L,
+  'enrolments_until': None, 'thursday': False, 'saturday': False,
+  'sunday': False, 'monday': False, 'disabled_fields': {'requested':
+  True, 'confirmed': True, 'EnrolmentsByCourse': True, 'free_places':
+  True, 'enrolments': True, 'duration': True, 'trying': True, 'id':
+  True}, 'lineHidden': 1L, 'start_date': datetime.date(2017, 4, 19),
+  'max_date': None, 'description': u'', 'end_date': None,
+  'start_time': datetime.time(9, 0), 'friday': False,
+  'description_en': u'', 'every': 1L, 'user': 'Johanna Tumler',
+  'every_unitHidden': , 'line': 'B\xfcrgerkurse', 'teacher': None,
+  'name': u'Kursreihe Mittwoch', 'room': 'Viertelhaus',
+  'disabled_actions': {}, 'wednesday': True,
+  'cal_EntriesByController': , 'free_places': None, 'max_places':
+  None, 'end_time': datetime.time(15, 0), 'roomHidden': 1L}, 'id': 6L,
+  'title': 'Aktivit\xe4ten \xbb Kursreihe Mittwoch'} : 'ascii' codec
+  can't decode byte 0xc3 in position 11: ordinal not in range(128)
+
+  
+>>> x = {'navinfo': {'last': 15L, 'recno': 23, 'prev': 8L, 'message': u'Record  23 von 33', 'first': 9L, 'next': 3L}, 'disable_delete': u'Kann Activity Kursreihe Mittwoch nicht l\xf6schen weil 11 Einschreibungen darauf verweisen.', 'data': {'tuesday': False, 'disable_editing': False, 'description_fr': u'', 'max_events': 10L, 'print_actions': <Element u'p' at 0x7f4fd8b15d10>, 'id': 6L, 'EnrolmentsByCourse': <Element u'table' at 0x7f4fd89ee0d0>, 'confirmed': 11, 'every_unit': <django.utils.functional.__proxy__ object at 0x7f4fe692fbd0>, 'workflow_buttons': <Element u'span' at 0x7f4fd8b23e90>, 'teacherHidden': None, 'userHidden': 3L, 'enrolments_until': None, 'thursday': False, 'saturday': False, 'sunday': False, 'monday': False, 'disabled_fields': {'requested': True, 'confirmed': True, 'EnrolmentsByCourse': True, 'free_places': True, 'enrolments': True, 'duration': True, 'trying': True, 'id': True}, 'lineHidden': 1L, 'start_date': datetime.date(2017, 4, 19), 'max_date': None, 'description': u'', 'end_date': None, 'start_time': datetime.time(9, 0), 'friday': False, 'description_en': u'', 'every': 1L, 'user': 'Johanna Tumler', 'every_unitHidden': <Recurrencies.weekly:W>, 'line': 'B\xfcrgerkurse', 'teacher': None, 'name': u'Kursreihe Mittwoch', 'room': 'Viertelhaus', 'disabled_actions': {}, 'wednesday': True, 'cal_EntriesByController': <Element u'div' at 0x7f4fd89def10>, 'free_places': None, 'max_places': None, 'end_time': datetime.time(15, 0), 'roomHidden': 1L}, 'id': 6L, 'title': 'Aktivit\xe4ten \xbb Kursreihe Mittwoch'}
+>>> print(x)
+
+
+
+In order to reproduce the problem 
+I added non-ascii chars in :mod:`lino_avanti.lib.avanti.fixtures.demo`.
