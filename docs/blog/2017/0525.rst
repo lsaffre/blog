@@ -1,0 +1,38 @@
+:date: 2017-05-25
+
+======================
+Thursday, May 25, 2017
+======================
+
+I finally continued :ticket:`1793` (SEPA Payment Initiation
+(Zahlungsaufträge)).  The pain001.xml template was alread used to
+generate an XML file from each payment order, but that file still
+contained template commands from TIM and therefore produced invalid
+XML files.(Yes, I simply copied the TIM template because this is what
+they are currently using, and because this file contained already
+quite some know-how.  Lino now validates these XML files. And it was a
+joy to convert them because I used test-driven development in
+:ref:`tera.specs`.
+
+This ticket is required for the spz project (:ref:`tera`).  They want
+to get started with accounting functionality first and leave the
+therapeutic part currently in TIM. Which might cause a bit of a
+challenge when they want to move also that second part to Lino.  We
+decided to do it in two steps because an accounting solution is more
+urgent and the therapeutic functionality will probably get a big
+redesign when they will merge with another therapeutic center in 2018.
+
+:mod:`lino_xl.lib.sepa` now injects a field `sepa_account` into
+Journal.
+
+The test suites of book, voga and welfare needed adaptation because
+some details changed in the demo fixtures: for example Rumma & Ko is
+now the :attr:`site_company` for all demo databases.  Or payment
+orders are now being generated only for partners who have a bank
+account. This is done using a new filter parameter
+:attr:`lino_xl.lib.ledger.ExpectedMovements.show_sepa` for
+      
+
+:class:`SuggestionsByPaymentOrder` sets the new
+parameter to `yes`.
+
