@@ -1,0 +1,67 @@
+:date: 2017-06-07
+
+=======================
+Wednesday, June 7, 2017
+=======================
+
+I finished :ticket:`1877` and checked in my changes.  (Manual tests
+are passing, automated tests are for later).
+
+DONE:
+
+- Pro Klient im Reiter Person noch freies Textfeld „Aufenthaltsgrund“
+  (einzeilig) und freies Textfeld „Bemerkungen“ (mehrzeilig)
+
+- Neues Feld "Zweite Staatsangehörigkeit" (für Fälle mit doppelter
+  Staatbürgerschafft)
+
+- In Liste Kalendereinträge pro Klient sollte man bei Klick auf den
+  Termin kommen, nicht auf alle Termine des Tages.
+
+- Bei den Listen „Kandidaten Kurse“ müsste das Geschlecht sichtbar
+  -sein.  -> Neue Kolonne client__gender in Einschreibungen
+
+- Tabelle "Meine Klienten" (d.h. nur die, deren Primärbegleiter ich bin)
+
+- Berufserfahrungen : "Firma" umändern nach "Arbeitsbereich". Felder
+  Sektor, Funktion, start_date und end_date raus.
+
+- Wenn man 2x den gleichen Namen eingibt, sollte Lino eine Meldung
+  machen. --> Dublettenkontrolle wie im Lino Welfare aktivieren.
+
+- Bei Studien start_date und end_date raus.
+
+- Bei Studien neues Feld "Originalsprache Diplom" (Auswahlliste)
+
+
+TALK:
+
+- Neues Ankreuzfeld "anzeigen im Dashboard" pro Kalendereintragsart,
+  damit Einträge vom Type "Lektion" *nicht* angezeigt werden.  Ich
+  habe das Gefühl, dass das keine gute Lösung ist. Wenn schon, müsste
+  man individuell pro Benutzer (oder pro Benutzerart) sagen können, ob
+  man Lektionen sehen will oder nicht.
+
+- Nach Handynummer suchen können. 0491. Aber Achtung: Leerzeichen,
+  Punkte etc werden nicht ignoriert. Also *087/55.34.12* (klassisch)
+  und *087 553412* (empfohlen) sind nicht das Gleiche.
+
+
+
+Side effects:
+  
+- New function :func:`atelier.utils.is_string`
+  
+- I created a new plugin :mod:`lino.modlib.dupable` which does the
+  same as :mod:`lino.mixins.dupable` and
+  :mod:`lino_welfare.modlib.dupable_clients` but using a
+  GenericForeignkey. Which simplifies things greatly. (TODO: convert 
+  Welfare so that it uses the new plugin).
+
+- New rules for the default handling of quick search text: if you want
+  to locate a row using its primary key, you must now prefix your
+  search text with "#".
+  If you want
+  to locate a row using its *reference*, you must now prefix your
+  search text with "*".
+  The quick_search_fields for contacts.Partner now include phone and gsm.

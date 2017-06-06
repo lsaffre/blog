@@ -7,3 +7,101 @@ Friday, May 26, 2017
 I started to move documentation into :ref:`xl.specs.ledger`
 and :ref:`xl.specs.finan`.
 :ticket:`1869`.
+
+
+A hopefully last optimization for :ticket:`1857` (Steve): Jedenfalls
+braucht ihr eine neue Version, in der ich die Fehlermeldung
+entschärfe: wenn kein Beschluss besteht, aber Verpflichtungen ÖSHZ
+ausgefüllt ist, soll er nicht schimpfen. Das kann ich am WE machen und
+euch dann aufspielen bis Montagmorgen.  Und dann (das können wir auch
+im laufenden Betrieb machen) müssen wir die Druckmaske anpassen.
+
+
+
+release@weleup
+==============
+
+Oops, I ran `pull.sh` before doing `make_snapshot.sh`::
+
+
+    $ ./pull.sh 
+    /path/to/mysite/env/repositories/lino /path/to/mysite
+    remote: Counting objects: 18, done.
+    remote: Compressing objects: 100% (3/3), done.
+    remote: Total 18 (delta 15), reused 18 (delta 15), pack-reused 0
+    Unpacking objects: 100% (18/18), done.
+    From https://github.com/lino-framework/lino
+       f5e83eb..bb94a99  master     -> origin/master
+    Updating f5e83eb..bb94a99
+    Fast-forward
+     lino/modlib/lino_startup/management/commands/linod.py | 14 +-------------
+     lino/modlib/printing/choicelists.py                   |  8 ++++----
+     lino/utils/xmlgen/sepa/validate.py                    | 19 ++++++++++---------
+     3 files changed, 15 insertions(+), 26 deletions(-)
+    /path/to/mysite
+    /path/to/mysite/env/repositories/xl /path/to/mysite
+    remote: Counting objects: 92, done.
+    remote: Compressing objects: 100% (38/38), done.
+    remote: Total 92 (delta 59), reused 86 (delta 53), pack-reused 0
+    Unpacking objects: 100% (92/92), done.
+    From https://github.com/lino-framework/xl
+       da88b04..53999d5  master     -> origin/master
+    Updating da88b04..53999d5
+    Fast-forward
+     lino_xl/lib/accounts/__init__.py                         |  35 +------
+     lino_xl/lib/accounts/choicelists.py                      |  78 +++------------
+     lino_xl/lib/accounts/fields.py                           |  33 +------
+     lino_xl/lib/accounts/models.py                           |  70 +------------
+     lino_xl/lib/accounts/utils.py                            |  34 +++----
+     lino_xl/lib/contacts/fixtures/demo.py                    |  12 ++-
+     lino_xl/lib/finan/config/finan/PaymentOrder/pain_001.xml |  65 ++++++------
+     lino_xl/lib/finan/fixtures/payments.py                   |  33 ++++++-
+     lino_xl/lib/finan/models.py                              |   2 +
+     lino_xl/lib/github/__init__.py                           |   2 +-
+     lino_xl/lib/github/actions.py                            |  54 ++++++----
+     lino_xl/lib/github/desktop.py                            |   3 +-
+     lino_xl/lib/github/models.py                             |  36 ++++---
+     lino_xl/lib/ledger/__init__.py                           |  65 +-----------
+     lino_xl/lib/ledger/choicelists.py                        | 204 +-------------------------------------
+     lino_xl/lib/ledger/mixins.py                             | 105 +-------------------
+     lino_xl/lib/ledger/models.py                             | 262 +------------------------------------------------
+     lino_xl/lib/ledger/roles.py                              |  34 +------
+     lino_xl/lib/ledger/ui.py                                 | 100 ++-----------------
+     lino_xl/lib/ledger/utils.py                              |  78 ++-------------
+     lino_xl/lib/sepa/fixtures/demo.py                        |  16 +--
+     lino_xl/lib/sepa/models.py                               |  10 ++
+     lino_xl/lib/xl/help_texts.py                             | 477 +++++++++++++++++++++++++++++++++++++++++------------------------------------------------
+     lino_xl/setup_info.py                                    |   1 +
+     24 files changed, 422 insertions(+), 1387 deletions(-)
+    /path/to/mysite
+    /path/to/mysite/env/repositories/cosi /path/to/mysite
+    Already up-to-date.
+
+Here is how to go back to the version before the pull:
+
+- look at the console messages. They mention the commit SHA before
+  the upgrade. It was f5e83eb for lino and da88b04 for xl (and for
+  cosi there were no changes).
+
+- manually checkout these commits::
+
+    $ cd env/repositories/xl
+    $ git checkout da88b04
+    Note: checking out 'da88b04'.
+
+    You are in 'detached HEAD' state. You can look around, make experimental
+    changes and commit them, and you can discard any commits you make in this
+    state without impacting any branches by performing another checkout.
+
+    If you want to create a new branch to retain commits you create, you may
+    do so (now or later) by using -b with the checkout command again. Example:
+
+      git checkout -b new_branch_name
+
+    HEAD is now at da88b04... Merge branch 'master' of github.com:lino-framework/xl
+
+  (and the same for lino)
+
+- Then run :xfile:`make_snapshot.sh`
+  
+- Then manually `git checkout master` in lino and xl
