@@ -1,0 +1,72 @@
+:date: 2017-06-08
+
+======================
+Thursday, June 8, 2017
+======================
+
+Yesterday Tonis and I had a four hour XP session, the second one of a
+series which will continue today. Yesterday we learned:
+
+- Google does *not* support CalDAV, therefore we decided to *abandon*
+  :ticket:`1201` (Lino as a calendar server).
+- The only really end-user friendly integratad solution would be to
+  write connectors to the leading proprietary APIs (Google, Apple,
+  Facebook, Microsoft...) in order to make Lino collaborate with these
+  systems. I am not currently willing to invest into such projects.
+  
+- The only generic solution is therefore to work on the mobile
+  interface.
+  
+- Before diving into a solution based on ExtJS modern (until now we
+  have classic), Tonis and I started to study whether the existing
+  bootstrap ui can evolve into a usable responsive read-write UI.
+
+Concretely we started by removing
+:attr:`lino.core.site.Site.default_user` from
+:mod:`lino_book.projects.bs3` and by reactivating the login
+functionality around :xfile:`bootstrap3/base.html`. I actualy once
+started this a long time ago but abandoned for reasons I don't
+remember in detail.
+At the end of the session Tonis and I agreed that it was definitively a very interesting exercise and that we would continue on this tomorrow.
+
+
+With Tonis
+==========
+
+This is what Tonis and I did today.
+
+Lino's authenticate method doesn't return a User instance. Which
+indicates that it was a silly API and that Django is better. And
+anyway it is time for :ticket:`1329` (Use a bit more of Django's
+authentication).  So we decided to dive even deeper into the
+bogs. Lots of code changes:
+
+- :mod:`lino.core.auth` is no longer used. We use
+  `django.contrib.auth` instead.
+
+- Rename :mod:`lino.modlib.users` to :mod:`lino.modlib.auth` in order
+  to become more close to Django.
+
+- Renamed User.profile to User.user_type because (1) Django complained
+  about it (after renaming users to auth) and (2) it had to be done some
+  day anyway.
+
+- Upgraded Django 1.9.13 to 1.11.2
+
+Unfortunately we had to do a few changes to Django. Lino master
+currently doesn't work with an unpatched Django.  We must present
+these changes tomorrow to the Django community and submit a pull
+request for https://code.djangoproject.com/ticket/20313
+
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.shell import *
+>>> dd.plugins.tickets.site_model
+
+
+I checked in above changes because Hamza should see them (ext6 is
+concerned). It is 9pm and I am ready for bed. But it is fantastic: I
+got `inv prep` to pass on all projects! Yes, the test suites are still
+mostly failing because we didn't yet change "users" to "auth" in the
+`.rst` files. But that's for tomorrow.

@@ -4,6 +4,9 @@
 Wednesday, June 7, 2017
 =======================
 
+Avanti
+======
+
 I finished :ticket:`1877` and checked in my changes.  (Manual tests
 are passing, automated tests are for later).
 
@@ -33,6 +36,10 @@ DONE:
 
 - Bei Studien neues Feld "Originalsprache Diplom" (Auswahlliste)
 
+- Nach Handynummer suchen können. 0491. Aber Achtung: Leerzeichen,
+  Punkte etc werden nicht ignoriert. Also *087/55.34.12* (klassisch)
+  und *087 553412* (empfohlen) sind nicht das Gleiche.
+
 
 TALK:
 
@@ -41,10 +48,6 @@ TALK:
   habe das Gefühl, dass das keine gute Lösung ist. Wenn schon, müsste
   man individuell pro Benutzer (oder pro Benutzerart) sagen können, ob
   man Lektionen sehen will oder nicht.
-
-- Nach Handynummer suchen können. 0491. Aber Achtung: Leerzeichen,
-  Punkte etc werden nicht ignoriert. Also *087/55.34.12* (klassisch)
-  und *087 553412* (empfohlen) sind nicht das Gleiche.
 
 
 
@@ -65,3 +68,62 @@ Side effects:
   to locate a row using its *reference*, you must now prefix your
   search text with "*".
   The quick_search_fields for contacts.Partner now include phone and gsm.
+
+
+Lino as a CalDAV server
+=======================
+
+Google offers a feature for reading "external" calendars. But:
+
+    External calendar feeds ("Add from URL") in Google Calendar update
+    very slowly, usually around 24 hours.  Clicking the "Refresh" link in
+    Google Calendar does not refresh the Other Calendars feeds, so events
+    added to external calendars may not show on the user's Google Calendar
+    for a long time.  An item added just after the automatic refresh is
+    performed would not be shown to the user for nearly 24 hours.
+
+
+    mfarrow, Jan 2010, in `Feature Request: Manual Refresh of external
+    calendar URL / .ics / iCal feeds
+    <https://productforums.google.com/forum/#!topic/calendar/iXp8fZfgU2E>`__
+
+
+with comments like 
+
+    I cannot believe this feature isn't implemented yet?  C'mon, Google!  I need this!
+
+Or    
+
+    I can see why Google would be reluctant to implement some type of
+    scheduling or even an update everytime the google calender is
+    accessed for the probably hundreds o thousands of calenders that
+    have been added by users. This would cost resources. A manual
+    update option would not be as costly but could be (ab)used by
+    other software creating the same problem.
+
+    What absolutely could and should do with very little effort is to
+    make sure that Android can by itself subscribe to .ics files. This
+    will bypass Gmail which might not be in your interest but if that
+    is an issue of your concern or if you dont like the solution
+    consider allowing Gmail as a simple passthrough for the URL to
+    Android.
+    
+Also thpope asked in April 2009
+`Why does it take so long for Google Calendar to refresh iCal links?  
+<https://productforums.google.com/forum/#!topic/calendar/VNHydDCukDU>`__
+
+Or here:
+
+    Google Calendar is not a CalDAV client (and not even a CalDAV server
+    anymore). It's just an HTTP client with read-only access to icalendar
+    files, you won't be able to edit these calendars
+    (`liZe in Jul 2016 <https://github.com/Kozea/Radicale/issues/434>`__)
+
+
+We don't know whether the users have Android phones or iPhones.
+
+**Conclusion** : Google does actually *not* collaborate with a CalDAV
+server.  This reduces our motivation of turning Lino into one.  At the
+moment it would give no visible advantage to turn Lino into a CalDAV
+server.
+

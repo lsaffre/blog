@@ -14,6 +14,6 @@ if False: # TIMTOWTDI: the following is equivalent
 else:
     from lino.api import dd, rt
     pcsw = dd.resolve_app('pcsw')
-    User = dd.resolve_model('users.User')
+    User = dd.resolve_model('auth.User')
     root = User.objects.get(username='root')
     print pcsw.UsersWithClients.request(user=root).to_rst()
