@@ -1,0 +1,59 @@
+:date: 2017-06-10
+
+=======================
+Saturday, June 10, 2017
+=======================
+
+I continued to restore the test suites after the changes for
+:ticket:`1329`.
+
+I plan to write a pull request for `Django ticket 20313
+<https://code.djangoproject.com/ticket/20313>`__.
+        
+
+I followed the `Writing your first patch for Django
+<https://docs.djangoproject.com/en/dev/intro/contributing/>`__
+tutorial, then forked Django on GitHub:
+
+    https://github.com/lsaffre/django
+
+The re-did my changes into that repository.
+
+Here is a summary of my changes:
+
+- In :file:`django/contrib/auth/base_user.py` I 
+  defined a new classmethod on the :class:`AbstractUser` model::
+
+    @classmethod
+    def get_anonymous_user(cls):
+        """Return an instance of AnonymousUser. Alternative implementations
+        for AUTH_USER_MODEL may override this to use an alternative
+        AnonymousUser class or add custom initialization.
+
+        """
+        return AnonymousUser()
+ 
+- In several places (:file:`django/contrib/auth/__init__.py`) I
+  replaced code like the following::
+
+    from django.contrib.auth.models import AnonymousUser
+    request.user = AnonymousUser()
+
+  by code like this::
+  
+    from django.contrib.auth import get_user_model  
+    request.user = get_user_model().get_anonymous_user()
+             
+  
+- In :file:`django/contrib/auth/backends.py` I moved the ``import`` of
+  the :class:`Permission` class from the global scope into the two
+  local scopes which use it. This is necessary because Lino's
+  :mod:`lino.modlib.auth` package defines an alternative :class:`User`
+  model and *no* models :class:`Permission` and :class:`Group`. As
+  long as the ``import`` statement is on the global scope, Django
+  complains about XXX when I try to import it.
+
+
+  
+
+

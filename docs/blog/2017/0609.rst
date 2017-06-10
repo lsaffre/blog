@@ -5,6 +5,25 @@ Friday, June 9, 2017
 ====================
 
 Night session : I got the book docs to build again after yesterday's
-changes.
+changes for :ticket:`1329`.
 
-Then I started to restore the test suites.
+Then I started to restore the test suites.  Since this is a
+frustrating and long-lasting work and with rather little educational
+value, Tonis and I decided to *not* meet today.  Tonis will review the
+content of the :ref:`lino.dev` rather than wathing me fix the test
+suite.
+
+
+As a side effect : :func:`atelier.utils.rmu` which deprecates
+:func:`atelier.utils.tuple_py2` & Co. Example:
+
+>>> from atelier.utils import rmu
+>>> lst = [123, "123", u"Äöü"]
+>>> rmu(lst)
+[123, '123', '\xc4\xf6\xfc']
+>>> rmu(tuple(lst))
+(123, '123', '\xc4\xf6\xfc')
+>>> dct = {i: i for i in lst}
+>>> rmu(dct)
+{123: 123, '\xc4\xf6\xfc': '\xc4\xf6\xfc', '123': '123'}
+
