@@ -76,14 +76,14 @@ Nehmen wir das Modell :class:`User <lino.modlib.users.models.User>`
 als Beispiel.
 Dieses Modell hat (in lino.apps.pcsw) 
 zwei Tabellen, die darauf basieren:
-:class:`Users <lino.modlib.users.Users>` 
+:class:`Users <lino.modlib.auth.Users>` 
 und :class:`UsersByNewcomer <lino.modlib.newcomers.UsersByNewcomer>`.
 Für `User` sind es nur zwei, aber viele Modelle haben 
 deutlich mehr Tabellen.
 
 Hier die beiden Tabellen-Ansichten dieser Tabellen:
 
-- image:: /screenshots/users.Users.grid.jpg
+- image:: /screenshots/auth.Users.grid.jpg
 - image:: /screenshots/newcomers.UsersByNewcomer.grid.jpg
 
 - http://127.0.0.1:8000/api/users/Users
@@ -96,7 +96,7 @@ da die gleiche Layout-Definition verwendet. Allerdings hat
 `UsersByNewcomer` noch Parameter, 
 die auch in der Detail-Ansicht vorhanden sind).
 
-- image:: /screenshots/users.User.detail.jpg
+- image:: /screenshots/auth.User.detail.jpg
   :scale: 50
 
 - image:: /screenshots/newcomers.UsersByNewcomer.detail.jpg
@@ -108,7 +108,7 @@ Ein Insert-Fenster gibt es in der `UsersByNewcomer` nicht,
 weil man dort nicht einfügen darf. 
 Deshalb also nur *ein* Insert-Fenster:
 
-- image:: /screenshots/users.User.insert-20120630.jpg
+- image:: /screenshots/auth.User.insert-20120630.jpg
   :scale: 50
 
 - http://127.0.0.1:8000/api/users/Users?an=insert
@@ -116,9 +116,9 @@ Deshalb also nur *ein* Insert-Fenster:
 Jetzt schauen wir uns mal den generierten 
 JS-Code an.
 Erstens steht irgendwo die Definition eines 
-`Lino.users.Users.FormPanel`::
+`Lino.auth.Users.FormPanel`::
 
-  Lino.users.Users.FormPanel = Ext.extend(Lino.FormPanel,{
+  Lino.auth.Users.FormPanel = Ext.extend(Lino.FormPanel,{
     layout: 'fit',
     auto_save: true,
     content_type: 5,
@@ -138,7 +138,7 @@ Erstens steht irgendwo die Definition eines
         cal_RemindersByUser_grid2249.on_master_changed();
         newcomers_CompetencesByUser_grid2254.on_master_changed();
       }
-      Lino.users.Users.FormPanel.superclass.initComponent.call(this);
+      Lino.auth.Users.FormPanel.superclass.initComponent.call(this);
     }
   });
 
@@ -147,15 +147,15 @@ Diese Definition wird für alle abgeleiteten Tabellen benutzt,
 und zwar normalerweise zweimal pro Tabelle: einmal für Detail 
 und einmal für Insert::
 
-  Lino.users.Users.insert_actionPanel = Ext.extend(Lino.users.Users.FormPanel,{
+  Lino.auth.Users.insert_actionPanel = Ext.extend(Lino.auth.Users.FormPanel,{
     ...
   });
 
-  Lino.users.Users.detail_actionPanel = Ext.extend(Lino.users.Users.FormPanel,{
+  Lino.auth.Users.detail_actionPanel = Ext.extend(Lino.auth.Users.FormPanel,{
     ...
   });
   
-  Lino.newcomers.UsersByNewcomer.detail_actionPanel = Ext.extend(Lino.users.Users.FormPanel,{
+  Lino.newcomers.UsersByNewcomer.detail_actionPanel = Ext.extend(Lino.auth.Users.FormPanel,{
     ... 
   });
   
@@ -167,17 +167,17 @@ eine `Lino.newcomers.UsersByNewcomer.insert_actionPanel`.
 Später kommen dann noch die eigentlichen Aktionen, die diese Fenster 
 instanzieren und öffnen::
   
-  Lino.users.Users.insert_action = new Lino.WindowAction({  },function(){
+  Lino.auth.Users.insert_action = new Lino.WindowAction({  },function(){
     var p = {};
     p.hide_top_toolbar = true;
     p.is_main_window = true;
-    return new Lino.users.Users.insert_actionPanel(p);
+    return new Lino.auth.Users.insert_actionPanel(p);
   });
 
-  Lino.users.Users.detail_action = new Lino.WindowAction({  },function(){
+  Lino.auth.Users.detail_action = new Lino.WindowAction({  },function(){
     var p = {};
     p.is_main_window = true;
-    return new Lino.users.Users.detail_actionPanel(p);
+    return new Lino.auth.Users.detail_actionPanel(p);
   });
   
   Lino.newcomers.UsersByNewcomer.detail_action = new Lino.WindowAction({  },function(){

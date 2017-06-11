@@ -7,17 +7,68 @@ Saturday, June 10, 2017
 I continued to restore the test suites after the changes for
 :ticket:`1329`.
 
-I plan to write a pull request for `Django ticket 20313
-<https://code.djangoproject.com/ticket/20313>`__.
-        
-
-I followed the `Writing your first patch for Django
+The most important consequence of these changes is that Lino
+applications now need our patched Django version until Django fixes
+`Django ticket 20313 <https://code.djangoproject.com/ticket/20313>`__.
+And let's hope that they fix them in a way as Lino needs them to be
+fixed. So I started to write a pull request.  For this I followed the
+`Writing your first patch for Django
 <https://docs.djangoproject.com/en/dev/intro/contributing/>`__
-tutorial, then forked Django on GitHub:
+tutorial, then forked Django on GitHub, then re-did my changes into
+that repository.
 
     https://github.com/lsaffre/django
 
-The re-did my changes into that repository.
+
+A strange behaviour
+===================
+
+So I now have a local copy of my Django fork repository, which I
+installed into my default working environment. using::
+
+  pip -e /home/luc/repositories/django
+
+in a new
+branch `ticket_20313`,
+
+That
+
+I changed the :ref:`install_requires` to say ``'django<2'`` as
+requirement.  The current version is 1.11.3.dev20170609164846 (from
+repository) which satisfies that dependency::
+
+  $ python -c "import django; print django.__version__"
+
+These setting seem to have caused a strange behaviour when I try to
+run a specific test (`tests.SpecsTests.test_care` in below example) :
+Invoking ``py.test -k test_care`` works as expected, but ``python
+setup.py test -s tests.SpecsTests.test_care`` doesn't. It says::
+
+    $ python setup.py test -s tests.SpecsTests.test_care
+    running test
+    Searching for django<=1.11
+    Reading https://pypi.python.org/simple/django/
+    Downloading https://pypi.python.org/packages/79/43/ed9ca4d69f35b5e64f2ecad73f75a8529a9c6f0d562e5af9a1f65beda355/Django-1.11.tar.gz#md5=5008d266f198c2fe761916139162a0c2
+    Best match: Django 1.11
+    Processing Django-1.11.tar.gz
+    ...
+    Installed /media/dell1tb/work/book/.eggs/Django-1.11-py2.7.egg
+    ...
+    test_care (tests.SpecsTests) ... FAIL
+
+That is, setuptools (unlike py.test) seems to believe that
+version `1.11.3.dev20170609164846` does not satisfy the
+`django<2` requirement.
+
+The problem disappeared when I did::
+
+  $ pip uninstall lino
+  $ go lino
+  $ pip install -e .
+
+
+About Django ticket 20313
+=========================
 
 Here is a summary of my changes:
 
@@ -54,6 +105,5 @@ Here is a summary of my changes:
   complains about XXX when I try to import it.
 
 
-  
 
 

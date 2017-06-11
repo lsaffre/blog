@@ -36,14 +36,14 @@ It took me almost four hours to solve these two problems.
   (e.g. :meth:`lino.utils.choicelists.ChoiceListField._get_choices`)
 - :class:`lino.modlib.newcomers.models.UsersByNewcomer` was defined as follows::
    
-    class UsersByNewcomer(users.Users):
+    class UsersByNewcomer(auth.Users):
         ...
         filter = models.Q(profile__in=[p for p in UserProfiles.items() if p.integ_level])
           
   This had to change to a dynamic filter because UserProfiles now aren't yet defined 
   when the models modules are being imported::
   
-    class UsersByNewcomer(users.Users):
+    class UsersByNewcomer(auth.Users):
         ...
         @classmethod
         def get_request_queryset(self,ar):
