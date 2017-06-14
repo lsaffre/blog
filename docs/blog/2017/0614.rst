@@ -1,0 +1,86 @@
+:date: 2017-06-14
+
+========================
+Wednesday, June 14, 2017
+========================
+
+Renamed "auth" plugin back to "users"
+=====================================
+
+Yes yesterday I realized that actually we didn't need to rename
+"users" to "auth". And yes, there is no technical need to turn back
+now, but
+
+- lino.modlib.users is about *users*, not about *authentication*.
+- it is less work to go back *now* than e.g. in two years.
+- We are only *almost* there, e.g. some users.rst files in the specs
+  haven't yet been renamed.
+- The community effect : it is easier to explain to Tonis why I
+  decided to go back than to all other developers why we renamed it
+  from users to auth.
+
+So I now did what was obvious. I prefer working three hours and being
+back at the same place as before over working only two hours and being
+at the wrong place.
+
+I created a separate ticket :ticket:`1897` for this.
+
+  
+
+Lino and the Django PR
+======================
+
+Yesterday I was disappointed when I saw that Tim Graham closed my PR
+one hour later with the lapidar comment "This change doesn't qualify
+for a backport to 1.11 per our `supported versions policy
+<https://docs.djangoproject.com/en/dev/internals/release-process/#supported-versions>`__."
+The fact that he then closed the PR tells me that they don't even want
+to discuss about it.  But then he also answered in Django ticket
+`#28302 <https://code.djangoproject.com/ticket/28302>`__, and this
+sheds new light onto the thing: I "just" need to
+
+- rewrite my PR against master
+- add tests and documentation  
+
+But this is less urgent since there is (as it seems) no way of getting
+it into Django 1.x because of their "supported versions policy".
+
+In the long run they are even right: they refuse to do useless work
+and force us to move forward (to Python 3). Why not.  Yes, that's both
+the advantage and drawback of having a big community.
+
+I moved three modules (backends, middleware and utils) from
+:mod:`lino.modlib.users` to :mod:`lino.core.auth` because that's where
+they should go.
+
+I reviewed the documentation pages about all this (it is not
+finished but it is getting clear at least to me):
+
+- :ref:`about.auth`
+- :ref:`dev.users`  
+- :ref:`specs.users`
+- :ref:`dev.permissions`
+
+This is work on :ticket:`1329`.
+
+
+Documentation
+=============
+
+I am reviewing the general structure of the Lino Book:
+
+- about : non-technical stuff for stakeholders
+
+- dev : for developers (newbies and experienced, core and application)
+
+- admin : for system administrators who want to install and run some
+  Lino application (and keep it alive, and possibly do all this with
+  many applications)
+
+- hosting : a separate section for the "Hosting programme"
+
+- community : a separate section for the "Community" (whatever this
+  means...)
+
+As a result I moved two pages from hosting to admin because they were
+obviously too technical.

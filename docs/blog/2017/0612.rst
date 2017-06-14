@@ -1,0 +1,27 @@
+:date: 2017-06-12
+
+=====================
+Monday, June 12, 2017
+=====================
+
+
+Sphinx typographical quotes cause test failures
+===============================================
+
+:ticket:`1889` came because Sphinx 1.6.1 had started to write smart
+quotes into the `help_text` texts. And these help texts are displayed
+in specs like e.g. :ref:`book.specs.cal` (by :func:`show_fields
+<lino.api.doctests.show_fields>`).
+
+I had changed these specs (which was a quite stupid work), but
+recently I downgraded my Sphinx to 1.5.x because the newest version
+has `an issue <https://github.com/abakan/ablog/issues/88>`__.
+
+Now I read `here <https://github.com/sphinx-doc/sphinx/issues/3824>`__
+that these smart quotes were actually always deactivated by default in
+Sphinx, and their appearance was a "bug" introduced because docutils
+changed the way how to deactivate them.
+
+I added a file :xfile:`docutils.conf` for :Ref:`book`.
+
+I continued to adapt the tests in book after :ticket:`1329`.
