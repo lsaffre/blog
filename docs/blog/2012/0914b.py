@@ -1,8 +1,8 @@
 from lino.api import dd, rt
 pcsw = dd.resolve_app('pcsw')
 users = dd.resolve_app('users')
-alicia = auth.User.objects.get(username='alicia')
-root = auth.User.objects.get(username='root')
+alicia = users.User.objects.get(username='alicia')
+root = users.User.objects.get(username='root')
 pg = pcsw.PersonGroup.objects.get(pk=1)
 
 ar = pcsw.CoachingsByUser.request(master_instance=alicia)

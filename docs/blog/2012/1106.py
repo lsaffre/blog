@@ -4,6 +4,6 @@ from django.conf import settings
 settings.LINO.startup()
 from lino.api import dd, rt
 pcsw = dd.resolve_app('pcsw')
-User = dd.resolve_model('auth.User')
+User = dd.resolve_model('users.User')
 root = User.objects.get(username='root')
 print pcsw.UsersWithClients.request(user=root).to_rst()

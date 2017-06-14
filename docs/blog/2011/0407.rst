@@ -41,7 +41,7 @@ So, nun wo die schlimmsten Bugs raus sind, mach ich in Eupen ein Upgrade.
 Ich habe auch ein neues Dokument :lino:`/dsbe/testlauf` begonnen.
 
 
-`lino.modlib.auth` wird `lino.modlib.users`
+`lino.modlib.users` wird `lino.modlib.users`
 -------------------------------------------
 
 Hier ein Bug, der offenbar schon seit Wochen drin ist und noch von 
@@ -49,11 +49,11 @@ niemandem bemerkt worden ist:
 
 #.  Man kann keine neuen Benutzer anlegen. 
     Er sagt dann "password: Dieses Feld darf nicht leer sein". 
-    Dabei gibt es ja gar kein Passwort mehr in `lino.modlib.auth`.
+    Dabei gibt es ja gar kein Passwort mehr in `lino.modlib.users`.
 
 In der Tat: `django.contrib.auth` wird an bestimmten Stellen im Django-Code 
 importiert, dadurch kommen diese Models auch in den Model-Pool, und dort 
-überschreiben Sie dann das von mir in `lino.modlib.auth` definierte Modell für `User`. 
+überschreiben Sie dann das von mir in `lino.modlib.users` definierte Modell für `User`. 
 Ohne Warnung...
 
 Also jetzt ist das app_label nicht mehr `auth`, sondern `users`. 

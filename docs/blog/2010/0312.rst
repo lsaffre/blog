@@ -35,7 +35,7 @@ Also `dsbe.models.Projects` wird als Actor `dsbe.Projects` registriert, was fals
 
 Upps... nee, das reicht noch nicht. Weil `actors.ActorMetaClass` den Report schon im actors_dict registriert, bevor dessen `__init__()` aufgerufen wird. Also ich muss den Startup-Prozess noch verfeinern: ActorMetaClass macht nur eine provisorische Liste aller Actor-Klassen in der Reihenfolge ihrer Definition. Also die Projects aus lino.modlib kommt dort zuerst, weil sie existieren muss, bevor sie von dsbe.Projects geerbt werden kann. Dann in einem zweiten Schritt werden alle Actors instanziert, und deren Instanzen werden dann im actors_dict eingetragen.
 
-11.15 Uhr. Puh, das war nach längerer Zeit noch mal ein Ausflug in den Startup-Prozess. Der ist komplex, und seit heute wieder ein Stückchen klarer. Trotzdem ist es noch etwas früh um ihn zu dokumentieren. In `lino_settings.py` wird jetzt nicht mehr wie bisher `m.add_action('system.Users')` gesagt, sondern `m.add_action('auth.Users')`. Das überraschte mich, aber es ist eine logische Folge dessen, dass ein Report nun automatisch das gleiche `app_label` hat wie sein Leit-Model.
+11.15 Uhr. Puh, das war nach längerer Zeit noch mal ein Ausflug in den Startup-Prozess. Der ist komplex, und seit heute wieder ein Stückchen klarer. Trotzdem ist es noch etwas früh um ihn zu dokumentieren. In `lino_settings.py` wird jetzt nicht mehr wie bisher `m.add_action('system.Users')` gesagt, sondern `m.add_action('users.Users')`. Das überraschte mich, aber es ist eine logische Folge dessen, dass ein Report nun automatisch das gleiche `app_label` hat wie sein Leit-Model.
 
 Check-in Lino und DSBE.
 
