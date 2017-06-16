@@ -84,3 +84,75 @@ I am reviewing the general structure of the Lino Book:
 
 As a result I moved two pages from hosting to admin because they were
 obviously too technical.
+
+
+Restoring brute-force protection after #1329
+============================================
+
+The :attr:`use_ipdict <lino.core.site.Site.use_ipdict>` feature is
+back.  Since this plugin had been deeply wired into Lino's
+authentication system, and since that system is now gone and replaced
+by Django's system, I had to write a few serious adaptations to this
+plugin.
+
+As before this feature is implemented as a configuration option
+:attr:`use_ipdict <lino.core.site.Site.use_ipdict>` on the
+:class:`Site <lino.core.site.Site>` class which causes the
+:mod:`lino.modlib.ipdict` plugin to be installed or not.  That's not
+very elegant, but it works and is easy to activate or deactivate.
+
+
+
+Lino Tera
+=========
+
+Lydia reported a bug and a few more optimizations (:ticket:`1891`):
+
+- MoveDown geht nicht in MWSt-Regeln
+- Die Ankreuzfelder `TRADETYPE_allowed` sind nicht sichtbar.
+  Außerdem sollten sie alle par défaut eingeschaltet sein.
+- Eingabe EKR mit MWSt-Betrag verteilt nicht
+- Den Kontenplan bearbeiten ist unbequem
+
+
+  
+Cannot print Sessions table as pdf (ExtJS6)
+===========================================
+
+Hamza and I had an interesting voice session about :ticket:`1898`. The
+tricky part was how to see the traceback of an error which happens
+while the AppyRenderer parses the template.
+
+You need to:
+
+- change the target_format from pdf to odt
+- set raiseOnError to False
+- and then you see the traceback inserted as comment in the resulting odt document
+
+Here is our traceback::  
+
+    Error while evaluating the expression "table(ar)" defined in the "from" part of a statement. ValueError: invalid literal for int() with base 10: ''
+    File "<string>", line 1, in <module>
+    File "/usr/local/python/lino_sites/jane/env/repositories/xl/lino_xl/lib/appypod/appy_renderer.py", line 279, in insert_table
+    return self.insert_table_(*args, **kw)
+    File "/usr/local/python/lino_sites/jane/env/repositories/xl/lino_xl/lib/appypod/appy_renderer.py", line 299, in insert_table_
+    columns, headers, widths = ar.get_field_info(column_names)
+    File "/usr/local/python/lino_sites/jane/env/repositories/lino/lino/core/tablerequest.py", line 536, in get_field_info
+    return with_user_profile(u.profile, getit)
+    File "/usr/local/python/lino_sites/jane/env/repositories/lino/lino/utils/jsgen.py", line 118, in with_user_profile
+    return func(*args, **kwargs)
+    File "/usr/local/python/lino_sites/jane/env/repositories/lino/lino/core/tablerequest.py", line 487, in getit
+    widths.append(int(all_widths[i]))
+    <type 'exceptions.ValueError'>: invalid literal for int() with base 10: ''  
+
+It then turned out that Hamza had actually and intuitively been
+looking at the right place: the extjs6 js code sends empty values for
+the `cw` items when requesting the pdf table file. And AppyRenderer
+fails of cours if you claim to specify explicit column widths and then
+actually specify an empty width for all your columns.
+
+We learned (or Hamza learned and I got reminded) why it will be quite
+some work to reimplement the "print table to pdf" feature using
+something else than appypod.  I am now quite sure that `secretary
+<https://github.com/christopher-ramirez/secretary>`__ is far away from
+being able to do such things.  Maybe weasyprint.
