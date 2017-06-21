@@ -1,0 +1,47 @@
+:date: 2017-06-22
+
+=======================
+Thursday, June 22, 2017
+=======================
+
+About persons, organizations and partners
+=========================================
+
+I have been meditating and experimenting about a stupid and subtle old
+problem.  Lydia had a customer called "Jugendgericht / John Doe".  In
+TIM this was a partner of type "Zahler" which became a Company in
+Lino. The "Jugendgericht" part was imported from TIM into the `prefix`
+field. The first name John wasn't imported at all, and the last name
+was imported as the :attr:`name`.
+
+Which caused Lydia to not find her customer because the combobox for
+`partner` (when creating a new invoice) didn't include the prefix. So
+she saw only "Doe".
+
+- str() of any Partner now includes the prefix
+- the prefix is now included to the `quick_search_fields` of a Partner.
+- which required us to move the definition of the :attr:`prefix` field
+  from the Company model (and the Household model) to the Partner
+  model. The field might even be useful for persons to handle special
+  cases of titles like "Graf" or "Kardinal" which must display *after*
+  the first name.
+
+I tried (in a branch which I later threw away) whether things get
+easier if we replace the single `partner` field of an invoice by two
+separate fields `company` and `person`. It doesn't. Because we also
+want households and partner lists to be able to receive
+invoices. Theoretically they can't because they are neither a physical
+nor a legal person, but "partner" is per definition the general term
+for "any kind of business partner" and should include them. For
+example a calendar event or service report in Lino Tera can be
+assigned to a single client, a household or a therapeutic group.
+
+As a side effect, Lino now supports remote fields to virtual FK
+fields.
+
+I committed and pushed my changes, though a few test cases in welfare
+are still failing (because Partner and Person now have one field
+more).
+
+Also some test cases in book are still failing due to changes by
+Tonis.
