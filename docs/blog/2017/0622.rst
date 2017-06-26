@@ -19,7 +19,8 @@ Which caused Lydia to not find her customer because the combobox for
 she saw only "Doe".
 
 - str() of any Partner now includes the prefix
-- the prefix is now included to the `quick_search_fields` of a Partner.
+- the prefix is now included to the :attr:`quick_search_fields` of a
+  Partner.
 - which required us to move the definition of the :attr:`prefix` field
   from the Company model (and the Household model) to the Partner
   model. The field might even be useful for persons to handle special
@@ -45,3 +46,240 @@ more).
 
 Also some test cases in book are still failing due to changes by
 Tonis.
+
+Diamond inheritance
+===================
+
+I have the feeling that I need to fix :ticket:`1908` before releasing
+a new version of :ref:`tera` for Lydia.
+
+The following test cases (in :ref:`book`) are currently failing::
+
+  $ python setup.py test -s tests.DocsTests.test_diamond
+  $ python setup.py test -s tests.DocsTests.test_diamond2
+
+
+The error message is::     
+
+    SystemCheckError: System check identified some issues:
+    ERRORS:
+    main.PizzeriaBar: (models.E005) The field 'restaurant_ptr' from parent model 'main.bar' clashes with the field 'restaurant_ptr' from parent model 'main.pizzeria'.
+
+I created Django ticket `28332
+<https://code.djangoproject.com/ticket/28332>` for this.
+
+But it seems that this problem is actually not related to our ticket
+:ticket:`1908`, it just was hidden before 1.11 and started to appear
+because 1.11 appearetly runs :manage:`check` as part of
+:manage:`test`.
+
+So here is once more my test case of last Friday:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.lydia.settings.demo')
+>>> from lino.modlib.lino_startup.management.commands.dump2py import write_create_function
+>>> import sys
+>>> from lino.api import rt
+>>> write_create_function(rt.models.lists.List, sys.stdout)
+def create_lists_list(partner_ptr_id, ref, list_type_id):
+    return create_mti_child(contacts_Partner, partner_ptr_id, lists_List,ref=ref,list_type_id=list_type_id,name_de=name_de,name_fr=name_fr)
+
+The :class:`lino_tera.lib.lists.List` model in Tera inherits from two
+concrete models :class:`lino_xl.lib.lists.List` and
+:class:`lino_xl.lib.contacts.Partner`::
+         
+    lino_tera.lib.lists.List (no local fields)
+    <- lino_xl.lib.lists.List (defines fields list_type and remarks)
+    <- lino_xl.lib.contacts.Partner (defines fields name, ...)
+       <- mixins.BabelNamed (defines fields name_xx)
+       <- mixins.Referrable (defines field ref)
+
+
+>>> model = rt.models.lists.List
+>>> for f in model._meta.get_fields():
+...     # if f.concrete and f.model is model:
+...     if f.model is model:
+...        print(repr(f), getattr(f, '_lino_babel_field', False))
+<django.db.models.fields.related.OneToOneField: partner_ptr>
+<lino.core.fields.NullCharField: ref>
+<django.db.models.fields.related.ForeignKey: list_type>
+<django.db.models.fields.CharField: name_de>
+<django.db.models.fields.CharField: name_fr>
+
+>>> model._meta.parents   
+OrderedDict([(<class 'lino_tera.lib.contacts.models.Partner'>, <django.db.models.fields.related.OneToOneField: partner_ptr>)])
+
+Ahhaa! Now I see why it is: BabelNamed defines a BabelField `name`
+which clashes with the `name` field of Partner. It seems that Django
+doesn't detect this clash because a BabelField isn't a real field.
+
+I solved this by creating a new mixin :class:`BabelDesignated` which
+is the same as :class:`BabelNamed` but uses a field `designation`
+instead of `name`. And then to use this mixin for the List model in
+Tera.
+
+Note that I also have to define a :meth:`full_clean` method which
+automatically fills the :name` field from the value of the
+:attr:`designation` field (similarily to Person and Household)
+
+implement therapeutic groups as something else than
+`lists.List`.
+
+
+
+Number formatting in grids
+==========================
+
+I started to work on :ticket:`1925`.
+
+The :class:`lino_xl.lib.finan.ItemsByPaymentOrder` table is the place
+where we want to see amounts with a space for separating thousands and
+always 2 positions after the comma.  For example a value `1234.5`
+should display as `1 234,50`.
+
+The grid is defined as
+:class:`Lino.finan.ItemsByPaymentOrder.GridPanel` in our
+:xfile:`linoweb.js` file.
+
+In ExtJS3 the :js:class:`Ext.grid.NumberColumn` class is responsible
+for rendering numbers. It has a config attribute :attr:`format` which
+can have the following values (taken from ExtJS 3.3 docs)::
+
+    examples (123456.789):
+    0 - (123456) show only digits, no precision
+    0.00 - (123456.78) show only digits, 2 precision
+    0.0000 - (123456.7890) show only digits, 4 precision
+    0,000 - (123,456) show comma and digits, no precision
+    0,000.00 - (123,456.78) show comma and digits, 2 precision
+    0,0.00 - (123,456.78) shortcut method, show comma and digits, 2 precision
+    To reverse the grouping (,) and decimal (.) for international numbers, add /i to the end. For example: 0.000,00/i      
+
+
+According to these docs I just need to chang the format from
+``0.00/i`` to ``0,000.00/i``.
+
+.. currentmodule:: lino.modlib.extjs.elems
+
+The amount field is represented in :mod:`lino.modlib.extjs.elems` by
+:meth:`DecimalFieldElement` which inherits from
+:meth:`NumberFieldElement`.  Note the :attr:`number_format` and the
+:meth:`get_column_options` method of these classes.
+
+I noticed that
+:meth:`get_column_options` didn't set `xtype` to `numbercolumn`.
+That's why the number format was being ignored.
+Fixed that.
+
+Now it seems correctly defined, e.g. for
+`Lino.finan.ItemsByPaymentOrder.GridPanel` the amount column is
+defined as this::
+
+    { "align": "right", "colIndex": 5, "dataIndex": "amount", "editable":
+      true, "editor": amount402, "filter": { "type": "numeric" },
+      "format": "0,000.00/i", "header": "Amount", "sortable": true,
+      "tooltip": "(finan.ItemsByPaymentOrder.amount) ", "width":
+      Lino.chars2width(13), "xtype": "numbercolumn" }
+
+Now, strangely, a value of `3240,58` is being displayed as
+`3.240,58000`!
+
+When the format is `0,0.00/i`, the result is `3.240,580`
+
+
+
+Note that the `format` is only for rendering, i.e. as long as they are
+not being edited. Editing behaviour not the problem here, and it is
+handled completely differently by :js:class:`Ext.form.NumberField`.
+    
+Note :js:class:`Lino.NullNumberColumn`
+
+:attr:`lino.core.site.Site.default_number_format_extjs`
+
+release@spz
+===========
+
+I deployed the new version to spz.
+
+One problem when restoring their data was as expected::
+
+  File "contacts_company.py", line 4, in <module>
+    loader.save(create_contacts_company(u'1',u'',None,u''))
+  File "snapshot/restore.py", line 522, in create_contacts_company
+  File "/home/lsaffre/repositories/lino/lino/utils/dpy.py", line 78, in create_mti_child
+    ignored))
+  Exception: create_mti_child() Company 1 from Partner : ignored non-local fields {'prefix': u''}
+
+That's normal because I moved `prefix` from Company to Partner. As a
+temporary fix, I ignore the field for now::
+
+    def create_contacts_company(partner_ptr_id, prefix, type_id, vat_id):
+        #return create_mti_child(contacts_Partner, partner_ptr_id, contacts_Company,prefix=prefix,type_id=type_id,vat_id=vat_id)
+        return create_mti_child(contacts_Partner, partner_ptr_id, contacts_Company,type_id=type_id,vat_id=vat_id)
+
+TODO: This is a case of migration which might need some more work on
+other sites where we will want to preserve these prefixes. I guess
+that I must extend :func:`create_mti_child` to exceptionally accept
+also non-local fields.
+
+Session log:
+
+- make snapshot a : before upgrade
+  
+- pull.sh
+  
+- django run a/restore.py
+
+- make snapshot b : after restoring a into new version (Partner.prefix are lost)
+
+- Run ./init_demo.sh in order to (correctly) re-import all data from
+  TIM. This will destroy all bookings which Lydia has already done.
+
+- snapshot c : with correct partners but without bookings.
+
+- copy the following files from b to c (overriding files in c)::
+
+    finan_*.py
+    sales_*.py
+    ledger_*.py
+    accounts_*.py
+    products_*.py
+    vat_*.py
+
+::
+   
+    Traceback (most recent call last):
+      ...
+      File "lists_list.py", line 4, in <module>
+        loader.save(create_lists_list(u'1000119',None,[u'HYPERKINESIE-KINDERGRUPPE 2000', u''],None))
+      File "20170623/c/restore.py", line 621, in create_lists_list
+    NameError: global name 'designation_fr' is not defined
+   
+
+I found and reported :ticket:`1926` (BabelFields on MTI parent fail to
+dump/restore). This is a plain design bug and the `lists.List` in
+:ref:`tera` is indeed the first case in the history of Lion where this
+happens.
+   
+Here is how to manually correct the :func:`create_lists_list` function
+in the :xfile:`restore.py` file. Lino creates something like this::
+
+    def create_lists_list(partner_ptr_id, ref, designation, list_type_id):
+        return create_mti_child(contacts_Partner, partner_ptr_id,
+        lists_List,ref=ref,
+        designation=designation,
+        list_type_id=list_type_id,
+        designation_fr=designation_fr)
+
+And as long as :ticket:`1926` is not fixed you must modify this into::
+
+    def create_lists_list(partner_ptr_id, ref, designation, list_type_id):
+        kw = dict()
+        if designation is not None:
+            kw.update(bv2kw('designation', designation))
+        return create_mti_child(contacts_Partner, partner_ptr_id,
+        lists_List,ref=ref,
+        list_type_id=list_type_id,
+        **kw)
+
+
+        

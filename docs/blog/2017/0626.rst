@@ -1,0 +1,43 @@
+:date: 2017-06-26
+
+=====================
+Monday, June 26, 2017
+=====================
+
+release@avanti
+==============
+
+I released :ref:`avanti` to their production site.  Session log::
+  
+    $ ./make_snapshot.sh
+    $ ./pull.sh
+    $ a
+    $ pip install -U django
+    $ python manage.py run snapshot/restore.py
+
+There were two manual changes to do in the :xfile:`restore.py` file::
+
+    Traceback (most recent call last):
+      ...
+      File "snapshot/restore.py", line 470, in create_lists_listtype
+    TypeError: 'name_en' is an invalid keyword argument for this function
+
+Actually this was a double change: for lists.List and for
+lists.ListType.
+
+And then the rename of :attr:`User.profile` into :attr:`User.user_type
+<lino.modlib.users.User.user_type>`::
+
+    def create_users_user(...):
+        ...
+        kw.update(user_type=profile)
+        ...
+
+
+About MTI
+=========
+
+I fixed :ticket:`1926` (BabelFields on MTI parent fail to
+dump/restore), converted the mti and nomti projects from tutorial to
+:mod:`lino_book.projects` and started to gather documentation about
+MTI under :ref:`dev.mti`.
