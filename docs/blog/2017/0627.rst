@@ -4,7 +4,7 @@
 Tuesday, June 27, 2017
 ======================
 
-Meeting with Lydia (Lino Tera)
+Hangout with Lydia (Lino Tera)
 ==============================
 
 Einkauf innergemeinschaftliche Lieferungen.
@@ -14,11 +14,11 @@ ein. Z.B. Stuhl für 100€. Bisher bucht sie in TIM wie folgt::
     6xxxxx           121€
     451000 MWSt 21%  -21€
 
-MWSt-Erklärung wird manuell gemacht. Pro Quartal.
+MWSt-Erklärung wird manuell gemacht und pro Quartal.
 
 Ideal für Lydia wäre
-- ein Dokument "MWSt-Erklärung", mit allen Feldern von Lino ausgefüllt,
-- plus Rechnungsjournale wie in TIM
+- ein Dokument "MWSt-Erklärung", mit allen Feldern von Lino ausgefüllt
+- Rechnungsjournale wie in TIM
 
 Manche Klienten (z.B. Lucie A.) haben zwei Begleitungen mit dem
 gleichen Begleiter und den gleichen Beginn- und Enddaten Das kommt,
@@ -37,6 +37,10 @@ recht komplex und suboptimal und wird höchstwahrscheinlich revidiert
 werden. Wahrscheinlich sind die Begleitungen genau das, was sie
 brauchen. Zu besprechen mit DD.
 
+DONE:
+
+- Problem "Konto 610350 nicht sichtbar" : nicht mehr reproduzierbar.
+
 TODO (Luc):
 
 - MWSt-Erklärung
@@ -50,19 +54,15 @@ TALK with DD:
 - Wohin mit den indirekten DL (bei denen Klient nicht anwesend war)?
 - Was meint er zum Modell der Begleitungen?   
 
-DONE:    
-- Konto 610350 war nicht sichtbar. Fehlanzeige. Nicht reproduzierbar.
-
-  
 One tutorial, two projects
 ==========================
 
 Before diving into what I spoke with Lydia, I finish the documentation
-review I started this morning: I also converted the **LETS tutorial**
-from the obsolete "single-directory format" to an approach which
-consists of
+review I started this morning: I also converted the LETS tutorial from
+the obsolete "single-directory format" to an approach which consists
+of
 
-- a single main document :doc:`/dev/lets` which (ideally) is readable
+- a single main document :ref:`dev.lets` which (ideally) is readable
   and has a logical sequencing, explaining things and concepts in a
   meaningful order. This main document is usually not tested because
   readability and testability are difficult to achive in one single
@@ -71,11 +71,14 @@ consists of
 - one or several tested and runnable projects (one for each variant)
   under :mod:`lino_books.projects`.
  
-- One tested "spec" document per project under :doc:`/specs`. These
+- One tested "spec" document per project under :ref:`specs`. These
   spec documents are primarily meant to demonstrate possibilities and
   how to use tested documents.
 
-Sphinx shouls warn earlier about broken references
+I am far from being satisfied but everything seems to move into the
+right direction.
+
+Sphinx should warn earlier about broken references
 ==================================================
 
 The book is of course getting very big, and it takes much time to
@@ -92,4 +95,48 @@ documents. Why can't it complain before starting to write anything?
     checking consistency... done
     preparing documents... done
     writing output... VERY SLOW
+
+A big beast
+===========
+
+I agree that Lino as a whole is a big beast. On my computer it takes
+one hour and a half to run the complete test suite::
     
+    Successfully terminated `inv prep test bd` for all projects
+    real	104m19.430s
+    user	94m7.412s
+    sys	3m44.744s
+
+Above run was for the following projects:
+
+========= ======== ========================================== ========================
+ Project   Status   URL                                        doctrees
+--------- -------- ------------------------------------------ ------------------------
+ atelier   master   http://atelier.lino-framework.org          docs
+ cd        master   https://github.com/lsaffre/commondata      docs
+ be        master   https://github.com/lsaffre/commondata-be
+ ee        master   https://github.com/lsaffre/commondata-ee
+ lino      master   http://www.lino-framework.org              docs
+ xl        master   http://www.lino-framework.org              docs
+ noi       master   http://noi.lino-framework.org              docs
+ cosi      master   http://cosi.lino-framework.org             docs
+ avanti    master   http://avanti.lino-framework.org/          docs
+ vilma     master   http://vilma.lino-framework.org            docs
+ care      master   http://care.lino-framework.org             docs
+ tera      master   http://tera.lino-framework.org             docs
+ book      master   http://www.lino-framework.org              docs
+ presto    master   http://presto.lino-framework.org           docs
+ voga      master   http://voga.lino-framework.org             docs
+ ext6      master   http://www.lino-framework.org              docs
+ welfare   master   http://welfare.lino-framework.org          docs, docs_de, docs_fr
+ amici     master   http://amici.lino-framework.org            docs
+ algus     master   http://algus.lino-framework.org/           docs
+========= ======== ========================================== ========================
+    
+Dependencies for the Lino Book
+==============================
+
+I added (back) the dependencies of book for tera, vilma, care and
+avanti because these *are* required for the test suite. Yes, vilma
+hasn't yet been published on PyPI, but that shouldn't be a problem
+since anyway they must install it from the git clone.
