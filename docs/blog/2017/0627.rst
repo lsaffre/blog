@@ -1,0 +1,95 @@
+:date: 2017-06-27
+
+======================
+Tuesday, June 27, 2017
+======================
+
+Meeting with Lydia (Lino Tera)
+==============================
+
+Einkauf innergemeinschaftliche Lieferungen.
+Büroausstattung mit Lieferung aus DE. Lydia trägt Nettobetrag
+ein. Z.B. Stuhl für 100€. Bisher bucht sie in TIM wie folgt::
+  
+    6xxxxx           121€
+    451000 MWSt 21%  -21€
+
+MWSt-Erklärung wird manuell gemacht. Pro Quartal.
+
+Ideal für Lydia wäre
+- ein Dokument "MWSt-Erklärung", mit allen Feldern von Lino ausgefüllt,
+- plus Rechnungsjournale wie in TIM
+
+Manche Klienten (z.B. Lucie A.) haben zwei Begleitungen mit dem
+gleichen Begleiter und den gleichen Beginn- und Enddaten Das kommt,
+wenn in TIM in `IdUsr1` und `IdUsr2` der gleiche Wert steht::
+
+    Therapeuten:              
+    1 FF   Franziska Franzen  
+    2 FF   Franziska Franzen  
+    3
+  
+Nummer 1 ist der, der das Erstgespräch gemacht hat. Nummer 2 ist der
+aktuelle Verantwortliche.  Es gibt auch Wiederaufnahmen (Klient war
+hier, hatte ein paar DL, kommt eine Zeitlang nicht. Und dann wird eine
+neue Akte angelegt, mit neuem Erstgespräch.  Dieses System in TIM ist
+recht komplex und suboptimal und wird höchstwahrscheinlich revidiert
+werden. Wahrscheinlich sind die Begleitungen genau das, was sie
+brauchen. Zu besprechen mit DD.
+
+TODO (Luc):
+
+- MWSt-Erklärung
+- Die Analysekonten fehlen noch.
+- Name 2 (`PAR->Firme2`) wird nicht importiert. Zum Beispiel Ethias.
+- Kalendereinträge pro Kunde anzeigen im
+  Klientendetail. EntriesByClient
+
+TALK with DD:
+
+- Wohin mit den indirekten DL (bei denen Klient nicht anwesend war)?
+- Was meint er zum Modell der Begleitungen?   
+
+DONE:    
+- Konto 610350 war nicht sichtbar. Fehlanzeige. Nicht reproduzierbar.
+
+  
+One tutorial, two projects
+==========================
+
+Before diving into what I spoke with Lydia, I finish the documentation
+review I started this morning: I also converted the **LETS tutorial**
+from the obsolete "single-directory format" to an approach which
+consists of
+
+- a single main document :doc:`/dev/lets` which (ideally) is readable
+  and has a logical sequencing, explaining things and concepts in a
+  meaningful order. This main document is usually not tested because
+  readability and testability are difficult to achive in one single
+  document.
+  
+- one or several tested and runnable projects (one for each variant)
+  under :mod:`lino_books.projects`.
+ 
+- One tested "spec" document per project under :doc:`/specs`. These
+  spec documents are primarily meant to demonstrate possibilities and
+  how to use tested documents.
+
+Sphinx shouls warn earlier about broken references
+==================================================
+
+The book is of course getting very big, and it takes much time to
+build. A disturbing detail here is that Sphinx reports broken
+references only quite late, after having written all the
+documents. Why can't it complain before starting to write anything?
+
+::
+
+    updating environment: 1028 added, 0 changed, 0 removed
+    reading sources... QUITE SLOW
+    looking for now-outdated files... none found
+    pickling environment... done
+    checking consistency... done
+    preparing documents... done
+    writing output... VERY SLOW
+    
