@@ -1,0 +1,96 @@
+:date: 2017-06-28
+
+========================
+Wednesday, June 28, 2017
+========================
+
+Datenimport aus TIM
+===================
+
+Soll ich die doppelten Coachings rausfiltern? --> Könnte ich machen,
+aber das würde bei der Analyse mit DD stören.
+
+Muss ich die Analysekonten aus TIM importieren? --> Nicht nötig, das
+sind nicht viele. Aber hier eine Liste für meine demo fixtures::
+
+    1      │FUNKTIONSKOSTEN
+       1100│Personalkosten Therapeuten
+       1200│Fahrtkosten
+       1300│Weiterbildung
+       1400│Sonstige Therapiekosten
+    2      │VERWALTUNGSKOSTEN
+     21    │Personalkosten Sekretariat
+       2110│Personalkosten
+       2120│Fahrtkosten
+       2130│Weiterbildung
+     22    │Unkosten Sekretariat
+       2201│Miete Gebäude
+       2202│Mietnebenkosten
+       2203│Telefon & Internet
+       2204│Büromaterial
+       2205│Informatik
+       2206│Buchhaltung
+       2208│Sonstiges                        
+       2209│Bankkosten
+       2210│Außerordentliche Aufwendungen    
+       2211│Abschreibungen                   
+     23    │Unkosten Verwaltungsrat
+       2310│Sitzungsgelder
+       2320│Fahrtkosten
+    3      │INVESTITIONEN
+       3000│Investitionen
+    4      │PROJEKT 1
+       4110│Personalkosten
+       4120│Fahrtkosten
+       4130│Weiterbildung               
+    5      │PROJEKT 2
+       5110│Personalkosten
+       5120│Fahrtkosten
+       5130│Weiterbildung
+       5140│Funktionskosten
+
+
+
+VAT account and returnable VAT account
+======================================
+
+Working on :ticket:`1933` (MWSt-Erklärung mit Lino).  Lydia helped
+me to understand a missing feature in Lino regarding VAT: Lino is not
+yet able to handle what I would currently call "returnable VAT on
+intracommunal operations". That is, when you buy something abroad,
+let's say a Belgian VAT-registered company buys a chair for 100€ in
+Germany, then the German vendor will not perceive any VAT. But when
+registering the invoice, our Belgian company must register a computed
+VAT amount of 21€ (21% of the base amount) at two accounts: first as a
+"due VAT" and also as a "returnable VAT".
+
+Replace :meth:`TradeType.get_vat_account` method by
+two new database fields
+:attr:`VatRule.vat_account` and 
+:attr:`VatRule.vat_returnable_account`.
+      
+This also removes the `xxx_vat_account` fields (one per trade type)
+from :class:`SiteConfig` which were used until now for storing the
+default value::
+
+    # sales_vat_account='411000',  # vat paid 411000, 472100
+    # purchases_vat_account='451000',  # due vat 451000, 472200
+      
+The :mod:`minimal_ledger <lino_xl.lib.ledger.fixtures.minimal_ledger>`
+and :mod:`euvatrates <lino_xl.lib.vat.fixtures.euvatrates>` fixtures
+are now interdependent and use a common set of names defined in
+:mod:`lino_xl.lib.ledger.accounts`.
+
+VAT declarations
+================
+
+The VAT declarations module had been inactive since
+:blogref:`20160229` because it had been written before the current
+implementation of accounting periods.
+
+Now I reactivated it and moved it from :ref:`cosi` to
+:mod:`lino_xl.lib.declarations`. The proof of concept looks
+promising. Of course there will be now quite some work fiddling with
+the gory details of VAT classes, VAT rules, VAT regimes, VAT rates,
+how to summarize them into VAT declarations and how to make all these
+things configurable.
