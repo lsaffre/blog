@@ -1,0 +1,82 @@
+:date: 2017-07-12
+
+========================
+Wednesday, July 12, 2017
+========================
+
+Release to SPZ
+==============
+
+I checked in my changes of the last days (for :ticket:`1933` and
+:ticket:`1934`) and released to :ref:`spz`.
+
+I had to manually change two lines in the :xfile:`restore.py` file::
+
+    # vat_InvoiceItem = resolve_model("vat.InvoiceItem")
+    # vat_VatAccountInvoice = resolve_model("vat.VatAccountInvoice")
+    vat_InvoiceItem = resolve_model("ana.InvoiceItem")
+    vat_VatAccountInvoice = resolve_model("ana.AnaAccountInvoice")
+  
+The following error messages were normal because these two fields no
+longer exist::
+
+  TypeError: 'purchases_vat_account_id' is an invalid keyword argument for this function
+  TypeError: 'sales_vat_account_id' is an invalid keyword argument for this function
+  
+After the upgrade the list of purchase invoices was empty, but only in
+the web interface. In the console I could see them:
+
+>>> from lino.api.shell import *
+>>> ana.AnaAccountInvoice.objects.count()
+14
+  
+>>> rt.show(ana.InvoicesByJournal, ledger.Journal.get_by_ref("EKR"))
+========= ============== ========== =================== ================= ================= ============ ================
+ No.       Voucher date   Due date   Partner             Total incl. VAT   Total excl. VAT   VAT          Actions
+--------- -------------- ---------- ------------------- ----------------- ----------------- ------------ ----------------
+ 14        23.06.17                  GUIDE SOCIAL        450,05            450,05                         **Draft**
+ 13        23.06.17                  Apotheke SCHUNCK    5,96              5,96                           **Registered**
+ 12        23.06.17                  DELHAIZE            3,10              3,10                           **Registered**
+ 11        16.06.17                  Die Waschbären                                                       **Draft**
+ 10        16.06.17                  Rumma & Ko OÜ       3 774,37          3 774,37                       **Registered**
+ 9         16.06.17                  PANDAVA SA          289,00            289,00                         **Registered**
+ 8         16.06.17                  LESEZIRKEL          120,90            120,90                         **Registered**
+ 7         16.06.17                  ETHIAS ASSURANCES   81,94             81,94                          **Registered**
+ 6         16.06.17                  BNP PARIBAS         131,24            131,24                         **Registered**
+ 5         16.06.17                  ETHIAS ASSURANCES   4 035,87          4 035,87                       **Registered**
+ 4         16.06.17                  ETHIAS ASSURANCES   584,64            584,64                         **Registered**
+ 3         16.06.17                  ETHIAS ASSURANCES   155,62            155,62                         **Registered**
+ 2         14.06.17                  TELELINQ            1 066,13          881,10            185,03       **Draft**
+ 1         14.06.17                  TELELINQ            1 130,88          1 130,88                       **Draft**
+ **105**                                                 **11 829,70**     **11 644,67**     **185,03**
+========= ============== ========== =================== ================= ================= ============ ================
+
+
+I also had an :message:`ImportError: No module named
+'unohelper'`. This came when I tried to print a table as pdf in
+spz. It was simply because :ref:`admin.oood` was not yet installed.
+
+
+In our meeting with Lydia I got one new change to do:
+
+- New checkbox :attr:`lino_xl.lib.vat.VatRule.vat_returnable` is
+  needed because they want the returnable VAT to be booked to the base
+  account and not to a constant separate one.
+
+
+Minor optimizations as side effect of today:
+
+- When showing a :class:`ChoiceList` as a table, I tried to have the
+  items sorted by their value (and no longer by the order of
+  creation).  For example in
+  :class:`lino.modlib.plausibility.Checkers` this depends on the
+  plugin load order and caused a test failure in
+  :ref:`voga.specs.checkdata`. Later I realized that sorting them by
+  value causes even more trouble, so I undid that change.
+
+- The :class:`lino.mixins.periods.Yearly` used to take the year of the
+  current system date as default value. Now it uses :meth:`dd.today
+  <lino.core.site.Site.today>`.
+
+
+
