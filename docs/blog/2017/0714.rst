@@ -4,24 +4,29 @@
 Friday, July 14, 2017
 =====================
 
-I worked on :ticket:`1960`.  I fixed a bug in
-:mod:`lino.utils.reports`, but then deactivated the
-:class:`lino_xl.lib.ledger.ActivityReport` and inserted its components
-(General accounts balance, Customer accounts balance and Supplier
-accounts balance) as individual menu entries.  And then a new table
-:class:`lino_xl.lib.sales.PrintableInvoicesByJournal`.
+Today I worked mostly on :ticket:`1960`.
 
-A new report        
-:class:`lino_xl.lib.ana.AnalyticAccountsBalance`.
+I fixed a bug in :mod:`lino.utils.report` which caused
+:class:`lino_xl.lib.ledger.ActivityReport` to always say "No data to
+display", but then replaced the :class:`ActivityReport` by its
+components (General accounts balance, Customer accounts balance and
+Supplier accounts balance) as individual menu entries.
 
-Above changes caused a general review of the :menuselection:`Reports`
-menu.  This menu starts to be a bit crowded now. Not yet sure how to
-solve this in an elegant way. Maybe a special "reporting
-dashboard". Keep in mind that one day we will want a feature of
-generating all legal accounting reports as pdf files in a batch
-process
+And then three new tables `PrintableInvoicesByJournal`
+:mod:`sales <lino_xl.lib.sales>`, :mod:`vat <lino_xl.lib.vat>` and
+:mod:`ana <lino_xl.lib.ana>`.
+
+And a new report :class:`lino_xl.lib.ana.AnalyticAccountsBalance`
+which inherits from :class:`lino_xl.lib.ledger.AccountsBalance` (do
+you see why I love Python?).
+
+Above changes caused quite some new entries to the
+:menuselection:`Reports` menu which starts to be a bit crowded now.
+Not yet sure how to solve this in an elegant way. Maybe a special
+"reporting dashboard". Keep in mind that one day we will want a
+feature of generating all legal accounting reports as pdf files in a
+batch process
 
 I fixed an old bug which caused entries of the
 :menuselection:`Accounting` menu to not always be in the user's
 language (by using :func:`django.utils.functional.lazystr`)
-
