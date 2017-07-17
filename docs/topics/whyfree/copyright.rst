@@ -65,6 +65,9 @@ The difference between "author right" and "copy right" is of such
 importance that I would report this unclear naming as a serious bug if
 the English language was a software project.
 
+A software product is the result of the collaboration of many humans.
+
+
 
 
 .. [#Moody] `Open access: All human knowledge is there—so why can’t

@@ -1,10 +1,4 @@
-============
-Introduction
-============
-
-Some illustrative examples.
-
-
+================
 The sandwich bar
 ================
 
@@ -50,26 +44,5 @@ public institutions as well except for some vocabulary. Replace
 
 I hope that this picture opens your eyes and that you start to feel
 with me why it is important to wake up.
-
-
-München
-=======
-
-- February 2014 `How Munich rejected Steve Ballmer and kicked
-  Microsoft out of the city
-  <http://www.techrepublic.com/article/how-munich-rejected-steve-ballmer-and-kicked-microsoft-out-of-the-city/>`_
-  (Nick Heath)
-
-
-- February 2017 `Nahendes LiMux-Aus: Open-Source-Szene trauert,
-  Microsoft jubelt
-  <https://www.heise.de/newsticker/meldung/Nahendes-LiMux-Aus-Open-Source-Szene-trauert-Microsoft-jubelt-3627759.html>`_
-
-
-Only one car manufacturer
-=========================
-
-Imagine there was only one car manufacturer on this planet.  Would you
-be worried about quality and security?
 
 
