@@ -37,27 +37,41 @@ I "fixed" this as follows::
 New tasks for Tera
 ==================
 
-- Übersetzung von "Entry date" muss sein "Eingabedatum", nicht
-  "Buchungsdatum"
+I met with Lydia and opened :ticket:`1976`.
+
+DONE:
   
-- MWSt-Erklärung zeigt überall 0. Muss sie aufs Belegdatum schauen
-  oder aufs Eingabedatum?  --> Weder noch; sie muss auf die
-  Buchungsperiode schauen.
+- VAT declarations must not select the observed period by a date range
+  and the entry date of the vouchers but by their accounting period.
+  Muss sie aufs Belegdatum schauen oder aufs Eingabedatum?  --> Weder
+  noch; sie muss auf die Buchungsperiode schauen.
+
+- For purchase invoices the payment_term is not needed per invoice
+  since anyway they serve only for computing a default value of
+  due_date. But for sales it is different, that's why we currently
+  leave the field also for purchases.
 
 - The display text of a countries.Place is currently "Eupen (None)"
-  which is stupid.
+  which is stupid. I added a new field
+  :attr:`lino_xl.lib.countries.Place.show_type` whose default value is
+  `False`.
 
-- tim2lino must import `PAR->Name2` as well. for example Partner
-  0150430 (ÖSHZ Eupen) has lots of others which iffer only by that
-  field.
+- :ticket:`1975` is a duplicate of :ticket:`492` and goes to Tonis.
+
+- tim2lino must import `PAR->Name2` as well. For example partner
+  0150430 (ÖSHZ Eupen) is now duplicate with lot of others which
+  differ only by that field.
   
+TODO:
+
+- Übersetzung von "Entry date" muss sein "Eingabedatum", nicht
+  "Buchungsdatum"
+
+- MWSt-Erklärung zeigt überall 0.
+
 - how to use tim2lino for importing master data without loosing
   invoices.
 
-- payment_terms only per partner, not per voucher. No need to have
-  them per invoice since they serve only for computing a default value
-  of due_date.
 
-- :ticket:`1975`
 
 
