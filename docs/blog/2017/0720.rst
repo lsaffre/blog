@@ -1,0 +1,63 @@
+:date: 2017-07-20
+
+=======================
+Thursday, July 20, 2017
+=======================
+
+
+Skype for Linux wants to update, but Ubuntu Software Updater says
+"This requires installing packages from unauthenticated sources." and
+the details say:
+
+| Changes for skypeforlinux versions:
+| Installed version: 5.3.0.1
+| Available version: 5.4.0.1
+| This update does not come from a source that supports changelogs.
+
+https://askubuntu.com/questions/578292/software-update-this-requires-installing-packages-from-unauthenticated-sources
+
+I "fixed" this as follows::
+
+    $ sudo apt remove skypeforlinux
+    $ sudo apt install skypeforlinux
+    [sudo] password for luc: 
+    Reading package lists... Done
+    Building dependency tree       
+    Reading state information... Done
+    The following packages will be upgraded:
+      skypeforlinux
+    1 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+    Need to get 53.9 MB of archives.
+    After this operation, 8,179 kB of additional disk space will be used.
+    WARNING: The following packages cannot be authenticated!
+      skypeforlinux
+    Install these packages without verification? [y/N] y
+
+
+New tasks for Tera
+==================
+
+- Übersetzung von "Entry date" muss sein "Eingabedatum", nicht
+  "Buchungsdatum"
+  
+- MWSt-Erklärung zeigt überall 0. Muss sie aufs Belegdatum schauen
+  oder aufs Eingabedatum?  --> Weder noch; sie muss auf die
+  Buchungsperiode schauen.
+
+- The display text of a countries.Place is currently "Eupen (None)"
+  which is stupid.
+
+- tim2lino must import `PAR->Name2` as well. for example Partner
+  0150430 (ÖSHZ Eupen) has lots of others which iffer only by that
+  field.
+  
+- how to use tim2lino for importing master data without loosing
+  invoices.
+
+- payment_terms only per partner, not per voucher. No need to have
+  them per invoice since they serve only for computing a default value
+  of due_date.
+
+- :ticket:`1975`
+
+
