@@ -1,0 +1,35 @@
+:date: 2017-07-22
+
+=======================
+Saturday, July 22, 2017
+=======================
+
+I continued to work for :ticket:`1874`. Thanks to writing down
+:ref:`tera.specs.tim2lino` I understood that individual therapies
+shouldn't be implemented as `coachings.Coaching` but as
+`courses.Course`. Also partner lists go away, these are courses as
+well.
+
+:func:`lino.utils.mti.mtichild` was originally written for avanti, but
+now we need it in tera as well.
+
+
+Optimizations in Amici
+======================
+
+I deactivated the :func:`site_setup` function in
+:mod:`lino_xl.lib.contacts.models` which called
+:meth:`set_detail_layout` for
+:class:`lino_xl.lib.countries.Places`. That was an obsolete method
+which disturbed now because I want a custom layout in
+:ref:`amici`. And actually in every application which uses
+:mod:`lino_xl.lib.addresses` we actually want the new
+`AddressesByCity` table. This means that all applications which use
+:mod:`lino_xl.lib.contacts` should now define that `detail_layout` in
+their `custom_layouts` module. Might cause some coding work.
+
+The default value for
+:attr:`lino.modlib.plausibility.Plugin.responsible_user` must be set
+in :meth:`on_plugins_loaded`, not in :meth:`on_site_startup`. Because
+otherwise we cannot override it in the Site's :meth:`setup_plugins`
+method.

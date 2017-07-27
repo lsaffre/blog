@@ -2,8 +2,9 @@
 Common knowledge
 ================
 
-The discussion about :doc:`why_free` is part of a more general idea.
-Software must be free because it is a form of *common knowledge*.
+The discussion about :doc:`/topics/whyfree/index` is part of a more
+general idea.  Software must be free because it is a form of *common
+knowledge*.
 
 **Common knowledge** is knowledge that has been acquired and
 formulated by more than one author. Such knowledge should *by default*

@@ -1,0 +1,186 @@
+:date: 2017-07-27
+
+=======================
+Thursday, July 27, 2017
+=======================
+
+Lino Tera continued
+===================
+
+
+Here is the new list of tasks for me after my meeting with Lydia
+yesterday.
+
+DONE:
+
+- The meanings of :attr:`entry_date` and :attr:`voucher_date` of
+  :class:`lino_xl.lib.ledger.Voucher` were a bit unclear and messy.  I
+  redefined them now. The `voucher_date` is actually used only for
+  information and only in public administrations where they want that
+  information for some reason I don't recall right now.
+
+  Attention, this will require a data migration for production sites
+  with existing data (e.g. :ref:`eiche`) where both `entry_date` and
+  `voucher_date` should be set to `voucher_date` (and existing values
+  in entry_date are worthless and will be lost).
+
+TODO:
+
+- We managed to reproduce :ticket:`1975` (Daten im oberen Teil des
+  Dokuments verschwinden wenn man registriert): Neue EKR erstellen. An
+  Rumma. Im Betreff "test" eingeben. Nicht speichern, sondern sofort
+  unten ein Konto 610211 eingeben, Betrag inkl. 123€, und dann
+  Registrieren klicken. NB passiert nur, wenn es eine soeben erstellte
+  EKR ist.
+  
+- Eingabedatum (wann ich es eingegeben habe) interessiert uns
+  nicht. entry_date = Buchungsdatum sollte par défaut gleich
+  
+ 
+- MWSt-Erklärung hat zwei Felder "Buchungsperiode". Labels spezifizieren.
+
+- Buchungsperiode soll laut BELEGdatum sein. Aber man muss
+  Buchungsperiode manuell ändern können. Falls BP abgeschlossen ist,
+  sollte Lino sie nicht mehr vorschlagen.
+  Data checker mit fix.
+  
+- Kontenbewegungen nach Buchungsperiode filtern können.
+  
+- Alle EKR sind im Q4 verbucht, das ist falsch.
+  
+- Testen, ob MWSt-Erklärung für Q1 jetzt funktioniert,
+  
+- Analytic Accounts Balance 2017 ist leer, obschon EKR existieren.
+  
+- Journal "Zahlungsaufträge" fehlt noch.
+  
+- Man kann Einschreibungen nicht bestätigen.
+  
+- Termin Familiengruppe machen und Anwesenheiten erfassen können.
+
+LATER:
+
+- Layout EKR noch zu optimieren. Zahlungsbedingung kann
+  raus.
+
+- Wenn ich Belegdatum ändere, sollte er Zahlungziel
+  anpassen. (unwichtig, weil es im insert_layout machbar ist)
+  
+- Was passiert wenn jemand umzieht? Momentan ist es so, dass man auch
+  beim Konsultieren einer alten Aktivität die neue Adresse sieht. Die
+  alte Adresse könnte man sich bei Bedarf als Bemerkung reinschreiben.
+  
+- Und dann kommt natürlich die Frage, wie das alles fakturiert werden soll.
+
+
+
+
+TypeError: __init__() takes exactly 4 arguments (2 given)
+=========================================================
+
+Intermetzzo. I received an error message from a production site where
+a bug caused an exception when trying to render as JSON a date with a
+year below 1900:
+
+>>> import datetime
+>>> from lino import startup
+>>> startup('lino_book.projects.min1.settings.demo')
+>>> from lino.utils.jsgen import py2js
+>>> print(py2js(datetime.date(2017, 7, 27)))
+"27.07.2017"
+>>> print(py2js(datetime.date(217, 7, 27)))  #doctest: +SKIP
+Traceback (most recent call last):
+  ...
+TypeError: __init__() takes exactly 4 arguments (2 given)
+
+After the fix it works:
+
+>>> print(py2js(datetime.date(17, 7, 27)))
+"27.07.17"
+
+
+They didn't yet complain, but I had a feeling that I should dive into
+this.  I wrote the following :manage:`run` script on their production
+server::
+
+    from lino.api.shell import *
+    print(isip.Contract.objects.filter(applies_from__year__lt=1900))
+    print(isip.Contract.objects.filter(applies_until__year__lt=1900))
+    print(isip.Contract.objects.filter(date_issued__year__lt=1900))
+    print(isip.Contract.objects.filter(date_decided__year__lt=1900))
+
+
+And indeed, the output was::
+  
+    [Contract #340 ('ISIP#340 (Yamina XXXX)')]
+    []
+    []
+    []
+
+And indeed, it was not possible to show that contract ISIP#340
+through the web interface. I ran another script to repair it::
+
+    from lino.api.shell import *
+    obj = isip.Contract.objects.filter(applies_from__year__lt=1900)[0]
+    print(obj.applies_from)
+    0217-05-18
+    obj.applies_from = obj.applies_from.replace(year=2017)
+
+
+Now that the bug is fixed, it is again possible to display dates
+before 1900.
+
+I didn't deploy that fix to their production site since this is
+probably a rather rare case. No need to panic.
+
+I started to write a page :ref:`lino.specs.jsgen` in the Developers
+Guide which tests that bug.
+
+
+API change about current user type
+==================================
+
+I continued a bit on the new :ref:`lino.specs.jsgen` page because it
+seems to be a good place for exploring and documenting questions like
+"What is a table handle and why do we need it?".
+
+I added a new method :meth:`lino.modlib.users.UserType.context` which
+returns a context manager so you can now write::
+
+  with UserTypes.admin.context():
+      # some code
+
+For this I moved the `_for_user_profile` global variable and the logic
+for handling it from :mod:`lino.utils.jsgen` to
+:mod:`lino.modlib.users.utils`.
+
+Instead of saying::
+  
+    from lino.utils import jsgen
+    if jsgen._for_user_profile ...
+
+you must now say::  
+
+  from lino.modlib.users.utils import get_user_profile
+  if get_user_profile() ...
+    
+I adapted also :ref:`extjs6` and added a test case there because this
+failure was not being detected.
+
+With all this I still didn't find a satisfying answer to the question
+"What is a table handle and why do we need it?"  so far. Maybe this is
+code left behind by history which can be simplified now.  Deserves
+more work. But for now I abandon it because customers are waiting...
+
+Adapt the test suites
+=====================
+
+I took some more time for getting the complete test suite pass again.
+Which made me discover :ticket:`1985`. I investigated more than an
+hour. Something is wrong there, but I still cannot even say whether it
+is just a trivial problem or something fundamental. Not urgent since
+the Welfare accounting project is currently waiting for political
+decision.
+
+I removed the disturbing :ticket:`1173` debug messages in kernel and
+actors.

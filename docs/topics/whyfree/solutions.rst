@@ -4,7 +4,7 @@ Solutions
 
 
 Yes, choosing free software *does* make our life more complicated.
-But your sovereignity is inalienable[#rousseau]_ and *worth the
+But your sovereignity is inalienable [#rousseau]_ and *worth the
 effort*.
 
 You need to consider the challenges and decide bravely how to

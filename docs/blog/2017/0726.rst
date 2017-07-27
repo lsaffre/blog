@@ -1,0 +1,72 @@
+:date: 2017-07-26
+
+========================
+Wednesday, July 26, 2017
+========================
+
+I continued to work for :ticket:`1874`.
+Today I will deploy it to their production site
+and analyze them with Lydia.
+
+
+The debugging messages of style :message:`18072017,
+h:|courses.EnrolmentsByCourseHandle|, hname:|_lino_ui_handle| #1955`
+introduced by Tonis for :ticket:`1955` in :mod:`lino.core.actors` and
+:mod:`lino.core.kernel` are disturbing for the moment.  I guess that
+the "right" way in this situation is to change them to debug level in
+the code and then use logging config on jane in order to set log level
+to DEBUG for these modules. But for now I just commented them out
+manually on the site's copy of the Lino repo.  This is an exceptional
+situation, let's not waste our time on this right now.
+
+
+Once more (as already :doc:`0623`) we have the challenge that we want
+to re-import master data (partners, clients, courses, enrolments) from
+TIM but do not want to loose accounting data. Here is the general
+approach:
+
+- make snapshot a (before upgrade)
+  
+- pull.sh
+  
+- `django run a/restore.py` and repair manual migration issues:
+    
+    - "TypeError: 'client_state' is an invalid keyword argument for
+      this function" (File "20170726/a/restore.py", line 546, in
+      create_contacts_partner)
+    - "TypeError: 'event_policy_id' is an invalid keyword argument for
+      this function" (File "20170726/a/restore.py", line 1116, in
+      create_tera_client)
+
+
+- make snapshot b (after restoring a into new version)
+
+- Run `./init_demo.sh` in order to (correctly) re-import all data from
+  TIM. This will destroy all bookings which were already done.
+
+- make snapshot c (with correct partners but without bookings)
+
+- copy the following files from b to c (overriding files in c)::
+
+    finan_*.py
+    sales_*.py
+    ledger_*.py
+    accounts_*.py
+    products_*.py
+    vat_*.py
+    ana_*.py
+
+- Run `django run c/restore.py`
+
+
+Session log::
+
+    $ a
+    $ ./make_snapshot.sh
+    $ mkdir 20170726
+    $ mv snapshot 20170726/a
+    $ ./pull.sh
+    $ python manage.py run a/restore.py
+    
+
+
