@@ -1,0 +1,119 @@
+:date: 2017-07-28
+
+=====================
+Friday, July 28, 2017
+=====================
+
+Lino Tera continued
+===================
+
+Here is the new list of tasks for me after my meeting with Lydia
+yesterday (:ticket:`1982`).
+
+DONE:
+
+- Pro Beleg haben wir jetzt das Buchungsdatum (entry_date), und ein
+  eventuelles Belegdatum (voucher_date), das aber höchstens zur Info
+  irgendwo im Hintergrund steht.
+  
+- Eine MWSt-Erklärung kann jetzt mehrere Monate auf einmal deklarieren.
+ 
+- Buchungsperiode soll laut Buchungsdatum sein. Aber man muss
+  Buchungsperiode manuell ändern können.
+
+- Kleine Rechenfehler in gewissen Feldern der MWSt-Erklärung.
+
+- Kontenbewegungen und Belege nach Buchungsperiode filtern können.
+  
+- Analytic Accounts Balance 2017 ist leer, obschon EKR existieren.
+  
+- Man kann Einschreibungen nicht bestätigen.
+  
+- Translations
+
+TODO:
+
+- :ticket:`1975` (Daten im oberen Teil des Dokuments verschwinden wenn
+  man registriert) ist jetzt reproduzierbar: Neue EKR erstellen. An
+  Rumma. Im Betreff "test" eingeben. Nicht speichern, sondern sofort
+  unten ein Konto 610211 eingeben, Betrag inkl. 123€, und dann
+  Registrieren klicken. NB passiert nur, wenn es eine soeben erstellte
+  EKR ist.
+  
+TODO after deployment:
+
+- Journal "Zahlungsaufträge" fehlt noch.
+- Alle EKR sind im Q4 verbucht, das ist falsch.
+- Testen, ob MWSt-Erklärung für Q1 jetzt funktioniert,
+- Termin Familiengruppe machen und Anwesenheiten erfassen können.
+
+  
+  
+LATER:
+
+- Falls Buchungsperiode abgeschlossen ist, sollte Lino sie nicht mehr
+  vorschlagen, sondern die erste offene BP danach nehmen.
+  
+- Data checker "Buchungsdatum und Buchungsperiode" (mit fix).
+  
+- Layout EKR noch zu optimieren. Zahlungsbedingung kann
+  raus.
+
+- Wenn ich Belegdatum ändere, sollte er Zahlungziel
+  anpassen. (unwichtig, weil es im insert_layout machbar ist)
+  
+- Was passiert wenn jemand umzieht? Momentan ist es so, dass man auch
+  beim Konsultieren einer alten Aktivität die neue Adresse sieht. Die
+  alte Adresse könnte man sich bei Bedarf als Bemerkung reinschreiben.
+  
+- Und dann kommt natürlich die Frage, wie das alles fakturiert werden soll.
+
+
+
+
+
+The :mod:`lino.mixins.periods` module defines model mixins and
+parameter panels for handling date ranges::
+
+  DatePeriod(Model) : start_date, end_date
+
+  CombinedDateTime(Model) : set_datetime() and get_datetime()
+  - Started(CombinedDateTime) : start_date, start_time
+  - Ended(CombinedDateTime) : end_date, end_time
+  
+  ObservedPeriod(ParameterPanel) : start_date, end_date
+  - Yearly(ObservedPeriod)
+  - Monthly(ObservedPeriod)
+
+  Today(ParameterPanel) : today
+  
+In :mod:`lino.utils.dates` we define :class:`DatePeriodValue` which is
+a volatile version of :class:`DatePeriod`.  Now we need something
+similar for accounting periods. Similar but simpler.
+
+See also the :class:`PeriodEvents` choicelist and its choices in
+:mod:`lino.modlib.system.choicelists`.
+
+CHANGES:
+
+- renamed :class:`DatePeriod` to
+  :class:`lino.mixins.periods.DateRange` and :class:`DatePeriodValue` to
+  DateRangeValue
+- renamed ObservedPeriod to ObservedDateRange  
+- New model mixin :class:`lino_xl.lib.ledger.PeriodRange` with two
+  fields start_period and end_period.
+
+
+
+Miscellaneous
+=============
+
+- ledger.Momements are now ordered by `id` because without any
+  ordering it produced output in some test cases.
+
+- :command:`inv mm` failed in lino because babel stumbled when parsing
+  :mod:`lino.sphinxcontrib.help_texts_extractor`.
+
+- Translations for
+  :class:`lino_xl.lib.beid.choicelists.ResidenceTypes` caused me some
+  surf time

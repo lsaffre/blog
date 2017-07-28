@@ -4,26 +4,37 @@
 Thursday, July 27, 2017
 =======================
 
+
+Today I redefined the meanings of :attr:`entry_date` and
+:attr:`voucher_date` of :class:`lino_xl.lib.ledger.Voucher`. Because
+they were a bit unclear and messy.  What counts is the `entry_date`
+(i.e. the date of the ledger entry, IOW where this voucher should
+appear in the ledger).  The `voucher_date` is actually used only for
+information and only in public administrations where they want that
+information for some reason I don't recall right now.
+
+Attention, this will require a data migration for production sites
+with existing data (e.g. :ref:`eiche`) where both `entry_date` and
+`voucher_date` should be set to `voucher_date` (and existing values
+in entry_date are worthless and will be lost).
+
+
+
 Lino Tera continued
 ===================
 
-
 Here is the new list of tasks for me after my meeting with Lydia
-yesterday.
+yesterday (:ticket:`1982`).
 
 DONE:
 
-- The meanings of :attr:`entry_date` and :attr:`voucher_date` of
-  :class:`lino_xl.lib.ledger.Voucher` were a bit unclear and messy.  I
-  redefined them now. The `voucher_date` is actually used only for
-  information and only in public administrations where they want that
-  information for some reason I don't recall right now.
-
-  Attention, this will require a data migration for production sites
-  with existing data (e.g. :ref:`eiche`) where both `entry_date` and
-  `voucher_date` should be set to `voucher_date` (and existing values
-  in entry_date are worthless and will be lost).
-
+- Eingabedatum (wann ich es eingegeben habe) interessiert uns
+  nicht. Pro Beleg haben wir jetzt das Buchungsdatum (entry_date), und
+  ein eventuelles Belegdatum (voucher_date) ist höchstens noch zur
+  Info irgendwo im Hintergrund.
+  
+- MWSt-Erklärung hat zwei Felder "Buchungsperiode". Labels spezifizieren.
+ 
 TODO:
 
 - We managed to reproduce :ticket:`1975` (Daten im oberen Teil des
@@ -33,12 +44,6 @@ TODO:
   Registrieren klicken. NB passiert nur, wenn es eine soeben erstellte
   EKR ist.
   
-- Eingabedatum (wann ich es eingegeben habe) interessiert uns
-  nicht. entry_date = Buchungsdatum sollte par défaut gleich
-  
- 
-- MWSt-Erklärung hat zwei Felder "Buchungsperiode". Labels spezifizieren.
-
 - Buchungsperiode soll laut BELEGdatum sein. Aber man muss
   Buchungsperiode manuell ändern können. Falls BP abgeschlossen ist,
   sollte Lino sie nicht mehr vorschlagen.
