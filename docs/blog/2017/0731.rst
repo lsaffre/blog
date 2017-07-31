@@ -1,0 +1,114 @@
+:date: 2017-07-31
+
+=====================
+Monday, July 31, 2017
+=====================
+
+I have a reproducible variant of :ticket:`352` in :ref:`tera`:
+
+- runserver in :mod:`lino_book.projects.lydia`
+- log in as robin
+- Select :menuselection:`Activities --> Individual therapies`
+- Double click on the first line "ÕUNAPUU Õie (166)"
+- Switch to "Enrolments" tab
+- Click the "Confirm" action in the table of enrolments
+
+You get the following error message:
+
+    **Bad Request**
+
+    Exception: ParameterStore of LayoutHandle for lino.core.layouts.ParamsLayout on lino_xl.lib.courses.desktop.Enrolments expects a list of 6 values but got 10: [u'', u'', u'', u'', u'', u'', u'', u'', u'', u'']
+
+and the server log says::
+
+
+    AjaxExceptionResponse Exception: ParameterStore of LayoutHandle for lino.core.layouts.ParamsLayout on lino_xl.lib.courses.desktop.Enrolments expects a list of 6 values but got 10: [u'', u'', u'', u'', u'', u'', u'', u'', u'', u'']
+
+    in request GET /api/courses/EnrolmentsByTherapy/58?_dc=1501471612563&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&an=wf1&sr=58
+    TRACEBACK:
+      File "/site-packages/django/core/handlers/base.py", line 185, in _get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/py27/local/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/lino/lino/modlib/extjs/views.py", line 465, in get
+        ar = ba.request(request=request, selected_pks=[pk])
+      File "/lino/lino/core/boundaction.py", line 78, in request
+        return self.actor.request(*args, **kw)
+      File "/lino/lino/core/dbtables.py", line 350, in request
+        return TableRequest(**kw)
+      File "/lino/lino/core/requests.py", line 1109, in __init__
+        BaseRequest.__init__(self, **kw)
+      File "/lino/lino/core/requests.py", line 211, in __init__
+        self.setup(**kw)
+      File "/lino/lino/core/tablerequest.py", line 350, in setup
+        ActionRequest.setup(self, **kw)
+      File "/lino/lino/core/requests.py", line 1167, in setup
+        pv.update(ps.parse_params(request))
+      File "/lino/lino/core/store.py", line 928, in parse_params
+        self, len(self.param_fields), len(pv), pv))
+
+    [31/Jul/2017 03:26:52] "GET /api/courses/EnrolmentsByTherapy/58?_dc=1501471612563&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&pv=&an=wf1&sr=58 HTTP/1.1" 400 208
+
+
+
+The problem was a tough one.
+
+We do not want `Lino.run_row_action` to add the parameter values of
+its requesting panel when it is being run from within a "non-main
+context". A "non-main context" is currently only in
+:meth:`lino.core.actors.Actor.slave_as_html_meth` (i.e. when
+:attr:`slave_grid_format <lino.core.actors.Actor.slave_grid_format>`
+is ``html``.  We now have a new attribute
+:attr:`lino.core.requests.BaseRequest.is_on_main_actor` per .
+
+Note that currently we also don't pass the mk and mt paramneters
+(master key and master type). I think that this is correct.
+
+But all this is to be observed.
+
+
+Later I tried whether this fixes :ticket:`1989`. But it didn't. I
+continued to search.
+
+Side effects:
+
+- I saw that :meth:`lino.core.utils.InstanceAction.request_from` still
+  used the deprecated :meth:`lino.core.requests.BaseRequest.setup_from`
+  method. I converted it.
+
+- I saw that actually we must explicitly specify
+  `is_on_main_actor=False` on most application code below
+  :meth:`get_slave_summary`.  Hm... not very nice...
+
+But still no fix for  :ticket:`1989`
+Here is the sequece to reproduce it:
+
+- runserver in :mod:`lino_book.projects.adg`
+- Log in as robin
+- Contacts --> Clients
+- Double click on the first client, click on the "Trends" tab.
+- In the Responses panel, under "Political compass" click on the green
+  plus to create a new response
+- Confirm the insert window unchanged. Lino creates a Response object
+  with default answers and displays it.
+- Click some answer in the first question ("1) If economic
+  globalisation is inevitable, ...".
+
+Note that the error comes only immediately after insert. The only
+difference is that after an insert the requesting panel is null.
+
+After insert::
+
+  javascript:Lino.polls.Responses.toggle_choice(null,false,14,{ "fv": [ 2, 32 ] })
+
+On existing record::  
+
+  javascript:Lino.polls.Responses.toggle_choice("ext-comp-2445",false,14,{ "fv": [ 2, 32 ] })
+
+  
+But that observation doesn't explain. I activated a few console.log
+calls in `linoweb.js` for debugging (all marked `20170731`).
+
+But for today I abandon...  I checked in everything. 

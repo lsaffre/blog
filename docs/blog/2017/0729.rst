@@ -1,0 +1,76 @@
+:date: 2017-07-29
+
+=======================
+Saturday, July 29, 2017
+=======================
+
+Upgrade for :ref:`spz`
+======================
+
+I deployed my changes for :ticket:`1982` to their production site.
+
+And again, as already :doc:`0623` and :doc:`0726`, we want to
+re-import master data from TIM without loosing accounting data.  This
+time it is mainly because we want to have the legacy `PAR->IdPar`
+numbers as the `ref` of each `Course`.
+
+Here is the general approach:
+
+- make snapshot a (before upgrade)
+- pull.sh
+- `python manage.py run a/restore.py` and repair manual migration issues
+- make snapshot b (after restoring a into new version)
+- Run `./init_demo.sh` in order to (correctly) re-import all data from
+  TIM. This will destroy all bookings which were already done.
+- make snapshot c (with correct partners but without bookings)
+- copy the following files from b to c (overriding files in c)::
+
+    finan_*.py 
+    sales_*.py
+    ledger_*.py
+    accounts_*.py
+    products_*.py
+    vat_*.py
+    ana_*.py
+- `python manage.py run c/restore.py` to put it all together.
+
+I wrote a run script for manually converting some of their voucher
+dates.
+
+I fixed some exceptions which occured when
+:meth:`Movement.get_mti_leaf` returned None. This situation was
+exceptional, it came because the VAT declaration was lost during data
+migration, but its movements were there.
+
+TODO: write a data checker for Movement which detects this and removes
+the movements.
+  
+
+Miscellaneous
+=============
+
+- TravisCI `build #271
+  <https://travis-ci.org/lino-framework/welfare/builds/258708897>`__
+  failed. I updated the :xfile:`.travis.yml` file: no more
+  need to support Django 1.9 and 1.10. And Python 3 is now 3.6 (no
+  need for 3.5 and 3.4). Same for book and other projects.
+
+Lino too big for ReadTheDocs?
+=============================
+
+The builds on readthedocs currently fail because :ref:`book` is too
+big: `latest
+<https://readthedocs.org/projects/lino/builds/5758472/>`__ was simply
+"Killed" and `stable
+<https://readthedocs.org/projects/lino/builds/5758473/>`__ "exited due
+to time out (took 897 seconds)".
+
+I guess that if I file an issue, the readthedocs team will tell us to
+split the book into smaller parts.  But I don't see how we could do
+that.  The two biggest beasts of the book (:ref:`specs` and
+:ref:`api`) are recursively interdependent: module docstrings usually
+refer to the specs page which describes them, and specs usually refer
+to elements of the API.  And note that the Lino specs are far from
+being complete.  And note that we plan to include Voga and Welfare
+into the book as well.  Hmm...
+
