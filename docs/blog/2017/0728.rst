@@ -27,11 +27,16 @@ DONE:
   
 - Analytic Accounts Balance 2017 ist leer, obschon EKR existieren.
   
-- Man kann Einschreibungen nicht bestätigen.
+- Journal "Zahlungsaufträge" fehlte noch.
+- Alle EKR waren im Q4 verbucht, das ist ist jetzt korrigiert.
+- MWSt-Erklärung für Q1 funktioniert jetzt scheinbar
   
 - Translations
 
 TODO:
+
+- Man kann Einschreibungen nicht bestätigen.
+- Termin Familiengruppe machen und Anwesenheiten erfassen können.
 
 - :ticket:`1975` (Daten im oberen Teil des Dokuments verschwinden wenn
   man registriert) ist jetzt reproduzierbar: Neue EKR erstellen. An
@@ -41,11 +46,6 @@ TODO:
   EKR ist.
   
 TODO after deployment:
-
-- Journal "Zahlungsaufträge" fehlt noch.
-- Alle EKR sind im Q4 verbucht, das ist falsch.
-- Testen, ob MWSt-Erklärung für Q1 jetzt funktioniert,
-- Termin Familiengruppe machen und Anwesenheiten erfassen können.
 
   
   
@@ -98,10 +98,19 @@ CHANGES:
 
 - renamed :class:`DatePeriod` to
   :class:`lino.mixins.periods.DateRange` and :class:`DatePeriodValue` to
-  DateRangeValue
-- renamed ObservedPeriod to ObservedDateRange  
-- New model mixin :class:`lino_xl.lib.ledger.PeriodRange` with two
-  fields start_period and end_period.
+  :class:`lino.utils.dates.DateRangeValue`.
+- renamed ObservedPeriod to :class:`ObservedDateRange
+  <lino.mixins.periods.ObservedDateRange>`.
+- New model mixins :class:`PeriodRange
+  <lino_xl.lib.ledger.PeriodRange>` and :class:`PeriodRangeObservable
+  <lino_xl.lib.ledger.PeriodRangeObservable>` in
+  :mod:`lino_xl.lib.ledger` (:class:`PeriodRange
+  <lino_xl.lib.ledger.PeriodRange>` is used by
+  :class:`lino_xl.lib.vat.VatDeclaration` while
+  :class:`PeriodRangeObservable
+  <lino_xl.lib.ledger.PeriodRangeObservable>` is used by
+  :class:`Movement <lino_xl.lib.ledger.Movement>` and
+  :class:`Voucher <lino_xl.lib.ledger.Voucher>`).
 
 
 
@@ -111,7 +120,7 @@ Miscellaneous
 - ledger.Momements are now ordered by `id` because without any
   ordering it produced output in some test cases.
 
-- :command:`inv mm` failed in lino because babel stumbled when parsing
+- :command:`inv mm` failed in Lino because babel stumbled when parsing
   :mod:`lino.sphinxcontrib.help_texts_extractor`.
 
 - Translations for
