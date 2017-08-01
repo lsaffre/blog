@@ -307,6 +307,15 @@ SPZ Eupen
 Website: http://www.spz.be/
 
 
+.. _jane:
+
+Jane
+----
+
+**Jane** is the site where we at :ref:`rumma` store our knowledge
+using a :ref:`noi`.
+
+
 .. _abakus:
 
 Abakus

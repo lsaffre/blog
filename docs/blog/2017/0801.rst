@@ -1,0 +1,149 @@
+:date: 2017-08-01
+
+=======================
+Tuesday, August 1, 2017
+=======================
+
+Here is another problem (:ticket:`1991`) which happened on the
+:ref:`tera` production server::
+   
+    Traceback (most recent call last):
+      File "/env/local/lib/python2.7/site-packages/django/core/handlers/base.py", line 185, in _get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/env/local/lib/python2.7/site-packages/django/db/models/query.py", line 380, in get
+        return self.dispatch(request, *args, **kwargs)
+      File "/env/local/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/repositories/lino/lino/modlib/extjs/views.py", line 577, in get
+        for row in ar.sliced_data_iterator]
+      File "/repositories/lino/lino/core/store.py", line 1122, in row2list
+        v = fld.full_value_from_object(row, ar)
+      File "/repositories/lino/lino/core/store.py", line 374, in full_value_from_object
+        return self.vf.value_from_object(obj, ar)
+      File "/repositories/lino/lino/core/fields.py", line 497, in value_from_object
+        return m(obj, ar)
+      File "/repositories/xl/lino_xl/lib/excerpts/mixins.py", line 168, in printed
+        ex = self.printed_by
+      File "/env/local/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.py", line 184, in __get__
+        rel_obj = self.get_object(instance)
+      File "/env/local/lib/python2.7/site-packages/django/db/models/fields/related_descriptors.py", line 159, in get_object
+        return qs.get(self.field.get_reverse_related_filter(instance))
+      File "/env/local/lib/python2.7/site-packages/django/db/models/query.py", line 380, in get
+        self.model._meta.object_name
+    DoesNotExist: Excerpt matching query does not exist.
+
+
+
+    [Tue Aug 01 00:03:29.791879 2017] [authz_core:debug] [pid 3114:tid 140152080881408] mod_authz_core.c(809): [client 127.0.0.1:51489] AH01626: authorization result of <RequireAny>: granted, referer: http://lino-spz:8080/
+    
+
+I fixed it locally with a :manage:`run` script::
+
+    from lino.api.shell import *
+    qs = sales.VatProductInvoice.objects.filter(printed_by_id__isnull=False)
+    for o in qs:
+      o.printed_by = None
+      o.save()
+
+The problem is probably reproducible as follows:
+
+- print a sales invoices (so that its printed_by field is non-empty)
+- make a database snapshot
+- comment out the line with excerpts_excerpt.py
+- restore the snapshot
+- try to view your invoice using the web interface
+
+Do we need a command for repairing broken foreign keys (as we have a
+:class:`lino.modlib.gfks.BrokenGFKs` table)? I'd say no because I
+consider this situation rather a case of database corruption.
+
+
+Note that `printed_by` (defined by
+:class:`lino_xl.lib.excerpts.Certifiable`) is a *nullable* FK, so we
+don't need to be "careful" when testing whether it is None or not. The
+following code was too careful::
+
+       if self.printed_by_id is None:
+           return ''
+       ex = self.printed_by
+       if ex is None:
+           return ''
+
+This code is enough::           
+
+       ex = self.printed_by
+       if ex is None:
+           return ''
+       if ex is None:
+           return ''
+
+Both variants of above code caused a `DoesNotExist` error in the
+corrupt database, so there is no need to be careful.
+
+
+Make Service report usable
+==========================
+
+:ticket:`1993` (Make Service report usable) was because
+:class:`ServiceReport <lino_noi.lib.clocking.ServiceReport>` gave
+:useless results on ref:`jane`.  I did two changes in
+::mod:`lino_xl.lib.tickets` and :mod:`lino_noi.lib.clocking` in order
+:to get it work.
+
+
+Here is a use case for when to define a local :attr:`workflows_module
+<lino.core.site.Site.workflows_module>` on a production site.
+
+ReportingTypes
+
+
+from lino_noi.lib.noi.workflows import *
+from lino.api import rt, _
+ReportingTypes = rt.models.clocking.ReportingTypes
+ReportingTypes.clear()
+add = ReportingTypes.add_item
+add('10', _("Time"), 'regular')
+
+#ReportingTypes.free.remove()
+#ReportingTypes.extra.remove()
+#ReportingTypes.regular.text = _("Time")
+
+     
+Note that this required a third little change to support redefining
+`clocking.ReportingTypes` in :attr:`workflows_module
+<lino.core.site.Site.workflows_module>`: the plugin's
+:attr:`default_reporting_type
+<lino_xl.lib.clocking.Plugin.default_reporting_type>` setting must be
+resolved in :meth:`post_site_startup
+<lino.core.plugin.Plugin.post_site_startup>`, not already in
+:meth:`on_site_startup <lino.core.plugin.Plugin.on_site_startup>`.
+
+
+I then did a release because there was hope that the folllowing issue
+would get fixed with the newest version of :ref:`extjs6`:
+
+- my issue is that when I try to change language for an excerpt from
+  english to german then it doesn't accept it.
+
+- first issue is that i need to click the refresh button after loading
+  that page because after loading the page, the excerpt Type combobox
+  is empty
+
+- when i click the refresh action, Lino asks me whether I want to save
+  my changes (though that's nonsense because I didn't do any changes)
+
+- it works when i just say No (to not save) but then I still cannot
+  change the language from English to German
+
+Some adventure during the release:
+
+- :xfile:`make_snapshot.sh` failed because it was killed due to low
+  memory. After a reboot of the server it worked. The reboot took
+  much time.
+
+- git pull reported three unpushed local commits in Lino. We guess
+  that they were inadvertently there, and it seems that they didn't
+  actually cause any code change.
+
+After the release it turned out that this did not fix the problem. So
+the customers got their service reports in English this month.
