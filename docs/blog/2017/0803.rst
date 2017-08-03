@@ -1,0 +1,124 @@
+:date: 2017-08-03
+
+========================
+Thursday, August 3, 2017
+========================
+
+Lino Tera Session 1
+===================
+
+I worked on :ticket:`1995`:
+
+DONE:
+
+- Wenn ich versuche, das Journal EKR auszudrucken, kommt "Bitte
+  warten" (und auf dem Server ein traceback ImportError: No module
+  named 'unohelper')
+- MWSt-Erklärung : Ihr habt eine "Déclaration spéciale", die hat
+  andere Felder als die normale MWSt-Erklärung.
+- MWSt-Erklärung : du musst unterscheiden können zwischen
+  Dienstleistungen und Waren
+- MWSt-Erklärung : man sieht die Zahlen nicht immer sofort sondern
+  muss manchmal zuerst Refresh klicken
+- ZKBC fehlt im Menü
+- In "Berichte" habe ich zweimal "Saldenliste Lieferanten" und keinmal
+  Saldenliste Kunden".
+- Datenimport : wenn ich auf einen Haushalt gehe, kann ich nicht die
+  Aktivitäten pro Haushalt sehen. Statt wie bisher zwei Felder
+  "Klient" und "Haushalt" pro Aktivität haben wir dort jetzt ein
+  einziges Feld Partner. Anders als bei :ref:`voga` bezahlen in
+  :ref:`tera` nicht die Teilnehmer sondern der Partner einer
+  Aktivität.  Der *Partner* einer Aktivität ist derjenige, um den es
+  geht. Normalerweise ist das auch derjenige, der bezahlt (es sei denn
+  der Partner hat eine Fakturationsadresse). Es könnte auch
+  Aktivitäten ohne Partner geben (bei denen jeder Teilnehmer bezahlt),
+  und der Partner kann z.B. eine Organisation sein.
+
+TODO:  
+  
+- When I set the VAT regime of an invoice to :attr:`intracom
+  <lino_xl.lib.vat.VatRegimes.intracom>` and then start adding items
+  in :class:`lino_xl.lib.vat.ItemsByInvoice`, then Lino still uses the
+  VAT rule for :attr:`normal <lino_xl.lib.vat.VatRegimes.normal>`
+  because the upper part has not been saved. Lino should ask to submit
+  the detail form before allowing to edit any cell of a slave grid.
+ 
+- Zahlungsziel : [u"Invalid value for this field (invalid literal for
+  int() with base 10: '27/02/2017')."] kommt wenn ich Ctrl-S in einem
+  Datumsfeld eingebe.
+
+- When I create a new Journal, the main menu gets updated only after a
+  server restart. Because the menu is cached somewhere.
+  
+- Datenimport : z.B. Kötters-Kalpers steht 2x als Haushalt
+
+The remaining TODO are lesse urgent. I did a deploy to their
+production site and some testing, then invited Lydia to a next field
+visit.
+  
+  
+New API feature
+===============
+
+It is now possible to specify the :attr:`detail_layout
+<lino.core.actors.Actor.detail_layout>` of an actor as a string in the
+form ``'foos.FooDetail'``.  Or more abstractly if the
+:attr:`detail_layout` is (1) a string and (2) that string contains *a
+dot ('.')* **and** *no newlines*, then Lino now takes this as the name
+of the class to be used.  If it is a string with at least one newline
+(or, special case, no newline but also no dot) then we have our old
+rule that it is taken as the `main` of a default :class:`DetailLayout
+<lino.core.layouts.DetailLayout>`.
+
+For example::
+
+    class Courses(dd.Table):
+        ...
+        detail_layout = 'courses.CourseDetail'
+
+        
+This new feature was necessary because otherwise it could become very
+tricky to override the detail layout in an extended plugin. Until now
+you had to define a new class and to assign an instance of that class
+to every actor which uses it.  But e.g. in :mod:`lino_xl.lib.courses`
+we have a lot of subclasses of the :class:`Courses` actor.
+
+Miscellaneous
+=============
+
+- The default value for `default_vat_regime` is now ``"normal"`` and
+  no longer ``"private"``.
+
+- I am still fiddling with the different sorting orders of
+  :class:`lino_xl.lib.ledger.Movements` table.  The challenge here is
+  that the order is important when testing the output in a doctest. But
+  :meth:`get_wanted_movements` does not yield the movements in a
+  constant order because it uses a dict to group them.
+
+- I explored some error messages from readthedocs.org and travis.
+  Posted an `issue on RTF <https://github.com/rtfd/readthedocs.org/issues/3031>`__.
+
+On Travis I had "There are known rendering problems with Cairo ..."
+and wanted to search for this in Jane. But Jane didn't know.  I then
+used `find-grep` in my blog and found :doc:`0406`. Yes of course, Jane
+does't read my developer blog. And it still seems that I won't get
+used to writing comments in Jane instead writing my blog. To be
+meditated. Jane should read my blog and store it in the database.  But
+how? One idea is that Jane could read my blog's RSS feed.  Another
+idea is that Jane would herself use Sphinx to read the source files of
+my blog.
+
+
+
+Lino Tera Session 2
+===================
+
+After speaking with Lydia I continued working on :ticket:`1995`.
+
+- I found and fixed the bug in :mod:`lino_xl.lib.tim2lino.spzloader`
+  which probably caused duplicate households in their database. To be
+  tested tonight on their server.
+
+- Weshalb stehen falsche Zahlen in der MWSt-Erklärung?  
+
+
