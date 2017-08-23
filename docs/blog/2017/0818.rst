@@ -1,0 +1,17 @@
+:date: 2017-08-18
+
+=======================
+Friday, August 18, 2017
+=======================
+
+The odd behaviour is probably because it is a chooser with
+`simple_values=True`. In that case the combobox behavesvery
+differently and does not provide pagination because that would be
+difficult to implement when the data is not in a database.  Such
+choosers usually show a reasonable number of rows. Note that filtering
+works (users just need to know...).
+
+I suggest to add a :meth:`full_clean` method to
+:class:`lino.modlib.users.mixins.TimezoneHolder` which protects us
+from having invalid values.
+       

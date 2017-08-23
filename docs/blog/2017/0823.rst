@@ -1,0 +1,34 @@
+:date: 2017-08-23
+
+==========================
+Wednesday, August 23, 2017
+==========================
+
+Thanks to Jeremy Satterfield who looked at `Django ticket 28332
+<https://code.djangoproject.com/ticket/28332#comment:2>`__ and posted
+a `pull request <https://github.com/django/django/pull/8920>`__ which
+gets the example to work. Thanks also to SmileyChris who suggested to
+add an explanation "Or use a common ancestor to hold the AutoField,
+using an explicit OneToOneField between the parent and root models to
+avoid a clash between the ones that would be automatically created" to
+the `docs page
+<https://docs.djangoproject.com/en/1.11/topics/db/models/#multiple-inheritance>`__.
+
+My :ref:`lino.tested.diamond` example now passes using Jeremy's
+method.  But in :ref:`lino.tested.diamond2` we still have the problem
+of Django saying::
+
+    django.core.exceptions.FieldError: Local field u'street' in class
+    'PizzeriaBar' clashes with field of the same name from base class
+    'Pizzeria'.
+
+This problem comes because we additionally to simple diamond
+inheritance the field street is defined in *a parent of* the common
+parent. Django then gets messed up when testing for duplicate fields
+and incorrectly thinks that `street` is duplicated.
+
+All this is our ticket :ticket:`1908`.  Which I put to **sleep** now
+because we currently have no use case for getting diamond inheritance
+working. The last case, if I remember well, was with some intermediate
+solution for :ref:`tera` where `lists.List` inherited from both
+`Client` and `Partner`. But that solution was ill anyway.
