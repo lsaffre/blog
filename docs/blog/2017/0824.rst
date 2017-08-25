@@ -1,0 +1,145 @@
+:date: 2017-08-24
+
+=========================
+Thursday, August 24, 2017
+=========================
+
+Store the village but show the municipality
+===========================================
+
+I worked on :ticket:`1950` for :ref:`avanti`: In Lino kann man pro Ort
+den übergeortneten Ort angeben. Also pro Dorf angeben, welche Gemeinde
+das ist. Und dann brauchen wir gar kein neues Feld, sondern Lino würde
+bei Wohnort "Heppenbach" automatisch (in deinen Tabellen) "Gemeinde
+Amel" schreiben.
+
+- Added a new virtual field
+  :attr:`lino_avanti.lib.avanti.Client.municipality` which implements
+  that logic. The field is used in
+  :class:`AllClients <lino_avanti.lib.avanti.AllClients>`.
+
+- Added a snippet in :ref:`avanti.specs.avanti` for
+  testing the list of visible columns in
+  :class:`AllClients <lino_avanti.lib.avanti.AllClients>`.
+
+- Side effect: new function :func:`lino.api.doctest.show_columns`
+
+help_text not loaded from docstrings in a prosa file
+====================================================
+
+Note: `lino_avanti` was missing in the `help_texts_builder_targets` in
+the :xfile:`conf.py` of :ref:`book`. But the `help_text` of the new
+field is still not being loaded. Yes, the `help_text_builder` system
+fails when the docstrings are in a prosa file.
+
+I wrote a new utility function :func:`lino.core.utils.simplify_name`
+and updated both :mod:`lino.core.site` and
+:mod:`lino.sphinxcontrib.help_texts_extractor` to use it.
+
+>>> from lino.core.utils import simplify_name
+>>> print(simplify_name('lino_avanti.lib.avanti.models.AllClients'))
+lino_avanti.lib.avanti.AllClients
+     
+I am a bit afraid that this first approach is to simplistic because it
+is based on a hard-coded set of module name parts to be ignored
+(currently "models", "ui", "desktop", "choicelists").
+
+The help text still does not get loaded. Maybe because it is a virtual
+field. Also the overridden docstring for
+:attr:`lino_avanti.lib.avanti.Client.city` is being ignored. That's
+probably because once a fields help_text has been set, Lino doesn't
+change it any more. To be meditated.
+
+>>> from lino import startup
+>>> startup('lino_book.projects.adg.settings.demo')
+>>> from lino.api.doctest import *
+>>> s = [f for f in avanti.Client._meta.get_fields() if f.name.startswith('mun')]
+>>> print(s)
+[VirtualField lino_avanti.lib.avanti.models.Client.municipality]
+
+
+Einschreibe-Optionen
+====================
+
+I realized that a choicelist `EnrolmentOptions` would be useless
+overkill.
+
+It is easier to just define our customized :class:`Enrolment
+<lino_avanti.lib.courses.Enrolment>` model for Avanti and to add the
+new fields to the :class:`EnrolmentsByCourse
+<lino_avanti.lib.courses.EnrolmentsByCourse>` table which existed
+already.
+
+Anmahnungen
+===========
+
+
+
+I added a new table :class:`PresencesByEnrolment
+<lino_avanti.lib.courses.PresencesByEnrolment>` because I felt the
+need when testing this.  Seems to be a cool thing which they will
+like.
+
+
+
+Reverted my yesterday changes to use_silk_icons
+===============================================
+
+I remembered why Lino was ignoring the :attr:`use_silk_icons
+<lino.core.site.Site.use_silk_icons>` option for
+:class:`DeleteSelected` and :class:`ShowInsert` actions: As long as
+most standard actions are not available in unicode it is too ugly to
+have these two converted.  But we *do* want the default value to be
+`False` because :mod:`lino_xl.lib.cal` has a beautiful set of working
+unicode icons.  We usually want these.  And using silk icons should be
+an explicit local choice.
+
+
+Failed to update the verbose_name of a field
+============================================
+
+In the :ref:`welfare` test suite is a failure which looks more
+innocent than it is::
+
+    $ go welfare
+    $ python setup.py test -s tests.SpecsTests.test_finan
+
+
+The failure says that it expected "Externe Referenz" but got "Ihr
+Zeichen" as header of the last column of the table
+(finan.ItemsByPaymentOrder).
+
+It is the :func:`override_field_names` function in
+:mod:`lino_welfare.modlib.finan.models` which is expected to change
+the `verbose_name` of that field from "Ihr Zeichen" to "Externe
+Referenz".
+
+The function gets invoked correctly, but the `verbose_name` is
+unchanged afterwards.  It seems that :func:`update_field
+<lino.core.inject.update_field>` fails.
+Since `build #276 on travis <https://travis-ci.org/lino-framework/welfare/builds/268046050>`_
+still passed,
+I suppose that this bug was introducted by
+`634e51f <https://github.com/lino-framework/lino/commit/634e51f77067719c5d71984adb11a49c564f7628>`__.
+
+
+
+
+First ideas for the People plugin
+=================================
+
+There will be one Google account per Site, to be created by the site
+owner. And then all mobile users can connect to that account. We
+cannot have the authentication credentials per user in the Lino
+database because nobody would agree to give their personal credentials
+into a shared database.
+
+What happens if 5 mobile users are then updating their contacts to
+that single account?  According to `this article
+<http://support.smartcloud.ie/support/solutions/articles/3000050772-how-to-share-google-contacts-with-other-gmail-users>`__
+it won't be trivial to share contacts in a bi-directional way. But for
+calendars RW sharing seems commonly used.
+
+`This
+<https://developers.google.com/api-client-library/python/>`__
+seems the best starting point.

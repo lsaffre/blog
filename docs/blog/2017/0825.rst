@@ -1,0 +1,60 @@
+:date: 2017-08-25
+
+=======================
+Friday, August 25, 2017
+=======================
+
+"Your Reference" vs "External Reference"
+========================================
+
+It took me more than three hours to fix that stupid failure which I
+discovered yesterday in the welfare test suite.  It was just a problem
+with string translation, not in the Lino kernel.  The
+:class:`lino_xl.lib.finan.FinancialVoucherItem` mixin defines a field
+named `remark` whose `verbose_name` was "External reference". And that
+string was being translated to German (a) by "Ihr Zeichen" in XL
+and (b) by "Externe Referenz" in Welfare.  Now it is "Your reference"
+(Ihr Zeichen) in XL and "External reference" (Externe Referenz) in
+Welfare.  It's understandable that Lino didn't work as expected.
+
+Missing help_text for Client.has_esf
+====================================
+
+Another failure was in :ref:`welfare.specs.esf`::
+
+    $ go welfare
+    $ python setup.py test -s tests.SpecsTests.test_esf
+    ...
+    File ".../welfare/docs/specs/esf.rst", line 237, in esf.rst
+    Failed example:
+        show_fields(rt.models.pcsw.Client, 'has_esf')
+    Expected:
+        =============== ============== =========================================================
+         Internal name   Verbose name   Help text
+        --------------- -------------- ---------------------------------------------------------
+         has_esf         ESF data       Whether Lino should make ESF summaries for this client.
+        =============== ============== =========================================================
+    Got:
+        =============== ============== ===========
+         Internal name   Verbose name   Help text
+        --------------- -------------- -----------
+         has_esf         ESF data
+        =============== ============== ===========
+   
+This one was simply caused by ticket :ticket:`2016`.  I had to run
+`inv clean` and `inv bd` because the Welfare :xfile:`help_exts.py`
+files on my machine had not yet been re-generated with the new
+simplified keys. You need to run `inv clean bd` in all related
+projects for this.
+
+
+Advancing in Avanti
+===================
+
+I finally started working on a series of tickets for :ref:`avanti`
+project.
+
+
+- :class:`plausibility.PlausibilityUser` inherits just from UserRole,
+  not from SiteUser because it caused an unresolved MRO when adding
+  this role to :mod:`lino_avanti.lib.avanti.user_types`.
