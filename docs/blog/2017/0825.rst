@@ -51,8 +51,41 @@ projects for this.
 Advancing in Avanti
 ===================
 
-I finally started working on a series of tickets for :ref:`avanti`
-project.
+I finally found time and worked on a series of tickets for
+:ref:`avanti` project. Here is (in German) the list of requested
+changes:
+
+- Anmahnungen : wenn ein Klient 2x unentschuldigt oder mehr als 10%
+  der Gesamtstundenzahl gefehlt hat, dann soll Lino dem Begleiter das
+  mitteilen. Es muss auch einen Workflow geben, wo der Begleiter
+  notiert, was er mit dem Klient besprochen hat. Wenn die Abmahnung
+  erledigt ist (z.B. durch ein Telefongespräch), dann sollte Lino für
+  eine gewisse Zeitlang Ruhe geben (also nicht z.B: schon bei einer
+  einzigen weiteren Abwesenheit wieder Alarm schlagen). Pro Klient
+  sollte Lino eine Liste aller Anmahnungen zeigen. Wie ich das genau
+  implementiere, muss ich mir noch überlegen. Wahrscheinlich zwei
+  Tabellen "Abmahnungen" und "Mahngrade" sowie eine scheduled
+  background task.
+
+- Einschreibe-Optionen : pro Einschreibung muss es 4 neue
+  Ankreuzfelder geben "Kinderbetreuung", "Schulzeiten", "Auf Bus
+  angewiesen", "Abendkurs". Momentan werden diese Infos als Bemerkung
+  erfasst, aber dann lässt sich das nicht weiterverwerten. Neue
+  choicelist EnrolmentOptions (also wenn irgendwann noch weitere
+  Optionen hinzu kommen, lässt sich das über Nacht leicht erledigen)
+
+- Übersichtsliste "Kursplanung" : Liste aller Kurse im Status
+  "Entwurf", gruppiert pro Gemeinde, mit diversen Angaben : Anzahl
+  Kandidaten (Männlich, Weiblich, insgesamt sowie pro
+  Einschreibe-Option ventiliert).  Diese Liste sollte ausdruckbar sein
+  und per E-Mail ans Konsortium geschickt werden können.
+
+- Lino meint "Kann Befragung nicht löschen, weil x Answers darauf
+  verweisen" --> Antworten sollen natürlich automatisch mit ihrer
+  Befragung gelöscht werden. Dieser Bug stört, weil wir deshalb die
+  Fake-Klienten nicht löschen können.
+
+A side effect:
 
 
 - :class:`plausibility.PlausibilityUser` inherits just from UserRole,

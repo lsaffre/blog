@@ -1,0 +1,145 @@
+:date: 2017-08-26 12:23
+
+=========================
+Saturday, August 26, 2017
+=========================
+
+Contact details
+===============
+
+During the last years I occasionally heard customers (or myself) think
+that one day we should add a feature which replaces the fields
+`phone`, `email`, `fax`, `url` of a partner by a panel of "Contact
+details" where users can enter as many phone numbers and urls and
+email addresses as they want.  This is easily feasable by a plugin
+which works a bit like :mod:`lino_xl.lib.addresses`.  Hamza will
+probably need this as well when he starts synchronizing contacts with
+Google. So it was time to do it.
+
+I created :ticket:`2023`, after double-checking that we obviously
+didn't yet have a ticket for this.  The idea is old, but I never wrote
+a ticket because I had a big problem: how to call that functionality?
+
+Roman Nofenko formulated the same problem last year on `stackexchange
+<https://english.stackexchange.com/questions/342778/what-is-one-word-for-phone-number-email-address-skype/342818>`__:
+
+    On a web site I have contact details section. This section can
+    contain phone number, email address, personal site, etc. And I
+    have button to add new item for contact details.
+    What is more correct form for 'Add ...'?
+
+My summary of the answers he received:
+
+- *Contact details* is the closest you can get without becoming really
+  obscure. It is defined in `Collins Dictionary
+  <http://www.collinsdictionary.com/dictionary/english/contact-details>`__
+  as "the information required to contact someone, such as an address
+  or telephone number".
+
+- *Contact information* or *contact info* is mentioned as being more
+  frequently used, but I don't agree that it is a better word for our
+  problem just because the combination occurs more often.
+
+So I guess we are going to call that functionality "Contact
+details". Yes, the word "detail" as the second part of an expression
+is suboptimal in Lino because it clashes with our naming conventions:
+we are going to have a class named `ContactDetail` which is a *model*
+and not a *detail layout*.
+
+But which internal name to use?
+
+- What about `lino_xl.lib.contact_details`? too long!
+- What about `lino_xl.lib.cdetails`? Mnjah...
+- What about `lino_xl.lib.phones`? 
+
+I liked :mod:`lino_xl.lib.phones` best.  Yes, that name is irritating
+because the plugin handles more than phone numbers. But it has a few
+advantages: one simple word, easy to memorize, letters "ph" not yet
+used in :mod:`lino_xl.lib`...
+
+The first guinea pig for this new feature is :ref:`amici`.  Note that
+:ref:`amici` differs from :ref:`noi`, :ref:`cosi` or :ref:`care` in
+that it is *not* included in the Lino Book.
+
+The :mod:`lino_amici.projects.herman` project didn't make much sence
+because it had a legacy_data_path and therefore was not runnable on
+other machines than mine. Fixed.
+
+testpaths and python_files
+==========================
+
+I fixed a `build failure for cosi on travis
+<https://travis-ci.org/lino-framework/cosi/builds/268627448>`__.  The
+:xfile:`pytest.ini` file in :ref:`cosi` contained this::
+
+    [pytest]
+    testpaths = tests/__init__.py
+    python_files = lino_cosi/*
+
+The `python_files` there was causing pytest to collect also the source
+files for test cases, which (1) was useless because all test files are
+grouped under tests and (2) caused an error on travis because it tried
+to import all these files without having any
+:envvar:`DJANGO_SETTINGS_MODULE`.
+
+For documentation about testpaths and python_files see the `pytest
+docs <https://docs.pytest.org/en/latest/customize.html>`__
+
+
+An error occured while trying to fetch your .travis.yml file
+============================================================
+
+I had this funny error message:
+https://travis-ci.org/lino-framework/xl/builds/268658271
+
+Maybe it was because of some obsolete environments in the
+:xfile:`.travis.yml` of :ref:`xl`.
+
+
+Optimizations for get_simple_params()
+=====================================
+
+I fixed a design flaw: when I define simple parameters on a model,
+then Lino until now also expected me to define these parameter fields.
+For example the :class:`lino.modlib.users.Authored` mixin said::
+
+    @classmethod
+    def get_simple_parameters(cls):
+        for p in super(Authored, cls).get_simple_parameters():
+            yield p
+        yield 'user'  # cls.author_field_name)
+
+    @classmethod
+    def get_parameter_fields(cls, **fields):
+        """Adds the :attr:`user` filter parameter field."""
+        fld = cls._meta.get_field('user')
+        fields.setdefault(
+            'user', models.ForeignKey(
+                'users.User', verbose_name=fld.verbose_name,
+                blank=True, null=True))
+        return super(Authored, cls).get_parameter_fields(**fields)
+
+
+But the :meth:`get_parameter_fields` method there is a useless
+requirement.  Lino can do this for me since the parameter field is
+just a copy of the database field of the same name.
+
+New feature: When :meth:`get_simple_parameters
+<lino.core.model.Model.get_simple_parameters>` contains names for
+which no parameter field is defined, then Lino creates that parameter
+field as a copy of the database field of the same name.
+
+I removed quite a few `get_parameter_fields` methods which were now
+useless.
+
+Side effect: the :meth:`get_simple_parameters
+<lino.core.model.Model.get_simple_parameters>` no longer returns a set
+but a list. Because the order of these items is important,
+e.g. because it is used by :meth:`get_title_tags`.
+
+I converted :class:`lino.modlib.notify.Message` and
+:class:`lino.modlib.plausibility.Problem` : both inherit from
+:class:`lino.modlib.users.UserAuthored` and therefore we dont need to
+define a :meth:`get_simple_parameters` method in therse cases.
+
+I started to write :ref:`dev.parameters`.
