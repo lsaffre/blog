@@ -1,0 +1,118 @@
+:date: 2017-08-30
+
+==========================
+Wednesday, August 30, 2017
+==========================
+
+
+ImportError: This package should not be accessible on Python 3
+==============================================================
+
+The last error I am having in the test suite of the book is in
+:ref:`specs.printing`. It says::
+
+    ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+This is :ticket:`1296`.
+
+The error does *not* occur when I test only that particular document::
+
+  $ doctest docs/specs/printing.rst  
+
+I need to run the whole suite::
+
+  $ inv test
+
+Or at least::  
+
+  $ python setup.py test -s tests.test_docs
+  
+
+It happens also `on travis
+<https://travis-ci.org/lino-framework/book/jobs/269925482>`__, but
+there it looks different, it says::
+
+    PodError: An error occurred during the conversion. Fatal Python error: Py_Initialize: can't initialize sys standard streams
+
+
+
+Cannot use ...lino_cache because it is used for ...Site
+=======================================================
+
+There was another error on travis:: 
+
+    Exception: Cannot use /home/travis/build/lino-framework/book/lino_cache/mysite for lino_book.projects.polls.mysite.settings.Site because it is used for mysite.settings.Site. (Settings None)
+    
+That's because
+:mod:`lino_book.projects.polls` can be called in two ways:
+     
+- from `tests/test_demo.py`::
+
+     self.run_django_manage_test('lino_book/projects/polls')
+     
+  The :envvar:`DJANGO_SETTINGS_MODULE` is ``mysite.settings`` because
+  that's how the Django tutorial works.
+
+- In `doctest docs/dev/polls/index.rst` it was being run with
+  ``lino_book.projects.polls.mysite.settings``
+
+Solution was to add the following to the doctest init of
+:ref:`lino.tutorial.polls`::
+
+    >> import os
+    >> os.chdir('lino_book/projects/polls')
+  
+Explanation: usually the docs are being tested with the project's root
+directory as current directory. For most pages this is not
+important. And since every test runs in its own process, they may
+change it without affecting the cwd of the next test.
+
+This error did not occur on my machine because in a normal development
+environment the directory holding the :xfile:`settings.py` is used as
+the site cache. On Travis we cannot do this because for some reason (I
+forgot the details) we cannot write to the source repositories. That's
+why we define the :envvar:`LINO_CACHE_ROOT` in our
+:xfile:`.travis.xml`::
+
+    export LINO_CACHE_ROOT=$TRAVIS_BUILD_DIR/lino_cache
+
+I now added this variable also to my own :xfile:`.bashrc` file. But I
+seem to remember that this configuration is disturbing in a
+development environment because it causes false alerts in quite some
+situations.
+
+Continued with Avanti
+=====================
+
+Added `id` to EnrolmentsByCourse so they can click on this field in
+order to open the detail window. As a side effect they will be more
+aware of the "enrolment id".  If they don't want this, then we must
+think about whether there is another field to make clickable.
+
+I changed the verbose_name of the `city` field (of the
+:class:`lino_xl.lib.countries.CountryCity` mixin) from "City" to
+"Locality". In German this should be translated to "Ortschaft".  I
+consulted `this discussion
+<https://english.stackexchange.com/questions/65325/generic-name-for-places-like-village-town-and-cities>`__
+before deciding.
+
+.. currentmodule:: lino_xl.lib.polls
+
+"Kann Befragung Erstgespräch Salalala Anna 13.04.17 nicht löschen weil
+1 Answer Remarks darauf verweisen."
+
+Yes, there were missing `allow_cascaded_delete` in
+:class:`AnswerChoice` and :class:`AnswerRemark`.
+
+Response
+Answer       
+AnswerRemark
+AnswerChoice
+
+Docs
+====
+
+- I updated :ref:`dev.virtualfields`
+  
+- I moved the docstrings of :mod:`lino_xl.lib.polls` from the code to
+  a new specs page.

@@ -1,0 +1,52 @@
+:date: 2017-08-29
+
+========================
+Tuesday, August 29, 2017
+========================
+
+Auto discovery for docs testing
+===============================
+
+It all started because I saw that `pytest` has options like
+`--doctest-glob` and `doctest_encoding`, and I thought "Looks
+promising, let's quickly try them out..."
+
+I try to summarize what I have been doing the last two days.
+
+The biggest result is that the rst files under docs in :ref:`book` are
+now automatically being tested. We no longer need to explicitly add a
+new test method when we add a new file. It is now easy to test a
+single file::
+
+      $ alias doctest='python -m atelier.doctest_utf8 $*'
+      $ go book
+      $ doctest docs/specs/gfktest.rst
+  
+The biggest work was that most of my "single-dir tutorials" have been
+converted. Their `index.rst` file was not designed for doctest but for
+:class:`lino.utils.test.DocTest`.  My idea with the "single-dir
+tutorials" was to have everything (models, settings, a documentation
+page) in one directory. But that idea turned out to be
+contra-productive. I knew that one day I would have to do this
+conversion, and I knew that it would be quite some work. I just didn't
+know that this day was now...
+  
+The biggest surprise was that I finally stopped using `pytest` for the
+book project and use plain unittest now.  That's because of two
+problems in pytest which seem to be show stoppers in our case:
+
+- pytest does *not* support `unicode output
+  <https://github.com/pytest-dev/pytest/issues/2728>`__.
+  There is still no other method than my :mod:`atelier.doctest_utf8`
+
+- pytest doesn't support the `load_tests protocol
+  <https://github.com/pytest-dev/pytest/issues/992>`__
+ 
+Note: If they happen to fix #2728, then indeed we don't need #992 and
+we could return to pytest.
+
+TODO: did we need py.test for getting coverage reports to work?
+
+The `failure in atelier
+<https://travis-ci.org/lino-framework/atelier/jobs/269866530>`__
+is because 
