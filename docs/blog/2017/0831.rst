@@ -1,0 +1,23 @@
+:date: 2017-08-31
+
+=========================
+Thursday, August 31, 2017
+=========================
+
+I did some general updates to the Lino Book.
+
+I added a new optional argument `exclude` for
+:func:`atelier.test.make_docs_suite`. And in book we use this to
+"skip" the `docs/specs/printing.rst` file which continues to fail due
+to :ticket:`1296`.
+
+I changed the default label of :attr:`workflow_buttons
+<lino.core.model.Model.workflow_buttons>` from "Actions" to
+"Workflow". Which caused of course some changes in output resulting in
+failures of test cases.  Which made me discover a bug in the new
+DocTestCase: when a test case failed, and the output contained
+non-ascii text, then the test reporter failed to report these
+failures. Bug fixed, now the failures are being reported. I made a
+checkin just to `show them
+<https://travis-ci.org/lino-framework/book/jobs/270280051>`__).
+      
