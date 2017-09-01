@@ -1,0 +1,64 @@
+:date: 2017-09-01
+
+=========================
+Friday, September 1, 2017
+=========================
+
+The :ref:`tera` project is about to reach its first milestone
+(entering accounting data of 2017 into Lino and compare with the
+results of TIM). A last important thing is to optimiza reporting.  The
+:class:`GeneralAccountsBalance
+<lino_xl.lib.ledger.GeneralAccountsBalance>` for example is
+theoretically okay, but the user must open the parameters panel, enter
+two dates (from 01.01.2016 to 31.12.2016), then click the refresh
+button, then adjust the column widths, and then print...
+
+Should we rely on appypod? -> yes for the moment.
+:ticket:`1534` (Use secretary instead of appy.pod?)
+:ticket:`1157` (Help Gaetan to get appy.pod work under Py3)
+
+Can we simply add a button to the VAT declaration which prints the
+GeneralAccountsBalance for the same period?
+  
+Should we use booking *dates* or rather booking *periods* for
+selecting the observed period?  selecting by the *value_date* of the
+movement is more straightforward and more performant. Why then do we
+have accounting periods at all? Answer: because we have periods
+"between the years", e.g. 2017-00 comes after 2016-12 and before
+2017-01.
+
+Changes:
+
+- change AccountsBalance from dates to periods
+  
+
+When a plugin modifies another plugin
+=====================================
+
+In :mod:`lino_xl.lib.appypod` I replaced::
+
+    @dd.receiver(dd.pre_analyze)
+    def customize_contacts1(sender, **kw):
+        from lino.utils.addressable import Addressable
+        for m in rt.models_by_base(Addressable):
+            m.define_action(print_labels=PrintLabelsAction())
+
+by::
+  
+    from lino.utils.addressable import Addressable
+    Addressable.print_labels = PrintLabelsAction()
+
+The result is the same. The latter looks more elegant, both of them
+bear the risk of shooting in your foot.  Difficult to say which one is
+worse. The latter one modifies the :class:`Addressable` class object,
+that's probably considered bad style (citation needed). But the first
+one isn't innocent either.
+
+
+Keep unseen notifications
+=========================
+
+Thanks to Mathieu for registering tickets 2029 to 2032.  For
+:ticket:`2029` I added two new config variables :attr:`keep_unseen
+<lino.modlib.notify.Plugin.keep_unseen>` and :attr:`remove_after
+<lino.modlib.notify.Plugin.remove_after>`.
