@@ -22,7 +22,7 @@ Andreas Peil
 Alexa
 -----
 
-Is a voluntary :ref:`voga` expert in Eupen.
+Is a volunteer :ref:`voga` expert in Eupen.
 
 
 .. _annalisa:

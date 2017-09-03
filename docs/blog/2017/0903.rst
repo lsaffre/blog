@@ -1,0 +1,76 @@
+:date: 2017-09-03
+
+=========================
+Sunday, September 3, 2017
+=========================
+
+Custom permissions for the detail action (continued)
+====================================================
+
+We now have a new method :meth:`lino.core.actions.Action.get_label`.
+This caused also a few code changes in the renderer of :ref:`extjs6`.
+
+This change was needed because we now attach also the library tasks as
+well. This caused the `label` property of the actor to be read already
+during startup for these actions as well. This caused a problem for
+actors with a dynamic label which does a database lookup
+(e.g. :mod:`lino_book.projects.actors`; en passant I converted the
+:file:`index.rst` file of that demo project to
+:ref:`specs.projects.actors`).
+
+Another question was: Can teachers (in :ref:`avanti`) confirm an
+enrolment?
+
+>>> from lino import startup
+>>> startup('lino_book.projects.adg.settings.demo')
+>>> from lino.api.doctest import *
+>>> ar = rt.login('laura')
+>>> user_type = ar.get_user().user_type
+>>> user_type
+users.UserTypes.teacher:100
+>>> user_type.role
+... #doctest: +ELLIPSIS
+<lino_avanti.lib.avanti.user_types.Teacher object at ...>
+
+>>> obj = rt.models.courses.Enrolment.objects.get(pk=9)
+>>> obj.user
+User #5 ('nathalie')
+
+>>> obj.wf1.get_row_permission(ar)
+True
+
+This is what changed and made the Avanti test suite fail.  Laura
+should not have permission to confirm that enrolment because the
+author is another user (nathalie) and Laura is just a teacher.
+
+>>> ba = obj.wf1.bound_action
+>>> ba.actor.get_row_state(obj)
+<EnrolmentStates.requested:10>
+
+>>> ba.actor
+lino_xl.lib.courses.desktop.Enrolments
+
+>>> ba.actor.get_row_permission(obj, ar, obj.state, ba)
+True
+
+Still wrong
+
+>>> obj.get_row_permission(ar, obj.state, ba)
+True
+
+>>> obj.manager_roles_required
+set([<class 'lino.core.roles.SiteUser'>])
+
+Okay now I see. It's because I added the SiteUser role to Teacher. And
+that's correct: teachers are site users.
+
+The :attr:`manager_roles_required` attribute on Enrolment is not
+SiteStaff but SiteUser. It is defined as::
+
+    manager_roles_required = dd.login_required()
+
+So it is "normal" that every site user can edit the state of
+enrolments made by other users. It was rather a bug that in Avanti
+this was not allowed because teacher by mistake) was lacking the
+SiteUser role.
+

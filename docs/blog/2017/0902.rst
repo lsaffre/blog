@@ -1,0 +1,163 @@
+:date: 2017-09-02
+
+===========================
+Saturday, September 2, 2017
+===========================
+
+Avanti
+======
+
+- I verified that there is still no fix for :ticket:`1989`. See
+  :doc:`0731`.
+- :class:`Courses` (All courses) is no longer visible for teachers.
+- Idem for :class:`CoursesPlanning`
+  
+
+Custom permissions for the detail action
+========================================
+
+Lino has a subtle new feature: a :class:`DetailLayout` can now have a
+:attr:`required_roles
+<lino.core.permissions.Permittable.required_roles>` attribute. If this
+is given, then it overrides the default value which until now was
+always the `required_roles` of the actor.
+
+This was needed because otherwise after above change (make
+:class:`Courses` hidden for teachers), :class:`MyCoursesGiven` had no
+detail action as well (for teacher). Also e.g. :meth:`obj2href` calls
+:meth:`get_default_table` which, for a course, is customized because
+the detail of a course can be different depending on what we call the
+"course area". E.g. in :ref:`voga` we have "courses", "hikes" and
+"travels". They all are activities, but their detail layouts defer.
+
+This new feature required a few internal changes. Don't try to
+understand the following snippets in detail (I just used them in order
+to understand myself)
+
+>>> from lino import startup
+>>> startup('lino_book.projects.adg.settings.demo')
+>>> from lino.api.doctest import *
+>>> ses = rt.login('laura')
+>>> user_type = ses.get_user().user_type
+>>> user_type
+users.UserTypes.teacher:100
+>>> user_type.role
+... #doctest: +ELLIPSIS
+<lino_avanti.lib.avanti.user_types.Teacher object at ...>
+
+>>> obj = rt.models.courses.Course.objects.get(pk=1)
+
+
+>>> obj.get_detail_action(None)
+<BoundAction(courses.Activities, <lino.core.actions.ShowDetail detail ('Detail')>)>
+
+Note this returned before::
+  <BoundAction(courses.Courses, <lino.core.actions.ShowDetail detail ('Detail')>)>
+
+Problem: When a session with a user is given, then
+`get_detail_action(ses)` returned None because the default table was
+(and is) Courses, not Activities.  But here we want Lino to understand
+that we actually do allow to open the detail window because that
+detail window has been inherited from Activities.
+
+>>> obj.get_detail_action(ses)
+<BoundAction(courses.Activities, <lino.core.actions.ShowDetail detail ('Detail')>)>
+
+
+>>> obj.line.course_area.courses_table
+u'courses.Courses'
+>>> table = rt.actors.resolve('courses.Courses')
+>>> table
+lino_xl.lib.courses.desktop.Courses
+>>> table.detail_action
+<BoundAction(courses.Courses, <lino.core.actions.ShowDetail detail ('Detail')>)>
+
+Teachers have no permission to see the Courses table:
+
+>>> table.default_action.get_view_permission(user_type)
+False
+
+>>> actor = table.detail_action.action.defining_actor
+>>> actor
+lino_xl.lib.courses.desktop.Activities
+>>> actor.get_view_permission(user_type)
+True
+>>> actor.detail_action.action.get_view_permission(user_type)
+True
+>>> actor.detail_action.allow_view(user_type)
+True
+
+
+But now we have the following problem:
+
+>>> ba = rt.models.users.MySettings.detail_action
+>>> ba
+<BoundAction(users.MySettings, <lino.core.actions.ShowDetail detail ('Detail')>)>
+
+The detail on MySettings now can be viewed only by those who can view
+the Users table:
+
+>>> ba.actor.get_view_permission(ses.user.user_type)
+True
+>>> ba.action.get_view_permission(ses.user.user_type)
+True
+>>> ba.action.owner.required_roles is None
+True
+>>> ba.required
+set([<class 'lino.core.roles.SiteUser'>])
+
+
+
+>>> user_type.has_required_roles(ba.required)
+True
+
+>>> ba.allow_view(ses.user.user_type)
+True
+>>> ba.get_view_permission(ses.user.user_type)
+True
+
+MySettings does allow a detail, but Lino 
+
+
+>>> #dl = rt.models.courses.MyCoursesGiven.get_detail_layout()
+>>> ba = rt.models.courses.MyCoursesGiven.detail_action
+>>> ba.actor
+lino_xl.lib.courses.desktop.MyCoursesGiven
+>>> ba.action
+<lino.core.actions.ShowDetail detail ('Detail')>
+>>> ba.get_view_permission(ses.user.user_type)
+True
+>>> rt.models.courses.Courses.detail_action.action
+<lino.core.actions.ShowDetail detail ('Detail')>
+>>> rt.models.courses.Courses.detail_action.action.defining_actor
+lino_xl.lib.courses.desktop.Activities
+>>> rt.models.courses.Courses.detail_action.action.owner
+... #doctest: +ELLIPSIS
+<lino_xl.lib.courses.desktop.CourseDetail object at ...>
+
+>>> rt.models.courses.MyCoursesGiven.detail_action.action.defining_actor
+lino_xl.lib.courses.desktop.Activities
+
+
+
+Aha. Course defines a custom :meth:`get_detail_action` because the
+`detail_layout` to use when displaying a course depends on the
+`course_area` (given by the course's :attr:`line`). And this is
+`Courses` in our case. And yes I told Lino that teachers don't have
+permission to see `Courses`.
+
+We don't want teachers to see *all* courses, but we *do* want them to
+see the detail of a course for which they are author or instructor.
+
+The library actions (default_action, detail_action, submit_detail,
+insert_action, delete_action and update_action) had their
+`defining_actor` to None.
+
+The `defining_actor` of an action is the actor on which it has been
+instantiated for the first time. Subclasses of the defining actor can
+use the same action instance. That differentiation is used by the
+extjs renderer: for actions that cause some JS code to be rendered it
+makes no sense to generate that code several times.
+
+A side effect is that I probably discovered and fixed a bug: teachers
+had no permission to edit their own settings.
