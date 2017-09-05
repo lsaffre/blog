@@ -1,0 +1,42 @@
+:date: 2017-09-04
+
+=========================
+Monday, September 4, 2017
+=========================
+
+Miscellaneous optimizations in :ref:`tera`
+==========================================
+
+Working for :ticket:`2033`.
+
+I added *spacer columns* to :class:`AccountsBalance
+<lino_xl.lib.ledger.AccountsBalance>` (i.e. to all three reports).  It
+required a few minor changes in the core:
+
+- I added a constant `ALLOW_DUPLICATE_ELEMS` in
+  :mod:`lino.core.layouts` which causes Lino to not complain about
+  "Duplicate element usage" within a layout.
+
+- Support empty column heading. If you don't sepecify any label, then
+  Lino uses the field name as before. But if you specify an empty string
+  as label, then it remains empty.
+  Also changed :meth:`FieldElement.get_column_options` in both extjs
+  versions.
+
+Lydia and I realized that some journals use `number_with_year` while
+others use `number`. We agreed that it should be `number_with_year`
+everywhere because the numbers without year would become useless as
+soon as there is more than one accounting year.  TODO: make the
+`number_with_year` column sortable.
+
+The ItemsByInvoice label in :ref:`tera` was rather irritatingly
+labelled "Analytische Rechnungspositionen". New table mixin
+:class:`lino_xl.lib.ledger.ItemsByVoucher` which sets also the label
+to "Content".
+
+We thought that it might be good to disable the phantom row in the
+journals tables, i.e. to allow creation of new rows only using the (+)
+button.  I then realized that this is actually true for most
+tables. More exactly for all tables that have :attr:`stay_in_grid` set
+to False.  This is handled by
+:meth:`lino.core.requests.ActorRequest.create_phantom_rows`.

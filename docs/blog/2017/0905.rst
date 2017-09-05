@@ -1,0 +1,159 @@
+:date: 2017-09-05
+
+==========================
+Tuesday, September 5, 2017
+==========================
+
+For :ref:`tera` we need to print the list of intra-Community
+operations. Vocabulary: 
+
+- de : Liste der innergemeinschaftlichen Operationen (Einkäufe / Verkäufe)
+- fr : Liste des opérations intracommunautaires (achats / ventes)
+- en : List of intra-Community operations (purchases / sales)
+
+This list has the special challenge that it might contain data from
+several models:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.apc.settings.demo')
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+>>> from lino.api.doctest import *
+>>> from lino_xl.lib.vat.mixins import VatDocument
+>>> for m in rt.models_by_base(VatDocument):
+...     print(m)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+<class 'lino_xl.lib.sales.models.VatProductInvoice'>
+<class 'lino_xl.lib.vat.models.VatAccountInvoice'>
+
+The number of invoice models depends on the application. For example
+in :ref:`tere` there are three models.
+
+Currently there is no example where invoices of different models occur
+in a same list, but it is theoretically possible and even probably
+that some site will want them some day. So I asked Google for "Django"
+and "union" and that's how I discovered that Django now has a `union()
+<https://docs.djangoproject.com/en/1.11/ref/models/querysets/#union>`__
+operator for QuerySets. Cool! Let's try it:
+
+>>> rt.show(vat.IntracomInvoices)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+======================= ========== ==================== =========== ======================= =================== ============== ===================
+ Buchungsdatum           Rechnung   Partner              MwSt.-Nr.   MwSt.-Regime            Total zzgl. MwSt.   MwSt.          Total inkl. MwSt.
+----------------------- ---------- -------------------- ----------- ----------------------- ------------------- -------------- -------------------
+ 03.01.14                *PRC 1*    AS Express Post                  Innergemeinschaftlich   33,06               6,94           40,00
+ 11.01.14                *SLS 5*    Garage Mergelsberg               Innergemeinschaftlich   442,15              92,85          535,00
+ 08.02.14                *PRC 6*    AS Express Post                  Innergemeinschaftlich   34,13               7,17           41,30
+ 06.03.14                *PRC 11*   AS Express Post                  Innergemeinschaftlich   33,55               7,05           40,60
+ 04.04.14                *PRC 16*   AS Express Post                  Innergemeinschaftlich   35,12               7,38           42,50
+ 13.04.14                *SLS 17*   Ausdemwald Alfons                Innergemeinschaftlich   385,09              80,87          465,96
+ 09.05.14                *PRC 21*   AS Express Post                  Innergemeinschaftlich   33,97               7,13           41,10
+ 07.06.14                *PRC 26*   AS Express Post                  Innergemeinschaftlich   33,06               6,94           40,00
+ 11.06.14                *SLS 29*   Evers Eberhart                   Innergemeinschaftlich   1 942,00            407,81         2 349,81
+ 05.07.14                *PRC 31*   AS Express Post                  Innergemeinschaftlich   34,13               7,17           41,30
+ 03.08.14                *PRC 36*   AS Express Post                  Innergemeinschaftlich   33,55               7,05           40,60
+ 08.09.14                *PRC 41*   AS Express Post                  Innergemeinschaftlich   35,12               7,38           42,50
+ 13.09.14                *SLS 41*   Johnen Johann                    Innergemeinschaftlich   442,15              92,85          535,00
+ 06.10.14                *PRC 46*   AS Express Post                  Innergemeinschaftlich   33,97               7,13           41,10
+ 04.11.14                *PRC 51*   AS Express Post                  Innergemeinschaftlich   33,06               6,94           40,00
+ 11.11.14                *SLS 53*   Meier Marie-Louise               Innergemeinschaftlich   385,09              80,87          465,96
+ 09.12.14                *PRC 56*   AS Express Post                  Innergemeinschaftlich   34,13               7,17           41,30
+ 07.01.15                *PRC 61*   AS Express Post                  Innergemeinschaftlich   33,88               7,12           41,00
+ 05.02.15                *PRC 66*   AS Express Post                  Innergemeinschaftlich   35,45               7,45           42,90
+ 13.02.15                *SLS 65*   Radermacher Hans                 Innergemeinschaftlich   1 942,00            407,81         2 349,81
+ 03.03.15                *PRC 71*   AS Express Post                  Innergemeinschaftlich   34,30               7,20           41,50
+ **Total (21 Zeilen)**                                                                       **6 048,96**        **1 270,28**   **7 319,24**
+======================= ========== ==================== =========== ======================= =================== ============== ===================
+<BLANKLINE>
+
+Above snippets needed of course a few changes to the core code.
+Actually almost a whole day (together with some other optimizations).
+
+Lino now supports Django's `union()
+<https://docs.djangoproject.com/en/1.11/ref/models/querysets/#union>`__
+operator.  A UNION is automatically done when :attr:`Table.model` is
+an *abstact* model for which the application has more than one
+concrete model.
+
+Another side effect these two new reports is that `vat_id` is now
+injected to Partner and no longer to Company.  That's not perfect
+because persons never have a VAT id. That might be a reason to
+consider making invoices only for organizations as partner. Invoices
+to a private person would then point to a special company "private
+partner".
+
+Until now it was possible for Lino to tell whether a table was
+"abstract" (i.e. to be ignored when analyzing) or not by looking at
+the model.  But now we have non-abstract tables on abstract models.
+
+And :meth:`lino_xl.lib.vat.VatDocument.compute_totals` now adds also
+returnable VAT to the `total_vat` field. Because we need that sum in
+our listing. And anyway it was irritating to not have it visible
+there. Yes, returnable VAT is special because the VAT is computed but
+isn't paid to the supplier.
+
+I had to add a unelegant `filter` keyword argument to
+:meth:`lino.core.model.Model.get_request_queryset` because union
+querysets do not support filter on subqueries, and unfortunately Lino
+is currently designed to do all custom filtering inside
+:meth:`lino.core.actors.Actor.get_request_queryset` (i.e. after having
+called the model's :meth:`get_request_queryset
+<lino.core.model.Model.get_request_queryset>`).  TODO: find a more
+elegant API. Maybe a new method :meth:`get_filter_kw` (after renaming
+the existing :meth:`lino.core.tables.Table.get_filter_kw` to
+`get_master_kw`)
+
+It seems that there is some limitation when trying to order the
+invoices by `order_by = ['entry_date', 'partner']` which causes a
+DatabaseError :message:`ORDER BY term does not match any column in the
+result set`. But the sorting order is not that important for us.
+
+Note that I must specify certain fields as :attr:`hidden_elements
+<lino.core.actors.Actor.hidden_elements>`.
+
+The menu versions of the tables are not really usable because when the
+user opens the parameter panel in order to specifiy a period range,
+they say::
+  
+    There was a problem with the database connection.
+    Exception: ParameterStore of LayoutHandle for lino.core.layouts.ParamsLayout on lino_xl.lib.vat.desktop.IntracomInvoices expects a list of 6 values but got 5: [u'', u'', u'', u'', u'']
+    If the error persists, try reloading the browser page.
+
+In :ref:`voga` I had this failure::
+
+  DoesNotExist: VatProductInvoice matching query does not exist.
+
+I added a snippet in :ref:`voga.specs.vat` for reproducing it.  It was
+caused when Lino tried to read fields from the model instance which
+were not included in the original query.  I removed `disabled_fields`
+by setting the table's to :attr:`editable
+<lino.core.actors.Actor.editable>` to False.
+
+
+
+Internal optimization around `description_column`
+=================================================
+
+We had two "clickable descriptions" of an object : :attr:`overview`
+and `description_column`.
+
+The `description_column` field was being used only on Grantings and
+Confirmations in :mod:`lino_welfare.modlib.aids`.  Its header was
+"Description", which clashes with the virtual column `overview`.  I
+renamed the field to :attr:`detail_pointer
+<lino.core.tables.AbstractTabl.detail_pointer>` and changed its header
+from "Description" to "Details".  It is no longer being defined on
+Model because implemented in AbstractTable (advantage: the column is
+also available on abstract tables,
+e.g. :class:`aids.ConfirmationsByGranting`).
+
+:func:`lino.core.inject.update_field` failed on virtual fields, and in
+general worked only on models, not on a table. But for detail_pointer
+we want the default label to be "Invoice".
+So I reimplemented the lookup method.
+
+I moved :func:`create_user <lino.modlib.users.utils.create_user>`
+from
+from :mod:`lino_noi.lib.users.models`
+to :mod:`lino.modlib.users.utils` because importing online users when they were not installed caused a side effect with the new implementation of update_field.
+
+

@@ -42,7 +42,6 @@ Confidential mails `GPG Public key <../dl/pubkey.gpg>`_ |br|
 
 
 .. toctree::
-   :maxdepth: 2
 
    cv
    historic

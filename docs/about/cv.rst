@@ -31,14 +31,17 @@ Other projects:
 Work experience
 ---------------
 
-
-================= =============================== ====================================
-From-until        Employer                        Responsibilities             
-================= =============================== ====================================
-since 11/2001     Rumma & Ko OÜ, Tallinn / Vigala Independant Software Developer and Project Manager. Software maintenance. Research, Analysis, Programming, Customer support.	
-03/1992 - 08/2001 PAC Systems PGmbH (now AbAKUS_) Software Developer / Analysis, Programming, Customer Projects, User Training, Research
-09/1990 - 01/1992 Siemens Software Center Liège	  Programmer / Source code maintenance.	BS/2000 & UNIX
-================= =============================== ====================================
+=================== =============================== ====================================
+From-until          Employer                        Responsibilities             
+=================== =============================== ====================================
+09/1990 - 01/1992   Siemens Software Center Liège   Programmer / Source code maintenance.
+                                                    BS/2000 & UNIX
+03/1992 - 08/2001   PAC Systems PGmbH (now AbAKUS_) Software Developer / Analysis, Programming,
+                                                    Customer Projects, User Training, Research
+since 11/2001       Rumma & Ko OÜ, Tallinn / Vigala Independant Software Developer and Project Manager.
+                                                    Software maintenance. Research, Analysis,
+                                                    Programming, Customer support.	
+=================== =============================== ====================================
 
 
 Scholar education
@@ -47,9 +50,9 @@ Scholar education
 =========== ============================================ ======================
 From-until  School                                       Studies
 =========== ============================================ ======================
-1988-1990   Institut Supérieur St-Laurent (Liège, BE)    Analyst/Programmer
-1986 - 1988 University Notre-Dame de la Paix (Namur, BE) Biology
 1974 - 1986 Collège Patronné (Eupen, BE)                 Basic School
+1986 - 1988 University Notre-Dame de la Paix (Namur, BE) Biology
+1988-1990   Institut Supérieur St-Laurent (Liège, BE)    Analyst/Programmer
 =========== ============================================ ======================
 
 Language skills
