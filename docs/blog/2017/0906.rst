@@ -161,16 +161,8 @@ Implementation notes:
 This is a quick first solution.  TODO: how to implement something
 similar more generally also for other invoice models.
 
-This is a *dialog action*. TODO: write general documentation. Examples
-of other dialog actions:
-
-- users.Users.change_password
-- pcsw.Clients.refuse_client
-- countries.Places.merge_row
-- contacts.Persons.create_household  
-- coachings.Coachings.create_visit
-- cal.Guests.checkin
-- lino_xl.lib.sales.VatProductInvoice.make_copy MakeCopy
+This is a :ref:`dialog action <dialog_actions>`. TODO: write general
+documentation.
 
 The action button is currently [⁂].  The button must in the
 :attr:`workflow_actions` (cannot be in the toolbar) because otherwise
@@ -180,3 +172,51 @@ I fixed a bug in :xfile:`linoweb.js` which caused the ActionFormPanel
 to not submit when ENTER key was pressed.  TODO: check whether this
 needs to be done in ExtJS 6 as well.
 
+Courses with two teachers
+=========================
+
+Johann asked :ticket:`2042` that they have cases where two teachers
+share one course.
+
+Misc Optimizations for :ref:`avanti` (:ticket:`2035`):
+
+- Added a panel "Presences" (:class:`lino_xl.lib.cal.GuestsByPartner`) to
+  :class:`avanti.ClientDetail`
+         
+- The chooser for :class:`lino_xl.lib.courses.Enrolment.course` now shows
+  only *active* courses (i.e. whose CourseState.active is True.
+  
+- :class:`lino_xl.lib.courses.CoursesByTopic` now shows only active
+  courses by default. Users can see them all by opening the slave
+  table in its own window and setting show_active parameter to empty.
+  As a result, also StatusReport (which uses this table) shows only
+  active courses.
+  
+- API change : I removed the rule that Lino used :attr:`detail_layout`
+  for the insert window as well when there's a :attr:`detail_layout`
+  but no :attr:`insert_layout`.
+  
+
+DONE:
+
+- Lehrer sollen die Liste "Alle Aktivitäten" nicht sehen
+  
+- Anna Fallalala kann noch immer nicht gelöscht werden, weil sie jetzt
+  noch Anwesenheiten hat. Und die sind nirgendwo sichtbar.
+  
+- Einfügen in Einschreibungen pro Klient : abgeschlossene und inaktive
+  Kurse sollten dort nicht angezeigt werden.
+  
+- Im Statusbericht auch nur die aktiven Kurse anzeigen (also
+  abgeschlossene und inaktive Kurse nicht)
+
+- Aktivitäten : Einfügen in Themen : ist nicht toll.​
+  
+TODO:  
+  
+- Entwicklungsschritte "Bilanzgespräch" und "Einschreibung in Kurse"
+  kann mehrmals pro Klient vorkommen, Lino schimpft dann aber.
+  
+- Vereinbarung ausdrucken via Lino : Modul "Auszüge"
+  aktivieren. Johanna schickt mir ein Modell
+  
