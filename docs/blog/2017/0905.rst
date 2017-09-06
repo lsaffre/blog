@@ -12,7 +12,9 @@ operations. Vocabulary:
 - en : List of intra-Community operations (purchases / sales)
 
 This list has the special challenge that it might contain data from
-several models:
+several models. Namely all models which inherit from
+:class:`lino_xl.lib.vat.VatDocument`. For example in :ref:`cosi` there
+are two such models:
 
 >>> from lino import startup
 >>> startup('lino_book.projects.apc.settings.demo')
@@ -26,14 +28,15 @@ several models:
 <class 'lino_xl.lib.vat.models.VatAccountInvoice'>
 
 The number of invoice models depends on the application. For example
-in :ref:`tere` there are three models.
+in :ref:`tera` there are three models.
 
 Currently there is no example where invoices of different models occur
-in a same list, but it is theoretically possible and even probably
-that some site will want them some day. So I asked Google for "Django"
-and "union" and that's how I discovered that Django now has a `union()
+in a same intracom list, but it is theoretically possible and even
+probably that some site some day will want them. So I asked Google for
+"Django" and "union" and that's how I discovered that Django now has a
+`union()
 <https://docs.djangoproject.com/en/1.11/ref/models/querysets/#union>`__
-operator for QuerySets. Cool! Let's try it:
+operator for QuerySets. Let's try it: 
 
 >>> rt.show(vat.IntracomInvoices)
 ... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
@@ -65,31 +68,30 @@ operator for QuerySets. Cool! Let's try it:
 ======================= ========== ==================== =========== ======================= =================== ============== ===================
 <BLANKLINE>
 
-Above snippets needed of course a few changes to the core code.
-Actually almost a whole day (together with some other optimizations).
+Cool!  The above table would have required a virtual table before
+Django 1.11 because (in that demo database) purchase invoices are
+entered as :class:`VatAccountInvoice
+<lino_xl.lib.vat.VatAccountInvoice>` while sales invoices as
+:class:`VatProductInvoice
+<lino_xl.lib.sales.models.VatProductInvoice>`.
+
+Of course this needed a few changes to the core code:
 
 Lino now supports Django's `union()
 <https://docs.djangoproject.com/en/1.11/ref/models/querysets/#union>`__
-operator.  A UNION is automatically done when :attr:`Table.model` is
-an *abstact* model for which the application has more than one
-concrete model.
-
-Another side effect these two new reports is that `vat_id` is now
-injected to Partner and no longer to Company.  That's not perfect
-because persons never have a VAT id. That might be a reason to
-consider making invoices only for organizations as partner. Invoices
-to a private person would then point to a special company "private
-partner".
+operator.  A UNION is automatically done when
+:attr:`lino.core.actors.Actor.model` is an *abstact* model for which
+the application has *more than one concrete* model.
 
 Until now it was possible for Lino to tell whether a table was
 "abstract" (i.e. to be ignored when analyzing) or not by looking at
 the model.  But now we have non-abstract tables on abstract models.
 
-And :meth:`lino_xl.lib.vat.VatDocument.compute_totals` now adds also
-returnable VAT to the `total_vat` field. Because we need that sum in
-our listing. And anyway it was irritating to not have it visible
-there. Yes, returnable VAT is special because the VAT is computed but
-isn't paid to the supplier.
+A side effect of the intracom reports is that `vat_id` is now injected
+to `Partner` and no longer to `Company`.  That's not perfect because
+persons never have a VAT id. That might be a reason to consider making
+invoices only for organizations as partner. Invoices to a private
+person would then point to a special company "private partner".
 
 I had to add a unelegant `filter` keyword argument to
 :meth:`lino.core.model.Model.get_request_queryset` because union
@@ -110,9 +112,15 @@ result set`. But the sorting order is not that important for us.
 Note that I must specify certain fields as :attr:`hidden_elements
 <lino.core.actors.Actor.hidden_elements>`.
 
-The menu versions of the tables are not really usable because when the
-user opens the parameter panel in order to specifiy a period range,
-they say::
+And :meth:`lino_xl.lib.vat.VatDocument.compute_totals` now adds also
+returnable VAT to the `total_vat` field. Because we need that sum in
+our listing. And anyway it was irritating to not have it visible
+there. Yes, returnable VAT is special because the VAT is computed but
+isn't paid to the supplier.
+
+TODO: The menu versions of the tables are not really usable because
+when the user opens the parameter panel in order to specifiy a period
+range, they say::
   
     There was a problem with the database connection.
     Exception: ParameterStore of LayoutHandle for lino.core.layouts.ParamsLayout on lino_xl.lib.vat.desktop.IntracomInvoices expects a list of 6 values but got 5: [u'', u'', u'', u'', u'']
@@ -122,7 +130,7 @@ In :ref:`voga` I had this failure::
 
   DoesNotExist: VatProductInvoice matching query does not exist.
 
-I added a snippet in :ref:`voga.specs.vat` for reproducing it.  It was
+I added a snippet in :ref:`voga.specs.vat` to reproduce it.  It was
 caused when Lino tried to read fields from the model instance which
 were not included in the original query.  I removed `disabled_fields`
 by setting the table's to :attr:`editable
@@ -157,3 +165,19 @@ from :mod:`lino_noi.lib.users.models`
 to :mod:`lino.modlib.users.utils` because importing online users when they were not installed caused a side effect with the new implementation of update_field.
 
 
+UNION and MariaDB
+=================
+
+Oops, after deploying today's work to their production site I see that
+the UNION is obiously not supported on MariaDB::
+
+  ProgrammingError: (1064, "You have an error in your SQL syntax;
+  check the manual that corresponds to your MariaDB server version for
+  the right syntax to use near 'UNION (SELECT
+  `ledger_voucher`.`user_id`, `ledger_voucher`.`journal_id`, `ledger'
+  at line 1")
+
+I upgraded from Django 1.11.3 to 1.11.5 just to make sure, but that
+didn't help.
+
+Tomorrow I will try using MySQL or PostgreSQL.
