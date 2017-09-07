@@ -194,11 +194,6 @@ Misc Optimizations for :ref:`avanti` (:ticket:`2035`):
   As a result, also StatusReport (which uses this table) shows only
   active courses.
   
-- API change : I removed the rule that Lino used :attr:`detail_layout`
-  for the insert window as well when there's a :attr:`detail_layout`
-  but no :attr:`insert_layout`.
-  
-
 DONE:
 
 - Lehrer sollen die Liste "Alle Aktivitäten" nicht sehen
@@ -222,3 +217,36 @@ TODO:
 - Vereinbarung ausdrucken via Lino : Modul "Auszüge"
   aktivieren. Johanna schickt mir ein Modell
   
+
+Tables with a detail_layout but no insert_layout
+================================================
+
+API change as a side effect of above: I removed the rule that Lino
+used :attr:`detail_layout` for the insert window as well when there's
+a :attr:`detail_layout` but no :attr:`insert_layout`.
+Ticket :ticket:`2043`.
+
+Here are some examples of tables whose behaviour is affected:
+
+- :class:`lino_xl.lib.courses.Topics`   
+- :class:`lino_xl.lib.polls.Questions`
+- :class:`lino_xl.lib.polls.ChoiceSets`
+- :class:`lino_xl.lib.notes.EventTypes`
+- :class:`lino_xl.lib.languages.Languages`
+- :class:`lino_xl.lib.cal.GuestRoles`
+- :class:`lino_xl.lib.accounts.Groups`
+- :class:`lino_welfare.modlib.jobs.Schedules`
+- :class:`lino_welfare.modlib.jobs.Offers`
+- :class:`lino_welfare.modlib.jobs.JobTypes`
+- :class:`lino_welfare.modlib.jobs.ExamPolicies`
+- :class:`lino_welfare.modlib.jobs.ContractTypes`
+
+For two table I wrote an `insert_layout`:
+
+- :class:`lino_welfare.modlib.jobs.Jobs` (which confirmed that the API
+  change was a good idea because until now it was really ugly when you
+  inserted a new job)
+  
+- :class:`lino_xl.lib.humanlinks.Links` (where it was important to add
+  it because `LinksByHuman` needs an `insert_action` for the part
+  "Create relationship as Father/Son ...")
