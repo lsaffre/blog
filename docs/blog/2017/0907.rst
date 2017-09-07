@@ -4,3 +4,146 @@
 Thursday, September 7, 2017
 ===========================
 
+The :ref:`welfare` test suite revealed some more consequences of
+ticket :ticket:`2043`.
+
+Here are some examples of tables whose behaviour is affected:
+
+- :class:`lino_xl.lib.courses.Topics`   
+- :class:`lino_xl.lib.polls.Questions`
+- :class:`lino_xl.lib.polls.ChoiceSets`
+- :class:`lino_xl.lib.notes.EventTypes`
+- :class:`lino_xl.lib.languages.Languages`
+- :class:`lino_xl.lib.cal.GuestRoles`
+- :class:`lino_xl.lib.accounts.Groups`
+- :class:`lino_welfare.modlib.jobs.Schedules`
+- :class:`lino_welfare.modlib.jobs.Offers`
+- :class:`lino_welfare.modlib.jobs.JobTypes`
+- :class:`lino_welfare.modlib.jobs.ExamPolicies`
+- :class:`lino_welfare.modlib.jobs.ContractTypes`
+
+For two table I wrote an `insert_layout`:
+
+- :class:`lino_welfare.modlib.jobs.Jobs` (which confirmed that the API
+  change was a good idea because until now it was really ugly when you
+  inserted a new job)
+  
+- :class:`lino_xl.lib.humanlinks.Links` (where it was important to add
+  it because `LinksByHuman` needs an `insert_action` for the part
+  "Create relationship as Father/Son ...")
+
+
+
+
+How to analyze performance issues of a query
+============================================
+
+Tonis and I opened :ticket:`2044`.
+  
+I wrote a function :func:`show_sql_queries
+<lino.api.doctest.show_sql_queries>` and a document which uses it in
+order to show why Jane is so slow: :ref:`specs.noi.sql`.
+
+
+Sencha Acquired by IDERA, Inc.
+==============================
+
+I read the news that
+`Sencha Acquired by IDERA, Inc.
+<https://www.sencha.com/blog/exciting-news-sencha-acquired-by-idera-inc/>`__.
+And Arthur Kay's comment 
+`A Fond Farewell to Sencha
+<https://www.akawebdesign.com/2017/08/29/fond-farewell-sencha/>`__.
+
+I changed the summary of :ticket:`148` to "Dialog with
+ExtJS/Sencha/Idera".
+
+
+Optimizing invoices entry in :ref:`tera`
+========================================
+
+Meeting with Lydia (:ticket:`2039`). We tested the new
+:class:`MakeCopy` action.  Lydia was amazed.  But after about three
+invoices we had a problem::
+        
+  IntegrityError: duplicate key value violates unique constraint "ledger_voucher_pkey"
+  DETAIL:  Key (id)=(33) already exists.
+
+And it is not just MakeCopy. There is no way to create any voucher at
+all.
+
+
+I guess that this is related to our recent move from MySQL to
+PostgreSQL. Here are some related links:
+
+- https://stackoverflow.com/questions/11089850/integrityerror-duplicate-key-value-violates-unique-constraint-django-postgres
+- http://jesiah.net/post/23173834683/postgresql-primary-key-syncing-issues
+- https://code.djangoproject.com/ticket/11423
+- https://stackoverflow.com/questions/2088210/django-object-creation-and-postgres-sequences  
+
+Best quote from one of above:
+
+    It appears to be a known difference of behaviour between the MySQL
+    and SQLite (they update the next available primary key even when
+    inserting an object with an explicit id) backends, and other
+    backends like Postgres, Oracle, ... (they do not).
+
+So it seems that I have been creating objects with an explicit id
+somewhere.  My problem is that AFAICS I do not manually specify the
+`id` of the voucher...
+
+... but wait, now I see what happened: :xfile:`restore.py` *does*
+explicitly specify the `id` of every row! And PostgreSQL does not
+update the sequence counter automatically in that case. The voucher
+ids until 33 were unused, that's why Lydia had no problems so far. And
+just coincidentally we reached number 33 when we were testing the new
+MakeCopy action.
+
+The following did not update the sequence::  
+
+    from lino.api.shell import *
+    ledger.Voucher.objects.first().save(force_update=True)
+    
+Some research::
+
+    $ python manage.py sqlsequencereset ledger
+    BEGIN;
+    SELECT setval(pg_get_serial_sequence('"ledger_journal"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_journal";
+    SELECT setval(pg_get_serial_sequence('"ledger_accountingperiod"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_accountingperiod";
+    SELECT setval(pg_get_serial_sequence('"ledger_paymentterm"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_paymentterm";
+    SELECT setval(pg_get_serial_sequence('"ledger_voucher"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_voucher";
+    SELECT setval(pg_get_serial_sequence('"ledger_movement"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_movement";
+    SELECT setval(pg_get_serial_sequence('"ledger_matchrule"','id'), coalesce(max("id"), 1), max("id") IS NOT null) FROM "ledger_matchrule";
+    COMMIT;
+
+Here is how I checked the current value without changing it::
+
+    # select pg_get_serial_sequence('ledger_voucher','id');
+        pg_get_serial_sequence    
+    ------------------------------
+     public.ledger_voucher_id_seq
+    (1 row)
+
+    # select * from ledger_voucher_id_seq;
+         sequence_name     | last_value | start_value | increment_by |      max_value      | min_value | cache_value | log_cnt | is_cycled | is_called 
+    -----------------------+------------+-------------+--------------+---------------------+-----------+-------------+---------+-----------+-----------
+     ledger_voucher_id_seq |         36 |           1 |            1 | 9223372036854775807 |         1 |           1 |      32 | f         | t
+    (1 row)
+
+The only solution seems to run Django's :manage:`sqlsequencereset`
+command after a :xfile:`restore.py`.  One problem here is that I want
+to reset all sequences, and the :manage:`sqlsequencereset` command
+requires us to specify all plugins as arguments.
+
+So I created a variant which is more admin-friendly, the
+:manage:`resetsequences` command.
+
+       
+Release to their production site. 
+
+Miscellaneous : there was another minor bug causing an
+"AssertionError: None is not a date" when creating a sales invoice on
+a partner without payment term.
+
+
+    
