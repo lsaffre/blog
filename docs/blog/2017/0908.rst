@@ -1,0 +1,150 @@
+:date: 2017-09-08
+
+=========================
+Friday, September 8, 2017
+=========================
+
+No alternative for appy.pod
+===========================
+
+I did some more research for:ticket:`1534` because for :ref:`avanti`
+we want to print documents.
+
+I installed `unoconv <https://github.com/dagwieers/unoconv>`_ on my
+machine (``sudo apt install unoconv``) and tried it.  I had to specify
+`UNO_PATH`, otherwise it worked out of the box::
+
+   UNO_PATH=/usr/lib/libreoffice unoconv -f pdf  myfile.odt
+
+Before choosing unoconv I had peeked into two other projects:
+`pyodconverter <https://github.com/mirkonasato/pyodconverter>`_ does
+something similar AFAICS but seems less alive and older.  `convertit
+<https://github.com/makinacorpus/convertit>`_ is just a web interface
+to unoconv.
+
+But unoconv does only the smaller part of what appy.pod does. The
+actual benefit of appy.pod is the templating work, i.e. how to replace
+"markup codes" in the template by data from the database.  Secretary
+is one alternative for this, and there is also `py3o.template
+<https://pypi.python.org/pypi/py3o.template/>`_.  But after looking at
+these once more, I continue to be skeptical. appy.pod is by far the
+best.
+
+
+Filtering contracts in :ref:`welfare`
+=====================================
+
+I worked on :ticket:`2030`.
+
+Dans les listes de contrats (PIIS, Art60, Art.61 etc), Lino permet de
+filtrer sur une période donnée. Si l'on remplit au moins un des champs
+"Date du" et "au", alors il faut également spécifier dans le champ
+"Évènement observé" comment Lino doit interpréter cette période:
+
+- Actif : applies_from (Début de contrat) et date_ended (Date de fin)
+  doivent se trouver dans la période donnée.
+- Commencé : applies_from (Début de contrat) dans la période
+- Fin : date_ended (Date de fin) dans la période
+- Décidé : date_decided (Décidé le) dans la période
+- Issued : date_issued (Date de signature) dans la période
+
+Note: il n'est donc pas possible de filtrer sur le champ applies_until
+(Fin prévue), sauf en utilisant un filtre de colonne.
+
+Code changes:
+
+- I changed the order of items in :class:`ContractEvents` : active is
+  now first because it is the default value and the most used.
+
+- I changed the meaning of `ContractEvents.active` : it now ignores
+  `applies_until`. This behaviour was from a time where `end_date` was
+  possible empty (which is no longer true
+
+  This is defined in
+  :class:`lino_welfare.modlib.isip.ContractBaseTable`
+  
+
+- I replaced applies_until by date_ended in the default column_names
+  of the Contracts tables in jobs, isip and art6
+  
+  
+Filter list of clients when creating appointment
+================================================
+
+I did :ticket:`2031` (added a chooser :meth:`project_choices` to
+:class:`lino_welfare.modlib.cal.Event`) and wrote a test case in
+:ref:`welfare.specs.cal` which covers it.
+
+
+Trying coverage
+===============
+
+- django-admin.py prep: error: unrecognized arguments: --noreload
+
+  That was because yesterday I removed the ``--noreload`` option
+  from :manage: `initdb`. I removed it because AFAICS it was
+  useless. So now I also removed it in the :command:`inv prep`
+  command defined in :mod:`lino.invlib.tasks`.
+
+- No .coveragerc file in welfare
+
+- :ref:`book` currently has 59% of coverage.
+     
+
+
+Miscellaneous
+=============
+
+Together with Johanna we found a way to break user management: create
+a user with all of the following fields blank: first_name, last_name,
+username and initials. Fixed.
+
+
+The site of a ticket
+====================
+
+In :class:`lino_xl.lib.clocking.MySessions` we had a remote field
+`ticket__project`. This field was useless now, I replaced it by
+`ticket__site`. Because before sending out service reports for August
+I wanted to verify that I didn't accidentally forgot to assign the
+site of a ticket I have been working on.
+
+This change caused :ref:`presto` to break. Since Presto has never been
+used and has no value, I deprecate the project and removed it from my
+list of atelier projects.
+
+
+
+The model of a VirtualField
+===========================
+
+While experimenting in :ref:`specs.noi.sql` I realized that the
+:attr:`model` of a :class:`VirtualField
+<lino.core.fields.VirtualField>` must be the class where the field was
+*defined*. This can be an abstract model. The VirtualField instance
+does not have a list of the concrete models which use it (because they
+inherit from that class).
+
+The :meth:`lino.core.kernel.Kernel.kernel_startup` was doing the
+following::
+
+    for model in models_list:
+        for k, v in class_dict_items(model):
+            if isinstance(v, fields.VirtualField):
+                v.attach_to_model(model, k)
+
+And meth:`class_dict_items` was defined as follows::
+
+
+    def class_dict_items(cl, exclude=None):
+        if exclude is None:
+            exclude = set()
+        for k, v in cl.__dict__.items():
+            if not k in exclude:
+                yield k, v
+                exclude.add(k)
+        for b in cl.__bases__:
+            for i in class_dict_items(b, exclude):
+                yield i
+
+                
