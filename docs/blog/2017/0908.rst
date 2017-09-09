@@ -76,8 +76,8 @@ I did :ticket:`2031` (added a chooser :meth:`project_choices` to
 :ref:`welfare.specs.cal` which covers it.
 
 
-Trying coverage
-===============
+Getting Travis projects to build
+================================
 
 - django-admin.py prep: error: unrecognized arguments: --noreload
 
@@ -114,7 +114,6 @@ used and has no value, I deprecate the project and removed it from my
 list of atelier projects.
 
 
-
 The model of a VirtualField
 ===========================
 
@@ -125,8 +124,8 @@ While experimenting in :ref:`specs.noi.sql` I realized that the
 does not have a list of the concrete models which use it (because they
 inherit from that class).
 
-The :meth:`lino.core.kernel.Kernel.kernel_startup` was doing the
-following::
+The :meth:`kernel_startup <lino.core.kernel.Kernel.kernel_startup>`
+was doing the following::
 
     for model in models_list:
         for k, v in class_dict_items(model):
@@ -134,7 +133,6 @@ following::
                 v.attach_to_model(model, k)
 
 And meth:`class_dict_items` was defined as follows::
-
 
     def class_dict_items(cl, exclude=None):
         if exclude is None:
@@ -147,4 +145,36 @@ And meth:`class_dict_items` was defined as follows::
             for i in class_dict_items(b, exclude):
                 yield i
 
-                
+That was incorrect because for virtual fields defined on a model mixin
+we must differentiate the "defining" from the "using" model.
+
+Release in Chatelet
+===================
+
+Since 2017-05-10. Upgraded Django from 1.9.13 to 1.11.5.
+
+
+- TypeError: 'profile' is an invalid keyword argument for this function
+
+  (because field `User.profile` renamed to
+  :attr:`lino.modlib.users.User.user_type`)
+
+
+
+Memory usage on :ref:`sr`
+=========================
+
+Maybe Jane is slow because :ref:`sr` had only 276M (of 2G) free
+memory?
+
+::
+
+    $ free -h
+                 total       used       free     shared    buffers     cached
+    Mem:          1.9G       1.6G       276M        39M        30M       193M
+    -/+ buffers/cache:       1.4G       500M
+    Swap:         1.0G       376M       647M
+
+After a reboot it was 1.1G.  But after the first web requests to jane
+and bugs these 1.1G were reduced to 574M.
+

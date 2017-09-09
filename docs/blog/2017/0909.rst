@@ -1,0 +1,69 @@
+:date: 2017-09-09
+
+===========================
+Saturday, September 9, 2017
+===========================
+
+A new way for disabling actions per row
+=======================================
+
+It is now possible to disable an action by adding its name to the set
+returned by :meth:`disabled_fields
+<lino.core.model.Model.disabled_fields>`.
+
+This approach can be more intuitive to write and less costly to run.
+For example the three actions on :class:`lino_xl.lib.stars.Starrable`
+are now implemented using this new possibility.
+
+Replace all :meth:`lino.core.actions.Action.get_action_permission`
+methods of actions by some condition in the :meth:`disabled_fields
+<lino.core.model.Model.disabled_fields>` method of the model which
+uses the action.
+
+Before::
+
+    class DoOne(dd.Action):
+        ...
+        def get_action_permission(self, ar, obj, st):
+            for x in obj.foos.all():
+                if x.bar:
+                    return True
+            return super(DoOne, self).get_action_permission(ar, obj, st)
+
+    class Foo(dd.Model):
+        do_one = DoOne()
+
+After::  
+
+    class DoOne(dd.Action):
+        ...
+        # no get_action_permission()
+
+    class Foo(dd.Model):
+
+        do_one = DoOne()
+
+        def disabled_fields(self, ar):
+            s = super(Foo, self).disabled_fields(ar)
+            s.add("do_one")
+            return s
+
+
+No more field `disabled_actions` : actions share the same
+namespace as fields, so there was no need to separate them.
+
+In :xfile:`linoweb.js`, I replaced "disabled_actions" by
+"disabled_fields". For example::
+  
+      var da = record.data.disabled_actions;
+
+becomes::      
+      
+      var da = record.data.disabled_fields;
+
+One challenge were actions with an `allowed_states`.  These are now
+handled more efficiently. Lino analyses the situation once at startup
+and creates per actor a dict :attr:`_state_to_disabled_actions` which
+is then being used for disabling these actions based on the row's
+state.
+
