@@ -41,3 +41,27 @@ is no longer needed. The local config dir is always a subdirectory
 <lino.core.site.Site.cache_dir>`
 
 
+I found the solution for :ticket:`1296`!  The problem occurred when
+appyPod spawned a Python3 subprocess using its `pythonWithUnoPath`
+setting.  The problem occurred only when running our test using
+:command:`setup.py test`.
+
+It was because somehow the :envvar:`PYTHONPATH` of the calling Python
+2 process was inherited to the Python 3 process given by
+`pythonWithUnoPath`.  That caused the Python 3 process to import
+modules of Python 2. And especially `future` doesn't like being
+imported by a Python that didn't install it).
+
+:meth:`atelier.utils.SubProcessParent.build_environment` now
+explicitly removes :envvar:`PYTHONPATH` from the environment of the
+child process.
+      
+I have no complete explanation yet.  Does :command:`setup.py test` set
+the :envvar:`PYTHONPATH`?
+
+
+Kontoauszüge erfassen
+=====================
+
+- 'DueMovement' object has no attribute 'obj2href'
+- Activate Merge action  
