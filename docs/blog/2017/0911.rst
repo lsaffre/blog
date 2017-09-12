@@ -1,0 +1,78 @@
+:date: 2017-09-11
+
+==========================
+Monday, September 11, 2017
+==========================
+
+Getting the test suites to pass on Travis
+=========================================
+
+I am currently doing occasional commits after reading build reports
+from travis and readthedocs.
+
+I had a `No data to combine` message in `travis for welfare
+<https://travis-ci.org/lino-framework/welfare/jobs/274041100>`__ and
+fixed it be removing the :xfile:`pytest.ini` file.  after looking at
+:func:`run_tests_coverage
+<lino.utils.invlib.tasks.run_tests_coverage>` in
+:mod:`lino.utils.invlib.tasks`.
+
+
+Another nice failure is `this one
+<https://travis-ci.org/lino-framework/welfare/jobs/274066527#L2657>`_.
+It occurs only on travis, not on my machine, obviously because of
+undefined sorting order when generating demo data using payment
+suggestions.  Seems that something is sorting movements or suggestions
+randomly when they have same partner and same date.  I hoped that
+`this commit
+<https://github.com/lino-framework/xl/commit/5a0f8cd32a011e80e4c623ffa362135014e367f2>`__
+but it didn't. My next attempt was to add `'project'` to the
+`order_by` because that's what's different for these movements. But
+note that `project` is a dummy field when `project_model` is not
+set. And we need to remove it because Django won't do that for us. I
+reimplemented :func:`fields_list <lino.core.fields.fields_list>`
+because I believed that I could use it to remove dummy fields from the
+order_by list. Then I realized that we cannot use :func:`fields_list
+<lino.core.fields.fields_list>` in the global scope of a
+:xfile:`models.py` module and wrote a stupid
+:meth:`lino_xl.lib.ledger.Plugin.remove_dummy` method.
+
+
+     
+And here is :ticket:`1296` back::
+
+    Original exception was:
+    Traceback (most recent call last):
+      File "virtualenvs/py27/lib/python2.7/site-packages/appy/pod/converter.py", line 20, in <module>
+        import sys, os, os.path, re, time, signal
+      File "/usr/lib/python3.5/re.py", line 335, in <module>
+        import copyreg
+      File "virtualenvs/py27/lib/python2.7/site-packages/copyreg/__init__.py", line 7, in <module>
+        raise ImportError('This package should not be accessible on Python 3. '
+    ImportError: This package should not be accessible on Python 3. Either you are trying to run from the python-future src folder or your installation of python-future is corrupted.
+
+That error is also on `travis
+<https://travis-ci.org/lino-framework/welfare/jobs/274066527>`__.
+
+I got rid of it after observing that it did not occur when I ran it
+manually::
+
+    $ doctest docs/specs/integ.rst
+
+It occurred only when called using::
+
+  from lino.utils.pythontest import TestCase
+  class SpecsTests(TestCase):
+
+     def test_integ(self):
+         return self.run_simple_doctests('docs/specs/integ.rst')
+
+
+
+
+And `this one
+<https://travis-ci.org/lino-framework/welfare/jobs/274066527#L2618>`__
+said "Warning: No local config directory. Contact your system
+administrator.  "
+
+

@@ -1,0 +1,25 @@
+:date: 2017-09-12
+
+===========================
+Tuesday, September 12, 2017
+===========================
+
+Two problems after release@ welcht
+==================================
+
+I continue to like the idea (:doc:`0904`) of having no phantom row in
+tables that have a (+) button (IOW an insert_layout), but there is one
+place where it disturbs: when users used a double-click to that the
+phantom row from within a slave table. New attribute
+:attr:`force_phantom_row <lino.core.tables.Tables.force_phantom_row>`.
+
+`cal.Events` was using two variables `pending_states` and
+`fixed_states` when `observed_event` was `EventEvents.stable`
+`EventEvents.panding`.  But these lists of states were being filled
+(using `EntryStates.filter(fixed=False)`) at *module* scope, i.e. when
+models were getting imported. That might have caused some troubles for
+them: J'ai trouvé une anomalie pour le filtrage des rendez-vous quand
+un "Évènement observé:" est spécifie.
+
+
+

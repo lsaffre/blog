@@ -18,19 +18,20 @@ I was born and grew up in Belgium (`Eupen
 married an Estonian woman and moved to Estonia.  We have 2 daughters
 and live in a small village.
 
-I work as CEO and senior developer at `Rumma
-& Ko OÜ <http://www.saffre-rumma.net/>`_ where we provide development,
+I work as senior developer at `Rumma & Ko OÜ
+<http://www.saffre-rumma.net/>`_ where we provide development,
 maintenance and customer support of `free
 <https://en.wikipedia.org/wiki/Free_software>`__ customized database
 applications, mainly using the `Lino framework
-<http://www.lino-framework.org/>`__ of which I am the author.
+<http://www.lino-framework.org/>`__ and its older brother `TIM
+<http://tim.lino-framework.org/129.html>`__.
 
 How to contact me:
 
 ================== ====================================================================
 Email              <luc *dot* saffre *at* gmail *dot* com>
-Phone              +372/4824548
-Mobile             +372/56672435
+Phone              +372/4824 548
+Mobile             +372/5667 2435
 Social networks    `Google <https://plus.google.com/104488487380470927379>`_ `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ `GitHub <https://github.com/lsaffre>`_
 Wikipedia          `et <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ `de <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ `en <https://en.wikipedia.org/wiki/User:LucSaffre>`_ `fr <https://fr.wikipedia.org/wiki/Utilisateur:LucSaffre>`__
 Blog               `en <http://luc.lino-framework.org>`__ `de <http://luc.saffre-rumma.net>`__ `et <http://belglane.saffre-rumma.net>`__

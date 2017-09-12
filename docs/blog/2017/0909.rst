@@ -15,25 +15,26 @@ This approach can be more intuitive to write and less costly to run.
 For example the three actions on :class:`lino_xl.lib.stars.Starrable`
 are now implemented using this new possibility.
 
-Replace all :meth:`lino.core.actions.Action.get_action_permission`
-methods of actions by some condition in the :meth:`disabled_fields
-<lino.core.model.Model.disabled_fields>` method of the model which
-uses the action.
+Here is a fictive example
 
-Before::
+1. Using :meth:`get_action_permission
+   <lino.core.actions.Action.get_action_permission>` method of the
+   action::
 
     class DoOne(dd.Action):
         ...
         def get_action_permission(self, ar, obj, st):
             for x in obj.foos.all():
                 if x.bar:
-                    return True
+                    return False
             return super(DoOne, self).get_action_permission(ar, obj, st)
 
     class Foo(dd.Model):
         do_one = DoOne()
 
-After::  
+2. Using the :meth:`disabled_fields
+   <lino.core.model.Model.disabled_fields>` method of the model which
+   defines the action::
 
     class DoOne(dd.Action):
         ...
@@ -45,12 +46,15 @@ After::
 
         def disabled_fields(self, ar):
             s = super(Foo, self).disabled_fields(ar)
-            s.add("do_one")
+            for x in self.foos.all():
+                if x.bar:
+                    s.add("do_one")
             return s
 
-
-No more field `disabled_actions` : actions share the same
-namespace as fields, so there was no need to separate them.
+No more method `disabled_actions` : actions share the same namespace
+as fields, so there was no need to separate them. A side effect of
+this is that in readonly tables it is no longer possible to disable
+individual actions. Which AFAICS is correct.
 
 In :xfile:`linoweb.js`, I replaced "disabled_actions" by
 "disabled_fields". For example::
