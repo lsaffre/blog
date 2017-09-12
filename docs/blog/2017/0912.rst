@@ -8,10 +8,14 @@ Two problems after release@ welcht
 ==================================
 
 I continue to like the idea (:doc:`0904`) of having no phantom row in
-tables that have a (+) button (IOW an insert_layout), but there is one
-place where it disturbs: when users used a double-click to that the
-phantom row from within a slave table. New attribute
-:attr:`force_phantom_row <lino.core.tables.Tables.force_phantom_row>`.
+tables that have a (+) button (IOW an insert_layout), but there is at
+least one place where it disturbs: when users used a double-click to
+that the phantom row from within a slave table. New attribute
+:attr:`no_phantom_row <lino.core.tables.Tables.no_phantom_row>`.  But
+I realized that the only real solution to Lydia's problem would be a
+new argument in the AJAX call where the grid component tells Lino
+whether it is a main component (with toolbar) or a slave panel in a
+detail window (without toolbar).
 
 `cal.Events` was using two variables `pending_states` and
 `fixed_states` when `observed_event` was `EventEvents.stable`
@@ -21,5 +25,19 @@ models were getting imported. That might have caused some troubles for
 them: J'ai trouvé une anomalie pour le filtrage des rendez-vous quand
 un "Évènement observé:" est spécifie.
 
+
+Adapting test suites
+====================
+
+I released :mod:`commondata.ee` version 0.0.4 because version 0.0.1
+failed on Python 3. Versions 0.0.2 and 0.0.3 were never released to
+PyPI due to misunderstandings with the Trove classifiers ("BSD
+License" must now have a capital L and natual language estonian
+doesn't exist).
+
+I removed the :attr:`is_local_project_dir` Site attribute because it
+is no longer needed. The local config dir is always a subdirectory
+:xfile:`config` of the :attr:`cache_dir
+<lino.core.site.Site.cache_dir>`
 
 
