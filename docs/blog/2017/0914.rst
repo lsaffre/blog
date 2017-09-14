@@ -1,0 +1,13 @@
+:date: 2017-09-14
+
+============================
+Thursday, September 14, 2017
+============================
+
+Yesterday I read `this thread
+<https://stackoverflow.com/questions/17257031/django-unique-null-and-blank-charfield-giving-already-exists-error-on-admin-p>`__
+and removed :class:`dd.NullCharField`.  And now I observed that it was
+not enough to just allow nullable charfields now.  I also had to adapt
+:meth:`lino.core.store.StoreField.form2obj` because now the field no
+longer takes care of handling the special situation.  Added a test
+case :mod:`lino_book.projects.adg.tests.test_nullchar` to cover this.

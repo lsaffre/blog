@@ -1,0 +1,140 @@
+:date: 2017-09-13 23:12
+
+=============================
+Wednesday, September 13, 2017
+=============================
+
+Jane performance
+================
+
+I converted :mod:`lino_xl.lib.clocking` to disable the
+:attr:`start_session` and :attr:`end_session` actions via
+:meth:`disabled_fields <lino.core.model.Model.disabled_fields>` (for
+:ticket:`2044`, now that :ticket:`2048` is done). And I set the
+:attr:`end_time <lino_xl.lib.clocking.Session.end_time>` field of
+:class:`Session <lino_xl.lib.clocking.Session>` to `db_index=True`.
+En passant I moved docstrings from the code to :ref:`specs.clocking`
+(:ticket:`1869`).
+
+Getting Lino Book to build on readthedocs
+=========================================
+
+Wow, the Book test suite passed for the first time on both Python 2
+and 3!  https://travis-ci.org/lino-framework/book/builds/274879119
+
+On readthedocs we continue to have the problem that the build gets
+killed: https://readthedocs.org/projects/lino/builds/5968721/
+But there was a warning about :mod:`commondata.eg`.
+
+
+Sometimes it has the following error::
+
+  OSError: [Errno 2] No such file or directory:
+  '/home/docs/checkouts/readthedocs.org/user_builds/lino/envs/latest/src/lino/lino/modlib/system/mixins.py'
+
+And I don't see where it comes from. There was once upon a time a
+module :file:`mixins` in :mod:`lino.modlib.system`, and I discovered
+only recently that a `.pyc` file was still dangling in my working
+copy. And that might have caused autodoc to generate a file
+:file:`api/lino.modlib.system.mixins.rst`
+
+
+
+Optimizations for :ref:`avanti`
+===============================
+
+The `insert_layout` for
+:class:`lino_xl.lib.cv.LanguageKnowledgesByPerson` had gone, and also
+the ⊕ Button to quickly add a new knowledge.
+
+:class:`lino_xl.lib.trends.TrendEvent` has no longer `unique_together`
+set to `['subject', 'trend_stage']`. It can happen that a same `stage`
+occurs more than once for a given `subject`.
+
+
+Optimizations for :ref:`tera`
+=============================
+
+Aufräumen in Stammdaten Klienten
+
+Jetzt geht es ans Erfassen der Zahlungen, und da fängt es schon an zu
+stören, dass doch recht viele Klienten oder Zahler doppelt existieren.
+Das kommt scheinbar davon, dass sie in TIM nicht korrekt miteinander
+verknüpft waren.
+
+Manuelle Korrektur : Enrolment.start_date ist korrekt ausgefüllt, aber
+diverse andere Datenfelder bei den Aktivitäten stehen konstant auf
+29.07.2017 (Datum des Imports). Hier mein Skript :file:`20170913.py`::
+
+    from lino.api.shell import courses
+    for obj in courses.Enrolment.objects.all():
+        obj.request_date = obj.start_date
+        obj.course.start_date = obj.start_date
+
+        obj.course.save()
+        obj.save()
+
+
+- detail window of a place now shows the partners living there
+- merge action also for persons. to observe : what happens when this
+  is used on a person who is also a client.
+- Show zip code when selecting a city (:ticket:`2064`).
+
+
+NB: I did not yet adapt the test suites to above changes. book and
+welfare are failing.
+
+
+User.username can *not* be null
+===============================
+
+During a deploy for :ref:`avanti` the :xfile:`restore.py` failed
+because they had two "virtual" users with empty :attr:`username
+<lino.modlib.users.User.username>`. An empty username was perfectly
+allowed in Lino. It means that this user exists and can be referred
+to, e.g. as the author of some `UserAuthored`, but cannot be used for
+logging in.  This feature was not tested however.
+
+At first I thought it had to do with nullable charfields in general.
+I read `this thread
+<https://stackoverflow.com/questions/17257031/django-unique-null-and-blank-charfield-giving-already-exists-error-on-admin-p>`__
+and removed :class:`dd.NullCharField`.  But still the problem didn't
+go away : the dump contained two users with username `None`, but the
+database complained about duplicate username fields.
+
+Upgraded from Django 1.11.3 to 1.11.5. Nope.
+
+>>> from lino import startup
+>>> startup("lino_book.projects.adg.settings.demo")
+>>> from lino.api.doctest import *
+>>> #fld = users.User._meta.get_field('username')
+>>> fld = avanti.Client._meta.get_field('national_id')
+>>> fld.__class__
+<class 'django.db.models.fields.CharField'>
+>>> fld.null
+True
+>>> fld.blank
+True
+>>> fld.unique
+True
+>>> fld.empty_strings_allowed
+True
+
+A new test in min1 revealed that the guilty was
+`django.contrib.auth.base_user.AbstractBaseUser`: it seems that Django
+doesn't tolerate username being None. If it is None, Django sets it to
+"None".  What a pity!  Okay, I change Lino's username to be non blank
+and non nullable.
+
+The only strange thing is that Lino did let us save both User objects
+with empty username.
+
+
+Public money, public code!
+==========================
+
+Publicly financed software developed for the public sector should be
+made publicly available under a Free and Open Source Software licence.
+Unfortunately this is far from being reality. It's a shame.  I signed
+`the open letter <https://publiccode.eu/openletter/>`__.
+
