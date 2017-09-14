@@ -4,10 +4,44 @@
 Thursday, September 14, 2017
 ============================
 
-Yesterday I read `this thread
+Yesterday I removed :class:`dd.NullCharField` after having read in
+`this thread
 <https://stackoverflow.com/questions/17257031/django-unique-null-and-blank-charfield-giving-already-exists-error-on-admin-p>`__
-and removed :class:`dd.NullCharField`.  And now I observed that it was
-not enough to just allow nullable charfields now.  I also had to adapt
+that Django now allows nullable CharField.  And now I observed that
+this was not enough.  I also had to adapt
 :meth:`lino.core.store.StoreField.form2obj` because now the field no
-longer takes care of handling the special situation.  Added a test
-case :mod:`lino_book.projects.adg.tests.test_nullchar` to cover this.
+longer takes care of handling the special situation.  Fixed. Added a
+test case :mod:`lino_book.projects.adg.tests.test_nullchar` to cover
+this.
+
+release@spz
+===========
+
+More optimizations: Therapists are now CourseTeacher role and see the
+MyCoursesGiven table.  The teacher_model in :ref:`tera` is User, not
+Person.  MyCoursesGiven did not yet support that.
+
+Welcome to Doti Sandhya Rani
+============================
+
+Doti Sandhya Rani, a Graduate Student at Texas State University,
+started to learn Lino with me as mentor. Welcome to the community,
+Doti!  I reviewed the second chapter of the Developers Guide
+(:ref:`lino.tutorial.hello`) with Doti in mind.
+
+Lino on readthedocs
+===================
+
+Uff, :ref:`book` now builds on readthedocs:
+http://lino.readthedocs.io
+
+
+Welfare failing on Travis
+=========================
+
+I added a method
+:meth:`lino.utils.config.ConfigDirCache.scan_config_dirs`.
+
+I removed :func:`rt.relpath` and replaced it by an ellipsis because
+anyway it failed on `travis
+<https://travis-ci.org/lino-framework/welfare/jobs/275453538>`__
