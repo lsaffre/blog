@@ -13,3 +13,31 @@ After `this failure <https://travis-ci.org/lino-framework/welfare/jobs/276021210
 I added Python 3 to the :xfile:`.travis.xml` of :ref:`voga`. And then
 also ran a limited futurize on it.
 
+We received the following warning mail every day::
+
+    /etc/cron.daily/certbot:
+    Saving debug log to /var/log/letsencrypt/letsencrypt.log
+    Cert not yet due for renewal
+    Cert not yet due for renewal
+
+    -------------------------------------------------------------------------------
+    Processing /etc/letsencrypt/renewal/ff.example.conf
+    -------------------------------------------------------------------------------
+
+    -------------------------------------------------------------------------------
+    Processing /etc/letsencrypt/renewal/example.org.conf
+    -------------------------------------------------------------------------------
+
+    The following certs are not due for renewal yet:
+      /etc/letsencrypt/live/foo.example/fullchain.pem (skipped)
+      /etc/letsencrypt/live/lino-framework.org/fullchain.pem (skipped)
+    No renewals were attempted.
+
+
+That's because a well-behaved daemon should not write to stdout.  I
+changed the `/etc/cron.daily/certbot` script so that it redirects
+output to :file:`/dev/null`::
+
+    #!/bin/sh
+    certbot renew --apache --renew-hook "service apache2 restart" > /dev/null
+

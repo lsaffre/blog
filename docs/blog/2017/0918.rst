@@ -1,0 +1,46 @@
+:date: 2017-09-18
+
+==========================
+Monday, September 18, 2017
+==========================
+
+The Developer's Guide is getting better
+=======================================
+
+I checked in the work I did during the weekend: :ticket:`40`
+and :ticket:`2072`. I wrote to Doti: 
+
+    I must admit that each time I look into the Developers Guide for
+    some mentee, I see many things to improve. Also this week-end I
+    did lots of changes. Reload your browser pages. The "Getting
+    started" section has currently 5 chapters, and I am now more or
+    less satisfied, you can read them all. I don't yet recommend to
+    read beyond the first section because I plan work on the second
+    section soon. Thanks for motivating me :)
+
+release@spz
+===========
+
+I deployed to SPZ for :ticket:`2070`. Some minor changes while testing
+the new feature on their site. I am satisfied with my idea of having
+Lino handle payment orders like payable "invoices" with the bank as
+"supplier".
+
+
+Jane is slow when showing tickets
+=================================
+
+Tonis discovered that after my changes on :blogref:`20170913`,
+:meth:`disabled_fields` is being called twice per row.  I wrote the
+new utility function :func:`lino.api.doctest.add_call_logger` to show
+the problem:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+>>> add_call_logger(rt.models.tickets.Ticket, 'disabled_fields')
+>>> demo_get('robin', 'api/tickets/ActiveTickets', fmt="json", limit=1)
+disabled_fields() on <class 'lino_noi.lib.tickets.models.Ticket'> was called
+disabled_fields() on <class 'lino_noi.lib.tickets.models.Ticket'> was called
+
+To be continued tomorrow.

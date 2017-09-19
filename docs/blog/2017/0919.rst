@@ -1,0 +1,33 @@
+:date: 2017-09-19
+
+===========================
+Tuesday, September 19, 2017
+===========================
+
+Jane is slow when showing tickets
+=================================
+
+Continued from yesterday.
+
+To fix the problem we now graft a dict `_disabled_fields` to every
+table row.  On the Actor (actors and dbtables) I replaced the method
+`disabled_fields` by two methods :meth:`get_disabled_fields` and
+:meth:`make_disabled_fields`.  This method is being used only
+internally (from :mod:`lino.core.store` and :mod:`lino.core.model`).
+
+I am not sure whether Django caches and shares Model instances between
+different requests. If it does, then we need to extend the grafted
+dict to something like `_user_to_disabled_fields` because the set
+depends on the user. We wouldn't want to mix up those of an admin with
+those of a simple user.
+
+TODO: Maybe we should also rename `Model.disabled_fields` to sth like
+`disable_data_elems` and change the API and all usages so that it
+returns nothing but receives the set as first arg and modifies that
+set, adding and possibly removing names.
+  
+  
+Developer's Guide
+=================
+
+Doti inspires me to continue and work much in the :ref:`lino.dev`.
