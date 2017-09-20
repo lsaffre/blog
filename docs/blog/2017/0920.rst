@@ -1,0 +1,56 @@
+:date: 2017-09-20
+
+=============================
+Wednesday, September 20, 2017
+=============================
+
+Python 3 support for Appy
+=========================
+
+After a second `failure on travis
+<https://travis-ci.org/lino-framework/xl/jobs/277485502>`__ caused by
+appy under Python 3, I heard good news: Gaetan is advancing with
+porting his appy framework to Python 3, and his work is published on
+https://forge.pallavi.be/projects/appy-python-3
+
+I can easily check out a copy of the repository to my machine::
+
+    $ svn checkout https://svn.forge.pallavi.be/appy-python-3
+
+But it seems that this repository cannot be installed (and I therefore
+cannot specify it in our `requirements.txt
+<https://pip.readthedocs.io/en/1.1/requirements.html>`__ file) because
+it has no file :xfile:`setup.py`::
+
+    $ pip install -e svn+https://svn.forge.pallavi.be/appy-python-3/trunk#egg=appy
+    Obtaining appy from svn+https://svn.forge.pallavi.be/appy-python-3/trunk#egg=appy
+      Checking out https://svn.forge.pallavi.be/appy-python-3/trunk to ./env/src/appy
+        Complete output from command python setup.py egg_info:
+        Traceback (most recent call last):
+          File "<string>", line 1, in <module>
+        IOError: [Errno 2] No such file or directory: './env/src/appy/setup.py'
+
+        ----------------------------------------
+    Command "python setup.py egg_info" failed with error code 1 in ./env/src/appy/
+
+
+Gaetan, is there any reason why you don't have a :xfile:`setup.py`
+file?  `Here
+<https://stackoverflow.com/questions/2204811/pip-install-a-python-package-without-a-setup-py-file>`__
+is a seven years old stackoverflow discussion about this.
+
+Changed configuration API for demo_projects
+===========================================
+
+I moved the definition of :envvar:`demo_projects` from lino.invlib to
+:mod:`atelier.invlib` and changed the syntax: the itema of
+:envvar:`demo_projects` must now be directory names (and no longer
+names of Django settings modules).  Yes this means that every django
+demo project now needs a :xfile:`manage.py` file. Until now only the
+:xfile:`settings.py` was required.
+We have a new setting :envvar:`prep_command`.
+
+Advantages: the concept of demo projects becomes more general, and the
+documentation is no longer splitted but in a single place
+:ref:`atelier.invlib`.
+
