@@ -1,0 +1,60 @@
+:date: 2017-09-21
+
+============================
+Thursday, September 21, 2017
+============================
+
+Today I worked on the bootstrap3 interface (for :ticket:`2076` "Make
+bugs.sr (bs3 for jane) more usable").  Logging in and out doesn't yet
+really work there.
+
+- renamed AllTickets to Tickets
+- removed PublicTickets  
+
+To "log in" or to "sign in"?
+============================
+
+I surfed about "sign in versus log in" and found that we should indeed
+change "log in" and "log out" to "sign in" and "sign out".
+
+I liked `Roland Tepp's explanation
+<https://ux.stackexchange.com/questions/1080/using-sign-in-vs-using-log-in>`__:
+Mostly because "Logging" something does not really convey the meaning
+of "entering" quite the same way as "sign in" does.  I can log any
+daily event, but that is just a mention of a fact while when I sign in
+at the door of an office building, I am giving my signature that I
+have entered the building and when I "sign out", I am also recording
+the fact that I am leaving the building...
+
+An avalanche of internal changes
+================================
+
+:ticket:`2076` triggered :ticket:`2077`.  I know that it's me who
+wrote Lino, but this software will never stop to surprise me. Today
+was such a moment. I am amazed. J'ai beau savoir qu'il est tombé dans
+la marmite quand il était petit...
+
+- login and logout are now implemented as Lino actions :class:`SignIn
+  <lino.modlib.users.SignIn>` and :class:`SignOut
+  <lino.modlib.users.SignOut>`.  Until now they were "hard-wired" in the
+  linoweb.js and had their own view in :mod:`lino.modlib.extjs.views`.
+
+- The `label_align` on a panel was being ignored. Fixed.  This feature
+  is used by SignIn because with the default labelAlign="top" they
+  really looked too weird.
+
+- We have a new feature : actions can now respond with a
+  :attr:`goto_url
+  <lino.core.requests.ValidActionResponses.goto_url>`. This feature
+  is used by SignIn and SignOut to request a page reload.
+
+- `ActionParamsPanel` now uses `buttons` instead of `tbar`. Looks
+  better.
+
+- as a result it is now possible in bootstrap3 to sign in and
+  out. that's what actually triggered the avalanche.
+  
+TODO:
+
+- in extjs6 the labelAlign doesn't work
+- in extjs Sorry, dialog action without base_params.mk  
