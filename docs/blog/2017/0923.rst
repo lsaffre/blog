@@ -1,0 +1,23 @@
+:date: 2017-09-23
+
+============================
+Saturday, September 23, 2017
+============================
+
+I added the `remark` field for GuestsByEvent in general (not only for
+:ref:`avanti`.
+
+I moved some code from :mod:`lino.modlib.changes.models` to a new
+module :mod:`lino.utils.watch`. Because the fact of declaring
+something to be watched is different from how this watching is to be
+done.  Apllication code must replace::
+
+     from lino.modlib.changes.models import watch_changes as wc
+     
+by::
+  
+     from lino.utils.watch import watch_changes as wc
+
+The advantage is that an application can define change watchers, and
+local system administrators can still decide to disable the
+:mod:`lino.modlib.changes` plugin.

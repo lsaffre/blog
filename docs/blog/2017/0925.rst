@@ -1,0 +1,59 @@
+:date: 2017-09-25
+
+==========================
+Monday, September 25, 2017
+==========================
+
+Coverage and Atelier
+====================
+
+I continued to work in :ref:`atelier` for :ticket:`2074`.  The default
+values for :envvar:`coverage_command` and :envvar:`prep_command` have
+changed and are now defined :mod:`atelier.invlib.ns` together with the
+others.  I completely removed special handling of projects having a
+:xfile:`pytest.ini` file.
+
+
+Optimizations in :ref:`avanti`
+===============================
+
+I checked in the code changes I did on Saturday.
+
+Users can now filter clients by coaching type.
+:class:`lino_xl.lib.coachings.Coachable` mixin.
+
+The :xfile:`presence_sheet.weasy.html` template didn't show the names.
+Fixed. And it now shows the state (and remark) of the
+:class:`lino_xl.lib.cal.Guest` object if such an object exists. If no
+Guest object exists, it continues to print eiterh X or blank based on
+the end_date and start_date of the enrolment.
+
+TODO: ATM this is still a single template used by both :ref:`avanti`
+and :ref:`voga`. Their usage is quite different though, and I guess
+that sooner or later we will need to split this template into two. The
+interesting question will then be how to keep as much as possible
+within a common base template.
+
+The :attr:`quick_search_fields` of
+:class:`lino_avanti.lib.avanti.Client`
+now includes the :attr:`ref` field.
+
+The detail window of :class:`lino_avanti.lib.courses.Enrolment` now
+also shows the data problems
+(i.e. :class:`lino.modlib.plausibility.ProblemsByController` which now
+uses a summary panel and whose detail_layout I optimized).
+
+
+
+Documentation
+=============
+
+
+I moved the docstrings from
+the :mod:`lino_xl.lib.coachings` module to
+the :ref:`specs.coachings` page.
+
+Lino surprised me once more:
+The help text of the :attr:`coaching_type
+<lino_xl.lib.users.User.coaching_type>` field is indeed given in the
+:ref:`specs.coachings` page.
