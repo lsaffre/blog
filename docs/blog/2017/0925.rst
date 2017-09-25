@@ -13,6 +13,32 @@ changed and are now defined :mod:`atelier.invlib.ns` together with the
 others.  I completely removed special handling of projects having a
 :xfile:`pytest.ini` file.
 
+One visible result is that the test coverage of atelier increased from
+20% to 40% (under Python 3).
+
+Under Python 3, in :mod:`atelier.sphinxconf.insert_input`, I had a
+TypeError :message:`a bytes-like object is required, not 'str'`. Had
+to do with the ``from io import BytesIO as StringIO`` in that
+module. It was about decoding the output of a subprocess...
+
+In :mod:`atelier.sphinxconf.blog` I had::
+
+  WARNING: Inline emphasis start-string without end-string.
+
+but funnily only under Python 3. It took me some time to figure out
+that it was caused by::
+
+    from builtins import map
+
+It seems that the :func:`map` function has the following docstring
+under Python 3::
+
+    map(func, *iterables) –> map object
+
+I fixed the problem by just removing the import statement, together
+with similar lines for ``range`` and ``object``. I continue to not
+understan the purpose of these imports.
+
 
 Optimizations in :ref:`avanti`
 ===============================
@@ -45,9 +71,8 @@ uses a summary panel and whose detail_layout I optimized).
 
 
 
-Documentation
+Documentation 
 =============
-
 
 I moved the docstrings from
 the :mod:`lino_xl.lib.coachings` module to
@@ -57,3 +82,10 @@ Lino surprised me once more:
 The help text of the :attr:`coaching_type
 <lino_xl.lib.users.User.coaching_type>` field is indeed given in the
 :ref:`specs.coachings` page.
+
+
+release@avanti
+==============
+
+I upgraded their production site because all items of :ticket:`2075`
+are done.
