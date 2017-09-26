@@ -4,4 +4,76 @@
 Tuesday, September 26, 2017
 ===========================
 
+I continued to work on :ticket:`36`. 
+
 I released :ref:`atelier` version 1.0.11.
+
+`Travis
+<https://travis-ci.org/lino-framework/welfare/jobs/279576918>`__
+reminded me that building the :ref:`welfare` docs requires the
+:mod:`lino_book`.  Oh my god, how big Lino is! It's not a bug and not
+a design flaw but about where to document things.
+     
+How to fix this? Merge the welfare docs into the book?  Or leave them
+separate, as an example of a big Lino application which lives a
+completely independent life?  Merging it would also fix the (small)
+problem that :ref:`specs.coaching` is a bit incomplete because the
+:class:`Coaching <lino_xl.lib.coachings.Coaching>` model is actually
+not used in :ref:`avanti` (the only other application besides welfare
+that uses coachings).
+
+No, we don't merge, we leave welfare independent because it is really
+very specific to Belgium.  And a quick fix is to add `lino_book` to
+the :xfile:`requirements.txt` file of welfare. If a future maintainer
+doesn't like that dependence, they would have to remove from the
+welfare docs about 21 intersphinx links which refer to book.
+
+I also tried to get rid of the std demo project in welfare. One place
+which needs it is the :xfile:`conf.py` of the welfare docs. The
+challenge here is that autodoc needs to import all modules, and Django
+isn't very cooperative when it's about defining model classes for
+plugins which aren't installed.
+
+A common problem is that autosummary doesn't say why it failed to
+import some module::
+
+    $ inv bd
+    ...
+    Warning, treated as error:
+    [autosummary] failed to import u'lino_welfare.projects.chatelet.modlib.courses.models': no module named lino_welfare.projects.chatelet.modlib.courses.models
+          
+The easiest trick to see what's happening is to simulate the situation:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.demo')
+>>> import lino_welfare.projects.chatelet.modlib.courses.models
+
+Here is the output::
+  
+    File "blog/docs/blog/2017/0926.rst", line 55, in 0926.rst
+    Failed example:
+    import lino_welfare.projects.chatelet.modlib.courses.models
+    Exception raised:
+    Traceback (most recent call last):
+      File "atelier/atelier/utils.py", line 60, in __getattr__
+        return self[name]
+    KeyError: 'courses'
+    <BLANKLINE>
+    During handling of the above exception, another exception occurred:
+    <BLANKLINE>
+    Traceback (most recent call last):
+      File "/usr/lib/python3.5/doctest.py", line 1321, in __run
+        compileflags, 1), test.globs)
+      File "<doctest 0926.rst[2]>", line 1, in <module>
+        import lino_welfare.projects.chatelet.modlib.courses.models
+      File "welfare/lino_welfare/projects/chatelet/modlib/courses/models.py", line 28, in <module>
+        from lino_xl.lib.courses.models import *
+      File "xl/lino_xl/lib/courses/models.py", line 49, in <module>
+        from .choicelists import EnrolmentStates, CourseStates, CourseAreas
+      File "xl/lino_xl/lib/courses/choicelists.py", line 84, in <module>
+        add('C', dd.plugins.courses.verbose_name, 'default')
+      File "atelier/atelier/utils.py", line 64, in __getattr__
+        name, ', '.join(list(self.keys()))))
+    AttributeError: AttrDict instance has no key 'courses' (keys are ...)
+
+Above case is BTW where I abandoned for this time.
