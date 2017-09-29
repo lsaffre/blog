@@ -1,0 +1,51 @@
+:date: 2017-09-27
+
+=============================
+Wednesday, September 27, 2017
+=============================
+
+The :class:`lino_xl.lib.ledger.AccountingReport` has a subtle but
+disturbing problem: since building all the reports can take a second
+or ten, it is annoying that Lino tries to do it again and again each
+time I change some parameter value.
+
+A first approach for fixing this might be to have an "explicit refresh
+button" and to disable the automatic refreshing after each parameter
+field change.
+
+
+The refresh button
+==================
+
+Currently there is no :class:`lino.core.actions.Action` object which
+represents the "Refresh" button.
+
+A :class:`Lino.GridPanel` has a `Ext.PagingToolbar
+<http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.PagingToolbar>`__ (or
+`Ext.toolbar.Paging
+<http://docs.sencha.com/extjs/6.5.2/classic/Ext.toolbar.Paging.html>`__
+in ExtJS 6) as as `tbar` which has a built-in "refresh" button.
+
+BTW this hard-coded button of the PagingToolbar does **not** call the
+:meth:`refresh` method (which is a Lino concept) but
+:meth:`store.load`.
+
+The :class:`Lino.GridPanel` also calls its :meth:`refresh`
+automatically after `resize` and `viewready` events.
+
+The `Lino.FormPanel` (defined in :xfile:`linoweb.js`) adds the refresh
+button itself::
+
+      this.tbar = this.tbar.concat([
+        {
+          handler:function(){ this.do_when_clean(false,this.refresh.createDelegate(this)) },
+          iconCls: 'x-tbar-loading',
+          tooltip:"{{_('Reload current record')}}",
+          scope:this}
+      ]);
+
+
+The :meth:`Lino.MainPanel.add_params_panel` method adds a listener to
+the change events of the parameter panel fields.
+
+

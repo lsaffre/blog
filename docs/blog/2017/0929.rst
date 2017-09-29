@@ -1,0 +1,63 @@
+:date: 2017-09-29
+
+==========================
+Friday, September 29, 2017
+==========================
+
+New option :attr:`auto_apply_params`
+====================================
+
+The problem in :class:`lino_xl.lib.ledger.AccountingReport` (see
+:doc:`0928`) is now fixed in a pragmatical way: changing a single
+parameter field no longer automatically triggers a refresh. You must
+explicitly click the refresh button to see your result. And when no
+starting period is given, the report just says "you must specify at
+least a starting period" instead of rendering a meaningless report. As
+a side effect this report now always uses the `appypdf` print method
+which produces the best result.
+
+Code changes:
+
+- New option :attr:`lino.core.actors.Actor.auto_apply_params`.
+
+- (side effect) I removed the :meth:`put_button` method from renderer
+  and Request and from the :func:`Lino.put` in both
+  :xfile:`linoweb.js` files.
+
+- :class:`lino.modlib.printing.actions.BasePrintAction` now supports
+  the case that the printable object's :meth:`get_build_method`
+  returns a string.  Until now this was allowed only for print actions.
+
+- a Report can now specify its print
+  method. :attr:`lino.utils.report.Report.build_method`
+
+- As an experimental new feature we now have a :class:`ButtonElement`,
+  and you can specify an action as a data element of a layout.
+  Currently however this is quite limited since it works only for
+  actions that have an explicit :attr:`js_handler`.  And the only
+  candidate action is :class:`ExplicitRefresh`, but this doesn't work
+  because in :xfile:`linoweb.js` a parameter panel currently doesn't
+  know the main panel it is sitting on and therefore the button cannot
+  call the refresh method of that panel.  I finally abandoned the idea
+  of an explicit "Go!" button because (1) it turned out to be
+  difficult to implement and (2) i realized that it wasn't a good
+  idea.
+
+
+
+TODO:
+
+- apply the changes in :mod:`lino.modlib.extjs` also to
+  :mod:`lino_extjs6`.
+  
+
+
+Default image size
+==================
+
+The images produced by :rst:directive:`sigal_image` have now a
+hard-coded default width of 280 pixel. Until now they had no width
+specified, which meant that the result depended on the actual
+thumnbnail size.
+
+
