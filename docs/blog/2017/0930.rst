@@ -6,3 +6,212 @@ Saturday, September 30, 2017
 
 I converted docs about printing to prosa in :ref:`specs.printing`.
 
+
+release@spz
+===========
+
+The :xfile:`restore.py` file created by :manage:`dump2py` now calls
+:manage:`resetsequences` after loading the dump. Because it doesn't
+take much time, and because forgetting it can cause frustration.
+
+
+Gateway Timeout
+===============
+
+As already some days ago, the AccountingReport fails on their
+production site with a gateway timeout:
+
+    Gateway Timeout
+    from the upstream server or application.
+
+    Failed to load resource: the server responded with a status of 504 (Gateway Timeout)
+
+This comes when Lino takes too much time for answering the request.  I
+had to fiddle a bit in order to see the SQL requests, and these
+confirmed that I need to rewrite the SQL query of
+:class:`AccountsBalance`.
+
+.. the following are just my notes.
+
+    SELECT
+        accounts_account.id, accounts_account.ref,
+        ...
+        accounts_account.name_en,
+
+        (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total
+          FROM ledger_movement U0
+          INNER JOIN ledger_voucher U2 ON (U0.voucher_id = U2.id)
+          INNER JOIN ledger_accountingperiod U3 ON (U2.accounting_period_id = U3.id)
+          WHERE (U0.account_id = (accounts_account.id)
+            AND U3.ref < 2016-01 AND U0.dc = True)
+          GROUP BY U0.id, ... U0.vat_class) AS old_d,
+
+        (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total
+           FROM ledger_movement U0
+           INNER JOIN ledger_voucher U2 ON (U0.voucher_id = U2.id)
+           INNER JOIN ledger_accountingperiod U3 ON (U2.accounting_period_id = U3.id)
+           WHERE (U0.account_id = (accounts_account.id) AND U3.ref < 2016-01 AND U0.dc = False)
+           GROUP BY U0.id, U0.voucher_id, ... U0.vat_class) AS old_c,
+
+         (SELECT ... AS during_d,
+
+         (SELECT ...  AS during_c
+
+         FROM accounts_account
+         LEFT OUTER JOIN accounts_group
+              ON (accounts_account.group_id = accounts_group.id)
+         WHERE (
+
+         (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total FROM ledger_movement U0 INNER JOIN ledger_voucher U2 ON (U0.voucher_id = U2.id) INNER JOIN ledger_accountingperiod U3 ON (U2.accounting_period_id = U3.id) WHERE (U0.account_id = (accounts_account.id) AND U3.ref < 2016-01 AND U0.dc = True) GROUP BY U0.id, U0.voucher_id, U0.partner_id, U0.seqno, U0.account_id, U0.amount, U0.dc, U0.match, U0.cleared, U0.value_date, U0.vat_regime, U0.vat_class) IS NOT NULL
+
+         OR (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total FROM ledger_movement U0 INNER JOIN ledger_voucher U2 ON (U0.voucher_id = U2.id) INNER JOIN ledger_accountingperiod U3 ON (U2.accounting_period_id = U3.id) WHERE (U0.account_id = (accounts_account.id) AND U3.ref < 2016-01 AND U0.dc = False) GROUP BY U0.id, U0.voucher_id, U0.partner_id, U0.seqno, U0.account_id, U0.amount, U0.dc, U0.match, U0.cleared, U0.value_date, U0.vat_regime, U0.vat_class) IS NOT NULL
+
+         OR (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total FROM ledger_movement U0 INNER JOIN ledger_voucher U1 ON (U0.voucher_id = U1.id) INNER JOIN ledger_accountingperiod U2 ON (U1.accounting_period_id = U2.id) WHERE (U2.ref <= 2016-01 AND U0.account_id = (accounts_account.id) AND U2.ref >= 2016-01 AND U0.dc = True) GROUP BY U0.id, U0.voucher_id, U0.partner_id, U0.seqno, U0.account_id, U0.amount, U0.dc, U0.match, U0.cleared, U0.value_date, U0.vat_regime, U0.vat_class) IS NOT NULL
+
+         OR (SELECT CAST(SUM(U0.amount) AS NUMERIC) AS total FROM ledger_movement U0 INNER JOIN ledger_voucher U1 ON (U0.voucher_id = U1.id) INNER JOIN ledger_accountingperiod U2 ON (U1.accounting_period_id = U2.id) WHERE (U2.ref <= 2016-01 AND U0.account_id = (accounts_account.id) AND U2.ref >= 2016-01 AND U0.dc = False) GROUP BY U0.id, U0.voucher_id, U0.partner_id, U0.seqno, U0.account_id, U0.amount, U0.dc, U0.match, U0.cleared, U0.value_date, U0.vat_regime, U0.vat_class) IS NOT NULL
+
+         )
+
+         ORDER BY accounts_group.ref ASC, accounts_account.ref ASC
+
+
+
+
+
+    SELECT
+        accounts_account.id, accounts_account.ref, accounts_account.seqno, accounts_account.name, accounts_account.sales_allowed, accounts_account.purchases_allowed, accounts_account.wages_allowed, accounts_account.taxes_allowed, accounts_account.clearings_allowed, accounts_account.vat_column, accounts_account.group_id, accounts_account.type, accounts_account.needs_partner, accounts_account.clearable, accounts_account.default_amount, accounts_account.name_en,
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total
+                FROM ledger_movement V0
+                INNER JOIN ledger_voucher V2
+                  ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = True)
+                 GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) AS old_d,
+
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) AS old_c,
+
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = True) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) AS during_d,
+
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) AS during_c
+
+        FROM accounts_account
+          LEFT OUTER JOIN accounts_group ON (accounts_account.group_id = accounts_group.id) WHERE ((SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = True) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = True) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL) ORDER BY accounts_group.ref ASC, accounts_account.ref ASC     
+
+
+
+    SELECT accounts_account.id, accounts_account.ref, ...,
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total
+          FROM ledger_movement V0
+          INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id)
+          WHERE (V0.account_id = (accounts_account.id)
+            AND V2.accounting_period_id IN (
+              SELECT U0.id AS Col1 FROM ledger_accountingperiod U0
+              WHERE U0.ref < 2016-01)
+            AND V0.dc = False)
+          GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class)
+        AS old_c,
+        (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total
+        FROM ...
+          AND V0.dc = True)
+        GROUP BY ...)
+        AS during_d,
+        ...
+        (SELECT ...) AS during_c,
+        (SELECT ...) AS old_d
+
+        FROM accounts_account
+          LEFT OUTER JOIN accounts_group ON (accounts_account.group_id = accounts_group.id)
+          WHERE (
+          (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = True) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total
+
+
+        FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = True) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL OR (SELECT CAST(SUM(V0.amount) AS NUMERIC) AS total FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = False) GROUP BY V0.id, V0.voucher_id, V0.partner_id, V0.seqno, V0.account_id, V0.amount, V0.dc, V0.match, V0.cleared, V0.value_date, V0.vat_regime, V0.vat_class) IS NOT NULL)
+
+        ORDER BY accounts_group.ref ASC, accounts_account.ref ASC      
+
+
+
+
+    >>> from lino import startup
+    >>> startup('lino_book.projects.pierre.settings.demo')
+    >>> from lino.api.doctest import *
+    >>> ses = rt.login("robin")
+    >>> from lino_xl.lib.accounts.utils import DEBIT, CREDIT
+    >>> from django.db.models import Q, F, OuterRef, Subquery, Sum
+    >>> from django.db import models
+
+    >>> Movement = rt.models.ledger.Movement
+    >>> Period = rt.models.ledger.AccountingPeriod
+    >>> Account = rt.models.accounts.Account
+    >>> op = Period.get_by_ref('2016-01')
+    >>> flt = dict(voucher__accounting_period=op)
+
+    >>> print Account._meta.model_name
+    account
+
+    >>> acc = Account.get_by_ref('4000')
+    >>> flt.update(account=acc)
+    >>> mvts = Movement.objects.filter(dc=CREDIT, **flt)
+    >>> mvts
+    <QuerySet [Movement #273 ('SLS 1.3'), Movement #276 ('SLS 2.3'), Movement #279 ('SLS 3.3'), Movement #282 ('SLS 4.3'), Movement #285 ('SLS 5.3')]>
+    >>> for m in mvts:
+    ...     print(m.amount)
+    2999.85
+    2039.82
+    679.81
+    280.00
+    535.00
+
+
+
+    >>> flt = dict(voucher__accounting_period=op)
+    >>> flt.update(account__ref__startswith='40')
+    >>> mvts = Movement.objects.filter(**flt)
+    >>> mvts = mvts.annotate(during_c=Sum('amount'))
+    >>> for m in mvts:
+    ...     print m.voucher, m.during_c
+    SLS 1 2999.85
+    SLS 2 2039.82
+    SLS 3 679.81
+    SLS 4 280.00
+    SLS 5 535.00
+
+
+    >>> from django.db.models.expressions import RawSQL
+
+    What we need is something like this::
+
+        SELECT SUM(V0.amount)
+            FROM ledger_movement V0
+            INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id)
+            WHERE (V0.account_id = (accounts_account.id)
+                AND V2.accounting_period_id IN (
+                  SELECT U0.id AS Col1
+                  FROM ledger_accountingperiod U0
+                  WHERE U0.ref < 2016-01)
+                AND V0.dc = False)
+
+
+    >>> main = Account.objects.filter(ref__startswith='4')
+    >>> main.count()
+    7
+    >>> flt.update(account=OuterRef('pk'))
+    >>> mvts = Movement.objects.filter(dc=CREDIT, **flt)
+    >>> mvts = mvts.values('amount')
+    >>> main = main.annotate(during_c_mvts=Subquery(mvts,
+    ...     output_field=dd.PriceField()))
+    >>> main = main.annotate(during_c=Sum('during_c_mvts__amount'))
+    >>> for acc in main:
+    ...     print(acc.ref, acc.during_c)
+
+
+    SELECT accounts_account.id, ...,
+      CAST(SUM((
+        SELECT V0.amount FROM ledger_movement V0
+        INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id)
+        WHERE (V0.account_id = (accounts_account.id)
+          AND V2.accounting_period_id IN (
+            SELECT U0.id AS Col1 FROM ledger_accountingperiod U0
+            WHERE U0.ref < 2016-01)
+          AND V0.dc = False)))
+      AS NUMERIC) AS old_c,
+
+      CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = True))) AS NUMERIC) AS during_d, CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = False))) AS NUMERIC) AS during_c, CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = True))) AS NUMERIC) AS old_d FROM accounts_account LEFT OUTER JOIN accounts_group ON (accounts_account.group_id = accounts_group.id) GROUP BY accounts_account.id, accounts_account.ref, accounts_account.seqno, accounts_account.name, accounts_account.sales_allowed, accounts_account.purchases_allowed, accounts_account.wages_allowed, accounts_account.taxes_allowed, accounts_account.clearings_allowed, accounts_account.vat_column, accounts_account.group_id, accounts_account.type, accounts_account.needs_partner, accounts_account.clearable, accounts_account.default_amount, accounts_account.name_en, accounts_group.ref HAVING (CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = True))) AS NUMERIC) IS NOT NULL OR CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE U0.ref < 2016-01) AND V0.dc = False))) AS NUMERIC) IS NOT NULL OR CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = True))) AS NUMERIC) IS NOT NULL OR CAST(SUM((SELECT V0.amount FROM ledger_movement V0 INNER JOIN ledger_voucher V2 ON (V0.voucher_id = V2.id) WHERE (V0.account_id = (accounts_account.id) AND V2.accounting_period_id IN (SELECT U0.id AS Col1 FROM ledger_accountingperiod U0 WHERE (U0.ref >= 2016-01 AND U0.ref <= 2016-01)) AND V0.dc = False))) AS NUMERIC) IS NOT NULL) ORDER BY accounts_group.ref ASC, accounts_account.ref ASC
