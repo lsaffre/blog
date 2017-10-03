@@ -37,10 +37,12 @@ Wikipedia          `et <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ `de 
 Blog               `en <http://luc.lino-framework.org>`__ `de <http://luc.saffre-rumma.net>`__ `et <http://belglane.saffre-rumma.net>`__
 RSS                `en <http://luc.lino-framework.org/rss.xml>`__ `de <http://luc.saffre-rumma.net/rss.xml>`__ `et <http://belglane.saffre-rumma.net/rss.xml>`__
 VCF                `Import into your address book <../dl/luc.vcf>`_
-Confidential mails `GPG Public key <../dl/pubkey.gpg>`_ |br| 
+Confidential mails `GPG Public key <../dl/pubkey.gpg>`_ |br|
+
+Ring_              ring:fa8a41081c6794f9e93e036b38ad9cac058a907a
 ================== ====================================================================
 
-
+.. _Ring: https://ring.cx
 
 .. toctree::
 

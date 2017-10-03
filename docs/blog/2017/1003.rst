@@ -1,0 +1,57 @@
+:date: 2017-10-03
+
+========================
+Tuesday, October 3, 2017
+========================
+
+Ring
+====
+
+I installed Ring.
+
+https://ring.cx/en/download/gnu-linux
+
+They ask me to do::
+
+    sudo sh -c "echo 'deb https://dl.ring.cx/ring-nightly/ubuntu_16.04/ ring main' > /etc/apt/sources.list.d/ring-nightly-main.list"
+    sudo apt-key adv --keyserver pgp.mit.edu --recv-keys A295D773307D25A33AE72F2F64CD5FA175348F84
+    sudo add-apt-repository universe
+    sudo apt-get update && sudo apt-get install ring
+
+
+I did only the first and the last line because
+
+- `apt-key adv --recv-keys` should not be used without care because
+  there are no checks performed, so it is easy to undermine the
+  apt-secure(8) infrastructure.
+
+- The third line is not necessary for since I already have this option
+  checked:
+
+    .. image:: universe.png
+
+It worked without giving them full trust::
+  
+    $ sudo apt-get update && sudo apt-get install ring           
+    The following additional packages will be installed:
+      libdbus-c++-1-0v5 libjsoncpp1 ring-daemon
+    The following NEW packages will be installed:
+      libdbus-c++-1-0v5 libjsoncpp1 ring ring-daemon
+
+Here is my new ring account (my old account is probably no longer
+usable because I did that on my old smartphone and I didn't want to
+find it back and try reconnect from there):
+
+  ring:fa8a41081c6794f9e93e036b38ad9cac058a907a      
+
+  
+Accounts balance
+================
+
+While explaining the :class:`lino_xl.lib.ledger.AccountsBalance` to
+Tonis, I realized another bug: :ticket:`2090`. I fixed this.
+
+En passant I also reviewed the specs section about
+:ref:`specs.tera.sql.AccountingReport` where the output of
+:func:`show_sql_queries <lino.api.doctest.show_sql_queries>` was
+truncated too much.

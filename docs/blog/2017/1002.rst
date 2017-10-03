@@ -6,15 +6,28 @@ Monday, October 2, 2017
 
 This weekend I worked 9 hours on how to make the SQL for
 AccountingReport more efficient.
-
-- :mod:`atelier.rstgen` had a problem for rendering the `empty_column`
-  columns. Fixed (but just a hack, to be reviewed).
-
-- The :xfile:`restore.py` file created by :manage:`dump2py` now calls
-  :manage:`resetsequences` after loading the dump. Because it doesn't
-  take much time, and because forgetting it can cause frustration.
+It was about 
+`Using aggregates within a Subquery expression
+<https://docs.djangoproject.com/en/1.11/ref/models/expressions/#using-aggregates-within-a-subquery-expression>`__.
+Now finally I can check in. Here is a
+summary of the changes:
 
 - Fixed the Gateway timeout problem in
   :class:`lino_xl.lib.ledger.AccountingReport` by optimizing the SQL
   query.
   
+- The :xfile:`restore.py` file created by :manage:`dump2py` now calls
+  :manage:`resetsequences` after loading the dump. Because it doesn't
+  take much time, and because forgetting it can cause frustration.
+
+- :mod:`atelier.rstgen` had a problem for rendering the `empty_column`
+  columns. Fixed (but just a hack, to be reviewed).
+
+
+I continued to hunt some failures under Python 3  
+
+- TypeError: Problem installing fixture '...demo_bookings.py':
+  argument must of text type (`282196028
+  <https://travis-ci.org/lino-framework/book/jobs/282196028>`__)
+
+
