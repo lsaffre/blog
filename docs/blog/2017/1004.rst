@@ -4,6 +4,9 @@
 Wednesday, October 4, 2017
 ==========================
 
+Avanti advances
+===============
+
 I continued to work on :ticket:`2083`.
 
 New rule for the :class:`EnrolmentChecker
@@ -25,3 +28,89 @@ DummyField now has a :meth:`__str__` method.
 
 New fixture demo2 which adds primary coaches to the clients one
 reminder.
+
+I then did a release during their working time (using the fact that
+they had team meeting) and did local configuration of the template
+files. Unfortunately Johanna and I failed to meet afterwards because
+Hangouts wasn't in the mood today.
+
+ExtJS 6 support advancing
+=========================
+
+There are still many details to fix before we can consider ExtJS 6 to
+be done... but we are advancing. Tonis and I fixed a few things
+together.
+
+
+Making :ref:`appy` ready for Python 3
+=====================================
+
+I had a nice shared screen session with Gaetan, the autor of
+:ref:`appy`.  Together we managed to make appy pass the
+`test_appy_pod` test of the :mod:`lino_xl` suite.  Our work is published on
+forge.pallavi.be: revisions `62
+<https://forge.pallavi.be/projects/appy-python-3/repository/revisions/62/diff/>`__,
+`63
+<https://forge.pallavi.be/projects/appy-python-3/repository/revisions/63/diff/>`__
+and `64
+<https://forge.pallavi.be/projects/appy-python-3/repository/revisions/64/diff/>`__.
+
+This is great news because :ref:`appy` is still the best and only real
+solution for generating .pdf files from .odt fies.
+
+The problem with Gaetan is that he uses a rather unorthodox packaging
+system.  I knew from earlier discussions that trying to convince him
+to become normal is just a waste of time.  So I didn't do that, and we
+found a solution for every problem.
+
+The *clou* of his strange system is that he refuses to have a
+:xfile:`setup.py` file in the root directory of his project. Don't ask
+me why.  To install a development version of appy, you must add a
+symbolic link to your :xfile:`site-packages`.  This causes at least
+two problems:
+
+- the `setup.py test` command tries to install appy from PyPI because
+  it doesn't know that it actually is installed. We fixed this by
+  temporarily removing ``'appy'`` from the :ref:`install_requires`.
+
+- we cannot specify the development snapshot as requirement on
+  :ref:`travis` because Travis cannot install without a
+  :xfile:`setup.py` file. This means that Gaetan must
+  release our work on PyPI before the :ref:`travis` tests will
+  pass. But okay, we are not about a few days now that we fixed
+  a problem that
+  has been waiting at least a year.
+
+
+Gaetan reminded me the basic operations of Subversion which I have
+been using much but hadn't used for years::
+  
+    $ svn up                # git pull
+    $ svn ci -m "message"   # git ci -m & git push
+
+And he also reminded me a debugging technique which I hadn't used for
+years now::
+
+    import pdb ; pdb.set_trace()
+
+And then in the debugger you need to know at least four commands:
+
+- l : list
+- n : go to next line
+- s : step into
+- c : continue
+
+Now that the :ref:`xl` test suite passes (at least on my machine), I
+continued with the test suite of :ref:`book`. This one still has
+dozens of failures which are *not* caused by appy.
+
+
+Release to PyPI
+===============
+
+I released some projects to PyPI just because I the information there
+was *so* obsolete.  Allthough actually this makes not much sence, we
+don't currently recommend using a released version of Lino.
+
+OMG, and now the information there is completely ugly:
+https://pypi.python.org/pypi/lino

@@ -1,0 +1,54 @@
+:date: 2017-10-06
+
+=======================
+Friday, October 6, 2017
+=======================
+
+Difference in Service Report
+============================
+
+I fixed :ticket:`2098`.
+I added a new field
+`lino_xl.lib.tickets.Site.reporting_type`. This confirms that some day
+we will completely remove "tickets.Projects" (currently called
+"Missions") from :ref:`noi`.  The only difference between project and
+site is that a site is not :class:`Hierarchical`. And after having
+removed the projects, we will probably rename "site" to "project". We
+go that detour because this direction wasn't visible when we started
+to move.
+
+New feature : :meth:`lino.core.choicelists.ChoiceList.field` now
+returns a DummyField when the plugin is not installed. Used for
+`ReportingTypes`
+
+Deploy to Jane, including a snapshot/restore.
+
+
+Optimizations for :ref:`tera`
+=============================
+
+I added a new trade type "Bank payment orders".
+
+The field `Journal.partner` wasn't yet visible in :class:`JournalDetail`.
+
+Sorting order of ana.InvoicesByJournal was wrong.
+
+Deploy to spz
+
+In the :xfile:`models.py` module of :mod:`lino_xl.lib.ledger` we
+currently do::
+
+    for tt in TradeTypes.objects():
+        dd.inject_field(
+            'accounts.Account',
+            tt.name + '_allowed',
+            models.BooleanField(verbose_name=tt.text, default=False))
+
+This isn't a good approach. It is used for limiting the choices during
+manual entry of an invoice.
+
+Journal.get_allowed_accounts
+
+
+
+no previously-included directories found matching '.build'

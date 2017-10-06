@@ -1,0 +1,57 @@
+:date: 2017-10-05
+
+=========================
+Thursday, October 5, 2017
+=========================
+
+release@spz
+===========
+
+I discovered and fixed :ticket:`2094`.
+
+Why was partner clickable but account not?
+
+This was because `GeneralAccountsBalance` was becoming the default
+table for Account:
+
+
+>>> from lino import startup
+>>> startup('lino_book.projects.lydia.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> accounts.Account._lino_default_table
+lino_xl.lib.ledger.ui.GeneralAccountsBalance
+
+>>> contacts.Partner._lino_default_table
+lino_xl.lib.contacts.models.Partners
+
+>>> r = dd.plugins.extjs.renderer
+>>> ar = rt.login('robin', renderer=r)
+
+>>> obj = contacts.Partner.objects.get(pk=120)
+>>> print(r.obj2url(ar, obj))
+javascript:Lino.contacts.Partners.detail.run(null,{ "record_id": 120 })
+
+>>> obj = accounts.Account.get_by_ref('4400')
+>>> print(r.obj2url(ar, obj))
+None
+
+
+I added a MakeCopy action for AnaAccountInvoice which will probably
+help Lydia for entering incoming invoices.
+
+
+performance on Jane
+===================
+
+I removed the :mod:`lino_xl.lib.faculties` plugin from :ref:`noi`.  I
+added a `select_related` to `Tickets`.
+
+I changed :func:`lino.api.doctest.show_sql_summary` so that the default output is testable.
+I agree that :func:`lino.api.doctest.show_sql_queries` is not maintainable.
+
+TIL that MySQL uses backticks where SQLite uses double quotes around
+table and field names in the SQL syntax.  `Here
+<https://stackoverflow.com/questions/11321491/when-to-use-single-quotes-double-quotes-and-backticks-in-mysql>`__
+is an interesting discussion with examples.  That's why Tonis' regex
+in :func:`lino.util.sql.sql_summary` didn't work for me.
