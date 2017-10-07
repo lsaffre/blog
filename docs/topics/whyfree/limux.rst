@@ -12,4 +12,5 @@ The LiMux project in München
   Microsoft jubelt
   <https://www.heise.de/newsticker/meldung/Nahendes-LiMux-Aus-Open-Source-Szene-trauert-Microsoft-jubelt-3627759.html>`_
 
-
+- October 2017 `LiMux-Ausstieg durch die Hintertür?
+  <http://gruene-fraktion-muenchen.de/limux-ausstieg-durch-hintertur-2/>`__

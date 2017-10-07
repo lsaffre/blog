@@ -1,0 +1,34 @@
+:date: 2017-10-07
+
+=========================
+Saturday, October 7, 2017
+=========================
+
+
+VAT Areas
+=========
+
+A seemingly innocent failure in a test case about the list of intracom
+purchases (:ref:`specs.bevats` or so) triggered an avalanche of
+changes which I summarize as :ticket:`2100` (VAT Areas).
+
+- Partners in the demo databases now have more "correct" VAT regimes,
+  i.e. which correspond to their country.
+
+For example :mod:`lino_xl.lib.invoicing.fixtures.demo_bookings` was
+failing in :ref:`voga` because there was one enrolment for Alfons
+whose invoice_recipient points to Erna, a second enrolment for Erna
+directly. The first enrolment returned Erna as *Partner*, the second
+returned her as *Pupil*. So Lino did not group them and generated two
+different items in the plan. Later when executing the plan, the first
+item made an invoice for both enrolments, and then on the second
+item's :meth:`create_invoice` Lino complained that "No invoiceables
+found for %s.".
+
+
+Miscellaneous
+=============
+
+The default value for
+:attr:`lino.modlib.extjs.Plugin.autorefresh_seconds` is now 0.
+Also in :ref:`lino_extjs6`.
