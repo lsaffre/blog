@@ -1,0 +1,46 @@
+:date: 2017-10-10
+
+=========================
+Tuesday, October 10, 2017
+=========================
+
+Internal optimizations of accounting stuff
+==========================================
+
+I continued to work on :ticket:`2101`:
+
+- :cmd:`inv prep` now works for :ref:`welfare`.
+- I started to update :ref:`xl.specs.accounts`.
+
+It's an old challenge for every accounting package how to organize the
+account chart. One aspect of this is which classification to use: PCMN
+or some international variant. The classification choice is usually
+not important for application code and should therefore be
+transparent.  OTOH we need certain naming conventions.
+
+- http://www.ifrs.org/
+- https://fr.wikipedia.org/wiki/Plan_comptable
+- https://strategiccfo.com/standard-chart-of-accounts/
+
+I realized that :class:`CommonAccounts` is something else than
+:class:`AccountTypes`.
+
+
+Side effects  
+
+- New method :meth:`lino.core.actors.Actor.is_installed`
+- The instantiator of a :meth:`lino.core.choicelists.Choice` now
+  supports being called without any argument at all (which makes sense
+  only for subclasses which define a value as class attribute).
+
+
+  
+Bugfix deploy for Avanti
+========================
+
+I upgraded the production site for :ref:`avanti` because Johanna had
+hundreds of false data problem messages "Need to update phonetic
+words" which did not disappear.
+
+I also did some translations to German of several texts, e.g. "Sign
+in" (:doc:`0921`) wasn't yet translated...

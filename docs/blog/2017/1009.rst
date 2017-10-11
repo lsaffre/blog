@@ -1,0 +1,47 @@
+:date: 2017-10-09
+
+=======================
+Monday, October 9, 2017
+=======================
+
+Today I committed a first working solution for :ticket:`2101`
+(CommonAccounts). This is actually another part of the avalanche which
+started on Friday.  New concept of
+:class:`lino_xl.lib.accounts.choicelists.CommonAccounts` replaces and
+extends what I used to call `AccountTypes`.  Also all the names in
+`lino_xl.lib.accounts.accounts.constants` are no longer used.
+Documentation is not yet ready.  Welfare test suite still failing.
+
+
+I also had a hangout with Johanna and worked for :ticket:`2102`
+(Optimierungen Avanti) : code changes and release.
+
+Note that if you define a
+`lino.core.choicelist.ChoiceList.default_value` on a ChoiceList, this
+will be used as default value of both database fields and table
+parameter fields.
+
+You can remove that "default default value" for all tables by
+specifying `default=''`. For example (excerpt from
+:mod:`lino_avanti.lib.avanti`)::
+
+    from lino_xl.lib.coachings.choicelists import ClientStates
+    ClientStates.default_value = 'coached'
+
+    parameters = ObservedDateRange(
+        ... 
+        client_state=ClientStates.field(blank=True, default=''))
+
+Note that the default values of parameter fields of a table which is
+used as the models default table, then these will apply for the
+choices of pointers to that model. Concrete use case is the choicelist
+of `cal.Guest.partner` in avanti which should show only coached
+clients.  So instead of above code we actually now do::
+
+    class MyClients(My, Clients):
+        @classmethod
+        def param_defaults(self, ar, **kw):
+            kw = super(MyClients, self).param_defaults(ar, **kw)
+            kw.update(client_state='')
+            return kw
+
