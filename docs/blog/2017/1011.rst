@@ -20,4 +20,137 @@ of button texts. Solution::
   {{guest.state.button_text or guest.state}}
 
 
+release@spz
+===========
+
+.. currentmodule:: lino_xl.lib.accounts
+                   
+In the early morning I updated their Lino.  My main motivation was to
+test my changes for :ticket:`2100` and :ticket:`2101` on the field.
+
+And indeed, during the meeting with Lydia I realized that there was a
+design flaw the production site uses different values in the
+:attr:`Account.ref` for the :class:`CommonAccounts`, then Lino doesn't
+find them anymore. So I did another release, with a series of
+quick commits.
+
+- New field :attr:`Account.common_account`,
+  :meth:`TradeType.get_object` uses this field instead of the
+  :attr:`Account.ref`.
+
+- "You must specify a product if there is an amount." required me to
+  use magic art for restoring their data.
+  
+- The "Sales base account" field on Product is back. See below.
+
+- UndefinedError: 'None' has no attribute 'isoformat' while parsing
+  :xfile:`finan/PaymentOrder/pain_001.xml`::
+
+      File "...lino_xl/lib/finan/config/finan/PaymentOrder/pain_001.xml", line 21, in top-level template code
+        <ReqdExctnDt>{{obj.execution_date.isoformat()}}</ReqdExctnDt>
+
+   
+  And because I want :attr:`execution_date` I changed the template to::
+
+      {{(obj.execution_date or obj.entry_date).isoformat()}}
+
+
+When to log the "Building... lino_x.js" message
+===============================================
+
+I opened :ticket:`2104` (When to log the "Building... lino_x.js"
+message).
+
+The :message:`Building... lino_x.js"` message is important to see in a
+developer console because the process takes some time and when
+developing you are watching at such messages. It should *not* be shown
+when running unit tests because its occurence is not (easily)
+predictable.
+
+Today I realized that we would like it to be logged on a production
+site as well.
+
+After some fiddling I found that the most elegant and straightforward
+solution is to say this::
+
+    if self.site.is_demo_site:
+        logger.debug("Building %s ...", fn)
+    else:
+        logger.info("Building %s ...", fn)
+  
+
+Released atelier 1.0.12
+=======================
+
+Before finding above solution, I tried to require all doctests to run
+with :envvar:`LINO_LOGLEVEL` being set to ``WARNING``.  At first I
+thought that this can be done easily by setting in my
+:xfile:`.bash_aliases`file ::
+
+  alias doctest='export LINO_LOGLEVEL=WARNING; python -m atelier.doctest_utf8 $*'
+  
+Then I realized that we also need to add a line to our
+:xfile:`.travis.yml` files::
+
+  - export LINO_LOGLEVEL=WARNING
+
+And finally I realized that even this is not enough and I added a new
+optional parameter `addenv` to :func:`atelier.test.make_docs_suite`.
+This is now being used by :ref:`book` and :ref:`welfare` for setting
+the loglevel to a guaranteed value, but *not* to ``WARNING`` (because
+that caused many other tests to fail).  Now it just makes sure that it
+is set to ``INFO`` (which is the default value, so actually it is not
+necessary).
+    
+
+
+Estonian VAT declaration via XML
+================================
+
+It seems that it won't be much of a hassle to write the XML file for
+and Estonian VAT declaration because everything is well documented:
+
+- `Deklaratsiooni esitamine xml- või csv-formaadis failiga
+  <https://www.emta.ee/et/ariklient/tulud-kulud-kaive-kasum/kaibedeklaratsiooni-esitamine>`__
+
+- `Failide tehniline spetsifikatsioon » (uuendatud veebruaris 2017)
+  <https://www.emta.ee/et/ariklient/tulu-kulu-kaive-kasum/kaibedeklaratsiooni-esitamine/kaibedeklaratsiooni-tehniline>`__
+
+
+Configuring sales account
+=========================
+
+The "Sales base account" field on
+Product is back.
+
+:attr:`lino_tera.lib.products.Product.sales_account`.
+      
+I added a use case
+for it ("7010 Sales on individual therapies") in the demo fixture of
+:mod:`lino_book.projects.lydia`.
+
+I did layout optimizations.
+
+The :class:`lino_xl.lib.ledger.GeneralAccountBalances` had `order_by`
+set to::
+
+    order_by = ['group__ref', 'ref']
+
+I changed that to::
+  
+    order_by = ['ref']
+
+because the former simply silently skipped any account that had no
+group, which was rather disturbing.  The account groups are actually
+for later when Lino must output annual reports.
+
+
+Free Culture in Estonian
+========================
+
+Tomorrow in Tartu is the presentation of the Estonian translation of
+Lawrence Lessig's book `Free Culture
+<http://www.free-culture.cc/>`__. Those who know this book might be
+amused to hear that I discovered it only now, 13 years after it was
+published.
 
