@@ -1,0 +1,35 @@
+:date: 2017-10-14
+
+==========================
+Saturday, October 14, 2017
+==========================
+
+I realized that making Person Certifiable was not a good idea because
+it adds a database field `printed_by` to Person for every application
+which has excerpts installed. In :ref:`welfare` and :ref:`voga` they
+won't want that field.  So I changed this: Partner is now just a
+:class:`lino.modlib.printing.Printable`, and the `std` fixture of
+:mod:`lino_xl.lib.contacts` now creates an :class:`ExcerptType` for
+the new :xfile:`contacts/Person/TermsConditions.odt` template.  Every site
+which uses contacts, excerpts and appypod will now try to print one
+person when loading the demo fictures. But our template has a
+condition: :attr:`site_company
+<lino.modlib.system.SiteConfig.site_company>` must be set.  When
+:attr:`site_company` is empty, this template makes indeed no sense.
+In the :mod:`lino_book.projects.team` demo project this caused a
+failure during :cmd:`inv prep`.  The actual bug here was that
+:ref:`noi` had no :attr:`site_company`.  I fixed this.
+
+All this caused also a few changes in the API around PrintableObject,
+Printable and Certifiable: e.g.  I moved the
+:meth:`get_printable_demo_objects
+<lino.modlib.printing.Printable.get_printable_demo_objects>` from
+Certifiable to Printable. I merged PrintableObject into Printable,
+moved some code from :class:`lino.core.model.Model` to
+:class:`lino.modlib.printing.Printable`, ...
+
+I renamed :xfile:`contacts/Person/Default.odt` to
+:xfile:`contacts/Person/TermsConditions.odt` because otherwise Lino
+would find :xfile:`excerpts/Default.odt` when excerpts is before
+contacts in :meth:`get_installed_apps`.
+

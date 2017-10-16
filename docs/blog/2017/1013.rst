@@ -1,4 +1,4 @@
-:date: 2017-10-13
+:xdate: 2017-10-13
 
 ========================
 Friday, October 13, 2017
@@ -17,3 +17,37 @@ released it to their production site.
   when the :mod:`lino_xl.lib.addresses` plugin itself is not
   installed.  This is used for :class:`lino_xl.lib.contacts.Partner`
   which now inherits from it.
+  
+- the full names of their users table got lost because writing a
+  migrator for this would have been complicated since users are no
+  longer persons (and the original dump ws written using an older
+  version).
+  
+- This was the first test of the
+  :class:`lino_xl.lib.phones.ContactDetailsOwnerChecker` for converting
+  a production database. Passed.
+
+- The template context had no name :tcname:`site` although it was
+  documented.
+
+- I added a Sphinx directive :rst:dir:`tcname` for documenting
+  template context names, and a role of same name (:rst:role:`tcname`)
+  for referring to them.
+
+- A :class:`Person <lino_xl.lib.contacts.Person>` is now
+  :class:`Certifiable <lino_xl.lib.excerpts.Certifiable>` and the demo
+  databases have a default template :xfile:`contacts/Person/Default.odt`
+  which prints a "Terms & Conditions" document, which they will probably
+  need for the :ref:`care` site.
+
+TODO:
+
+- For :ref:`care` we would like to also make :class:`users.User
+  <lino.modlib.users.User>` inherit from :class:`Certifiable
+  <lino_xl.lib.excerpts.Certifiable>`, and since the mixin is optional
+  (i.e. supports being applied when its plugin is not installed), the
+  most elegant way to get there is to make the standard User model
+  certifiable as well. That's currently not possible because it would
+  create a dependency (lino depends on lino_xl). Solution would be to
+  move excerpts from xl to lino.
+

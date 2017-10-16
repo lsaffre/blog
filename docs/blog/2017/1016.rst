@@ -1,0 +1,43 @@
+:date: 2017-10-16
+
+========================
+Monday, October 16, 2017
+========================
+
+Before starting to continue with :ref:`avanti` I ran a test and got
+this error message::
+  
+  AttributeError: 'str' object has no attribute 'get_layout_handle'
+
+The explanation is easy: that's what happens when you try to
+:meth:`rt.show` an abstract table.  It took me 80 minutes to find this
+explanation because I hadn't paid attention to Tonis's last commit
+(`Fixing Two AllTickets in menu
+<https://github.com/lino-framework/xl/commit/77697d2f7394b3f50beb8f4d24b9fd98daa8afe6>`__).
+Now Lino would say "tickets.Tickets is abstract" when it happens again.
+I reverted Tonis's change and must ask him what problem it fixed.
+
+Before I knew what happened, I made a few code optimizations in the
+startup process.  Side effect: the :func:`make_params_layout_handle`
+function no longer takes a parameter since that wasn't used anyway.
+
+Tonis and I fixed :ticket:`2111`. This was a tough one, but the
+solution seems easy and clear now that we found it: when an action
+responds using `goto_url`, then this means that we want to reload the
+browser page. That's why it makes no sense to call `goto_url` and
+e.g. `refresh` or `refresh_all` at the same time. We didn't call this
+directly, but Lino called `close_window` on action success, which also
+makes no sense when you are going to another URL anyway. And Firefox
+behaved differently from Chromium in this situation (by cancelling any
+pending AJAX requests).  That's why the problem was visible only
+there.
+
+
+Lydia and I discovered that when you enter the number of an invoice in
+the finan.Item.match field, Lino should fill the other fields (partner
+and amount) with what it can suggest. For Lino Tera that's important
+because they have lots of incoming payments where the name of the
+payment sender differs from the invoice recipient.  For example when a
+child of divorced parents attends a therapy, it can happen that they
+pay in alternance, or that even some other relative pays their
+invoice.

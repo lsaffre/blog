@@ -28,7 +28,7 @@ interproject.configure(globals())
 extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']
 extensions += ['lino.sphinxcontrib.logo']
-# extensions += ['lino.sphinxcontrib.actordoc']
+extensions += ['lino.sphinxcontrib.base']  # for tcname
 # extensions += ['sphinxcontrib.taglist']
 extensions += ['sphinxcontrib.youtube']
 extensions += ['sphinx.ext.inheritance_diagram']
@@ -317,6 +317,9 @@ html_sidebars = {
 # html_theme = "classic"
 # html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
 
+# html_theme = "bizstyle"
+# html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
+
 blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
 
 
@@ -334,6 +337,8 @@ feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"
 feed_field_name = 'date'
 
-extensions += ['hieroglyph']
+# extensions += ['hieroglyph']  # Generate HTML presentations
 # autoslides = False
 # slide_numbers = True
+
+
