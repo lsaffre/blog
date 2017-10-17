@@ -4,6 +4,9 @@
 Tuesday, October 17, 2017
 =========================
 
+Avanti
+======
+
 The following views now require :class:`ClientsUser
 <lino_avanti.lib.avanti.ClientsUser>` role (i.e. are no longer visible
 for teachers and auditors):
@@ -18,3 +21,60 @@ I added coverage for testing these user permissions in
 The :class:`MoveEntryNext <lino_xl.lib.cal.MoveEntryNext>` action
 (:guilabel:`▽`) now asks for confirmation and is no longer available
 on entries in a fixed state.
+
+I upgraded their production site.
+
+
+
+TypeError during inv bd on travis
+=================================
+
+I saw that `job 513.1
+<https://travis-ci.org/lino-framework/book/jobs/289164186>`__ on
+:ref:`travis` failed during :cmd:`inv bd` with this error message::
+
+    writing output... [100%] user/templates_api                                     
+    Traceback (most recent call last):
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/cmdline.py", line 306, in main
+        app.build(opts.force_all, filenames)
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/application.py", line 339, in build
+        self.builder.build_update()
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 331, in build_update
+        'out of date' % len(to_build))
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 397, in build
+        self.write(docnames, list(updated_docnames), method)
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 434, in write
+        self._write_serial(sorted(docnames))
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/builders/__init__.py", line 443, in _write_serial
+        self.write_doc(docname, doctree)
+      File "/opt/python/2.7.13/lib/python2.7/contextlib.py", line 24, in __exit__
+        self.gen.next()
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/util/logging.py", line 225, in pending_warnings
+        memhandler.flushTo(logger)
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/util/logging.py", line 191, in flushTo
+        logger.handle(record)
+      File "/opt/python/2.7.13/lib/python2.7/logging/__init__.py", line 1296, in handle
+        self.callHandlers(record)
+      File "/opt/python/2.7.13/lib/python2.7/logging/__init__.py", line 1336, in callHandlers
+        hdlr.handle(record)
+      File "/opt/python/2.7.13/lib/python2.7/logging/__init__.py", line 755, in handle
+        rv = self.filter(record)
+      File "/opt/python/2.7.13/lib/python2.7/logging/__init__.py", line 617, in filter
+        if not f.filter(record):
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/util/logging.py", line 363, in filter
+        raise SphinxWarning(message % record.args)
+    TypeError: not all arguments converted during string formatting
+    Exception occurred:
+      File "/home/travis/virtualenv/python2.7.13/lib/python2.7/site-packages/sphinx/util/logging.py", line 363, in filter
+        raise SphinxWarning(message % record.args)
+    TypeError: not all arguments converted during string formatting
+    The full traceback has been saved in /tmp/sphinx-err-rciXYL.log, if you want to report the issue to the developers.
+    Please also report this if it was a user error, so that a better error message can be provided next time.
+    A bug report can be filed in the tracker at <https://github.com/sphinx-doc/sphinx/issues>. Thanks!
+
+
+In order to see the full traceback, :cmd:`inv bd` now adds the `-P`
+option when calling :cmd:`sphinx-build`.
+
+I removed the :mod:`lino.invlib` package which had become useless.
+
