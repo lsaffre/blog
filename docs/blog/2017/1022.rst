@@ -1,0 +1,85 @@
+:date: 2017-10-22
+
+========================
+Sunday, October 22, 2017
+========================
+
+For :ticket:`1275` 
+I did my first steps with `Python Social Auth
+<https://github.com/python-social-auth>`__.
+
+The configuration section was easy.
+I created a new plugin :mod:`lino.modlib.social_auth`.
+But how to connect this to Lino at the web interface level?
+
+I got lost in the `Beginner's Guide
+<http://python-social-auth.readthedocs.io/en/latest/developer_intro.html>`__. It
+seems that I ignore something which seems so evident to the author
+that they don't even talk about it.
+
+Okay let's try using the `Google backend
+<http://python-social-auth.readthedocs.io/en/latest/backends/google.html>`__.
+Either "OAuth2" or "Google+ Sign-In". Let's start with OAuth2.
+
+`Using OAuth 2.0 to Access Google APIs
+<https://developers.google.com/identity/protocols/OAuth2?csw=1>`__
+
+I went to the `Google API Console
+<https://console.developers.google.com/>`__.
+
+It says "You have 12 projects remaining in your quota."
+
+I created my first project, named "Lino team".
+Now it says:
+
+| No APIs or services are enabled
+| Browse the Library to find and use hundreds of available APIs and services
+
+I added Google Calendar and Google People (what's the difference
+between People and Contacts?)
+
+It says "To use this API, you may need credentials. Click 'Create
+credentials' to get started."
+
+I created a "credential" for web clients.  This gave me a "client id"
+string of type::
+
+  1234567890-a1b2c3d4e5.apps.googleusercontent.com
+
+I also downloaded a :file:`client_id.json` file with this content::
+
+    {"web":{
+      "client_id":"1234567890-a1b2c3d4e5.apps.googleusercontent.com",
+      "project_id":"lino-team",
+      "auth_uri":"https://accounts.google.com/o/oauth2/auth",
+      "token_uri":"https://accounts.google.com/o/oauth2/token",
+      "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
+      "client_secret":"SH6da...",
+      "redirect_uris":["https://jane.saffre-rumma.net/login"],
+      "javascript_origins":["https://jane.saffre-rumma.net"]
+    }}
+
+I added this info to the local :xfile:`settings.py` on :ref:`jane` ::
+
+  AUTHENTICATION_BACKENDS.insert(
+    0, 'social_core.backends.google.GoogleOAuth2')
+  SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = \
+    '1234567890-a1b2c3d4e5.apps.googleusercontent.com'
+  SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'SH6da...'
+    
+Now I must obtain an access token from the Google Authorization
+Server.
+
+Side effect: Until now the value of :envvar:`AUTHENTICATION_BACKENDS`
+was a tuple, which made the above code fail. Now it is a list.
+
+
+UpdateAllGuests
+===============
+
+For :ticket:`2115` they want a button per course which updates the
+guest list of all planned calendar entries. (Teilnehmerliste
+aktualisieren für alle Termine. Es ​wäre praktisch, wenn das „Liste
+füllen“ bei den einzelnen Terminen automatisch ginge)
+
+

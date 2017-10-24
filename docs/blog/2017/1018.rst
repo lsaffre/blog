@@ -4,9 +4,15 @@
 Wednesday, October 18, 2017
 ===========================
 
+Models for newbies documentation
+================================
+
 After stumbling over Tim Kholod's nice blogpost `The simple way to
 understand Django models <https://arevej.me/django-models/>`__, I
 started to write :ref:`dev.models` (which mentions it).
+
+Common accounts
+===============
 
 I added two virtual fields to
 :class:`lino_xl.lib.accounts.CommonAcccounts`, and added the table to
@@ -28,3 +34,69 @@ backends/belgiumeid.py>`__.
 There is also a backend for `Google OpenId, OAuth2, OAuth1, Google+
 <https://github.com/python-social-auth/social-core/blob/master/social_core/backends/google.py>`__. That
 might be interesting for Hamza who is working on :ticket:`2013`.
+
+
+FieldDoesNotExist: Event has no field named '_event_type_cache'
+===============================================================
+
+Yesterday with Johanna we had an error which happens from time to
+time::
+
+  File "/xl/lino_xl/lib/cal/models.py", line 560, in after_ui_save
+    super(Event, self).after_ui_save(ar, cw)
+  File "/lino/lino/modlib/notify/mixins.py", line 144, in after_ui_save
+    ar, self, mt, msg, self.get_change_observers())
+  File "/lino/lino/modlib/notify/models.py", line 213, in emit_message
+    subject_body = msg_func(user, mm)
+  File "/lino/lino/modlib/notify/mixins.py", line 135, in msg
+    return (subject, self.get_change_body(ar, cw))
+  File "/lino/lino/modlib/notify/mixins.py", line 67, in get_change_body
+    items = list(cw.get_updates_html(["_user_cache"]))
+  File "/lino/lino/core/diff.py", line 68, in get_updates_html
+    f = self.watched._meta.get_field(k)
+  File "/site-packages/django/db/models/options.py", line 619, in get_field
+    raise FieldDoesNotExist("%s has no field named '%s'" % (self.object_name, field_name))
+  FieldDoesNotExist: Event has no field named '_event_type_cache'
+
+It seems that the :attr:`__dict__` of a Django database object can now
+contain additional names used internally by Django.
+
+I didn't write an automatic way to reproduce it, but I now fixed it at
+least theoretically, and at least the test suite passes.
+
+Side effect: The :meth:`lino.core.diff.ChangeWatcher.get_updates`
+method now sorts its result in order to make it predictable for test
+cases.
+
+En passant I fixed another bug :message:`AjaxExceptionResponse
+KeyError: u'obj' in request POST /api/tickets/Tickets` which occured
+when sending an update notification to a user in German.  Because the
+text "{user} created {what}" had been translated to "{user} hat {obj}
+erstellt" (`{obj}` instead `{what}`).
+
+
+
+New notification mode "silent"
+==============================
+
+For :ticket:`2119` I added a new notification mode :attr:`silent
+<lino.modlib.notify.choicelists.MailModels.silent>`.
+
+This mode differs from :attr:`never
+<lino.modlib.notify.choicelists.MailModels.never>`: "never" means that
+you want to get notified, but only in the web interface, not via
+E-Mail. The new option "silent" means that notifications are
+completely disabled and not even being created.
+
+To be observed. I am not sure whether they really want this.
+
+
+Cannot query "1Euro-Shop": Must be "Person" instance
+====================================================
+
+Lydia had an error message "ValueError: Cannot query "1Euro-Shop":
+Must be "Person" instance".  In the virtual fields :attr:`suppliers`
+and :attr:`needed_skills` we had to add::
+
+    if not isinstance(self, dd.plugins.faculties.demander_model):
+        return ''

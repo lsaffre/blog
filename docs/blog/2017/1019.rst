@@ -1,0 +1,99 @@
+:date: 2017-10-19
+
+==========================
+Thursday, October 19, 2017
+==========================
+
+Test suite failing when offline
+===============================
+
+The :mod:`lino_xl.lib.github` plugin causes a failure file
+:file:`book/docs/specs/noi/github.rst` when there is no internet
+connection::
+
+    Traceback (most recent call last):
+       ...
+        File "/xl/lino_xl/lib/github/actions.py", line 81, in run_from_code
+        for commit in self.get_commits(**kw):
+      File "/xl/lino_xl/lib/github/actions.py", line 62, in get_commits
+        for c in kw.get('repo').github_api_get_all_comments(sha=kw.get('sha', None)):
+      File "/xl/lino_xl/lib/github/models.py", line 90, in github_api_get_all_comments
+        r = requests.get(self.api_url() + 'commits', parms)
+      ...
+      File "/site-packages/requests/adapters.py", line 508, in send
+        raise ConnectionError(e, request=request)
+    ConnectionError: HTTPSConnectionPool(host='api.github.com', port=443): Max retries exceeded with url: /repos/lino-framework/noi/commits?per_page=100&page=1&sha=8bac51399644261ce1a216a299a1dd3aa5c63632 (Caused by NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7f0e03928550>: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution',))
+
+
+    
+
+UnicodeEncodeError
+==================
+
+::
+
+    AjaxExceptionResponse UnicodeEncodeError:
+    'ascii' codec can't encode character u'\xc9' in position 0: ordinal not in range(128)
+    in request PUT /api/isip/ContractsByClient/474
+    TRACEBACK:
+    File "/site-packages/django/core/handlers/base.py" in _get_response
+      185.                 response = wrapped_callback(request, *callback_args, **callback_kwargs)
+    File "/site-packages/django/views/generic/base.py" in view
+      68.             return self.dispatch(request, *args, **kwargs)
+    File "/site-packages/django/views/generic/base.py" in dispatch
+      88.         return handler(request, *args, **kwargs)
+    File "/lino/lino/modlib/extjs/views.py" in put
+      564.         return settings.SITE.kernel.run_action(ar)
+    File "/lino/lino/core/kernel.py" in run_action
+      898.             a.run_from_ui(ar)
+    File "/lino/lino/core/actions.py" in run_from_ui
+      689.             self.save_existing_instance(elem, ar)
+    File "/lino/lino/core/actions.py" in save_existing_instance
+      633.         elem.save_watched_instance(ar, watcher)
+    File "/lino/lino/core/model.py" in save_watched_instance
+      591.         elem.after_ui_save(ar, watcher)
+    File "/welfare/lino_welfare/modlib/isip/mixins.py" in after_ui_save
+      388.         self.update_reminders(ar)
+    File "/welfare/lino_welfare/modlib/isip/mixins.py" in update_reminders
+      453.         rv = super(ContractBase, self).update_reminders(ar)
+    File "/xl/lino_xl/lib/cal/mixins.py" in update_reminders
+      173.         return self.update_auto_events(ar)
+    File "/xl/lino_xl/lib/cal/mixins.py" in update_auto_events
+      202.             we.save()
+    File "/xl/lino_xl/lib/cal/mixins.py" in save
+      739.         super(Component, self).save(*args, **kw)
+    File "/lino/lino/mixins/periods.py" in save
+      125.         super(Started, self).save(*args, **kw)
+    File "/lino/lino/modlib/gfks/mixins.py" in save
+      129.             super(Controllable, self).save(*args, **kw)
+    File "/lino/lino/mixins/__init__.py" in save
+      245.         super(Created, self).save(*args, **kwargs)
+    File "/lino/lino/mixins/__init__.py" in save
+      219.         super(Modified, self).save(*args, **kwargs)
+    File "/site-packages/django/db/models/base.py" in save
+      807.                        force_update=force_update, update_fields=update_fields)
+    File "/site-packages/django/db/models/base.py" in save_base
+      837.             updated = self._save_table(raw, cls, force_insert, force_update, using, update_fields)
+    File "/site-packages/django/db/models/base.py" in _save_table
+      923.             result = self._do_insert(cls._base_manager, using, fields, update_pk, raw)
+    File "/site-packages/django/db/models/base.py" in _do_insert
+      962.                                using=using, raw=raw)
+    File "/site-packages/django/db/models/manager.py" in manager_method
+      85.                 return getattr(self.get_queryset(), name)(*args, **kwargs)
+    File "/site-packages/django/db/models/query.py" in _insert
+      1076.         return query.get_compiler(using=using).execute_sql(return_id)
+    File "/site-packages/django/db/models/sql/compiler.py" in execute_sql
+      1107.                 cursor.execute(sql, params)
+    File "/site-packages/django/db/backends/utils.py" in execute
+      65.                 return self.cursor.execute(sql, params)
+    File "/site-packages/django/db/backends/mysql/base.py" in execute
+      101.             return self.cursor.execute(query, args)
+    File "/site-packages/MySQLdb/cursors.py" in execute
+      187.                 query = query % tuple([db.literal(item) for item in args])
+    File "/site-packages/MySQLdb/connections.py" in literal
+      278.         return self.escape(o, self.encoders)
+    File "/site-packages/MySQLdb/connections.py" in string_literal
+      203.                 return db.string_literal(obj)
+    Exception Type: UnicodeEncodeError
+    Exception Value: 'ascii' codec can't encode character u'\xc9' in position 0: ordinal not in range(128)
+    Request data not supplied

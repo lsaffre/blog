@@ -1,0 +1,39 @@
+:date: 2017-10-23
+
+========================
+Monday, October 23, 2017
+========================
+
+I continued to work on :ticket:`1275`.
+Here are some error messages I have seen today.
+
+:: 
+
+    {error: "idpiframe_initialization_failed",
+      details: "Not a valid origin for the client:
+        http://127.0.0.…itelist this origin for your project's client ID."}
+    {error: "idpiframe_initialization_failed",
+      details : "Not a valid origin for the client:
+        http://127.0.0.1:8000 has not been whitelisted for client ID ....
+        Please go to https://console.developers.google.com/ and whitelist
+        this origin for your project's client ID."}
+
+I went to the Google console and added http://127.0.0.1:8000 to the
+*Authorised JavaScript origins*. This didn't help at first. But when I
+tried again two hours later, it worked. So it seems that Google needs
+some time to update the Web application after a change of
+configuration.
+
+Next error message was this::
+
+    {
+      "error" : "invalid_request",
+      "error_description" : "Permission denied to generate login hint for target domain."
+    }
+
+
+Thanks to `this
+<https://stackoverflow.com/questions/32041418/google-sign-in-website-error-permission-denied-to-generate-login-hint-for-targ>`__.
+I changed my URL from http://127.0.0.1:8000 to http://localhost:8000
+and added added also http://localhost:8000 to the *Authorised
+JavaScript origins*.
