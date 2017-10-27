@@ -1,0 +1,54 @@
+:date: 2017-10-26
+
+==========================
+Thursday, October 26, 2017
+==========================
+
+Running linkcheck on the Lino Book
+==================================
+
+I opened :ticket:`2128`, a task for newbies::
+
+  $ go book
+  $ sphinx-build -b linkcheck docs docs/.build
+
+Then edit the file :file:`docs/.build/output.txt` and fix all errors.
+But before you begin to work on this, speak with one of the team and
+make sure that you cah check in your work.
+
+
+Login via Google+
+=================
+
+I continued on :ticket:`1275`.
+I can now choose my account,
+but something goes wrong afterwards.
+
+- The browser sends a GET to
+  https://accounts.google.com/o/oauth2/iframerpc with these
+  parameters::
+
+    action:issueToken
+    response_type:token id_token
+    login_hint:...
+    client_id:....apps.googleusercontent.com
+    origin:http://localhost:8000
+    scope:openid profile email
+    ss_domain:http://localhost:8000
+
+  It receives a valid response::
+
+    access_token: "ya29....GrjA"
+    expires_in: 3600
+    id_token : "ey...Talg"
+    login_hint: "..."
+    scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/plus.me openid email profile"
+    session_state: {extraQueryParams: {authuser: "0"}}
+    token_type: "Bearer"
+
+- Then the browser sends a POST to
+  http://localhost:8000/complete/google-plus/ which receives an 403 error::
+
+    HTTPError: 403 Client Error:
+    Forbidden for url:
+    https://www.googleapis.com/plus/v1/people/me?access_token=ey...lg&alt=json

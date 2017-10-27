@@ -1,0 +1,37 @@
+:date: 2017-10-27
+
+========================
+Friday, October 27, 2017
+========================
+
+
+While triaging tickets I created :ticket:`2131` (Rename lino_startup
+to something else) and then "just did it": I renamed the
+:mod:`lino.modlib.lino_startup` plugin to just :mod:`lino`.  It's the
+kind of things nobody would ever do, except me. I guess.
+
+
+In the beginning this plugin contained a hack for implementing a kind
+of startup signal which caused :meth:`lino.core.site.Site.startup` to
+be called automatically when Django starts up.  It was called
+`lino.modlib.lino`.  At some moment (Django 1.7 or so) this caused a
+"name is already used" exception.  And after Django 1.8 or so the
+plugin became merely (1) a hook for defining a :class:`lino.AppConfig`
+which calls :meth:`lino.core.site.Site.startup` and (2) the root of
+the the :xfile:`management`, :xfile:`config` and :xfile:`locale`
+subdirs.
+
+All these things are still there, but I moved them to the root,
+i.e. the full plugin name is "lino".
+
+An elegant solution seems
+
+
+In :mod:`lino.core.urls` we had this::
+
+    # we must explicitly call django.setup() because when running under
+    # mod_wsgi this is not done automatically as with runserver (or at
+    # least it seems so)
+    lino.site_startup()
+
+I removed that call to :func:`site_startup`.

@@ -123,7 +123,7 @@ getting more invoices for license fees.
 
 
 .. _AbAKUS: http://www.abakus.be
-.. _TIM: http://tim.saffre-rumma.net/129.html
+.. _TIM: http://tim.lino-framework.org/129.html
 .. _Lino: http://www.lino-framework.org
 .. _TIMtools: http://code.google.com/p/timtools/
 .. _Clipper: http://en.wikipedia.org/wiki/Clipper_(programming_language)

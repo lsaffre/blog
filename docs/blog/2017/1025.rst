@@ -9,20 +9,34 @@ Separate "coachings" from "clients"
 
 While adapting the test suites after yesterday's changes for
 :ticket:`2115`, I realized that it is time to split the coachings
-plugin into coachings "per se" and "client_contacts".  This fixes some
-less visible problems, e.g. the irritating menu for coachings.
+plugin into "coachings per se" and "clients".  And :ref:`avanti` uses
+only :mod:`clients <lino_xl.lib.clients>`, not :mod:`coachings
+<lino_xl.lib.coachings>`.  This fixes some less visible problems,
+e.g. the irritating unused menu entries for coachings in
+:ref:`avanti`.
 
-After these changes I had -as expected- some work to repair the test suites for :ref:`welfare`.
-
-At some moment there were only 23 instead of 58 clients in
-:mod:`lino_welfare.projects.eupen`.
-This was because :doc:`1009`.
+Database migration: The models :class:`ClientContact
+<lino_xl.lib.clients.ClientContact>` and :class:`ClientContactType
+<lino_xl.lib.clients.ClientContactType>` were moved from
+:mod:`lino_xl.lib.coachings` to :mod:`lino_xl.lib.clients`.  Idem for
+the choicelists :class:`ClientStates
+<lino_xl.lib.clients.ClientStates>` and :class:`ClientEvents
+<lino_xl.lib.clients.ClientEvents>`.
+       
+After these changes I had -as expected- some work to repair the test
+suites for :ref:`welfare`.  For example at some moment there were only
+23 instead of 58 clients in :mod:`lino_welfare.projects.eupen`.  This
+was actually because of the *default default* value of the
+:attr:`client_state` field (see :doc:`1009`).
 
 
 Login via Google+
 =================
 
-I saw this RuntimeError:
+I continued on :ticket:`1275`.
+I reached the point where Google asks me to choose my account.
+
+I saw this nice RuntimeError:
 
   You called this URL via POST, but the URL doesn't end in a slash and you have APPEND_SLASH set.
   Django can't redirect to the slash URL while maintaining POST data.
@@ -30,7 +44,7 @@ I saw this RuntimeError:
   or set APPEND_SLASH=False in your Django settings.
   
 
-And later::
+And later, shortly after fixing above error::
    
     AjaxExceptionResponse HTTPError: 403 Client Error: Forbidden for url: https://www.googleapis.com/plus/v1/people/me?access_token=...&alt=json
 
@@ -70,8 +84,21 @@ And later::
     [25/Oct/2017 14:09:20] "POST /complete/google-plus/ HTTP/1.1" 400 1321
 
 
+I didn't yet understand what's happening there...  In the debugger I
+saw that the `X-CSRFToken
+<https://docs.djangoproject.com/en/1.11/ref/csrf/>`__ was null, maybe
+that's the problem?  But theoretically it is being set by the general
+`beforerequest` handler defined in :xfile:`linoweb.js` ::
 
-`This thread
-<https://stackoverflow.com/questions/24377506/httperror-403-forbidden-with-django-and-python-social-auth-connecting-to-googl>`__
-helped me to find out that the word "login" was missing in my
-:setting:`SOCIAL_AUTH_GOOGLE_PLUS_SCOPE`.
+    Ext.Ajax.on('beforerequest', function (conn, options) {
+       if (!(/^http:.*/.test(options.url) || /^https:.*/.test(options.url))) {
+         if (typeof(options.headers) == "undefined") {
+           options.headers = {'X-CSRFToken': Ext.util.Cookies.get('csrftoken')};
+         } else {
+           options.headers.extend({'X-CSRFToken': Ext.util.Cookies.get('csrftoken')});
+         }                        
+       }
+    }, this);
+
+
+To be continued...
