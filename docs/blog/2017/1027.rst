@@ -4,6 +4,8 @@
 Friday, October 27, 2017
 ========================
 
+Rename lino_startup to something else
+=====================================
 
 While triaging tickets I created :ticket:`2131` (Rename lino_startup
 to something else) and then "just did it": I renamed the
@@ -15,23 +17,55 @@ In the beginning this plugin contained a hack for implementing a kind
 of startup signal which caused :meth:`lino.core.site.Site.startup` to
 be called automatically when Django starts up.  It was called
 `lino.modlib.lino`.  At some moment (Django 1.7 or so) this caused a
-"name is already used" exception.  And after Django 1.8 or so the
-plugin became merely (1) a hook for defining a :class:`lino.AppConfig`
-which calls :meth:`lino.core.site.Site.startup` and (2) the root of
-the the :xfile:`management`, :xfile:`config` and :xfile:`locale`
-subdirs.
+"name is already used" exception. That's why it was called
+:mod:`lino.modlib.lino_startup`.  After Django 1.8 or so it became
+merely:
+
+- a hook for defining the :class:`lino.AppConfig` class which
+  calls :meth:`lino.core.site.Site.startup` and
+- the root of the the :xfile:`management`, :xfile:`config` and
+  :xfile:`locale` subdirs.
 
 All these things are still there, but I moved them to the root,
-i.e. the full plugin name is "lino".
+i.e. the full plugin name is now :mod:`lino`.  I have the feeling that
+this makes things much more straightforward.
 
-An elegant solution seems
-
-
-In :mod:`lino.core.urls` we had this::
+To be observed: In :mod:`lino.core.urls` we had this::
 
     # we must explicitly call django.setup() because when running under
     # mod_wsgi this is not done automatically as with runserver (or at
     # least it seems so)
     lino.site_startup()
 
-I removed that call to :func:`site_startup`.
+I removed that call to :func:`site_startup`.  We will see whether the
+comment was true or not.  This is maybe related to our :ticket:`1173`.
+
+
+"Core" plugins versus "XL" plugins
+==================================
+
+Another question is: we have two plugins :mod:`printing`
+:mod:`excerpts`. The :mod:`printing` plugin is in the core
+(:mod:`lino.modlib`) while :mod:`excerpts` is in :mod:`lino_xl.lib`.
+Why? Where is the borderline between a "core" plugin and an "XL"
+plugin?  What about :mod:`languages` and :mod:`office`? 
+And :mod:`vocbook`.
+
+The theoretical answer is: :mod:`lino.modlib` contains functionality
+which is still useful for people who don't want the XL.  Why should
+somebody not want the XL?
+
+- Because it is a big library. Somebody who just wants to write a
+  quick database application from scratch does not want to dive into
+  all these concepts.
+  
+- Because it is still just one possible view of the world. For example
+  the way how XL does contacts management is not the only possibility.
+
+I removed :mod:`lino.modlib.database_ready` and the `database_ready`
+signal because they were not used.
+
+Miscellaneous
+=============
+
+I worked in the :doc:`/dev/index`.
