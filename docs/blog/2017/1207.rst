@@ -1,0 +1,156 @@
+:date: 2017-12-07
+
+==========================
+Thursday, December 7, 2017
+==========================
+
+Third-party authentication providers
+====================================
+
+I worked on :ticket:`1197` (Add support for authentication via OpenID,
+Google or Facebook). This is actually the same as
+:ticket:`1275` (Authenticate using Belgian ID card).
+See also :doc:`1018` and :doc:`1022`.
+
+As mentioned earlier, the question is:
+how to integrate
+`Python Social Auth
+<https://github.com/python-social-auth>`__
+to Lino at the web interface level?
+
+I read Vitor Freita's blog entry `How to Add Social Login to Django
+<https://simpleisbetterthancomplex.com/tutorial/2016/10/24/how-to-add-social-login-to-django.html>`__. A
+great document.  It helps us understand the difference between Lino
+and Django: as a Lino application developer I do **not** want to write
+this kind of things!
+
+Which means that as a Lino *core* developer I must write a generic
+solution. This is what I did today.
+
+, Lino will now
+automatically add a link to the specified
+
+Here are some error messages I saw today when developing this:
+
+- https://my.example.com/complete/github/?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdeveloper.github.com%2Fv3%2Foauth%2F%23redirect-uri-mismatch
+
+
+- AttributeError: 'BaseUserManager' object has no attribute
+  'create_user' in
+  http://127.0.0.1:8000/oauth/complete/github/?redirect_state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5&code=32e730c23e0989862b2d&state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5
+
+Summary of code changes:
+
+- Third-party Authentication support now works. It is just a new site
+  attribute :attr:`social_auth_backends
+  <lino.core.site.Site.social_auth_backends>`.
+
+  A working example is in the :mod:`lino_book.projects.team` demo
+  project.
+
+  I created an application `Social Auth Tester
+<https://github.com/organizations/lino-framework/settings/applications/632218>`__
+on GitHub. The link works only if you are logged in on GH and have
+permission to see this page. Probably not. But here is a screenshot:
+
+.. image:: 20171207a.png
+       
+The client secret of that GitHub application is stored in the team
+demo project, so you can test the social auth functionality by doing::
+
+  $ go team
+  $ python manage.py prep
+  $ runserver
+
+Works like a charm!
+
+- Actually we *might* implement the feature as a plugin
+  (:mod:`lino.modlib.social_auth`) and not as a Site attribute. That
+  would be more Django-like. But OTOH a Site attribute is so easy to
+  use and to configure!  I am probably going to remove
+
+Side effects:
+
+- The :attr:`objects` of :class:`users.User` is now able to create users.
+  
+- It is now possible to use a :class:`lino.core.fields.HtmlBox` or a
+  :class:`lino.core.fields.DisplayField` as parameter fields of an
+  action.  The trick is to specify a `default` value for them.
+  
+  The :class:`SignInWithSocialAuth` action (in
+  :mod:`lino.modlib.users.actions`) is the first usage example.
+       
+  But we don't currently use it because after getting the new
+  possibility to work, I discovered that it probably isn't necessary,
+  at least not for social authentication.  It is more intuitive to
+  leave the SignIn action dialog as it is and to add these social auth
+  links after the "You will now probably want to sign in" message in
+  (:xfile:`admin_main.html`)
+
+A hangout with Tonis for :ticket:`352`
+======================================
+
+:ticket:`352` (ParameterStore of LayoutHandle for ParamsLayout X
+expects a list of Y values but got N) is related to the
+:attr:`is_on_main_actor ` attribute introduced on :doc:`0731`.  The
+following test helped us to explore the problem. It is now also in the
+specs (in :ref:`noi.specs.std`).
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+>>> A = rt.models.clocking.SessionsByTicket
+>>> obj = rt.models.tickets.Ticket.objects.get(pk=1)
+
+>>> ses = rt.login('robin', renderer=settings.SITE.kernel.default_renderer)
+>>> ses.is_on_main_actor
+True
+>>> ar = rt.models.tickets.Tickets.request(parent=ses)
+>>> ar.is_on_main_actor
+True
+>>> ar.actor
+lino_xl.lib.tickets.ui.Tickets
+>>> html = A.get_slave_summary(obj, ar)
+>>> print(E.tostring(html))  #doctest: +SKIP
+<div class="htmlText"><p><a href="javascript:Lino.tickets.Tickets.start_session(null,true,1,{  })" style="text-decoration:none">&#9654;</a></p><p>Total 0:00 hours.</p><p>Active sessions: <span><a href="javascript:Lino.clocking.SessionsByTicket.detail.run(null,{ &quot;record_id&quot;: 1 })">Jean since 09:00:00</a> <a href="javascript:Lino.clocking.Sessions.end_session(null,true,1,{  })" style="text-decoration:none">&#9632;</a></span>, <span><a href="javascript:Lino.clocking.SessionsByTicket.detail.run(null,{ &quot;record_id&quot;: 5 })">Luc since 09:00:00</a> <a href="javascript:Lino.clocking.Sessions.end_session(null,true,5,{  })" style="text-decoration:none">&#9632;</a></span>, <span><a href="javascript:Lino.clocking.SessionsByTicket.detail.run(null,{ &quot;record_id&quot;: 9 })">Mathieu since 09:00:00</a> <a href="javascript:Lino.clocking.Sessions.end_session(null,true,9,{  })" style="text-decoration:none">&#9632;</a></span></p></div>
+
+>>> soup = BeautifulSoup(E.tostring(html), 'lxml')
+>>> # print(soup.body.prettify())
+>>> links = soup.body.find_all('a')
+>>> len(links)
+7
+>>> for lnk in links:
+...    print(lnk['href'])
+javascript:Lino.tickets.Tickets.start_session(null,true,1,{  })
+javascript:Lino.clocking.Sessions.detail.run(null,{ "record_id": 1 })
+javascript:Lino.clocking.Sessions.end_session(null,false,1,{  })
+javascript:Lino.clocking.Sessions.detail.run(null,{ "record_id": 5 })
+javascript:Lino.clocking.Sessions.end_session(null,false,5,{  })
+javascript:Lino.clocking.Sessions.detail.run(null,{ "record_id": 9 })
+javascript:Lino.clocking.Sessions.end_session(null,false,9,{  })
+
+
+
+A bug for Tonis
+===============
+
+Tonis, after our meeting I saw another reproducible bug in
+:mod:`lino_book.projects.lydia` which I recommend you to have a look
+at:
+
+- sign in as robin
+- got to Patient Bernd BRECHT
+  
+- Activate the "Family" tab. In the "Households memberships" panel you
+  see:
+
+    | BRECHT Bernd (177) is
+    | ☐ Head of household in Bernd & Inge Brecht-Radermacher Isolated (186)
+    | Create a household : Married couple / Divorced couple / Factual household / Legal cohabitation / Isolated / Other
+- Click on the ☐.
+  
+  This should actually mark that household as primary, causing the
+  ☐ to change into a ☑.
+  
+  You get an error mesage "Bad request. IndexError: list index out of
+  range "

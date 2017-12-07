@@ -1,0 +1,57 @@
+:date: 2017-11-29
+
+============================
+Wednesday, November 29, 2017
+============================
+
+
+Coverage and Python 2/3 compatibility
+=====================================
+
+Toshio Kuratomi wrote a nice little recipe about `Better unittest
+coverage stats: excluding code that only executes on Python 2/3
+<https://anonbadger.wordpress.com/2017/11/24/better-unittest-coverage-stats-excluding-code-that-only-executes-on-python-2-3/>`__.
+
+My summary:
+
+With the following config in :xfile:`.coveragerc`::
+  
+    [report]
+    exclude_lines=
+        pragma: no cover
+        pragma: no py${PYTEST_PYMAJVER} cover
+
+
+we can write code like this::
+
+    if six.PY3:  # pragma: no py2 cover
+        stdout = sys.stdout.buffer
+    else:  # pragma: no py3 cover
+        stdout = sys.stdout
+
+
+Locally modifying a choicelist
+==============================
+
+It is easy to locally extend a choicelist.  Here is an example taken
+from an :ref:`amici` production site.
+
+In your local :xfile:`settings.py` file, define a custom
+:attr:`user_types_module <lino.core.site.Site.user_types_module>`::
+
+    ...
+    class Site(Site):
+        user_types_module = 'mysite.user_types'
+    ...
+
+    
+Then create a file :file:`user_types.py` with the following content::
+
+    from lino_amici.lib.amici.user_types import *
+    from lino_xl.lib.phones.choicelists import ContactDetailTypes, STD
+
+    add = ContactDetailTypes.add_item_instance
+    add(STD('080', "Eesti isikukood", "id_ee"))
+    add(STD('081', "Belgian NISS", "id_be"))
+
+

@@ -1,0 +1,76 @@
+:date: 2017-11-17
+
+=========================
+Friday, November 17, 2017
+=========================
+
+I deployed :ref:`amici` to a production site.
+
+:class:`lino_xl.lib.addresses.AddressOwnerChecker` failed because
+there were address rows for partners that are not a person (which is
+no longer supported in :ref:`amici`).
+
+New ticket :ticket:`2148` (Cannot insert person with nonempty email in
+Amici) This was caused by :mod:`lino_xl.lib.phones`.  When inserting a
+person with a non-empty email field, :ref:`amici` failed because it
+tried to save the ContactDetail row before the Person row had been
+saved. It says :message:`ValueError: save() prohibited to prevent data
+loss due to unsaved related object 'partner'`.
+
+Instead of defining :meth:`FOO_changed
+<lino.core.model.Model.FOO_changed>` methods for every field, we now
+define a :meth:`after_ui_save <lino.core.model.Model.after_ui_save>`
+method on :class:`ContactDetailsOwner
+<lino_xl.lib.phones.ContactDetailsOwner>`.
+
+I created a test case
+:mod:`lino_amici.projects.herman.test_insert_person` which reproduces
+the problem.
+
+Note that we don't import :class:`ContactDetailTypes
+<lino_xl.lib.phones.ContactDetailTypes>` to the global namespace of
+:mod:`lino_xl.lib.phones.mixins` because we want that module to be
+importable from applications which do *not* have phones installed.
+
+Lino Tera continued
+===================
+
+I continued to work for :ref:`tera` on :ticket:`2137` after meeting
+with Daniel on :doc:`1104`.
+
+DONE:
+
+- "Kurse" --> "Therapien", "Kursleiter" -> "Therapeut", "Klient" -->
+  "Patient".
+
+- PersonDetail : add GuestsByPerson and EnrolmentsByPerson, remove
+  NotesByPerson.
+
+- ClientDetail : add GuestsByClient, remove CoursesByClient.
+
+- "Themen" ("Topics") are implemented using :mod:`lino_xl.lib.lists`
+  (not :mod:`lino_xl.lib.faculties`).
+
+- Notizen und Themen sind jetzt vertraulich (d.h. nur sichtbar für
+  Benutzer mit Rolle `ClientsUser`)
+  
+- Notizen sind unabhängig von Terminen (Termine sind nicht vertraulich)
+    
+
+TODO:  
+
+- Notizen und Themen müssen importiert werden aus TIM. Themen sind pro
+  Familie und pro Klient, Notizen nur pro Klient.
+
+- MTI Navigator can be irritating. Possibility to hide certain links &
+  conversions. e.g. Person -> Houshold, Person -> Partner should be
+  hidden for normal users.
+
+TALK
+
+- Termin erstellen von Therapie aus : testen. Konfigurierung?
+- Hide Course.client pointer?
+- humanlinks & households raus?
+- Automatische ZDSS-Anfrage Krankenkasse?
+- Multiple phone numbers?
+

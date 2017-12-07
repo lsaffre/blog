@@ -1,0 +1,33 @@
+:date: 2017-12-03
+
+========================
+Sunday, December 3, 2017
+========================
+
+I have some failures `on travis
+<https://travis-ci.org/lino-framework/book/builds/309959114>`_ which
+don't occur on my machine.  In order to try to reproduce them, I
+reinstalled the default Lino environment on my machine using the
+:xfile:`install_dev_projects.sh`. I can now confirm that this file
+still more testing.  Afterwards I had a failure in the
+:ref:`dev.models` tutorial because I accidentally had installed the
+repositories into another directory.
+
+
+
+
+
+A failure ​:message:`django.core.exceptions.ValidationError: {'iban':
+[u'CR IBANs must contain 22 characters.']}` was caused by fictive demo
+data in file :file:`COD_20150907_O25MMF107I.xml` in
+:mod:`lino_cosi.lib.b2c.fixtures`.  The file contained IBAN from CR
+(Costa Rica), and it seems that either CR has changed their format
+recently, or django-localflavor has recently started to verify them.
+
+I replaced them by account numbers from MK
+
+other fictive
+
+<IBAN>CR
+<IBAN>HR
+

@@ -1,0 +1,42 @@
+:date: 2017-11-23
+
+===========================
+Thursday, November 23, 2017
+===========================
+
+As a side effect of :ticket:`2157` I updated the :xfile:`roles.py`
+modules of several plugins to reflect a subtle change in permissions
+definitions: user roles should inherit from UserRole, not from
+SiteUser.
+
+Sortable virtual fields
+=======================
+
+>>> from lino import startup
+>>> startup('lino_book.projects.adg.settings.doctests')
+>>> from lino.api import rt
+>>> de = rt.models.cal.Events.get_data_elem('when_text')
+
+>>> de.__class__
+<class 'lino.core.fields.VirtualField'>
+>>> de.sortable_by
+[u'start_date', u'start_time']
+
+
+>>> de.return_type.__class__
+<class 'lino.core.fields.DisplayField'>
+>>> de.return_type.sortable_by
+[u'start_date', u'start_time']
+
+
+>>> th = rt.models.cal.Events.get_handle()
+>>> col = th.get_columns()[0]
+>>> col.__class__
+<class 'lino.modlib.extjs.elems.DisplayElement'>
+>>> col.name
+'when_text'
+>>> col.field.sortable_by
+[u'start_date', u'start_time']
+
+>>> col.sortable
+True

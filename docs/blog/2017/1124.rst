@@ -1,0 +1,72 @@
+:date: 2017-11-24
+
+=========================
+Friday, November 24, 2017
+=========================
+
+Marketing work
+==============
+
+I finised by blog entry
+`November 2017 <http://www.saffre-rumma.net/blog/>`__
+which summarizes (in German) the last weeks.
+
+I also updated the
+:ref:`community`,
+:ref:`hosters`
+and
+:ref:`developers` pages.
+
+Optimizations in :ref:`avanti`
+==============================
+     
+I continued with :ticket:`2157`.  Teachers complain that the sorting
+order used for the guests of a calendar entry (which Lino fills from
+the enrolments of a course) is not always the same.  And indeed,
+:class:`GuestsByEvent` has no :attr:`order_by`, so it inherits the one
+which is defined on :class:`Guests`::
+
+  order_by = ['event__start_date', 'event__start_time']
+
+Which definitively is not what we want.
+
+Also the :class:`lino_avcanti.lib.courses.PresencesByEnrolment` table
+had no :attr:`order_by` specified because it did not inherit from
+`cal.Guests`. So here we specify now manually::
+
+    order_by = ['event__start_date', 'event__start_time']
+  
+I added a merge action for Client, Person and Company.
+
+
+New field :attr:`EventType.transparent`
+
+demo data (EventType "Internal") & adapt test suites.
+
+
+Optimizations in :ref:`tera`
+============================
+
+
+I started to write an import fixture for :ref:`tera` which imports
+their "notes" and "topics" from TIM (:ticket:`2162`).
+
+$ python manage.py loaddata i20171124
+
+
+Release :ref:`avanti`
+=====================
+
+manual data migration:
+
+- 
+- coachings.CoachingEnding -> avanti.EndingReason
+- coachings.Coaching and coachings.CoachingType were empty
+
+Quick bugfixes en passant:
+  
+- when an admin user acts as an auditor, then Lino showed the full
+  names (i.e. did not simulate what the subst_user would see)
+- when cal.RecurrenceSet.max_events was 0, Lino did not remove all
+  automatic events but used the site-wide default value.
+

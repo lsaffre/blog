@@ -1,0 +1,78 @@
+:date: 2017-12-01
+
+========================
+Friday, December 1, 2017
+========================
+
+
+Release @avanti
+===============
+
+I adapted the test suites up after my work on :ticket:`2169`.  The new
+user role :class:`lino_xl.lib.cal.GuestOperator` has side effects in
+:ref:`welfare` and other projects.
+
+I then deployed it to their production site, noted a regression
+(coordinators now could not see calendar entries) and fixed it quickly
+(without running the test suites again).
+
+Oh yes: designing and maintaining permissions for an application like
+:ref:`avanti` or :ref:`welfare` is not an easy task. But it is not
+difficult compared to designing a permissions system for a whole
+framework...  Today I saw once more that user roles should be as
+atomic as possible. For example the :class:`OfficeOperator` have a too
+wide meaning.
+     
+
+'VirtualField' object has no attribute 'field_name'
+===================================================
+
+I got a traceback from a :ref:`amici` production site::
+
+    AjaxExceptionResponse AttributeError: 'VirtualField' object has no attribute 'field_name'
+
+    in request PUT /api/contacts/Companies/4722 (data: <QueryDict: {u'city': [u'Tallinn'], u'rp': [u'ext-comp-1759'], u'language': [u'English'], u'parent': [u'Select a Organization...'], u'languageHidden': [u'en'], u'country': [u'Estonia'], u'countryHidde...)
+    TRACEBACK:
+      File "env/local/lib/python2.7/site-packages/django/core/handlers/base.py", line 185, in _get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "env/local/lib/python2.7/site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "env/local/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "env/repositories/lino/lino/modlib/extjs/views.py", line 570, in put
+        return settings.SITE.kernel.run_action(ar)
+      File "env/repositories/lino/lino/core/kernel.py", line 895, in run_action
+        a.run_from_ui(ar)
+      File "env/repositories/lino/lino/core/actions.py", line 691, in run_from_ui
+        self.save_existing_instance(elem, ar)
+      File "env/repositories/lino/lino/core/actions.py", line 635, in save_existing_instance
+        elem.save_watched_instance(ar, watcher)
+      File "env/repositories/lino/lino/core/model.py", line 591, in save_watched_instance
+        elem.after_ui_save(ar, watcher)
+      File "env/repositories/xl/lino_xl/lib/phones/mixins.py", line 30, in after_ui_save
+        self.propagate_contact_detail(cdt)
+      File "env/repositories/xl/lino_xl/lib/phones/mixins.py", line 34, in propagate_contact_detail
+        k = cdt.field_name
+
+Yes, this occured when the user changed the :attr:`name` field of a
+company.  To fix this, I added a new method
+:meth:`lino.core.choicelists.ChoiceList.find`.
+
+Miscellaneous
+=============
+
+I am trying to understand the failures in `build #546
+<https://travis-ci.org/lino-framework/book/builds/309857320>`__ for
+book at travis.
+
+Seems that I must specify the `requests_mock` dependency in
+`install_requires`, not in `tests_require`.  Though I don't understand
+why...
+
+Even with that fixed, there are still `3 failures
+<https://travis-ci.org/lino-framework/book/builds/309865522>`__.
+
+One of them was because the IBAN format of CR has changed. I had to
+install a new version of `django-localflavor`::
+
+  $ pip install -U django-localflavor

@@ -1,0 +1,35 @@
+:date: 2017-12-06
+
+===========================
+Wednesday, December 6, 2017
+===========================
+
+Now I finally finished what I started on Monday ago: :ticket:`1696`
+(Site-wide global search) and its child :ticket:`1792` (quick search
+with several words) are now done. (Of course there are more
+optimizations to come). Summary of changes:
+        
+
+- New table :class:`lino.modlib.about.models.SiteSearch`.
+- A new model class attribute
+  :attr:`lino.core.model.Model.show_in_site_search` which can be set to
+  `False` if you really don't want a model to occur in the site-wide
+  search.
+
+- For models with no char field at all
+  (:class:`lino_xl.lib.ledger.MatchRule`), Lino returned always all
+  objects, independently of what you entered as earch text.
+
+- When then :attr:`quick_search` contains more than one word, Lino now
+  returns rows which contain all words, but does not require them to
+  be in the given order.
+
+- I started a new specs page :ref:`specs.search`.
+  
+The :attr:`lino.core.model.Model.quick_search_fields` and
+:attr:`lino.core.model.Model.quick_search_fields_digit` attributes are
+now tuples of field descriptor objects (no longer frozenset of field
+names).
+
+
+

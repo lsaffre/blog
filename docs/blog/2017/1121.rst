@@ -1,0 +1,109 @@
+:date: 2017-11-21
+
+==========================
+Tuesday, November 21, 2017
+==========================
+
+Autosummary and layouts modules
+===============================
+
+The :mod:`lino_tera.lib.tera.layouts` module caused :cmd:`inv bd` to
+fail in :ref:`book`::
+
+  [autosummary] failed to import u'lino_tera.lib.tera.layouts': no module named lino_tera.lib.tera.layouts
+
+Here is how I can visualize the real problem behind this:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.max.settings.doctests')
+>>> import lino_tera.lib.tera.layouts
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File ".../lino_tera/lib/tera/layouts.py", line 38, in <module>
+    dd.plugins.lists.verbose_name = _("Topics")
+  File "/media/dell1tb/work/atelier/atelier/utils.py", line 64, in __getattr__
+    name, ', '.join(list(self.keys()))))
+AttributeError: AttrDict instance has no key 'lists' (keys are weasyprint, addresses, xl, phones, topics, sales, ledger, channels, pages, accounts, notify, excerpts, cv, export_excel, bootstrap3, households, invoicing, appypod, jinja, clocking, contacts, wkhtmltopdf, tinymce, system, comments, extjs, languages, contenttypes, products, postings, vat, extensible, gfks, users, deploy, staticfiles, office, concepts, votes, lino, faculties, sessions, outbox, properties, bevat, tickets, about, boards, countries, sepa, notes, polls, noi, courses, printing, humanlinks, uploads, reception, cal, checkdata, changes)
+  
+The problem is that autosummary needs to import the module, but after
+our recent changes (for :ticket:`2137`) the module requires the
+:mod:`lino_xl.lib.lists` plugin to be installed.  And autosummary imports
+it with the :mod:`lino_book.projects.max` settings. And these did not
+yet include :mod:`lino_xl.lib.lists` plugin.
+
+But even if I add :mod:`lino_xl.lib.lists` to
+:mod:`lino_book.projects.max`, I get another error:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.max.settings.doctests')
+>>> import lino_tera.lib.tera.layouts
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "/media/dell1tb/work/tera/lino_tera/lib/tera/layouts.py", line 54, in <module>
+    ClientsUser)
+  File "/media/dell1tb/work/atelier/atelier/utils.py", line 64, in __getattr__
+    name, ', '.join(list(self.keys()))))
+AttributeError: AttrDict instance has no key 'tera' (keys are weasyprint, addresses, xl, phones, topics, sales, ledger, channels, pages, accounts, notify, excerpts, cv, export_excel, bootstrap3, households, invoicing, appypod, jinja, clocking, contacts, wkhtmltopdf, tinymce, system, comments, extjs, languages, contenttypes, products, postings, vat, extensible, gfks, users, deploy, staticfiles, office, concepts, votes, lists, lino, faculties, sessions, outbox, properties, bevat, tickets, about, boards, countries, sepa, notes, polls, noi, courses, printing, humanlinks, uploads, reception, cal, checkdata, changes)
+
+Yes, this is a fundamental things to accept.  To solve this issue, I
+have to indent the whole content of the module under an ``if``
+condition::
+
+  if dd.is_installed('tera'):
+
+      ...
+      
+This case would be an example of a case why ``return`` inside a module
+would be useful. It would be more clear to write::
+
+  if not dd.is_installed('tera'):
+      return
+  ...
+
+But that's is a Python design decision, as explained e.g. in `this
+thread
+<https://stackoverflow.com/questions/12311802/python-why-is-return-not-allowed-in-a-module>`__.
+
+
+The qtclient
+============
+
+I fiddled with :manage:`qtclient`. No visible result yet.
+
+
+
+Lino as a CMS
+=============
+
+I continued on :mod:`lino_book.projects.cms`.
+
+- The login input fields were useless here since here we have a
+  separate admin interface.
+
+- Instead of supporting an unlimited number of user interfaces (and an
+  attribute `user_interfaces` with a list of them, we now have a 
+  new attribute `Site.admin_ui`. 
+
+- When selecting another language and then clicking to another page in
+  the menu, the selected language was
+  lost. :meth:`Page.get_absolute_url` now forwards optional ``kwargs``
+  to :meth:`lino.core.plugins.Plugin.build_plain_url`.
+
+These changes `cf8ec5bc
+<https://github.com/lino-framework/lino/commit/cf8ec5bc91a3371e871d2d32816b83220c2a9182>`__
+and `643b7896
+<https://github.com/lino-framework/lino/commit/643b7896b704965f0a05d6e4c688be0cc21a7924>`__)
+must be considered dangerous because they might have introduced
+regressions that are not covered by the test suite.
+
+
+TODO:
+
+- :mod:`lino_book.projects.belref` does not change the user language
+  anymore. Check whether this has come with today's changes.
+  
+- add more meaningful demo content
+- add images  
+- make it sexy and reactive
+  
+
