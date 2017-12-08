@@ -25,19 +25,8 @@ and Django: as a Lino application developer I do **not** want to write
 this kind of things!
 
 Which means that as a Lino *core* developer I must write a generic
-solution. This is what I did today.
-
-, Lino will now
-automatically add a link to the specified
-
-Here are some error messages I saw today when developing this:
-
-- https://my.example.com/complete/github/?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdeveloper.github.com%2Fv3%2Foauth%2F%23redirect-uri-mismatch
-
-
-- AttributeError: 'BaseUserManager' object has no attribute
-  'create_user' in
-  http://127.0.0.1:8000/oauth/complete/github/?redirect_state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5&code=32e730c23e0989862b2d&state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5
+solution. This is what I did today. The first proof of concept works
+like a charm!
 
 Summary of code changes:
 
@@ -46,29 +35,29 @@ Summary of code changes:
   <lino.core.site.Site.social_auth_backends>`.
 
   A working example is in the :mod:`lino_book.projects.team` demo
-  project.
+  project.  Anybody can test the social auth functionality on your
+  machin by doing::
 
-  I created an application `Social Auth Tester
-<https://github.com/organizations/lino-framework/settings/applications/632218>`__
-on GitHub. The link works only if you are logged in on GH and have
-permission to see this page. Probably not. But here is a screenshot:
+    $ go team
+    $ python manage.py prep
+    $ runserver
 
-.. image:: 20171207a.png
+  For this to work out of the box, I created an application `Social
+  Auth Tester
+  <https://github.com/organizations/lino-framework/settings/applications/632218>`__
+  on GitHub (that link works only if you are logged in on GH and have
+  permission to see this page, but here is a screenshot:)
+
+  .. image:: 20171207a.png
        
-The client secret of that GitHub application is stored in the team
-demo project, so you can test the social auth functionality by doing::
-
-  $ go team
-  $ python manage.py prep
-  $ runserver
-
-Works like a charm!
-
-- Actually we *might* implement the feature as a plugin
-  (:mod:`lino.modlib.social_auth`) and not as a Site attribute. That
-  would be more Django-like. But OTOH a Site attribute is so easy to
-  use and to configure!  I am probably going to remove
-
+  The client secret of that GitHub application not really secret
+  anymore since it is stored in the :xfile:`settings.py` of the team
+  demo project (more exactly `here
+  <https://github.com/lino-framework/book/blob/master/lino_book/projects/team/settings/demo.py>`__). But
+  anyway the Home page URL of the application is
+  http://127.0.0.1:8000/ which means that it is being used only on a
+  local machine.
+         
 Side effects:
 
 - The :attr:`objects` of :class:`users.User` is now able to create users.
@@ -80,12 +69,36 @@ Side effects:
   The :class:`SignInWithSocialAuth` action (in
   :mod:`lino.modlib.users.actions`) is the first usage example.
        
-  But we don't currently use it because after getting the new
+  But we don't currently use that action because after getting the new
   possibility to work, I discovered that it probably isn't necessary,
   at least not for social authentication.  It is more intuitive to
   leave the SignIn action dialog as it is and to add these social auth
   links after the "You will now probably want to sign in" message in
   (:xfile:`admin_main.html`)
+
+TODO:
+
+- Port my changes in :mod:`lino.modlib.extjs` (those in `elems.py
+  <https://github.com/lino-framework/lino/commit/1fc7d5f594702b059e6065208e98558e02cd41f8#diff-e5d0acc40d2ea6ddc90ac417870864b2>`__)
+  also to extjs6. For testing it, uncomment the lines in 
+  :mod:`lino.modlib.users.models` which 
+  install the
+  :class:`SignInWithSocialAuth` action.
+
+- Try it also with Facebook, Google and Belgian eID
+
+- Actually we *might* implement the feature as a plugin
+  (:mod:`lino.modlib.social_auth`) and not as a Site attribute. That
+  would be more Django-like. But OTOH a Site attribute is so easy to
+  use and to configure!  I am probably going to remove the plugin.
+
+Here are some error messages I saw today when developing this:
+
+- https://my.example.com/complete/github/?error=redirect_uri_mismatch&error_description=The+redirect_uri+MUST+match+the+registered+callback+URL+for+this+application.&error_uri=https%3A%2F%2Fdeveloper.github.com%2Fv3%2Foauth%2F%23redirect-uri-mismatch
+
+- AttributeError: 'BaseUserManager' object has no attribute
+  'create_user' in
+  http://127.0.0.1:8000/oauth/complete/github/?redirect_state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5&code=32e730c23e0989862b2d&state=UynmZVZAzLYd0dbsxjioBCOMt1BFH6h5
 
 A hangout with Tonis for :ticket:`352`
 ======================================
