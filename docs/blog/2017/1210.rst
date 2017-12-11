@@ -1,0 +1,81 @@
+:date: 2017-12-10
+
+=========================
+Sunday, December 10, 2017
+=========================
+
+I had a review of the :ref:`lino.dev`, trying to feel like a student
+of the `Tallinn IT college <http://www.itcollege.ee/>`.  The first
+thing that made me stumble was the fact that I need to work in
+Python 2.
+
+Our work on :ticket:`36` is almost done, but it went to sleep because
+we depend on appy.
+
+The appypod project, aartial redistribution of appy
+===================================================
+
+Don't take it personally Gaetan, but now I will try a partial
+redistribute of appy.
+
+The idea is that I redistribute Gaetan's work on `appy.pod` in a
+project with a git repository and a :xfile:`setup.py`.
+
+The sole purpose is making Gaetan's work on `appy.pod` available under
+Python 3. I don't plan any enhancements.
+
+Note that appy.pod is only a part of the Appy framework. We reduce the
+redistribution to a minimum because we don't want to be a replacement.
+
+
+
+Porting Lino to Django 2
+========================
+
+The first stumblestone for Lino under Django 2 is that they somehow
+decided to make `on_delete` a required argument::
+
+  TypeError: __init__() missing 1 required positional argument: 'on_delete'
+
+I fix this by changing all :class:`models.ForeignKey` calls to
+:func:`lino.core.fields.ForeignKey`.
+
+Next problem::
+  
+  AttributeError: 'Options' object has no attribute 'virtual_fields'
+
+That's because virtual_fields has been replaced by private_fields
+in 1.9. Already in 1.10 we had:
+
+- The private attribute virtual_fields of Model._meta is deprecated in
+  favor of private_fields.
+
+- The private keyword arguments virtual_only in
+  Field.contribute_to_class() and virtual in Model._meta.add_field()
+  are deprecated in favor of private_only and private, respectively.
+
+Next problem::
+
+  Exception: Invalid remote field account__ref for <class 'lino_xl.lib.finan.models.JournalEntryItem'>
+
+That's because Field.rel and Field.remote_field.to are removed.
+Already in `1.9
+<https://docs.djangoproject.com/en/2.0/releases/1.9/#field-rel-changes>`__,
+"Field.rel and its methods and attributes have changed to match the
+related fields API. The Field.rel attribute is renamed to remote_field
+and many of its methods and attributes are either changed or renamed."
+
+Until no I could test::
+
+    if fk.remote_field is not None: ...
+
+But in Django 2, fk.remote_field is False when it was None.
+
+Django admin commands now have more severe argument checking.
+
+Voilà. A nice start. It's not finished, the next problem is somewhere
+in mti, that's enough Django 2 for me for today. I said::
+
+  install_requires.append('django<2')
+
+because after all I first want it to pass under Python 3 at all.

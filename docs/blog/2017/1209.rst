@@ -1,0 +1,102 @@
+:date: 2017-12-09
+
+==========================
+Saturday, December 9, 2017
+==========================
+
+Lino no longer uses UNION querysets
+===================================
+
+I found the explanation and a solution for :ticket:`2190`
+(IntracomPurchases is empty on test client but not on devserver).
+https://travis-ci.org/lino-framework/book/builds/313378643
+
+IntracomSales and IntracomPurchases are currently the only *tables
+with an abstract model*. For such tables I was using Django's UNION
+feature.  The problem came because of `Django ticket #28281
+<https://code.djangoproject.com/ticket/28281>`__.
+Django's UNION
+feature is a pseudo feature because `count()` doesn't work and because
+it doesn't work on mysql.
+
+So now I don't use that feature anymore, and
+:meth:`lino.core.dbtables.Table.get_request_queryset` now returns an
+iteration over the different models which implement the abstract
+model. The disadvantage is of course that they are ordered only within
+their model.  But that's not a problem for now, since IntracomSales
+and IntracomPurchases de facto are usually in a single model.
+      
+
+
+Changed the API for defining merge actions
+==========================================
+
+Until now each application had to explicitly specify the models that
+would have a *merge action*.  Now it is the opposite: every model has
+a merge action unless the application developer sets
+:attr:`lino.core.model.Model.allow_merge_action` to `False`.
+
+TODO: adapt welfare test suite. adapt documentation. should Lino
+automatically set it to False on models with MTI children?
+
+One problem is that now we have dozens of new dialog actions in
+Welfare or Tera, one for each model.
+
+
+Lino Book passing on Travis
+===========================
+
+The last `build failure
+<https://travis-ci.org/lino-framework/book/builds/313850722>`__ on
+:ref:`travis` was because building the :ref:`book` requires `graphviz
+<http://graphviz.org/>`__ to be installed on the system::
+
+  sudo apt-get install -y graphviz
+
+I now added this to the :xfile:`.travis.yml` file.
+
+And yess! `Build #557
+<https://travis-ci.org/lino-framework/book/builds/313936204>`__
+passed. It is the first one since `#468
+<https://travis-ci.org/lino-framework/book/jobs/277719171>`__ 3 months
+ago. And at that moment the build didn't include :cmd:`inv bd`. So
+actually it is the first time in the history of Lino that the full
+test suite passes.
+
+Nothing is perfect, and there is at least one problem: the coverage is
+reported to be only 7%. There is obviously something missing.  I guess
+that it has to do with the warnings at `line 6006
+<https://travis-ci.org/lino-framework/book/builds/313936204#L6006>`__::
+
+  Coverage.py warning: Module lino was never imported. (module-not-imported)
+
+At line 3679 it says::
+    
+  Running `which invoke` prep test clean --batch bd in book within coverage...
+
+After looking at the :mod:`atelier.invlib.tasks` source and the
+`Coverage docs
+<http://coverage.readthedocs.io/en/coverage-4.2/cmd.html>`__), I tried
+a few things:
+
+- Maybe the explanation is that I should not call :cmd:`coverage
+  combine` when I have only one :cmd:`coverage run`?  --> No,
+  :cmd:`coverage combine` seems to be necessary. Without it, we get an
+  error "no data to combine".
+
+- Maybe I should use ``--parallel-mode``? --> No, at least not
+  immediately.
+
+     
+
+As a summary: The problem is that we launch a single Python process
+under coverage::
+  
+  `which invoke` prep test clean --batch bd
+
+And that process runs subprocesses. And it seems that the collected
+coverage data is getting lost or overwritten.
+
+Also the Lino book continues to be `too big for readthedocs.org
+<https://readthedocs.org/projects/lino/builds/6389505/>`__
+
