@@ -1,0 +1,64 @@
+:date: 2017-12-12
+
+==========================
+Tuesday, December 12, 2017
+==========================
+
+Release @ Avanti
+================
+
+I made an upgrade of :ref:`avanti` production site.  I realized that
+for most users in :ref:`avanti` we do not want to have the new
+:class:`SiteSearch <lino.modlib.about.SiteSearch>` feature.  So I
+added a new user role :class:`lino.modlib.about.SiteSearcher`.
+
+- There are still some candidate courses for which a series of unused
+  calendar entries has been generated. But because the course series
+  "Candidates" no longer has a calendar entry type, Lino did not
+  delete them.
+  
+- A checkdata problem whose :attr:`owner
+  <lino.modlib.checkdata.Problem.owner>` is None means that the owner
+  has been deleted. It means that we can safely delete the problem as
+  well. AttributeError: 'NoneType' object has no attribute 'has_conflicting_events'
+
+- their checkdata often reports that phonetic words aren't
+  up-to-date. I tried to understand why. I added a
+  :meth:`get_simple_paraneters` to `PhoneticWord` because I would like
+  to verify on their data that there are no phonetic words at all for
+  these cases.
+
+        yield 'owner_id'
+        yield 'owner_type'
+
+  That's how I discovered another bug: cannot use GenericForeignKey as
+  a filter parameter.
+
+Setting the value of a combobox in ExtJS 6
+==========================================
+
+In :class:`lino.core.store.ComboStoreField` we need to change how a
+combobox field is represented in a JSON response::
+
+    def value2dict(self, ar, v, d, row):
+        value, text = self.get_value_text(ar, v, row)
+        d[str(self.name)] = text
+        d[str(self.name + constants.CHOICES_HIDDEN_SUFFIX)] = value
+
+into this::
+
+    def value2dict(self, ar, v, d, row):
+        value, text = self.get_value_text(ar, v, row)
+        d[str(self.name)] = [{'text': text, 'value': value}]
+        d[str(self.name + constants.CHOICES_DISPLAY_SUFFIX)] = text
+        d[str(self.name + constants.CHOICES_HIDDEN_SUFFIX)] = value
+
+and then define `CHOICES_DISPLAY_SUFFIX` as ``'Display'``.  And then
+we need to set `displayField
+<http://docs.sencha.com/extjs/6.5.2/classic/Ext.form.field.ComboBox.html#cfg-displayField>`__
+and `valueField
+<http://docs.sencha.com/extjs/6.5.2/classic/Ext.form.field.ComboBox.html#cfg-valueField>`__
+
+
+
+

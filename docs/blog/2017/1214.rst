@@ -1,0 +1,104 @@
+:date: 2017-12-14
+
+===========================
+Thursday, December 14, 2017
+===========================
+
+The straw that breaks the camel's back
+======================================
+
+The latest `Sencha Product Roadmap Update
+<https://www.sencha.com/blog/sencha-product-roadmap-update/>`__ might
+be the straw that breaks the camel's back.  "What’s the position on
+future GPL releases?"  was the first question after this post. It was
+asked by Chris Alfano from `Jarvus <http://jarv.us/>`__ two weeks
+ago. And their answer is `void`.
+
+.. raw:: html
+
+    <p align="center"><a title="Zoltan Kluger [Public domain], via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File%3AAN_ARAB_FARMER_TAKING_STRAW_TO_HIS_FARM._%D7%97%D7%A7%D7%9C%D7%90%D7%99_%D7%A2%D7%A8%D7%91%D7%99_%D7%A8%D7%9B%D7%95%D7%91_%D7%A2%D7%9C_%D7%97%D7%9E%D7%95%D7%A8_%D7%9E%D7%95%D7%91%D7%99%D7%9C_%D7%A2%D7%9C_%D7%92%D7%91%D7%99_%D7%94%D7%92%D7%9E%D7%9C_%D7%A7%D7%A9.D813-124.jpg"><img width="60%" alt="AN ARAB FARMER TAKING STRAW TO HIS FARM. חקלאי ערבי רכוב על חמור מוביל על גבי הגמל קש.D813-124" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/AN_ARAB_FARMER_TAKING_STRAW_TO_HIS_FARM._%D7%97%D7%A7%D7%9C%D7%90%D7%99_%D7%A2%D7%A8%D7%91%D7%99_%D7%A8%D7%9B%D7%95%D7%91_%D7%A2%D7%9C_%D7%97%D7%9E%D7%95%D7%A8_%D7%9E%D7%95%D7%91%D7%99%D7%9C_%D7%A2%D7%9C_%D7%92%D7%91%D7%99_%D7%94%D7%92%D7%9E%D7%9C_%D7%A7%D7%A9.D813-124.jpg/512px-AN_ARAB_FARMER_TAKING_STRAW_TO_HIS_FARM._%D7%97%D7%A7%D7%9C%D7%90%D7%99_%D7%A2%D7%A8%D7%91%D7%99_%D7%A8%D7%9B%D7%95%D7%91_%D7%A2%D7%9C_%D7%97%D7%9E%D7%95%D7%A8_%D7%9E%D7%95%D7%91%D7%99%D7%9C_%D7%A2%D7%9C_%D7%92%D7%91%D7%99_%D7%94%D7%92%D7%9E%D7%9C_%D7%A7%D7%A9.D813-124.jpg"/></a></p>
+
+
+This observation is only one of many.
+
+In their post `It’s Back: Ext JS Single Developer License
+<https://www.sencha.com/blog/its-back-ext-js-single-developer-license/>`__
+(December 1, 2017), Robert Warmack writes "I am sure a lot of you have
+questions. We have addressed several questions below and encourage you
+to check out our updated FAQ page. If there are additional questions
+that we have not yet addressed, please do feel free to send them to
+feedback@sencha.com.".  I sent them my question:
+
+    Getting support for the GPL community version
+
+    I read the latest `blog post
+    <https://www.sencha.com/blog/its-back-ext-js-single-developer-license/>`__
+    and yes, you have our continued support, and we feel a part of the
+    Sencha Community, and our old question is still unanswered: how
+    can we contribute to the community given the fact that we refuse
+    to use the non-GPL parts of ExtJS?
+
+And their answer --so far-- is: silence.
+
+Their `download page for the GPL version
+<https://www.sencha.com/legal/GPL/>`_ starts as follows:
+
+    For developers that are willing to release the source code to their
+    applications, Sencha provides an open source licensing option for
+    these frameworks. To use this license, you must follow the terms of
+    the GPL v3; see highlights below.
+
+I am not a lawyer, but AFAICS this summary of the GPL is factually
+wrong.  The GPL does not oblige you to release your code when it is
+being used only within your own company. The obligation comes only
+when you want to make make money by giving your code to other people.
+Yes, in many cases the result is the same, but presented like Sencha
+do it, it looks as if they want to discourage us from using the GPL
+version.
+
+
+All this tells me that Sencha does not care a bit for their GPL
+community.  I had been hoping that ExtJS's new managers are wiser than
+those before.
+
+It is sad but seems true: we should stop working on the ExtJS user
+interface and rather invest our time into something that deserves our
+work.
+
+My suggestion: we switch back Jane to ExtJS3, stop working on ExtJS6
+until we have a clear and positive statement from Idera about these
+questions.
+
+
+Testing under both Python 2 and 3
+=================================
+
+Yesterday and today I grew my experience with writing tests (unit and
+doctest) that work under both Python versions... There were 45
+failures when I started.
+
+:func:`atelier.utils.rmu` now honors Mike Orr's :class:`unipath.Path`
+objects which happen to print differently under Python 3.
+
+Added a new function :func:`atelier.utils.sixprint`.
+
+>>> from builtins import str
+>>> import six
+>>> s = str("aei")
+>>> isinstance(s, six.string_types)
+True
+
+
+Thanks to http://python3porting.com/problems.html I discovered the
+`IGNORE_EXCEPTION_DETAIL` doctest flag which handles differences in
+exception formatting.
+
+
+- 2017-12-14 23:57 in *atelier*:
+  `031cdfa <https://github.com/lino-framework/atelier/commit/39f7dc22acce9a1a86ee1826296fc87d5031cdfa>`__
+- 2017-12-14 23:58 in *lino*:
+  `08c492a <https://github.com/lino-framework/lino/commit/621ea058b615f2f3c5ae05a49c0bfa42808c492a>`__
+- 2017-12-14 23:58 in *lino_xl*:
+  `bce0af8 <https://github.com/lino-framework/xl/commit/42e5fc2785eaa05ae63a807d65e6881c6bce0af8>`__
+- 2017-12-14 23:59 in *lino_book*:
+  `0e812fc <https://github.com/lino-framework/book/commit/4d83a9b8d284906f31b96cbf18d532b870e812fc>`__

@@ -1,0 +1,53 @@
+:date: 2017-12-15
+
+=========================
+Friday, December 15, 2017
+=========================
+
+
+AmbiguousTimeError
+==================
+
+Yesterday Tonis and I had a surprise during an otherwise routine
+upgrade on Jane.  We called it :ticket:`2204`.
+
+Today we found out how to reproduce the problem and eliminate its
+cause.  Thanks to Ilian Iliev for publishing his blog post `Django,
+pytz, NonExistentTimeError and AmbiguousTimeError
+<http://www.ilian.io/django-pytz-nonexistenttimeerror-and-ambiguoustimeerror/>`__.
+
+When somebody living in Brussels tells you "it was at on 2017-10-29 at
+01:16:06", then you don't know whether they mean summer or winter
+time.  Because their clock showed that time exactly twice during that
+night. The timestamp "2017-10-29 01:16:06" is ambigous.
+
+The reason for :ticket:`2204` was that :manage:`dump2py` used the
+site's default :setting:`TIME_ZONE` setting when writing the naive
+values of DateTimeFields in the generated `applabel_modelname.py`
+files.  When trying to load a dump which contains such a timstamp,
+Lino would cause an `AmbiguousTimeError`.
+
+So :manage:`dump2py` must make sure to express the naive time literals
+in a timezone which doesn't have such ambigous hours. UTC for example.
+
+I extended :ref:`book.specs.dumps` so that it now verifies whether
+:ticket:`2204` is fixed.  En passant this page now also demonstrates
+three methods of writing demo multilingual data for babel fields.
+
+
+Authenticate using Facebook
+===========================
+
+I added Facebook as a **third authentication backend** to the
+:mod:`lino_book.projects.team` demo project and updated the
+:ref:`lino.socialauth` page.
+
+Before doing this, **I reappeared on Facebook** after :doc:`two and a
+half years of absence <../2015/1104>`__. Oh no, it's not because I
+have become their friend.  It's rather because I realized that having
+no Facebook account while continuing to have a Google account is even
+worse than having an account on both.  Both Facebook and Google are
+rather imperia than democracies, and every user is another buttress of
+this imperium.  But it's clear also that I won't save the world by
+keeping away from them.
+

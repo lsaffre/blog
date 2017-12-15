@@ -43,3 +43,16 @@ Content
    solutions
    rms
    freedom
+   
+
+Investigate Europe
+===================
+
+http://www.investigate-europe.eu/en/
+
+
+Der Radiobeitrag `Gefährliche Abhängigkeit von Microsoft
+<http://www.inforadio.de/programm/schema/sendungen/digitalesleben/201711/185851.html>`_
+(inforadio.de, Sa 25.11.2017) erklärt mit verständlichen Worten,
+weshalb es so gefährlich ist, wenn ein Software-Hersteller als
+Platzhirsch die Szene dominiert.

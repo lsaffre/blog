@@ -15,9 +15,24 @@ The next challenge is to continue removing Python 3 test failures in
 :ref:`book` (:ticket:`36`).  So I reactivated Python 3 in the
 :xfile:`.travis.xml` file for :ref:`book` and started to fix them.
 
+The :cmd:`inv cov` command was calling :cmd:`inv prep` twice. This was
+because in :mod:`atelier.invlib.tasks` we had::
 
-Thoughts about the future of humanity
-=====================================
+    @task(name='cov', pre=[tasks.call(prep, cov=True)])
+    def run_tests_coverage(ctx, html=True, html_cov_dir='htmlcov'):
+
+That was wrong. It must be::
+
+    @task(name='cov')
+    def run_tests_coverage(ctx, html=True, html_cov_dir='htmlcov'):
+
+We don't need to specify hard-coded dependency between tasks since now
+we have :envvar:`coverage_command`.
+
+
+
+Thoughts about the future of Lino
+=================================
 
 Will Kahn-Greene (the author of Bleach, which Lino uses to avoid
 problems after pasting content from MS-Word into a text editor field)
@@ -32,10 +47,10 @@ at all, there's a ton of stuff to do, he's burned out, and recently
 there have been spats of negative comments in the issues and
 PRs. Generally the project had a lot of stop energy."
 
-I recognized myself and Lino, at least partly.  There are quite some
+I recognized myself and Lino. At least partly... there are some
 differences between Geoffrey/html5lib and Luc/Lino, e.g. I am *not*
-burnt out (just getting old), and Lino- unlike html5lib- *does* pay
-two full-time developers.
+burnt out (just limited and getting old), and Lino- unlike html5lib-
+*does* pay two full-time developers.
 
 Will then makes another observation which fits Lino as well: "I see a
 lot of open source projects that are in trouble in the sense that they
@@ -54,27 +69,24 @@ will take years before Lino will be a community project. But we are on
 the way.
 
 A difference between Will and me is that Will is obviously better than
-me in teamwork.  I never learned to work in a team. 25 year old little
-Tonis teaches me lessons on teamwork.
+me in teamwork.  I never learned to work in a team. 25 year old Tonis
+happens to teach me lessons on how to behave in a team.
 
 People like Will are priceless.  Humanity needs such people if we
-agree that software to be free.
+agree that software must be free.  But who pays for such people?
 
-But who would pay for such people?  I see that Will has been paid by
-the PCF (`Participatory Culture Foundation
-<http://pculture.org/about-pcf>`__) who according to their website
-"develop technology and services that ensure everyone has access to
-all that the internet has to offer." Their flagship project is `Amara
-<https://amara.org/>`__ where I watched the first 10 minutes of the
-moving `Story of Aaron Schwartz
-<https://amara.org/en/videos/5Mo4oAj1bxOb/info/the-internets-own-boy-the-story-of-aaron-swartz/?tab=video>`__.
+I see that Will has been paid by the PCF (`Participatory Culture
+Foundation <http://pculture.org/about-pcf>`__) who according to their
+website "develop technology and services that ensure everyone has
+access to all that the internet has to offer." Their flagship project
+is `Amara <https://amara.org/>`__ where I watched the first 10 minutes
+of the moving `Story of Aaron Schwartz
+<https://amara.org/en/videos/5Mo4oAj1bxOb/info/the-internets-own-boy-the-story-of-aaron-swartz/?tab=video>`__. And
+now Will is being paid by Mozilla (a funder of PCF).
 
-Now Will is being paid by Mozilla (a funder of PCF).
+Would Mozilla or the PCF be interested in Lino?  No, I don't believe
+they would invest into Lino because customized database application
+development is a whole different business.  But it is clear that Lino
+needs some association like Mozilla or the PCF.
 
-Mozilla is a good and important project, but I don't believe they
-would invest into Lino because that would be a whole different
-business.
-
-I recently talked with Edmund Laugasson who has been thinking about a
-*Free Software Competence Center*.
 
