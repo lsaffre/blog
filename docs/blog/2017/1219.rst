@@ -1,0 +1,34 @@
+:date: 2017-12-19
+
+==========================
+Tuesday, December 19, 2017
+==========================
+
+I upgraded :ref:`lf` which had become quite obsolete. This revealed
+ticket :ticket:`2218`, yet another example of Py2to3 problems.  In
+:mod:`lino_welfare.modlib.welfare` fixture I had::
+
+   from builtins import str
+   ...
+   FUNCTIONS = Cycler(cv.Function.objects.all())
+   ...
+   def objects():
+       f = FUNCTIONS.pop()
+       ...
+       yield jobs.Job(... name=str(f), ...)
+
+
+The problem disappeared when I changed this to::
+
+   import six
+   ...
+   FUNCTIONS = Cycler(cv.Function.objects.all())
+   ...
+   def objects():
+       f = FUNCTIONS.pop()
+       ...
+       yield jobs.Job(... name=six.text_type(f), ...)
+
+
+
+Ticket :ticket:`2220` was an easy customer request.

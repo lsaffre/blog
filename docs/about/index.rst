@@ -32,7 +32,7 @@ How to contact me:
 Email              <luc *dot* saffre *at* gmail *dot* com>
 Phone              +372/4824 548
 Mobile             +372/5667 2435
-Social networks    `Google <https://plus.google.com/104488487380470927379>`_ `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ `GitHub <https://github.com/lsaffre>`_
+Social networks    `Google <https://plus.google.com/104488487380470927379>`_ `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ `GitHub <https://github.com/lsaffre>`_, `Facebook <https://www.facebook.com/luc.saffre>`__
 Wikipedia          `et <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ `de <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ `en <https://en.wikipedia.org/wiki/User:LucSaffre>`_ `fr <https://fr.wikipedia.org/wiki/Utilisateur:LucSaffre>`__
 Blog               `en <http://luc.lino-framework.org>`__ `de <http://luc.saffre-rumma.net>`__ `et <http://belglane.saffre-rumma.net>`__
 RSS                `en <http://luc.lino-framework.org/rss.xml>`__ `de <http://luc.saffre-rumma.net/rss.xml>`__ `et <http://belglane.saffre-rumma.net/rss.xml>`__

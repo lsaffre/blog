@@ -1,0 +1,92 @@
+:date: 2017-12-21
+
+===========================
+Thursday, December 21, 2017
+===========================
+
+Reception clearks should see the calendar tab
+=============================================
+
+In :mod:`lino_welfare.projects.eupen`, a reception clerk (user type
+210) now can see the :guilabel:`Calendar` tab because it contains the
+:class:`EntriesByClient <lino_welfare.modlib.cal.EntriesByClient>`
+panel.
+
+I changed the required roles for that panel from just `OfficeUser` to
+`(OfficeUser, OfficeOperatoir)`:
+
+>>> rt.models.cal.EntriesByClient.get_view_permission(p210)
+True
+
+I added a :meth:`__getitem__` method to :class:`BaseLayout` to make
+the following doctest snippet more readable:
+
+>>> print(py2rst(pcsw.Clients.detail_layout['calendar']))
+**Kalender** (calendar) [visible for 100 110 120 200 210 220 300 400 410 500 510 800 admin 910]:
+- **Kalendereinträge** (cal.EntriesByClient)
+- **Aufgaben** (cal.TasksByProject) [visible for 100 110 120 200 300 400 410 500 510 admin 910]
+<BLANKLINE>
+
+Above snippets are being tested in :ref:`welfare.specs.users`.
+
+The Welfare test suite is currently failing because :ticket:`2223`
+asks to make the contracts tab visible as well. And some details are
+waiting customer feedback.
+
+While working on this ticket, I stubled into :ticket:`2226` which
+needs to get fixed before :ticket:`2223` can be closed.
+
+
+aids.ConfirmationChecker
+========================
+
+I tried the new :class:`lino_welfare.modlib.aids.ConfirmationChecker`
+on their production data::
+
+    $ python manage.py checkdata aids.ConfirmationChecker
+    Found 536 and fixed 0 data problems in Income confirmations.
+    Found 92 and fixed 0 data problems in Refund confirmations.
+    Found 55 and fixed 0 data problems in Simple confirmations.
+    Done 3 checkers, found 683 and fixed 0 problems.
+
+
+I fixed a minor bug causing a traceback when a confirmation had no
+granting.
+
+
+RemoteUserMiddleware without SessionMiddleware
+==============================================
+
+Another problem was this::
+
+    Traceback:
+
+    File "/site-packages/django/core/handlers/exception.py" in inner
+      41.             response = get_response(request)
+
+    File "/site-packages/django/core/handlers/base.py" in _legacy_get_response
+      244.             response = middleware_method(request)
+
+    File "/lino/lino/core/auth/middleware.py" in process_request
+      89.             if request.user.get_username() == self.clean_username(username, request):
+
+    File "/lino/lino/core/auth/middleware.py" in clean_username
+      110.         backend_str = request.session[auth.BACKEND_SESSION_KEY]
+
+    File "/site-packages/django/contrib/sessions/backends/base.py" in __getitem__
+      57.         return self._session[key]
+
+    Exception Type: KeyError at /
+    Exception Value: '_auth_user_backend'
+
+
+Playing with forms
+==================
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+>>> from django.forms
+>>> from django.forms import ModelForm
+>>> from django import forms
+>>> 

@@ -1,0 +1,34 @@
+:date: 2017-12-20
+
+============================
+Wednesday, December 20, 2017
+============================
+
+Some optimizations for :ticket:`2223`.  This reactivates
+:ticket:`1354` which had been sleeping. I implemented the test now as
+a checker instead of using :meth:`full_clean`.
+
+The :attr:`remark` of a UserType now defaults to the docstring of its
+:attr:`role`. Used to generate a more meaningful information in a
+document like http://de.welfare.lino-framework.org/users.html
+
+
+
+Updating a beta site from a snapshot
+====================================
+
+One customer uses a "preview" site which shows their data as it would
+look with the newest version.
+
+
+Instead of writing database migrators it's easier to manually change
+their restore.py:
+
+- ClientContactTypes, ClientContacts and ClientStates now in clients, no longer in coachings
+
+- def create_users_user(...
+      ...
+      kw.update(user_type=profile)
+
+- aids_account
+  suppliers_account

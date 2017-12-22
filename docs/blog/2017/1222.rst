@@ -1,0 +1,53 @@
+:date: 2017-12-22
+
+=========================
+Friday, December 22, 2017
+=========================
+
+Django forms for Lino
+=====================
+
+For :ticket:`2227` I started to read the `detailed form API reference
+<https://docs.djangoproject.com/en/2.0/ref/forms/>`__:
+
+- `The Forms API
+  <https://docs.djangoproject.com/en/2.0/ref/forms/api/>`__
+
+- `Form fields
+  <https://docs.djangoproject.com/en/2.0/ref/forms/fields/>`__.
+
+  Note the `MultiValueField
+  <https://docs.djangoproject.com/en/2.0/ref/forms/fields/#multivaluefield>`__
+  (aggregates the logic of multiple fields that together produce a
+  single value) and the `ModelChoiceField
+  <https://docs.djangoproject.com/en/2.0/ref/forms/fields/#modelchoicefield>`__.
+
+- `The form rendering API
+  <https://docs.djangoproject.com/en/2.0/ref/forms/renderers/>`__
+
+
+My thoughts after reading this:
+
+- Continues to sound promising for me. I'd prefer using Django forms
+  instead of continuing to override the :meth:`as_plain_html` methods
+  of our ExtJS elements.
+  
+- I'd probably start a new package :mod:`lino.modlib.forms_ui`.
+
+- We don't want application developers to have to write a template
+  per form. Lino continues to generate HTML from layouts
+  (detail_layout, insert_layout, params_layout).
+  
+- Layout elements contain additional information: width, height,
+  custom label or help_text, custom roles_required.
+
+- Special Lino layout elements are container and slave table
+
+- We would use Django's form fields and widgets with a custom form
+  renderer which arranges the fields using a layout (detail_layout,
+  insert_layout, params_layout).
+
+Optimization in Amici
+=====================
+
+I added the :mod:`lino.modlib.uploads` plugin to :ref:`amici`.
