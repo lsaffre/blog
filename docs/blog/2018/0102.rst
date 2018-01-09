@@ -1,0 +1,25 @@
+:date: 2018-01-02
+
+========================
+Tuesday, January 2, 2018
+========================
+
+Tonis and I worked on :ticket:`2232` (sepa.uppercasefield_widget fails
+in use_django_forms branch).
+
+Before checking my work in I'd like to run the test suite...
+
+...but there is a strange failure::
+
+    $ doctest docs/specs/noi/bs3.rst
+    **********************************************************************
+    File "book/docs/specs/noi/bs3.rst", line 33, in bs3.rst
+    Failed example:
+        res = test_client.get('/tickets/Ticket/13')
+    Expected nothing
+    Got:
+        (<WSGIRequest: GET '/tickets/Ticket/13'>, u'tickets', u'Ticket', u'13')
+
+
+Looks as if :meth:`django.test.Client.get` now outputs to
+stdout. Tonis, do you remember having added a debug message recently?

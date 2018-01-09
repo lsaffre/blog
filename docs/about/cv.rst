@@ -122,10 +122,11 @@ Hobbies
 Personal views
 --------------
 
-- I grew up in a catholic family, and after moving to Vigala engaged
-  in the local lutheran `church community
-  <http://www.eelk.ee/vigala/>`_.  My faith has been influenced by the
-  spirituality of the `Taizé <http://taize.fr/>`_ community.
+- I grew up in a catholic family, and after moving to
+  Vigala engaged in the local lutheran church community.  My faith has
+  been influenced by the spirituality of the `Taizé
+  <http://taize.fr/>`_ community.
+  I am a convinced reasonable :doc:`Christian <christian>`.
 
 - I am not actively engaged in any political party. The
   politicalcompass.org website classified me as `Economically rather

@@ -1,22 +1,16 @@
-================
-I am a Christian
-================
+===================
+I am a Christian...
+===================
 
-Yes, I confess publicly that I am a Christian. But let me explain what
-that means to me. Don't expect a short answer.
-
-.. contents::
-    :depth: 1
-    :local:
-
+Yes, I declare publicly that I am a Christian. But let me explain what
+that means to me.  And don't expect a short answer.
 
 The meaning of life
 ===================
 
-What it the meaning of life? Well, the *scientific* answer to that
+What is the meaning of life? Well, the *scientific* answer to that
 question is 42, as Douglas Adams describes in the Hitchhiker's Guide
-to the Galaxy. But he adds that the problem is the question, not the
-answer.
+to the Galaxy. But the problem is the question, not the answer.
 
 We ask about the meaning of our life, whether it makes sense to live,
 but that question is absurd, because any system has a "meaning"
@@ -24,21 +18,19 @@ but that question is absurd, because any system has a "meaning"
 the outside. Some time ago it was possible to ask whether a given
 slave had a meaning or not. Because I am a free person, my life makes
 sense only if humanity as a whole makes sense. And humanity as a whole
-makes sense only if the Universe makes sense. All this makes sense
-only if there is some world beyond the Universe.
+makes sense only if the Universe makes sense. Life, the Universe and
+everything makes sense only if there is some world beyond the visible
+world.
 
 This hypothetical world must be invisible to us, not detectable by any
-scientific method. Otherwise we would have discovered and explored it
-long ago.
+scientific method.  It has neither a clear definition nor a name
+because it is bigger than anything we can conceive, because *by
+definition* it lies beyond our thinking.
 
-We can call that hypothetical world "Heaven" and "Kingdom of God" as
-the Christians do, or we can imagine a "Mother Earth" acting as a
-goddess, we can fit this into any religious teaching. The important
-thing to remember here is that it is a *hypothese*.  We don't *know*
-it.
+All religious systems use different concepts to do basically the same
+thing: they assume such a world outside the visible universe which
+gives a meaning to it.
 
-We really don't know
-====================
-
-There is one religion which does not accept above hypothese, namely
-the atheistic faith.
+Unfortunately you must now either continue reading `in German
+<http://luc.saffre-rumma.net/reden/christ.html>`__ or wait until I
+find time to translate it.
