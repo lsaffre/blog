@@ -204,18 +204,22 @@ Tonis
 Tonis is a Lino contributor living in Tallinn.
 
 
+.. _tim:
+
+TIM
+---
+
+TIM is Lino's predecessor. See http://tim.lino-framework.org/
+
 
 .. _evea:
 
 EVEA
 ====
 
-.. image:: evea.png
-   :align: right
-
-EVEA is the Estonian Association of SME.
-
-Eesti Väike- ja Keskmiste Ettevõtjate Assotsiatsioon, http://evea.ee
+`EVEA <http://evea.ee>`__
+(Eesti Väike- ja Keskmiste Ettevõtjate Assotsiatsioon)
+is the Estonian Association of SME.
 
 .. _rumma:
 
