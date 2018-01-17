@@ -1,0 +1,100 @@
+:date: 2018-01-16
+
+=========================
+Tuesday, January 16, 2018
+=========================
+
+
+Alternatives for the ExtJS UI
+=============================
+
+I read Robert Warmack's post `Trends in Web Technologies – A Survey of
+Development Professionals
+<https://www.sencha.com/blog/trends-in-web-technologies/>`__.  Yes
+that's good work, and I especially like when he writes "One of the
+stand-out data points of this survey is that 79% of desktop apps are
+expected to be in use for three years or more" because it shows that
+Lino is in the right direction.  But I am disappointed because I am
+waiting for other news.  Lino's first choice user interface is based
+on Sencha's ExtJS.  We continue to believe in this technology, and our
+Lino sites will continue to use it for the years to come.  But we are
+increasingly worried because there are still no news about Sencha's
+engagement for the free software community.  Their continued ignoring
+us forces us to start looking for alternatives.
+
+Yesterday en passant I introduced Hamza to the issues
+:ticket:`278` (NPAPI plugins don't work on Chrome version 42 and higher),
+:ticket:`1377` (Use web-based protocol handlers) and
+:ticket:`2089` (Use custom browser protocol instead of davlink).
+He asked "Is it possible that the problem doesn't exist with `Node.js`?".
+
+Some week ago Eric recommended to rather look into "Materialize design
+toolkits and frameworks".  This morning I read `a blog post
+<https://www.techiediaries.com/django-react-forms-csrf-axios/>`__
+about how to handle the Django CSRF token in *React* when using the
+*Axios* client.
+
+So now I started :ticket:`2260` (Materialize, Node.js and Angular).
+Maybe Tonis and I should investigate a bit more before continuing with
+:ticket:`2245` (Diving into OpenUI5).
+
+I sometimes feel like some part of a `launch vehicle
+<https://en.wikipedia.org/wiki/Launch_vehicle>`__ hoping to reach
+outer space and not knowing whether I'm in the payload or on a carrier
+rocket...
+
+
+
+Sphinx 1.7 beta is out
+======================
+
+Takeshi Komiya announced:
+
+    We just released 1.7.0b1.
+    It includes much of improvements. And we believe it will help you.
+
+    In detail, please see CHANGES:
+    https://github.com/sphinx-doc/sphinx/blob/1.7.0b1/CHANGES
+
+    Since this is a beta release, we expect that you may encounter bugs.
+    If you find a bug, please report it on github issues:
+    https://github.com/sphinx-doc/sphinx/issues
+
+I tested it on my projects.  Note that :cmd:`pip install -U sphinx`
+didn't install it, so I pulled the github repo and used :cmd:`pip
+install -e`.  (I didn't know that I could have used pip's `--pre
+<https://pip.pypa.io/en/stable/reference/pip_install/?highlight=pre#pre-release-versions>`__
+option: :cmd:`pip install --pre -U sphinx` does the job as
+well. Thanks to Shirou for pointing it out.
+
+It worked flawlessly, except for a problem when building :ref:`book`::
+
+   SphinxWarning: /book/docs/specs/cal.rst:1010:duplicate object description of lino_xl.lib.cal.Plugin, other instance in /book/docs/api/lino_xl.lib.cal.rst, use :noindex: for one of them
+
+No, I cannot "use :noindex: for one of them" because my document
+structure is based on the asumption that autodoc ignores members that
+have no docstring.  For example the page which documents the
+:mod:`lino_xl.lib.cal` module is automatically generated, but it must
+not contain a definition for :class:`lino_xl.lib.cal.Plugin` which has
+a prosa description in :ref:`book.specs.cal`.
+
+It took me some time to find the reason.  I first searched for
+`autodoc-process-docstring` and `autodoc_default_flags` but could not
+find any explanation.  I tried to add ``'no-undoc-members'``, no
+change.
+
+The explanation was that Sphinx didn't consider the docstring as
+empty because it took the docstring of the parent class.
+
+The "guilty" is therefore a new configuration setting
+`autodoc_inherit_docstrings` which default value is `True`.  I fixed
+my problem by setting it to `False`.
+
+
+
+Avanti
+======
+
+I continued to work on :xfile:`final_report.body.html` and checked in
+my current version.  It's already beautiful and promising, but
+tomorrow I will continue before showing it to Johanna.

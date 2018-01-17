@@ -34,3 +34,33 @@ Foundation".
 I started to change the documentation under :ref:`lino.team` and
 :ref:`lino.copyright`.
   
+
+
+
+Renaming a server
+=================
+
+I had the spontaneous idea of changing the hostname
+of the virtual machine which serves :ref:`ml` from 
+`serveur-1` to `ovh1`.
+
+I followed the instructions found `here
+<https://wiki.debian.org/HowTo/ChangeHostname>`__
+
+::
+
+    $ hostnamectl set-hostname ovh1
+    Could not set property: The name org.freedesktop.PolicyKit1 was not provided by any .service files
+
+
+    # ll /etc/ssh/*.pub 
+    -rw-r--r-- 1 root root 604 Jan 15  2016 /etc/ssh/ssh_host_dsa_key.pub
+    -rw-r--r-- 1 root root 176 Jan 15  2016 /etc/ssh/ssh_host_ecdsa_key.pub
+    -rw-r--r-- 1 root root  96 Jan 19  2016 /etc/ssh/ssh_host_ed25519_key.pub
+    -rw-r--r-- 1 root root 391 Jan 13 14:38 /etc/ssh/ssh_host_rsa_key.pub
+
+(Edit these four files : change root@server-1 to root@ovh1 at the end of the line)
+
+::
+   # service ssh restart
+   Restarting OpenBSD Secure Shell server: sshd.

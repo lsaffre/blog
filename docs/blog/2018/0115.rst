@@ -1,0 +1,42 @@
+:date: 2018-01-15
+
+========================
+Monday, January 15, 2018
+========================
+
+I continued to work in :mod:`lino_book.projects.adg` for
+:ticket:`2256`.
+       
+The :xfile:`final_report.body.html` excerpt action on
+:class:`lino_avanti.lib.avanti.Client` didn't want to show up as
+expected. That was because it was "hidden" by the
+:xfile:`TermsConditions.odt` defined on
+:class:`lino_xl.lib.contacts.Person`.  That was because the
+`lino_xl.lib.excerpts.set_excerpts_actions` method didn't yet support
+models which have MTI children.
+
+
+Lino and Google's People API
+============================
+
+Hamza and I invested another hour playing with the
+:xfile:`try_people_api.py` script.  Here `this
+<https://stackoverflow.com/questions/41466731/how-can-i-refresh-the-token-with-social-auth-app-django>`__
+describes a problem which we also had and we didn't resolve.
+:xfile:`try_people_api.py` fails when we run it more than one hour
+after having authenticated via the web interface.  On my machine it
+said :message:`TypeError: expected string or buffer`.  On Hamza's
+machine it was something else.  It seems that PSA uses some trick for
+refreshing an expired token.
+
+But here I said "Stop" because actually we don't even know whether
+this is a problem for us, because we have no concrete use case.  We
+decided to put this ticket to sleep now until there is somebody (other
+than me) who wants it. The :xfile:`try_people_api.py` script in
+:mod:`lino_book.projects.team` shows what we learned. The question now
+is: what do we want to do with that information. And the answer
+depends on the customer...
+
+Hamza will now concentrate on getting the test suites to pass on
+Python 3 (:ticket:`36`).
+

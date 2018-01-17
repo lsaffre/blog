@@ -1,0 +1,109 @@
+:date: 2018-01-14
+
+========================
+Sunday, January 14, 2018
+========================
+
+release@jane
+============
+
+I deployed my recent changes to :ref:`jane` because I want to test the
+use_django_forms changes on our own production site before deploying
+them to a customer.  Also because I'd like to see how :ticket:`2252`
+works. And also because I renamed clocking to working which requires a
+manual data migration.
+
+As a side effect I changed the default logger format to include
+process id and thread number to the :xfile:`lino.log` file.  This is
+another attempt to gather information about the "xxx.Yyy has no
+list_layout" and "'TableHandle' object has no attribute 'store'"
+errors.
+
+I had some problems caused by low memory and tried several things to
+explore the situation.  Today I learned that nothing helped but a
+reboot.
+
+My :xfile:`restore.py` got killed after having read the tickets::
+
+    Deferred Ticket #1882 ('#1882 (\u2612 FK links in table view direct to current URL in extjs6)') : {'duplicate_of': [u"Ticket instance with id u'1901' does not exist."]}
+    Trying to save 14 deferred objects.
+    Saved 14 objects.
+    Killed
+
+    real	18m58.833s
+    user	8m8.172s
+    sys	0m16.748s
+
+After a :xfile:`reload_services.sh` it went a bit further but still
+got killed before reaching the end::
+
+    Loading 103 objects to table django_mailbox_message...
+    Deferred Message #74 ('') : {'subject': [u'This field cannot be blank.']}
+    {'subject': [u'This field cannot be blank.']}
+    Traceback (most recent call last):
+      File "/usr/local/python/lino_sites/jane/env/repositories/lino/lino/utils/dpy.py", line 158, in try_save
+        obj.full_clean()
+      File "/usr/local/python/lino_sites/jane/env/local/lib/python2.7/site-packages/django/db/models/base.py", line 1249, in full_clean
+        raise ValidationError(errors)
+    ValidationError: {'subject': [u'This field cannot be blank.']}
+    Trying to save 4 deferred objects.
+    Deferred Message #74 ('') : {'subject': [u'This field cannot be blank.']}
+    Saved 0 objects.
+    Loading 11 objects to table django_mailbox_messageattachment...
+    Trying to save 4 deferred objects.
+    Deferred Message #74 ('') : {'subject': [u'This field cannot be blank.']}
+    Saved 0 objects.
+    Killed
+
+    real	27m46.789s
+    user	11m28.020s
+    sys	0m24.076s
+        
+I tried to add an explicit carbage collection before every input
+file::
+
+    import gc
+    _ef = execfile
+
+    def execfile(x):
+        gc.collect()
+        _ef(x)
+
+This method fails because it causes a different return value for
+:func:`locals`.  I tried by manually adding calls to `gc.collect()`
+after every line. Also without success. 
+  
+It seems to depend largely on the output of :cmd:`free`. Here
+is how it should look in a normal situation (after a *successful*
+reload)::
+
+    $ free -h
+                 total       used       free     shared    buffers     cached
+    Mem:          1.9G       1.4G       537M       2.5M       147M       201M
+    -/+ buffers/cache:       1.0G       887M
+    Swap:         1.0G       3.2M       1.0G
+
+
+Independetly of these memory problems it turned out that the
+use_django_forms branch did cause more bugs in the extjs6 ui, they
+just weren't covered and we didn't see them. As a quick workaround I
+switched the default_ui of Jane back to extjs3. 
+
+
+Avanti continued
+================
+
+I continued to work on :ticket:`2256`
+
+Bugfix
+======
+
+Displaying certain tickets,
+e.g. http://bugs.saffre-rumma.net/tickets/Tickets/797 caused a ::
+
+    ParseError at /tickets/Tickets/797
+    undefined entity: line 1, column 144
+  
+This was caused by changes in
+:meth:`elems.HtmlBoxElement.as_plain_html` method. Now it works again,
+but the whoe thing needs more testing.
