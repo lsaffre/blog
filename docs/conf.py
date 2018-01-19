@@ -12,7 +12,6 @@
 # serve to show the default value.
 
 # from __future__ import unicode_literals
-
 import lino
 from lino.sphinxcontrib import configure
 

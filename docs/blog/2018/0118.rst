@@ -1,0 +1,40 @@
+:date: 2018-01-18
+
+==========================
+Thursday, January 18, 2018
+==========================
+
+
+The :xfile:`setup.py` file of a Python project can be as simple as
+this::
+  
+    from setuptools import setup
+    setup(name='foo', version='1.0.0')
+
+But for atelier there are two additional required conventions:
+
+- The :xfile:`setup.py` must actually call the :func:`setup` function
+  only if invoked from a command line, i.e. only `if __name__ ==
+  '__main__'`.
+  
+- The :xfile:`setup.py` must definea name ``SETUP_INFO`` which is a
+  dict containing all those keyword arguments passed to the
+  :func:`setup` function.
+  
+So the above minimal :xfile:`setup.py` file becomes::
+
+    from setuptools import setup
+    SETUP_INFO = dict(name='foo', version='1.0.0')
+    if __name__ == '__main__':
+        setup(**SETUP_INFO)
+
+When I recently added the timtools project to my atelier, I forgot to
+verify this condition.  It took me at least one hour to find the
+reason. I now added a test to :func:`atelier.projects.get_setup_info`
+in order to make it more fool-proof::
+
+    Oops, {} called sys.exit().
+    Atelier requires the setup() call to be in a "if __name__ == '__main__':\" condition.
+
+    
+I updated the documentation about atelier :ref:`atelier.usage`.
