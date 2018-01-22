@@ -1,0 +1,61 @@
+:date: 2018-01-22
+
+========================
+Monday, January 22, 2018
+========================
+
+Statistical data per Working Site in Noi
+========================================
+
+While doing statistics about our work in 2017, I saw that the
+MySitesDashboard table needs optimization, it is too slow to have in
+my dashboard because it does a mydiar of SQL queries for counting all
+those tickets each time. And actually the number of tickets is only
+one kind of summary we want to have per site.  Another important
+number (for me) is the number of working hours.
+
+It is now implemented using summary fields
+(:mod:`lino.modlib.summaries`).  This was :ticket:`2270` (Use
+summaries for SitesDashboard).
+
+As a side effect I merged the working plugin from noi into xl. Because
+we no longer have any use case for that differenciation (and because
+it makes things needlessly complicated).
+
+Another side effect is that also :mod:`lino_welfare.modlib.esf` now
+generates gross total summaries (i.e. summary records having
+year=None). And therefore the Summaries tables have :attr:`hide_sums`
+set to True.
+
+What is a "Site" in Noi anyway?
+===============================
+
+A :class:`lino_xl.lib.tickets.Site` in :ref:`noi` is an important
+concept for our team in order to organize aur tickets.
+
+It has nothing to do with :class:`lino.core.site.Site` nor with
+:class:`lino.modlib.system.SiteConfig`, it rather means a *building
+site* or *construction site* (German "Baustelle", French "Chantier").
+
+What would be a better name?  Does a Site in Lino Noi correspond to a
+Product Backlog Item (PBI) in Scrum? Not exacly, because a PBI should
+be small enough to be handled during a single sprint.  A PBI
+(according to `scruminc.com
+<https://www.scruminc.com/product-backlog-item-pbi/>`__) can be a
+"specification", "requirement", "use case", an "epic", a "user story",
+a "bug", a "chore", a "timeboxed research task".  Important properties
+of a PBI are
+
+- a description
+- a "business value"  (determined by the Product Owner).
+- an "estimate" (the relative effort needed to do it. Estimated by the
+  Team)
+- "seqno" (the Product Owner prioritizes PBIs)
+
+A :class:`lino_xl.lib.tickets.Site` in :ref:`noi` has a mnemonic name
+which we use internally to speak about it. It can correspond to
+
+- a virtual machine with a production site maintained by our team
+  (jane, avanti, welcht, ...)
+- a documentation web site or some part thereof (book, guide,
+- Some long-term project (extjs3, py2to3, ...)
