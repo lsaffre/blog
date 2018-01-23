@@ -1,0 +1,34 @@
+:date: 2018-01-23
+
+=========================
+Tuesday, January 23, 2018
+=========================
+
+Some changes *en passant* during a release to a testlino:
+
+- When :attr:`quick_search_fields
+  <lino.core.model.Model.quick_search_fields>`
+  :attr:`quick_search_fields_digit
+  <lino.core.model.Model.quick_search_fields_digit>` contain names of
+  non-existing fields, Lino now complains at startup. Until now we had
+  an irritating traceback when the quick search was used.
+
+- The :class:`lino.modlib.changes.Change` model now has
+  :attr:`show_in_site_search
+  <lino.core.model.Model.show_in_site_search>` set to `False`.
+
+- :class:`lino_xl.lib.cal.ObsoleteEventTypeChecker` caused an
+  AttributeError :message:`'NoneType' object has no attribute
+  'update_cal_event_type'` when an entry had an `auto_type` but no
+  `owner`.
+
+  I noted that this checker currently does not yield the ("Event type
+  but {0} (should be {1}).") problem as fixable.  Which AFAICS was a
+  simple typo (actually we want it to set the event type), but I am
+  not fully sure of this, so I leave the behaviour unchanged for now.
+  
+  
+release@jane
+============
+
+I updated our production server and played with :ticket:`2270`.
