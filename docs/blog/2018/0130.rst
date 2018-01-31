@@ -1,0 +1,18 @@
+:date: 2018-01-30
+
+=========================
+Tuesday, January 30, 2018
+=========================
+
+I added a new new option `--max-row-count` to the :manage:`dump2py`
+command.  The default value is 50000, which means that when a table
+has more than 50000 rows
+
+
+This fixes :ticket:`2286` (Python process being killed) for
+good, or at least I hope so.  The explanation and workaround which I
+found :doc:`three days ago <0127>` was not enough for the :ref:`spz`
+production site where they currently have 136000 calendar entries.
+Trying to load them using a single file would kill any Python process
+that tries to load the source file into memory. Without that fix I
+would have to do the manual split for each data migration.

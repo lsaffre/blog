@@ -1,0 +1,97 @@
+:date: 2018-01-26
+
+========================
+Friday, January 26, 2018
+========================
+
+Referring to source code of a python object
+===========================================
+
+I discovered :ticket:`2285` and did preliminary tests.
+
+I moved some code :func:`py2url_txt
+<atelier.sphinxconf.base.py2url_txt>` from :mod:`lino_xl` to
+:mod:`atelier.sphinxconf.base` because that's where it should be.
+
+Here is a code snippet which reproduces the problem:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.min1.settings.demo')
+>>> from atelier.sphinxconf.base import py2url_txt
+>>> print(py2url_txt('lino')[0])
+https://github.com/lino-framework/lino/blob/master/lino/__init__.py
+>>> print(py2url_txt('lino.api.doctest')[0])
+Error in Python code ('module' object has no attribute 'doctest')
+
+
+Chase Seibert had the same problem:
+https://chase-seibert.github.io/blog/2014/04/23/python-imp-examples.html
+
+But his solution doesn't work out of the box for our context. Needs
+more work.
+
+
+Nachtrag Avanti
+===============
+
+Der neue Klientenzustand "Empfangsbestätigung" fehlte noch.  (I still
+had some dead code in :mod:`lino_avanti.lib.avanti.choicelists` and
+did that change there but then didn't verify whether it was visible.)
+
+
+TypeError: 'type' object is not iterable
+========================================
+
+Came when creating a new ticket.
+This was my mistake. Needs a quick release to Jane.
+
+
+Lino Tera weiter
+================
+
+I did a series of application-specific changes based on a mail by
+Daniel.  Then a relase to their production site followed by a data
+import (:mod:`lino_xl.lib.tim2lino.spzloader2`)
+
+::
+   
+    ProfessionalStates
+
+    11 Selbstständig/Freiberufler 
+    31 Arbeiter/Angestellter      
+    51 in Ausbildung              
+    54 Hausfrau/Hausmann          
+    61 arbeitslos                 
+    63 berufsunfähig              
+    65 Sozialhilfeempfänger       
+    80 im Ruhestand               
+    90 andere Situation           
+    00 unbekannt                  
+
+
+    PartnerTariffs
+
+    00 unbekannt    
+    10 zahlt nichts 
+    11 Tarif 2,00   
+    12 Tarif 5,00   
+    13 Tarif 10,00  
+    14 Tarif 15,00  
+    15 Tarif 20,00  
+    16 Tarif 39,56  
+
+
+    Lebensweise
+    02 allein ohne Kinder           
+    03 allein mit Kindern           
+    21 in Partnerschaft mit Kindern 
+    22 in Partnerschaft ohne Kinder 
+    31 bei Eltern                   
+    32 alternierend bei Eltern      
+    35 bei einem Elternteil         
+    37 bei Pflegeeltern             
+    60 Adoptivfamilie               
+    81 in Einrichtung oder WG       
+    90 sonstige Möglichkeit         
+    
+

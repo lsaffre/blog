@@ -1,0 +1,52 @@
+:date: 2018-01-24
+
+===========================
+Wednesday, January 24, 2018
+===========================
+
+I worked on two tickets for :ref:`avanti`:
+
+- Feld "Ausgestellt am" umbenennen nach "Situation am", und dieses
+  Feld automatisch ausfüllen mit dem Datum der "letzten Stunde, für
+  die der Kursleiter seine Anwesenheiten erfasst hat". Die Lehrer
+  erfassen die Anwesenheiten manchmal verspätet, aber Mahnungen können
+  nicht warten. Neuer ReminderState "Storniert" für wenn eine gültige
+  Entschuldigung erst nach Verschicken der Mahnung eingereicht wird.
+
+- Neuer Klientenzustand "Empfangsbestätigung". insert_layout in
+  EntriesByClient : Eintragsart rein, Enddatum raus. Unbestätigte
+  Termine : (1) default 1 Woche vorher und (2) ins Dashboard rein.
+
+I updated the testlino in Eupen which caused a few last changes.
+
+While adapting the test suites after :ticket:`2223` I discovered
+:ticket:`2282` (SocialAgents in chatelet (400 and 410) can't see isip
+contracts after #2223).
+
+>>> import lino
+>>> lino.startup('lino_welfare.projects.chatelet.settings.doctests')
+>>> from lino.api.doctest import *
+
+
+>>> from lino_welfare.modlib.pcsw.roles import SocialAgent
+>>> from lino_welfare.modlib.integ.roles import IntegrationAgent
+
+>>> sa = users.UserTypes.get_by_value('400')
+>>> isinstance(sa.role, SocialAgent)
+True
+
+>>> si = users.UserTypes.get_by_value('100')
+>>> isinstance(si.role, IntegrationAgent)
+True
+
+>>> req = isip.ContractsByClient.required_roles
+>>> req == set((IntegrationAgent, SocialCoordinator))
+True
+
+>>> si.role.satisfies_requirement(req)
+True
+>>> sa.role.satisfies_requirement(req)
+True
+
+It seems that actually this was a bug which now disappeared "by
+miracle".  I wrote a note in :ref:`welcht.changes`.

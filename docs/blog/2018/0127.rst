@@ -1,0 +1,53 @@
+:date: 2018-01-27
+
+==========================
+Saturday, January 27, 2018
+==========================
+
+Python process being killed
+===========================
+
+I had a reproducible "Killed" happening during :xfile:`restore.py`::
+
+    $ python manage.py run snapshot/restore.py
+    ...  
+    Loading 75 objects to table users_user...
+    Loading 15 objects to table cal_recurrentevent...
+    Loading 0 objects to table cal_subscription...
+    Loading 0 objects to table checkdata_problem...
+    Loading 16710 objects to table courses_course...
+    Killed
+    $ free -h
+                 total       used       free     shared    buffers     cached
+    Mem:          2.0G       117M       1.8G         9M       3.8M        49M
+    -/+ buffers/cache:        64M       1.9G
+    Swap:         1.3G       111M       1.2G
+    $    
+
+  
+And I found why it comes. No, we don't need any manual garbage
+collection, everything is okay there. It comes because the file size
+can be huge.  Here we had 136000 calendar entries (cal.Event) leading
+to a python source file of 26 megabytes::
+
+    $ ls -lh cal_event.py 
+    -rw-rw---- 1 lsaffre lsaffre 29M Jan 26 14:47 cal_event.py
+
+Since the file has no logical structure (no indented blocks), we can
+simply split it into two smaller files by saying::
+
+    $ wc -l cal_event.py 
+    136077 cal_event.py
+    $ split -n 70000 cal_event.py
+
+And of course adapt the :xfile:`restore.py` file::
+
+    #execfile("cal_event.py", *args)
+    execfile("xaa", *args)
+    execfile("xab", *args)
+
+`xaa` and `xab` are the default filenames used by the `split`
+command. We don't need to rename them to `.py` because anyway they are
+temporary.
+
+TODO: do this splitting automatically already during :manage:`dumpypy`.

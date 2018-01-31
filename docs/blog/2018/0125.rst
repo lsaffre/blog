@@ -1,0 +1,64 @@
+:date: 2018-01-25
+
+==========================
+Thursday, January 25, 2018
+==========================
+
+Estonian residents
+==================
+
+A ZDNet article by Kalev Ääsmäe based on an interview with Kaspar
+Korjus presents Estonias `e-residency programm
+<https://e-resident.gov.ee/>`_ in a shiny positive light: `Estonia's
+ID card fiasco: 'We've no intention of letting a good crisis go to
+waste'
+<http://www.zdnet.com/article/estonias-id-card-fiasco-weve-no-intention-of-letting-a-good-crisis-go-to-waste/>`__.
+It also suggests that Estonia can become the best country for ICOs
+in 2018.
+
+This is in visible contrast with Otto De Voogd's sad story where
+Estonia lost four *real* residents because Otto had been faced with
+the real --and unfortunatley very obsolete-- juristic apparatus.  See
+`Bad News for Otto De Voogd as Supreme Court Regulates Bitcoin in
+Estonia
+<https://www.newsbtc.com/2016/04/11/otto-de-voogd-bitcoin-estonia-case/>`_.
+
+Optimizations in Noi
+====================
+
+The :ref:`avanti` project moved from "development mode" to
+"maintenance mode".  To reflect the changed situation, I changed the
+ref of "avanti" to "avanti-dev", then created two new sites
+"avanti-regular" (for regular maintenance requests) and "avanti-talk"
+(for tickets that are to be invoiced additionally). But that
+differentiation makes no sense and is disturbing in practive because
+Avanti remains a single continuous project.
+
+
+I added a new field :attr:`TicketType.reporting_type` and en passant I
+did some optimizations in the insert_layout and detail_layout of
+Tickets:
+
+- mission and topic become invisible
+- commits, changes, deployments and stars become ShowSlaveTable
+  actions
+- planned_time is now a DurationField (not a TimeField)
+- removed "private" from insert_layout because it depends on the site.
+
+
+release@jane
+============
+
+
+I released above changes on Jane and was glad to see that indeed the
+tickets tables now display much faster.  That's because three slave
+tables aren't being summaried anymore for every ticket. They are still
+accessible via the ShowSlaveTable actions.
+
+Observation about permissions
+=============================
+
+I wondered whether I may adapt the :ref:`avanti.specs.roles` specs
+where it now says that `cal.EntriesByProject.insert` is visible to
+coordinator.  Which does not cause any visible difference since a
+coordinator does not see clients at all.

@@ -1,0 +1,30 @@
+:date: 2018-01-28
+
+========================
+Sunday, January 28, 2018
+========================
+
+I undid a change in :mod:`lino_xl.lib.clients` on Friday where I added
+a `default=''` to the `client_state` parameter field::
+
+  client_state=ClientStates.field(blank=True, default='')) 
+
+Because we want to have the choicelists's default_value there, not a
+blank value. In :ref:`avanti` it's important to hide non-active
+clients also from the list of choices of foreign keys to client.
+
+I updated the ClientStates in :ref:`tera`.
+
+I adapted some tests after yesterday's changes.
+
+I read `a question on SO
+<https://stackoverflow.com/questions/48383199/splitting-names-that-include-de-da-etc-into-first-middle-last-etc>`__
+with Brazilian names, added them as examples to
+:ref:`lino.tutorial.human`, added some name prefixes and fixed a bug
+in :mod:`lino.mixins.human` module.  But for the name "Francisco da
+Sousa Rodrigues" Lino currently still fails because it ignores that
+there are people with a double family names. Okay if there is a name
+prefix (like "da" in our example) Lino should recognize that here it
+is one given name and three family names.  But I guess there are many
+people with a double family name and without such a prefix.  In these
+cases I don't see any real solution.
