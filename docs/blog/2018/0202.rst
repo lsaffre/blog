@@ -1,0 +1,95 @@
+:date: 2018-02-02
+
+========================
+Friday, February 2, 2018
+========================
+
+Our first :ref:`Screenshot tour <dev.tours>` is currently broken. It
+says::
+
+  InvalidArgumentException: Message: Expected [object Undefined] undefined to be a string
+     
+Upgraded Selenium from 3.8.0 to 3.8.1. No change.  Tried with Python 3
+instead of 2. No change (except for the details of the traceback)::
+
+    $ python docs/tours/team/maketour.py 
+    Wrote screenshot docs/tours/team/login1.png ...
+    Traceback (most recent call last):
+      File "~/lino/lino/api/selenium.py", line 197, in run
+        func(self)
+      File "docs/tours/team/maketour.py", line 48, in english_tour
+        elem.send_keys("robin")
+      File "~/py3/lib/python3.5/site-packages/selenium/webdriver/remote/webelement.py", line 479, in send_keys
+        'value': keys_to_typing(value)})
+      File "~/py3/lib/python3.5/site-packages/selenium/webdriver/remote/webelement.py", line 628, in _execute
+        return self._parent.execute(command, params)
+      File "~/py3/lib/python3.5/site-packages/selenium/webdriver/remote/webdriver.py", line 312, in execute
+        self.error_handler.check_response(response)
+      File "~/py3/lib/python3.5/site-packages/selenium/webdriver/remote/errorhandler.py", line 237, in check_response
+        raise exception_class(message, screen, stacktrace)
+    selenium.common.exceptions.InvalidArgumentException: Message: Expected [object Undefined] undefined to be a string
+
+
+    During handling of the above exception, another exception occurred:
+
+    Traceback (most recent call last):
+      File "~/lino/lino/api/selenium.py", line 70, in runserver
+        func(driver)
+      File "docs/tours/team/maketour.py", line 126, in main
+        """).run(english_tour)
+      File "~/lino/lino/api/selenium.py", line 199, in run
+        self.error_message = traceback.format_exc(e)
+      File "/usr/lib/python3.5/traceback.py", line 163, in format_exc
+        return "".join(format_exception(*sys.exc_info(), limit=limit, chain=chain))
+      File "/usr/lib/python3.5/traceback.py", line 117, in format_exception
+        type(value), value, tb, limit=limit).format(chain=chain))
+      File "/usr/lib/python3.5/traceback.py", line 474, in __init__
+        capture_locals=capture_locals)
+      File "/usr/lib/python3.5/traceback.py", line 332, in extract
+        if limit >= 0:
+    TypeError: unorderable types: InvalidArgumentException() >= int()
+
+    During handling of the above exception, another exception occurred:
+
+    Traceback (most recent call last):
+      File "docs/tours/team/maketour.py", line 129, in <module>
+        runserver('lino_book.projects.team.settings.demo', main)
+      File "~/lino/lino/api/selenium.py", line 73, in runserver
+        traceback.print_exc(e)
+      File "/usr/lib/python3.5/traceback.py", line 159, in print_exc
+        print_exception(*sys.exc_info(), limit=limit, file=file, chain=chain)
+      File "/usr/lib/python3.5/traceback.py", line 100, in print_exception
+        type(value), value, tb, limit=limit).format(chain=chain):
+      File "/usr/lib/python3.5/traceback.py", line 463, in __init__
+        _seen=_seen)
+      File "/usr/lib/python3.5/traceback.py", line 474, in __init__
+        capture_locals=capture_locals)
+      File "/usr/lib/python3.5/traceback.py", line 332, in extract
+        if limit >= 0:
+    TypeError: unorderable types: TypeError() >= int()
+    (py3) luc@doll:~/work/book$
+
+
+The details of the traceback differ because there were two places like
+this where I forwarded the exception `e` to the :func:`print_exc`
+and/or :func:`format_exc` functions::
+
+    try:
+        ...
+    except Exception as e:
+        self.error_message = traceback.format_exc(e)
+        traceback.print_exc(e)
+
+This was simply wrong, but under Python 2 it didn't cause an
+additional exception.  The first argument for these functions is
+`limit`, you cannot specify some arbitrary exception to them, they
+always use exception that happened as the system's last one. The code
+must be::
+
+    try:
+        ...
+    except Exception:
+        self.error_message = traceback.format_exc()
+        traceback.print_exc()
+
+
