@@ -4,6 +4,9 @@
 Friday, February 2, 2018
 ========================
 
+Making screenshots with Selenium
+================================
+
 Our first :ref:`Screenshot tour <dev.tours>` is currently broken. It
 says::
 
@@ -93,3 +96,41 @@ must be::
         traceback.print_exc()
 
 
+Django Channels version 2
+=========================
+
+The `Django Channels <https://channels.readthedocs.io/>`__ project has
+passed to version 2, and that version no longer supports Python 2.
+This caused a minor dependency problem for us:
+
+On :ref:`jane` we use :mod:`lino.modlib.notify` (which requires
+channels).  And Jane is still under Python 2.  Also the main Lino test
+suite in :ref:`book` depends on Django Channels.  And we (currently
+still) want it to pass under Python 2.
+
+So I changed dependency specs from 'channels' to 'channels<2' in several projects:
+
+- 2018-02-02 13:57 in *lino_noi*:
+  `357d747 <https://github.com/lino-framework/noi/commit/079db1737c10ee576a5858466809b284c357d747>`__
+  (http://luc.lino-framework.org/blog/2018/0202.html)
+- 2018-02-02 13:58 in *lino_voga*:
+  `d8cd627 <https://github.com/lino-framework/voga/commit/5c4f2f1a1f7cc496ca7f501662ac9eeefd8cd627>`__
+  (http://luc.lino-framework.org/blog/2018/0202.html)
+- 2018-02-02 13:58 in *lino_care*:
+  `650c21b <https://github.com/lino-framework/care/commit/255f7f0a835a0362252d39ce0fb413404650c21b>`__
+  (http://luc.lino-framework.org/blog/2018/0202.html)
+- 2018-02-02 13:58 in *lino_book*:
+  `c0962c1 <https://github.com/lino-framework/book/commit/013c3623b5759a851f54c13abf28cb9b8c0962c1>`__
+  (http://luc.lino-framework.org/blog/2018/0202.html)
+- 2018-02-02 13:59 in *lino_welfare*:
+  `afd6efd <https://github.com/lino-framework/welfare/commit/97073774d916624fff4397535159db264afd6efd>`__
+  (http://luc.lino-framework.org/blog/2018/0202.html)
+
+
+
+The `lino-framework.org` server is down
+=======================================
+
+The `lino-framework.org` server is currently down.  This also is the
+reason for failures on Travis, e.g.  `this one
+<https://travis-ci.org/lino-framework/voga/jobs/336522007>`__
