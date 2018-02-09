@@ -1,0 +1,90 @@
+:date: 2018-02-09
+
+========================
+Friday, February 9, 2018
+========================
+
+Trying to fix a UnicodeDecodeError
+==================================
+
+We have a reproducible unicode error on :ref:`welcht`.  It happens
+when generating the automatice calendar entries of a contract.  It
+happens only when the :attr:`EventType.event_label` contains a text
+with non-ascii chars.  I tried to reproduce it::
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.chatelet.settings.demo')
+>>> from lino.api.doctest import *
+
+
+>>> # rt.show('cal.EventTypes')
+>>> # rt.show('courses.Courses', column_names='id line__event_type')
+
+>>> et = rt.models.cal.EventType.objects.get(name="Évaluation")
+>>> et.event_label
+u'\xc9valuation'
+
+>>> qs = rt.models.jobs.Contract.objects.filter(type__exam_policy__event_type=et)
+>>> obj = qs.order_by('id').first()
+>>> obj
+Contract #1 ("Mise \xe0 l'emploi art60\xa77#1 (Bernd BRECHT)")
+
+>>> s = obj.update_cal_summary(et, 1)
+>>> print(s)
+Évaluation 1
+>>> type(s)
+<class 'future.types.newstr.newstr'>
+>>> s
+'\xc9valuation 1'
+
+
+>>> s = obj.update_cal_summary(None, 1)
+>>> print(s)
+Évaluation 1
+>>> type(s)
+<type 'unicode'>
+>>> s
+u'\xc9valuation 1'
+
+Hm, all this looks perfectly normal! Maybe it is just a local problem
+in their database configuration?
+
+
+Confidential data in Avanti
+===========================
+
+Johanna asked for two optimizations: An auditor of a :ref:`avanti`
+site should not even see the first name of participants. Just their
+number and the place where they live. And they should not see any
+presences (:class:`lino_xl.lib.cal.Guest`) at all.
+
+As a side effect I added a new option `show_links` to
+:meth:`lino.core.requests.BaseRequest.show` and added some testing in
+:ref:`avanti.specs.roles`. Because until now these tables did not
+indicate whether the names of participants were clickable or not.
+
+
+A strange failure
+=================
+
+Today I had a failure (:ticket:`2314`) under Python 2 in book:: 
+
+  $ doctest docs/specs/voga/sales.rst
+  
+The failure said::
+
+  EvaluationError: Error while evaluating the
+  expression "table(obj.get_print_items(ar))" defined in the "from" part
+  of a statement. UnicodeEncodeError: 'ascii' codec can't encode
+  character u'\u20ac' in position 1447: ordinal not in range(128)
+
+I got rid of it by changing the "if False:" in line 279 of
+:mod:`lino_xl.lib.appypod.appy_renderer` back to "if True:".  But I
+have no idea why the failure didn't come on Travis nor on Hamza's
+machine.  Maybe try with Hamza on his machine whether he can reproduce
+it.
+
+Why software must be free
+=========================
+
+I updated and translated the page at http://www.saffre-rumma.net/free/

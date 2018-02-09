@@ -1,0 +1,35 @@
+:date: 2018-02-03
+
+==========================
+Saturday, February 3, 2018
+==========================
+
+I realized that :ticket:`2295` is still there and that my yesterday's
+changes didn't fix the problem at all.  Now I did another series of
+subtle changes in :mod:`atelier.sphinxconf.interproject` and even
+:mod:`atelier.projects`.  The idea is that the :file:`objects.inv`
+needed for intersphinx links can be either on the local file system or
+via internet using :envvar:`intersphinx_urls`.  If I have installed a
+Lino SDK, then I don't need no internet connection to build all docs.
+On Travis where we have no full SDK installed so there we need an
+Internet connection.
+
+
+L'instance Event Type avec 1 dans id n'existe pas
+=================================================
+
+We have a failure on Tavis in :ref:`welfare` under Python 2 : `Job
+398.1
+<https://travis-ci.org/lino-framework/welfare/jobs/336826267>`_. It
+says :message:`{'system_note_type': [u"L'instance Event Type avec 1
+dans id n'existe pas."]}`.
+
+The same test passes on my machine::
+
+    $ go eupen
+    $ dm test tests.test_broken_gfks
+
+Maybe the :attr:`lino.core.site.Site.site_config` is not cleared
+correctly between two tests?  I added a print `print("20180203 Gonna
+clear_site_config")` to the :data:`testcase_setup` handler in
+:mod:`lino.modlib.system`. This does not seem to be the reason. Hm...

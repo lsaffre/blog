@@ -1,0 +1,47 @@
+:date: 2018-02-08
+
+==========================
+Thursday, February 8, 2018
+==========================
+
+Tonis showed me a next series of progresses with the new OpenUI5
+interface.  It continues to look promising!
+
+The next thing to do are the detail windows.  OpenUI5 has more
+possibilities than ExtJS, but in a first step we will just continue to
+use Lino's traditional layout concept and render it using `nested
+flexboxes
+<https://openui5.hana.ondemand.com/#/sample/sap.m.sample.FlexBoxNested/preview>`__.
+
+
+>>> from lino import startup
+>>> startup('lino_book.projects.min1.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> a = rt.models.users.UsersOverview.sign_in.__class__
+>>> a
+<class 'lino.modlib.users.actions.SignIn'>
+
+The dialog window for this action is available at the
+:attr:`params_layout` attribute:
+
+>>> a.params_layout.__class__
+<class 'lino.core.layouts.Panel'>
+
+which alwais has at least one element called `main`:
+
+>>> a.params_layout.main
+'\n    username\n    password\n    '
+
+You can get the layout handle for this main element:
+
+>>> lh = rt.models.users.UsersOverview.sign_in.params_layout.get_layout_handle(settings.SITE.kernel.default_ui)
+
+and that element has itself 2 children:
+
+>>> len(lh.main.elements)
+2
+>>> for e in lh.main.elements:
+...     print(repr(e.wrapped))
+<CharFieldElement username in lino.core.layouts.ActionParamsLayout on <lino.modlib.users.actions.SignIn sign_in ('Sign in')>>
+<PasswordFieldElement password in lino.core.layouts.ActionParamsLayout on <lino.modlib.users.actions.SignIn sign_in ('Sign in')>>
