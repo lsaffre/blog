@@ -1,0 +1,99 @@
+:date: 2018-02-13
+
+==========================
+Tuesday, February 13, 2018
+==========================
+
+Dashboard items and table titles
+================================
+
+My yesterday's changes caused a failure in :ref:`welfare`::
+
+    File "welfare/docs/specs/main.rst", line 49, in main.rst
+    Failed example:
+        for h in soup.find_all('h2'):
+            print(h.text.strip())
+    Expected:
+        Benutzer und ihre Klienten ⍐
+        Wartende Besucher ⍐
+        Meine Termine ⍐
+        Meine überfälligen Termine ⍐
+        Meine Benachrichtigungen ⍐
+    Got:
+        Benutzer und ihre Klienten ⍐
+        Wartende Besucher (Wartet) ⍐
+        Meine Termine (Verwaltet durch Rolf Rompen, Daten von 22.05.2014 bis ...) ⍐
+        Meine überfälligen Termine (Verwaltet durch Rolf Rompen, Daten von 01.04.2014 bis 22.05.2014) ⍐
+        Meine Benachrichtigungen (Empfänger Rolf Rompen, Nein) ⍐
+
+Yes, indeed: :meth:`lino.core.dashboard.DashboardItem.render_request`
+should not show the full title (:meth:`get_title
+<lino.core.actors.Actor.get_title>`) buy just the
+:meth:`get_title_base <lino.core.actors.Actor.get_title_base>`.
+
+En passant:
+
+- I changed the symbol used to show a dashboard item in own window
+  from [⍐] (2350) to [⏏] (23CF)
+
+- I added a new specs page :ref:`book.specs.events` (because I was
+  surprised that abovementioned test failure appeared only during
+  welfare, not already in book. With this page it would have appeared
+  earlier.
+
+
+Lino Tera
+=========
+
+I played around with the names and references of courses, course
+lines, teams etc.  I am jiggling around without clear instruction but
+based on different input sources:
+
+- feedback from Daniel after looking at the site
+- the imported data I see on their production site
+- what I believe they need
+
+A team in :mod:`lino_xl.lib.teams` is now :class:`Referrable` (which
+might require a database migration also for other applications).
+
+Some translations.  Verbose names and position in detail of fields
+`Course.user` and `Course.teacher`.
+
+I changed the :class:`MyCoursesGiven` no longer uses
+:meth:`setup_request` and a :attr:`master_key` but simply
+:meth:`param_defaults` (like in :class:`lino.modlib.users.My`).  This
+was caused by the changes in dashboard.
+
+
+
+Django migrations in Lino
+=========================
+
+I started to seriously think about how to do Django migrations on a
+Lino application.
+
+The fundamental challenge is that a Lino application can inject fields
+(i.e. one plugin causes a field to be created on a model in another
+plugin) and can have conditional fields (plugins whose database
+structure depends on some local setting).  This challenge was easier
+than I feared, thanks to Django's `MIGRATION_MODULES
+<https://docs.djangoproject.com/en/1.11/ref/settings/#std:setting-MIGRATION_MODULES>`__
+setting: we define one common migrations module for all plugins of a
+given application.  New site attribute
+:attr:`lino.core.site.Site.migration_module`.  I tried this in
+:mod:`lino_book.projects.min9`. Seems to work as expected::
+
+    $ go min9
+    $ python manage.py makemigrations
+
+It reveals two more challenges: are choices and babel values. Django
+does not know how to serialize them. I must add a :meth:`deconstruct`
+method for these. Seems feasible. To be tested.
+
+Also the default value of ChoiceList fields causes a problem --at
+least in Python 2-- because it uses an unbound method.  In a first
+step I converted all `default` values in application code from the
+deprecated `MyChoices.foo.as_callable` form to
+`MyChoices.as_callable('foo')`. Just to discover that this is not
+enough because it also creates an unbound function.
+

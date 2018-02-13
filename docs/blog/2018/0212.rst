@@ -1,0 +1,149 @@
+:date: 2018-02-12
+
+=========================
+Monday, February 12, 2018
+=========================
+
+Improve the Lino Developers Guide
+=================================
+
+I did a series of changes to make the Lino Developers Guide more
+readable for beginners. As usual this also caused some internal
+optimizations.
+
+I removed the obsolete alias :data:`dd.apps` for :data:`dd.plugins
+<lino.api.dd.plugins>`.  I moved the documentation for
+:mod:`lino.api.dd` from the source code to a prosa document.
+
+I moved the "layout elements" from :mod:`lino.modlib.extjs` to to
+:mod:`lino.core.elems`.  (I also plan to rename them to "widgets"
+soon).
+     
+I started to optimize the internal API about table handles, layouts
+and layout handles.
+
+>>> import lino
+>>> lino.startup('lino_book.projects.team.settings.doctests')
+>>> from lino.api.doctest import *
+>>> AllTickets = rt.models.tickets.AllTickets
+
+>>> cols = AllTickets.get_handle().get_columns()
+>>> lh = AllTickets.get_list_layout()
+>>> lh  #doctest: +ELLIPSIS
+<lino.core.layouts.LayoutHandle object at ...>
+>>> lh.layout  #doctest: +ELLIPSIS
+<lino.core.layouts.ColumnsLayout object at ...>
+>>> lh.main
+<GridElement main in lino.core.layouts.ColumnsLayout on lino_xl.lib.tickets.ui.AllTickets>
+
+Tonis wrote the :meth:`get_detail_elems` of an actor:
+
+>>> list(AllTickets.get_detail_elems())
+[<Panel general_1 in lino_noi.lib.tickets.models.TicketDetail on lino_xl.lib.tickets.ui.Tickets>, <Panel more in lino_noi.lib.tickets.models.TicketDetail on lino_xl.lib.tickets.ui.Tickets>]
+
+I wrote a method :meth:`get_detail_layout` which returns the layout
+handle itself. Maybe that's easier to use:
+
+>>> lh = AllTickets.get_detail_layout()
+>>> lh  #doctest: +ELLIPSIS
+<lino.core.layouts.LayoutHandle object at ...>
+>>> lh.layout  #doctest: +ELLIPSIS
+<lino_noi.lib.tickets.models.TicketDetail object at ...>
+>>> lh.main
+<TabPanel main in lino_noi.lib.tickets.models.TicketDetail on lino_xl.lib.tickets.ui.Tickets>
+>>> list(lh.main.elements)
+[<Panel general_1 in lino_noi.lib.tickets.models.TicketDetail on lino_xl.lib.tickets.ui.Tickets>, <Panel more in lino_noi.lib.tickets.models.TicketDetail on lino_xl.lib.tickets.ui.Tickets>]
+
+The :mod:`lino_book.projects.events` is the only use case (in
+:ref:`book`, one other case is in :ref:`welfare`) for dynamic table
+handles.  The project was unused and ratherbroken. Now it is usable
+with runserver and has a test suite which covers that special use of a
+table with a meth:`get_handle_name` method.
+
+But all this is --as usual-- not finished. Tomorrow I will maybe
+continue.
+    
+
+Sphinx 1.7.0 is out
+===================
+
+Komiya Takeshi released the `newest version of Sphinx
+<http://www.sphinx-doc.org/en/master/changes.html>`__.  I installed it
+and ran :cmd:`inv clean` and :cmd:`inv bd` on all my projects. No
+problems.
+
+Except maybe for a SphinxWarning :message:`Inline interpreted text or
+phrase reference start-string without end-string"`.  I had to
+temporarily set :envvar:`tolerate_sphinx_warnings` to `True` in order
+to see where it comes from.  It was in the docstring for
+:func:`lino.core.fields.ForeignKey`. I worked around this by removing
+the link to Django docs there.  It is possible that Sphinx autosummary
+has a modified behaviour when extracting the first sentence of the
+docstring.  But another possible explanation is that I changed this
+docstring recently. No need to investigate AFAICS.
+
+
+Is POD ready for python 3 ?
+===========================
+
+Ajit reported `a problem
+<https://answers.launchpad.net/appy/+question/130346>`__ when trying
+`our distribution <https://github.com/lino-framework/appypod>`__ of
+`appy.pod`.  And indeed I can reproduce his problem. Here is the
+script which creates a file from a simple template::
+
+.. literalinclude:: 0212/0212.py
+
+The output document created with our version of appypod says::
+
+    Error while evaluating expression "I". 'int' object is not iterable
+    if escape: result.dumpContent(res)
+    File "/appypod/appy/pod/buffers.py", line 196, in dumpContent
+    nsText=self.env.namespaces[self.env.NS_TEXT])
+    File "/appypod/appy/xml/__init__.py", line 65, in escapeXml
+    for c in s:
+    TypeError: 'int' object is not iterable
+
+This seems to show that `appy-python-3` was not ready for Python 3
+when I forked it some months ago.
+
+Now I updated my copy of that repository::
+
+    (py27) luc@doll:~/repositories/appy-python-3$ svn update
+    Updating '.':
+    A    trunk/ui/navigate.py
+    U    trunk/ui/utils.py
+    U    trunk/ui/css.py
+    U    trunk/http/client.py
+    U    trunk/model/fields/group.py
+    U    trunk/model/fields/__init__.py
+    U    trunk/model/fields/search.py
+    U    trunk/model/fields/string.py
+    U    trunk/model/fields/calendar.py
+    U    trunk/model/fields/workflow.py
+    U    trunk/model/fields/ref.py
+    U    trunk/model/fields/action.py
+    U    trunk/model/fields/date.py
+    U    trunk/model/fields/file.py
+    U    trunk/model/fields/computed.py
+    U    trunk/model/fields/pod.py
+    U    trunk/utils/path.py
+    U    trunk/xml/__init__.py
+    U    trunk/pod/renderer.py
+    U    trunk/pod/converter.py
+    U    trunk/pod/doc_importers.py
+    U    trunk/pod/styles_manager.py
+    U    trunk/pod/xhtml2odt.py
+    U    trunk/px/parser.py
+    U    trunk/px/__init__.py
+    Updated to revision 123.
+
+So Gaetan continues developing in `appy-python-3
+<https://forge.pallavi.be/projects/appy-python-3>`__ but refuses to
+add a :xfile:`setup.py` file so that normal people can use the
+package.  Furthermore I have no idea whether he saw my fixes for the
+trivial errors I added to his code after the fork.  Oh my God, this
+situation makes no sense! I want to help Gaetan to make appy work
+under Python 3, I don't want to fork it definitively!  Gaetan, let's
+meet and collaborate!
+

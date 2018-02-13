@@ -1,0 +1,45 @@
+:date: 2018-02-10
+
+===========================
+New plugin: User statistics
+===========================
+
+Saturday, February 10, 2018.
+
+I wrote a new plugin :mod:`lino_xl.lib.userstats`. First usage example
+is :ref:`noi`.
+
+Some side effects:
+
+**I optimized the API** for :mod:`lino.modlib.summaries`:
+
+- no more need to define a class method
+  :meth:`get_summary_master_model` because the default implementation
+  now returns the model pointed to by the :attr:`master` field.
+
+- A new choice ``'timeless'`` for
+  :attr:`lino.modlib.summaries.Summary.summary_period`.
+      
+**I finally took some time and fixed an old problem:** in certain
+tables it was disturbing to see the sums of certain columns
+(:ticket:`2317`).  For example the sums of the years and months in a
+summary table.  Now we have a new widget option `hide_sum` to be used
+with :meth:`lino.core.model.Model.set_widget_options` to hide the sum
+of a column.
+
+The first usage example are the :attr:`year` and `month` of a
+:class:`lino.modlib.summaries.Summary`.  Which revealed an internal
+bug: :meth:`lino.core.model.Model.set_widget_options` worked only on
+concrete models, not when called on a model mixin
+(:ticket:`2318`). Fixed.
+
+>>> import lino
+>>> lino.startup('lino_book.projects.team.settings.doctests')
+>>> from lino.api.doctest import *
+>>> # rt.models.userstats.UserStat.__mro__
+>>> # rt.models.userstats.UserStat._widget_options
+>>> cols = rt.models.userstats.UserStats.get_handle().get_columns()
+>>> # cols[0].name
+>>> cols[0].hide_sum
+
+
