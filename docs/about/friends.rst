@@ -6,6 +6,13 @@ A list of people and organizations that I consider my friends and whom
 I might mention in my blog.
 
 
+.. _ajapaik:
+
+ajapaik
+-------
+
+https://ajapaik.ee/
+
 .. _andi:
 
 Andi

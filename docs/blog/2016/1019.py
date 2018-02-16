@@ -2,7 +2,7 @@ import bleach
 import lino
 lino.startup('lino_noi.projects.team.settings.demo')
 
-from lino.utils.xmlgen.html import E
+from etgen.html import E
 from lino.modlib.notify.utils import rich_text_to_elems
 from lino.api import rt
 
@@ -11,7 +11,7 @@ body = u'<p><!--[if gte mso 9]><xml>\n <o:OfficeDocumentSettings>\n  <o:AllowPNG
 
 body = u'<p><!--[if gte foo 123]>A conditional comment<![endif]--></p>\n<p>Hello</p>'
 
-from lino.utils.xmlgen.html import E
+from etgen.html import E
 # E.names
 # ALLOWED_TAGS = ['a', 'b', 'i', 'em', 'ul', 'ol', 'li', 'strong', 'p',
 #                 'br', 'span', 'pre', 'def', 'style', 'table']

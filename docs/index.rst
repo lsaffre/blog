@@ -13,7 +13,6 @@ Sitemap
    :maxdepth: 1
 
    blog/index
-   news/index
    about/index
 
 

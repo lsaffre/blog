@@ -45,16 +45,17 @@ En passant:
 Lino Tera
 =========
 
-I played around with the names and references of courses, course
-lines, teams etc.  I am jiggling around without clear instruction but
-based on different input sources:
+I played with the names, labels, titles and references of courses,
+course lines, teams etc.  I am fiddling around based on different (but
+fuzzy) input sources:
 
 - feedback from Daniel after looking at the site
 - the imported data I see on their production site
 - what I believe they need
 
-A team in :mod:`lino_xl.lib.teams` is now :class:`Referrable` (which
-might require a database migration also for other applications).
+A team in :mod:`lino_xl.lib.teams` is now :class:`Referrable
+<lino.mixins.Referrable>` (which might require a database migration
+also for other applications).
 
 Some translations.  Verbose names and position in detail of fields
 `Course.user` and `Course.teacher`.
@@ -62,15 +63,16 @@ Some translations.  Verbose names and position in detail of fields
 I changed the :class:`MyCoursesGiven` no longer uses
 :meth:`setup_request` and a :attr:`master_key` but simply
 :meth:`param_defaults` (like in :class:`lino.modlib.users.My`).  This
-was caused by the changes in dashboard.
-
+was needed after the changes in dashboard this morning.
 
 
 Django migrations in Lino
 =========================
 
-I started to seriously think about how to do Django migrations on a
-Lino application.
+I started to think a bit more seriously about how Django migrations on
+a Lino application would look like. Because a :xfile:`restore.py` at
+:ref:`spz` takes two hours.  And because I saw how they work at
+:ref:`ajapaik`.
 
 The fundamental challenge is that a Lino application can inject fields
 (i.e. one plugin causes a field to be created on a model in another
@@ -86,14 +88,19 @@ given application.  New site attribute
     $ go min9
     $ python manage.py makemigrations
 
-It reveals two more challenges: are choices and babel values. Django
-does not know how to serialize them. I must add a :meth:`deconstruct`
+It reveals two more challenges: choices and babel values. Django does
+not know how to serialize them. I must add a :meth:`deconstruct`
 method for these. Seems feasible. To be tested.
 
 Also the default value of ChoiceList fields causes a problem --at
 least in Python 2-- because it uses an unbound method.  In a first
 step I converted all `default` values in application code from the
-deprecated `MyChoices.foo.as_callable` form to
-`MyChoices.as_callable('foo')`. Just to discover that this is not
-enough because it also creates an unbound function.
-
+deprecated `default=MyChoices.foo.as_callable` form to
+`default=MyChoices.as_callable('foo')`. Just to discover that this is
+not enough because it also creates an unbound function.  A possible
+solution could be to simply deserialize them to the choice's `value`
+(which is a plain string) and to make a ChoiceListField interpret them
+correctly.  If that works, we could define the default value of
+choicelist fields simply as `default='foo'`. But will that work on
+choicelists that get repopulated in a `custom_workflows` module? We
+will see...
