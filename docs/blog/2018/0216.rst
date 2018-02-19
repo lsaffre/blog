@@ -27,12 +27,12 @@ the non-ascii character might cause trouble.
 Moved code from Lino to new package "etgen"
 ===========================================
 
-Hamza is working on :ticket:`1199`. While reviewing his last pull
-request (`lino 82 <https://github.com/lino-framework/lino/pull/82>`__
-I noticed that the packages :mod:`lino.utils.xmlgen` and
+Hamza is working on :ticket:`1199`.  While reviewing `his last pull
+request <https://github.com/lino-framework/lino/pull/82>`__, I
+realized that the packages :mod:`lino.utils.xmlgen` and
 :mod:`lino.utils.html2rst` actually don't need anything from Lino.  We
 should move them out of Lino into an independent package to make them
-available for people who don't care about Lino.
+available for people who don't want Lino.
 
 - I created and published a new package :ref:`etgen`
 - I removed :mod:`lino.utils.xmlgen` and :mod:`lino.utils.html2rst`
@@ -40,8 +40,7 @@ available for people who don't care about Lino.
 - Removed :mod:`lino.utils.xmlgen.cbss` completely (this was some early
   study which has never been used in production)
 
-
-Of course this causes lots code changes in the other projects. For
+Of course this caused lots code changes in the other projects. For
 example the well-known line::
 
     from lino.utils.xmlgen.html import E
@@ -50,3 +49,11 @@ is now::
 
     from etgen.html import E
     
+My first version 0.0.1 caused an IOError :message:`[Errno 2] No such
+file or directory:
+'/home/travis/virtualenv/python2.7.14/lib/python2.7/site-packages/etgen/sepa/XSD/pain.001.001.02.xsd'`
+in `book build 649.1
+<https://travis-ci.org/lino-framework/book/jobs/342266015>`__.  This
+was a packaging problem: the :file:`.xsd` files are not by default
+part of the source distribution. It me took several releases until
+:ref:`etgen` passed on :ref:`travis`.

@@ -1,0 +1,107 @@
+:date: 2018-02-19
+
+=========================
+Monday, February 19, 2018
+=========================
+
+"We don't want no freedom"
+==========================
+
+I read the summary of a documentation on German televison about **why
+many European governments continue to ignore the vendor lock-in**:
+
+    "Wanna Cry" war ein Weckruf: Die Cyber-Attacke traf im Mai 2017
+    hunderttausende Rechner in über 100 Ländern. Aber wie kann ein
+    Schadprogramm Unternehmen, Krankenhäuser und sogar Geheimdienste
+    lahmlegen? Die Antwort: Microsoft. Die Software des Konzerns macht
+    angreifbar für Hacker und Spione, verstößt gegen das europäische
+    Vergaberecht, blockiert den technischen Fortschritt und kommt
+    Europa teuer zu stehen. Warum aber stemmen sich Regierungen gegen
+    die Alternativen, oder kehren sogar zurück in die Arme von
+    Microsoft?  Andrup Ansip, EU-Kommissar für den digitalen
+    Binnenmarkt, und weitere Akteure stellen sich den Fragen. `Das
+    Microsoft-Dilemma
+    <https://programm.ard.de/?sendung=28721508378954&first=1>`__
+
+Estonian Wikipedians met in Tartu
+=================================
+
+**Estonian Wikipedians** met last Saturday in Tartu to elect the board
+members of their organization (MTÜ).  Märt Põder, one of the
+professional activists in their small team, wrote a review of their
+ativities in 2017: `Wikimedia hea uue ilma lävepakul
+<https://wikimediaeesti.wordpress.com/2018/02/17/wikimedia-hea-uue-ilma-lavepakul/>`__
+
+The annual meeting had to face an urgent problem because the Wikimedia
+Foundation did not yet accept `their grant application
+<https://meta.wikimedia.org/wiki/Grants:Simple/Applications/Wikimedia_Eesti/2018>`__,
+and the MTÜ depends quite much on this money which is needed to
+continue the work.  The biggest challenge for the Estonian Wikipedia
+is indeed that they are such a small community, therefore it is
+difficult to find volunteers who meet the skills required by the
+Foundation for maintaining administrative quality standards.
+
+
+Remove blogs, extend comments
+=============================
+
+I removed the :mod:`lino_xl.lib.blogs` plugin from :ref:`noi` because
+we didn't use it anyway.  And I did a few optimization in the comments
+framework.  The biggest change is that your must now "publish" every
+comment. New comments are now "pending" (i.e. not published) by
+default. When you have unpublished comments, Lino reminds this in the
+dashboard by saying :message:`You have 2 items in My pending
+comments`.  You can publish them either individually or all at once
+(currently you must open the table to publish them all).
+
+The :class:`RecentComments <lino.modlib.comments.RecentComments>`
+table had been removed from the :meth:`get_dashboard_items
+<lino.core.plugins.Plugin.get_dashboard_items>` of
+:mod:`lino.modlib.comments` "because it is rather disturbing to see
+all comments". This remark was obviously from before we had
+:mod:`lino.modlib.dashboard` (which makes it possible to disable
+individual items per user).
+
+Instead of `short_text` and `long_text` we now have a single field
+`body` and a new field `body_preview` which contains the first
+paragraph of `body_text`. Actually these fields are defined in
+:class:`lino.mixins.bleached.BleachedPreviewBody`.
+
+Until now the :func:`truncate_comment
+<lino.utils.soup.truncate_comment>` function was called for each
+rendering of a comment as a list item. Now we use the
+:attr:`body_preview` field.
+
+I enhanced the :func:`truncate_comment
+<lino.utils.soup.truncate_comment>` function: it now removes the
+``<p>`` tag around the (only) paragraph. I now also handles texts
+whose first paragraph is a header (``<h1>`` though ``<h9>``). And it
+now also truncates plain text.
+
+I moved the test cases for this function from the source code to a
+separate document :ref:`book.specs.comments` (mostly in order to avoid
+problems caused by newlines in examples).
+
+Comment tables now have a parameter panel.
+
+The parameter field `user` on comments was was read-only because it is
+a simple parameter field, which means that Lino creates the parameter
+field as a copy of the database field. And that field (`user`) is
+read-only on :class:`lino.modlib.comments.Comment`. This was a bug in
+Lino.
+
+I adapted several demo fixtures to above changes:
+:mod:`lino.modlib.comments.fixtures.demo2`
+and
+
+These changes will require attention when migrating the database::
+
+    Comment.body = short_text + long_text
+
+I didn't write a migrator for this because we have only one production
+site.
+
+I converted the docs of :mod:`lino.modlib.comments` to prosa style.
+
+
+I removed the obsolete module :mod:`lino.utils.htmlgen`.
