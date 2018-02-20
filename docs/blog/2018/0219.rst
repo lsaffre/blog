@@ -63,8 +63,9 @@ all comments". This remark was obviously from before we had
 individual items per user).
 
 Instead of `short_text` and `long_text` we now have a single field
-`body` and a new field `body_preview` which contains the first
-paragraph of `body_text`. Actually these fields are defined in
+:attr:`body <lino.modlib.comments.Comment.body>` and a new field
+`body_preview` which contains the first paragraph of
+`body_text`. Actually these fields are defined in
 :class:`lino.mixins.bleached.BleachedPreviewBody`.
 
 Until now the :func:`truncate_comment
@@ -96,12 +97,31 @@ and
 
 These changes will require attention when migrating the database::
 
-    Comment.body = short_text + long_text
 
+    def create_comments_comment(...):
+        owner_type_id = new_content_type_id(owner_type_id)
+        kw = dict()
+        kw.update(id=id)
+        ...
+        # kw.update(more_text=more_text)
+        # kw.update(short_text=short_text)
+        kw.update(reply_to_id=reply_to_id)
+        from lino.utils.soup import truncate_comment
+        body = more_text+'\n\n'+short_text
+        kw.update(body=body)
+        kw.update(body_preview=truncate_comment(body)
+        return comments_Comment(**kw)
+  
 I didn't write a migrator for this because we have only one production
-site.
+site... 
 
 I converted the docs of :mod:`lino.modlib.comments` to prosa style.
 
 
 I removed the obsolete module :mod:`lino.utils.htmlgen`.
+
+TODO: I forgot a "detail": the notifications are still being sent as
+before for every new comment and for every change.
+
+Note: when you update the dashboard in your user settings by clicking
+the
