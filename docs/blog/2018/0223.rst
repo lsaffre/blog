@@ -1,0 +1,49 @@
+:date: 2018-02-23
+
+=========================
+Friday, February 23, 2018
+=========================
+
+Yes, after two days of meditation I will remove the "published" field
+again, and not even replace it by a "state" field, and return back to
+have comment be a ChangeObservable.
+
+One day I will probably also remove CommentType, just to make things
+clear: the :mod:`lino.modlib.comments` plugin is about simple
+comments.  Maybe once in the future we will start a "discuss" plugin
+where every statement has a state, a workflow, a rating merchanism...
+
+I realized that adding new features to the comments framework will not
+make me go away from my blogging habit.  A comment is something I want
+to "say" to others. And as in the real world it is my responsibility
+think at least a bit before I say something.  What I call my my "blog"
+is actually not even a blog, it is rather a "detailed changelog".
+
+Filtrer les notifications pour certains interventants
+=====================================================
+
+In :ref:`welfare`, every active coach of a client gets notified about
+every change on that client (more exactly changes on the client
+itself, on coachings and on notes).
+
+In :ref:`welcht` they now want certain users to be notified only about
+changes in a client's notes (the :class:`notes.NotesByProject` panel)
+while changes in coachings and on the client itself should not be
+notified to these users.
+
+This is the perfect use case for
+:class:`lino.modlib.notify.MessageTypes`: each type of change get's
+its own message type.  This choicelist was rather unused until now, I
+wasn't sure at all whether we shouldn't remove it.  New method
+:meth:`lino.modlib.notify.Message.get_notify_message_type`.
+
+
+The decision will be done in a generic place, namely in the
+:meth:`emit_message <lino.modlib.notify.Message.emit_message>` class
+method.  The next question is: how to tell Lino who wants notification
+for a given message type who doesn't?  The most generic solution would
+be to add a `required_roles` to every message type and to check these
+against the every user's `user_type.role`.  One problem: it seems that
+they are having many users with `user_type` Administrator.  I wait for
+feedback from Mathieu for that.
+
