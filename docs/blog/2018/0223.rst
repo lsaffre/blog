@@ -22,6 +22,8 @@ is actually not even a blog, it is rather a "detailed changelog".
 Filtrer les notifications pour certains interventants
 =====================================================
 
+Mathieu reported ticket :ticket:`2333`.
+
 In :ref:`welfare`, every active coach of a client gets notified about
 every change on that client (more exactly changes on the client
 itself, on coachings and on notes).
@@ -37,13 +39,12 @@ its own message type.  This choicelist was rather unused until now, I
 wasn't sure at all whether we shouldn't remove it.  New method
 :meth:`lino.modlib.notify.Message.get_notify_message_type`.
 
-
-The decision will be done in a generic place, namely in the
+Notification filtering will be done in a generic place, namely in the
 :meth:`emit_message <lino.modlib.notify.Message.emit_message>` class
 method.  The next question is: how to tell Lino who wants notification
 for a given message type who doesn't?  The most generic solution would
 be to add a `required_roles` to every message type and to check these
-against the every user's `user_type.role`.  One problem: it seems that
-they are having many users with `user_type` Administrator.  I wait for
-feedback from Mathieu for that.
+against every candidate recipient's `user_type.role`.  One problem: it
+seems that they are having many users with `user_type` Administrator.
+I wait for feedback from Mathieu for that.
 

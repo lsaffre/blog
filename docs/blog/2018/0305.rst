@@ -1,0 +1,45 @@
+:date: 2018-03-05
+
+=====================
+Monday, March 5, 2018
+=====================
+
+
+I did an :cmd:`apt upgrade` on :ref:`lf`.
+
+I continued on :ticket:`2333`.  The last piece of the jigsaw puzzle is
+an interface for defining applicaton-specific notification types.
+
+Short analysis where message types were being used until now:
+
+- ChangeObserver has a default message type "change"
+
+- notify fixture demo manually emits a notification "The database has
+  been initialized" of type "system".
+- lino_welfare.modlib.pcsw : RefuseClient action emits a notification
+  of type "action", message text is based on RefusalReasons.
+- lino_welfare.modlib.reception.CreateClientVisit uses type "change"
+- tickets when assigned_to field changes, the Ticket model emits a
+  "action" message.
+- after creating a ticket
+
+
+Code changes:
+
+- :meth:`MessageType.__init__` : the 'value' and 'name' of a message
+  type must be the same.
+
+- New message types :
+  - 'coachings' (requires CoachingsUser role)
+  - 'notes' (requires OfficeUser role)
+  - 'tickets' (requires Triager role)
+
+Side effect:
+
+- :func:`atelier.utils.isidentifier`
+  was definied in :mod:`lino.modlib.system` until now.
+  
+TODO: Wouldn't it be interesting to define a user role "ClientsUser"
+and use this instead of CoachingsUser?
+
+
