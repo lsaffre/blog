@@ -1,0 +1,56 @@
+:date: 2018-03-09
+
+=====================
+Friday, March 9, 2018
+=====================
+
+Lazy and unlazy gettext
+=======================
+
+I still didn't commit my yesterday's work because I noticed that there
+was at least one subtle but important problem. I often used the
+construct::
+
+  str(_("Hello"))
+
+That is, I call :func:`ugettext_lazy` to produce a :class:`Promise`
+object which will look up my translatable text lasily when needed, and
+then I do nothing else than passing it to :func:`str` in order to
+force it to resolve my text.  Which is nonsense.  In that case we can
+directly call :func:`ugettext` instead of :func:`ugettext_lazy`::
+
+  gettext("Hello")
+
+To make this more easily usable, I added a third import in
+:mod:`lino.api`::
+
+  from django.utils.translation import ugettext_lazy as _
+  from django.utils.translation import pgettext_lazy as pgettext
+  from django.utils.translation import ugettext as gettext
+
+I would have preferred to use :func:`__` (a double underscore) as
+alias for :func:`gettext`::
+
+  from django.utils.translation import ugettext as __
+
+But this causes the message extractor to not find these strings.  The
+xgettext program looks for calls to :func:`gettext`, :func:`pgettext`,
+and :func:`_`, but not :func:`__` (the `--keyword
+<https://www.gnu.org/software/gettext/manual/gettext.html#xgettext-Invocation>`__
+option to xgettext has the following default values for Python:
+gettext, ugettext, dgettext:2, ngettext:1,2, ungettext:1,2,
+dngettext:2,3, _.
+
+Lino uses the message extractors that come with `Babel
+<http://babel.pocoo.org/en/latest/messages.html>`_.  I didn't find any
+configuration option to tell Babel that it should also extract calls
+to :func:`__`.
+
+TODO:
+
+- replace `str(_("Foo"))` constructs by `gettext("Foo")`
+- repair the welfare test suite which is still broken
+  
+
+
+

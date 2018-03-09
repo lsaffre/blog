@@ -24,6 +24,11 @@ Short analysis where message types were being used until now:
 - after creating a ticket
 
 
+Side effect:
+
+- :func:`atelier.utils.isidentifier`
+  was definied in :mod:`lino.modlib.system` until now.
+  
 Code changes:
 
 - :meth:`MessageType.__init__` : the 'value' and 'name' of a message
@@ -34,12 +39,14 @@ Code changes:
   - 'notes' (requires OfficeUser role)
   - 'tickets' (requires Triager role)
 
-Side effect:
-
-- :func:`atelier.utils.isidentifier`
-  was definied in :mod:`lino.modlib.system` until now.
-  
 TODO: Wouldn't it be interesting to define a user role "ClientsUser"
 and use this instead of CoachingsUser?
 
+I realized that actually the user roles are not a useful criteria for
+masking notification messages.  Whether a user receives a notification
+is decided by the application anyway.  Whether they want to see a
+given type of message is not related to what they have *permission* to
+see.  That's why we now have
+:meth:`lino.modlib.users.UserType.mask_notifications` and the
+`mask_message_types` set.
 

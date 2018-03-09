@@ -11,7 +11,7 @@ body = u'<p><!--[if gte mso 9]><xml>\n <o:OfficeDocumentSettings>\n  <o:AllowPNG
 
 body = u'<p><!--[if gte foo 123]>A conditional comment<![endif]--></p>\n<p>Hello</p>'
 
-from etgen.html import E
+from etgen.html import E, tostring
 # E.names
 # ALLOWED_TAGS = ['a', 'b', 'i', 'em', 'ul', 'ol', 'li', 'strong', 'p',
 #                 'br', 'span', 'pre', 'def', 'style', 'table']
@@ -19,4 +19,4 @@ from etgen.html import E
 ar = rt.login('robin')
 elems = rich_text_to_elems(ar, body)
 for e in elems:
-    print(E.tostring(e))
+    print(tostring(e))

@@ -22,7 +22,7 @@ Sphinx build says::
     ses = rt.login('alicia')
     translation.activate('de')
     for msg in settings.SITE.get_welcome_messages(ses):
-        print(E.tostring(msg))
+        print(tostring(msg))
 
 I tried to reproduce this problem here in the blog (and testing it
 with ``python -m doctest docs/blog/2016/0125.rst)``.
@@ -38,7 +38,7 @@ First attempt:
 >>> ses = rt.login('alicia')
 >>> translation.activate('de')
 >>> for msg in settings.SITE.get_welcome_messages(ses):
-...     print(E.tostring(msg))
+...     print(tostring(msg))
 <span>Du bist besch&#228;ftigt in <em>Consultation mit COLLARD Charlotte (118)</em> (<b>Versammlung beenden</b>). </span>
 <span>Du hast 2 Eintr&#228;ge in <b>Zu best&#228;tigende Hilfebeschl&#252;sse</b>.</span>
 <b>Du hast 3 offene Datenkontrollen.</b>
@@ -58,7 +58,7 @@ attempt:
 ... ses = rt.login('alicia')
 ... translation.activate('de')
 ... for msg in settings.SITE.get_welcome_messages(ses):
-...     print(E.tostring(msg))
+...     print(tostring(msg))
 ... """
 >>> exec(code, context)
 <span>Du bist besch&#228;ftigt in <em>Consultation mit COLLARD Charlotte (118)</em> (<b>Versammlung beenden</b>). </span>
@@ -83,7 +83,7 @@ don't remember having wanted a test to *fail* as much as today.
 ...     ses = rt.login('alicia')
 ...     translation.activate('de')
 ...     for msg in settings.SITE.get_welcome_messages(ses):
-...         print(E.tostring(msg))
+...         print(tostring(msg))
 ... """
 >>> code = str(code)
 >>> exec(code, context)
@@ -107,7 +107,7 @@ But here it is finally:
 ...     ses = rt.login('alicia')
 ...     translation.activate('de')
 ...     for msg in settings.SITE.get_welcome_messages(ses):
-...         ln = E.tostring(msg)
+...         ln = tostring(msg)
 ...         print(ln)  # this is line 8 of the string
 ... """
 >>> import sys

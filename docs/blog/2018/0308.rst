@@ -1,0 +1,112 @@
+:date: 2018-03-08
+
+=======================
+Thursday, March 8, 2018
+=======================
+
+Today I worked for :ticket:`2330` (which is part of our porting to
+Python 3 project).
+
+It all started with this error message `TypeError: append() argument
+must be xml.etree.ElementTree.Element, not lxml.etree._Element
+<https://travis-ci.org/lino-framework/book/jobs/349734100#L3839>`__.
+
+Until now we have been working with two different implementations of
+ElementTree: my self-made implementation based on
+:class:`etgen.utils.Namespace`, and the lxml implementation.  In
+Python 3 this now causes above problem, probably because there is some
+type checking somewhere.
+
+I think the best solution is to completely move over to the lxml
+implementation.
+
+Though not the easy way. It has a few consequences.
+
+We cannot use `E.tostring()` any more because the ``E`` defined in
+:mod:`lxml.etree` doesn't have that method.  My extended version of
+:func:`tostring` is now as a global function in :mod:`etgen.html`.
+
+Old code::
+
+     from etgen.html import E
+     ...
+     E.tostring()
+
+New code::
+     
+     from etgen.html import E, tostring
+     ...
+     tostring()
+
+Same problem for `E.iselement` and `E.to_rst` and `E.raw`.
+
+Note that there was no direct error message because expressions
+`E.tostring`, `E.iselement` and `E.to_rst` are valid: they return an
+element with that tag. Which is of course not at all our expected
+behaviour. One possible consequence was::
+
+  FutureWarning: The behavior of this method will change in future
+  versions. Use specific 'len(elem)' or 'elem is not None' test
+  instead.
+  elif isinstance(text, six.string_types) or E.iselement(text):
+
+In lxml we don't have the hack of adding an underscore to attributes
+like `class` which are a reserved in Python. We must convert these
+cases.  Before::
+
+  return E.li(a, class_="active")
+
+After::
+
+  return E.li(a, **{'class': "active"})
+
+
+There is also the trick described in the lxml tutorial::
+
+    def CLASS(*args): # class is a reserved word in Python
+        return {"class":' '.join(args)}
+
+But I don't like it because it adds unnecessary complexity.
+
+There were lots of failures saying `TypeError: bad argument type:
+__proxy__(u' by ')`. These are because lxml elements don't like Django
+translatable strings.  Old code::
+  
+    return E.div(E.h2(self.actor.label), e)
+            
+New code::
+  
+    return E.div(E.h2(str(self.actor.label)), e)
+
+I tried to add the :func:`str` in the core, i.e. to have as least
+impact as possible to application code.
+    
+Another failure was :message:`TypeError: update() takes no keyword
+arguments`. Old code::
+  
+    e.attrib.update(align='right')
+        
+New code::
+
+    e.set('align', 'right')
+
+
+
+I also changed the message:
+
+    Your printable document (filename sales.VatProductInvoice-135.pdf)
+    should now open in a new browser window. If it doesn't, please consult
+    <a href="http://www.lino-framework.org/help/print.html"
+    target="_blank">the documentation</a> or ask your system
+    administrator.
+
+to:    
+  
+    Your printable document (<a
+    href="/media/cache/appypdf/sales.VatProductInvoice-135.pdf">sales.VatProductInvoice-135.pdf</a>)
+    should now open in a new browser window. If it doesn't, please ask
+    your system administrator.
+
+Because the ``a`` tag with two attributes (href and target) caused
+doctest failures in Python 3 where the order of these attribues is
+arbitrary.
