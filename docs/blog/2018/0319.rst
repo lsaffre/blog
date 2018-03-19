@@ -1,0 +1,14 @@
+:date: 2018-03-19
+
+======================
+Monday, March 19, 2018
+======================
+
+I fixed :ticket:`2348` (Output of doctest.show_fields() differs
+(Python 2*3)).  This was not an easy one.  It seems that the sort
+order of the 3 virtual fields defined on
+:class:`lino.core.model.Model` (:attr:`workflow_buttons` etc) was not
+correct under Python 2. As a workaround I added an option `all=False`
+to :func:`lino.api.show_fields` which hides fields that have no
+`help_text`.  Of course this caused some existing test snippets to
+fail.  And *en passant* I updated some help texts.

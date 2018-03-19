@@ -1,0 +1,39 @@
+:date: 2018-03-14
+
+=========================
+Wednesday, March 14, 2018
+=========================
+
+I updated our `jobs page <http://www.saffre-rumma.net/jobs/>`_ and
+reviewed some pages of the :ref:`book`.
+
+Edmund told me how upgrade the LibreOffice on my machine::
+
+    sudo add-apt-repository -y ppa:libreoffice/ppa && sudo apt update && sudo apt full-upgrade -y && sudo apt clean
+
+Worked like a charm!    
+
+I upgraded :ref:`jane`. I remembered vaguely that there was some
+manual migration to do, but didn't even try to check my changes after
+the last upgrade, simply did :xfile:`make_snapshot.sh` and then
+:xfile:`restore.py`, which told me that I had removed the
+`Comment.published` field from the database.
+
+I also had a warning which I didn't investigate deeper::
+  
+  django/db/backends/mysql/base.py:101: Warning: (1265L, u"Data truncated for column 'regular_hours' at row 1")
+
+Some optimizations in :ref:`noi` while sending our service reports for
+February.
+
+- ServiceReports.insert_layout
+- Session.set_widget_options('break_time', hide_sum=True)
+- cal.Room now inherits from users.TimezoneHolder Which has the
+  challenge that TzH defines a chooser with a context argument
+  "partner". cal.Room does have a property "partner", but Lino doesn't
+  support this. It says AttributeError: 'property' object has no
+  attribute 'name'.
+  
+- New field Session.room  
+- There was a place in working.models.welcome_messages where we still
+  passed a lazily translated text as child of an ET element.

@@ -1,0 +1,23 @@
+:date: 2018-03-13
+
+=======================
+Tuesday, March 13, 2018
+=======================
+
+Gerd reported :ticket:`2342` (ChangePassword action button has no
+help_text) and indeed: :func:`lino.core.utils.simplify_name` didn't
+simplify ``actions`` and ``mixins``.
+
+This change required me to run :cmd:`inv clean` followed by :cmd:`inv
+bd` in all projects so that my :xfile:`help_texts.py` files get
+rewritten.  Because for example the help text of
+:attr:`lino_xl.lib.beid.mixins.BeIdCardHolder.nationality` is now
+stored under it new simplified name
+``lino_xl.lib.beid.BeIdCardHolder.nationality``.
+
+And I also fixed an old ergonomy problem: the buttons in the [My
+settings] window were at the bottom instead of (as usual) at the top
+of the form. It was easier than I thought: we just must set
+`hide_navigator` on the default action instead of setting
+`hide_top_toolbar` on the actor. (TODO: document, optimize the
+names...)

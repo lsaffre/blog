@@ -1,0 +1,26 @@
+:date: 2018-03-12
+
+======================
+Monday, March 12, 2018
+======================
+
+I released etgen version 0.0.4 because of failures on :ref:`travis`
+like `this one
+<https://travis-ci.org/lino-framework/xl/builds/352026976?utm_source=email&utm_medium=notification>`__
+in packages which don't declare a github snapshot in their
+:xfile:`requirements.txt`.
+
+
+I continued to repair the test suite of :ref:`welfare` after my
+changes for :ticket:`2330` and :ticket:`2333`.
+
+There is a subtlety to be considered when a plugin A is automatically
+being installed because it is needed by a plugin B which is itself
+being installed automatically because needed by a third plugin C: In
+this case, :meth:`A.get_menu_group
+<lino.core.plugins.Plugin.get_menu_group>` should return C (and not
+B).
+
+A case where this happens is :mod:`lino_welfare.modlib.pcsw` which
+needs :mod:`lino_xl.lib.coachings` which in turn needs
+:mod:`lino_xl.lib.clients`.
