@@ -12,3 +12,29 @@ correct under Python 2. As a workaround I added an option `all=False`
 to :func:`lino.api.show_fields` which hides fields that have no
 `help_text`.  Of course this caused some existing test snippets to
 fail.  And *en passant* I updated some help texts.
+
+A failure in :ref:`book.specs.dumps` was another example why it is
+difficult to delegate this job because it requires quite some
+experience with the Lino internals.  When Hamza asked me some weeks
+ago how to handle this failure, I told him to maybe create two
+different directories for the expected files, one for Python 2 and
+another for Python 3. When I now looked at it, I saw that there was an
+easier and better way: BabelFields still used a ``u`` prefix when
+writing their values to the stream.  I removed that ``u`` and voilà!
+
+
+There were several doctests which failed because the attributes of an
+``<a>`` tag in Python 3 are not in the same order as in Python 2. You
+never know which of the following lines would come::
+
+    <a href="#" onclick="toggle_visibility('comment-2');" title="Hide">⁜</a>
+    <a onclick="toggle_visibility('comment-2');" href="#" title="Hide">⁜</a>
+    <a title="Hide" onclick="toggle_visibility('comment-2');" href="#">⁜</a>
+
+During a production upgrade for :ref:`welcht` I made an optimization
+about the behaviour of choicelists in a python dump.  And yes, it
+seems that specifying the default value for a choicelist field no
+longer requires that as_callable method, simply specify the choice's
+`name` as a string.  That's because :meth:`ChoiceListField.to_python`
+now resolves string values also as names.
+

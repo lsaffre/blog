@@ -1,0 +1,20 @@
+:date: 2018-03-22
+
+========================
+Thursday, March 22, 2018
+========================
+
+Today and yesterday I finished working on :ticket:`2350` (Atelier avec
+une série de 3 week-ends) by adding a test case in
+:ref:`voga.specs.holidays` (which revealed some more minor problems,
+one of them was that :class:`LongEntryChecker
+<lino_xl.lib.cal.LongEntryChecker>` was silently setting the
+`end_date` of these entries back to empty because the calendar entry
+type had :attr:`max_days <lino_xl.lib.cal.EventType.max_days>` set
+to 1.  I moved the logic to a :meth:`duration_veto` method and added a
+:meth:`full_clean` method to :class:`cal.Event` so that it now
+complains immediately when an entry lasts longer than the allowed
+number of days. This will prevent users from accidentally setting
+:attr:`end_date <lino_xl.lib.courses.Course.end_date>` instead of
+:attr:`max_date <lino_xl.lib.courses.Course.max_date>`.
+

@@ -1,0 +1,61 @@
+:date: 2018-03-20
+
+=======================
+Tuesday, March 20, 2018
+=======================
+
+More minor changes for :ticket:`36`.  I proceed by having a look at
+the last travis build and fix one error at a time.
+
+https://travis-ci.org/lino-framework/book/jobs/355712132
+
+
+
+I started working on :ticket:`2347` (Make Lino installable using pip).
+
+https://packaging.python.org/tutorials/distributing-packages/#packaging-your-project
+
+
+
+
+Changes in :mod:`lino_xl.lib.courses`
+=====================================
+
+About :ticket:`2351`.
+
+After changing the end_date of on a course from 31.12.2018 (which was
+wrong) to empty (which is what they want), there was one automatically
+generated event which had this end_date. I tried to manually remove
+the Lino changes this event from suggested to draft.  Which is logical
+but not what we want.  Actually we want it to remain a suggestion. The
+trick here is to simply delete the automatic event and let Lino
+re-generate them all.
+
+I did some subtle code changes for :ticket:`2351` (Atelier avec une
+série de 3 week-ends). Lino Welfare did not yet support managing a
+workshop that generates a series of week-ends (i.e. of meetings which
+last more than one day, i.e. where every calendar entry has an end
+date).  For example I moved :meth:`before_auto_event_save` and
+:meth:`compare_auto_event` from the `EventGenerator` to the
+`RecurrenceSet`.  There were also some places where the rule "empty
+end_date means same as start_date" was not fully applied.
+
+To test these changes, I added an activity "Five weekends 2014" to the
+demo fixture for :mod:`lino_book.projects.roger` data. Afterwards
+there was a problemwhen printing invoice SLS 11 in ::
+
+    EvaluationError: Error while evaluating the expression
+    "table(obj.get_print_items(ar))" defined in the "from" part of a
+    statement. XMLSyntaxError: Extra content at the end of the
+    document, line 3, column 1 (line 3)
+    
+I opened :ticket:`2353` for this. I don't know why this problem
+occured only now.  To fix it, I changed how
+:func:`lino.utils.bleacher.rich_text_to_elems` works. It now uses
+:func:`lxml.html.fragments_fromstring` instead of
+:func:`lxml.etree.fromstring` because the former had a problem with
+newlines added between and after tags by :func:`restify
+<lino.utils.restify.restify>`.
+
+
+      
