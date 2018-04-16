@@ -1,0 +1,126 @@
+:date: 2018-04-03
+
+======================
+Tuesday, April 3, 2018
+======================
+
+Command-line program for reading data from a Belgian eid card
+=============================================================
+
+News for :ticket:`2089`.
+Wouter Verhelst answered to `my issue on eid-mw
+<https://github.com/Fedict/eid-mw/issues/68>`__ that "eid-viewer
+indeed does not have an option to write the XML file without user
+interaction" and that they "did consider that, but saw it as feature
+creep, and therefore decided against it."  He adds that "the XML
+generating code is part of the eID Viewer library, so writing a short
+program to do so (or integrating that library in and existing program)
+should be fairly straightforward."
+
+Straightforward maybe, but I am afraid that I need more help.  The
+issue tracker on eid-mw is no support channel, it seems that I must
+ask on the `eid-middleware-dev
+<http://groups.google.com/group/eid-middleware-dev>`__ group. Before
+posting a new question, I saw that my question has been posted in
+different variations:
+
+- `How to retrieve a simple data from belgian eID ?
+  <https://groups.google.com/forum/#!topic/eid-middleware-dev/--cdSjBIToU>`__
+
+- `Reading e-id information from java
+  <https://groups.google.com/forum/#!topic/eid-middleware-dev/bsTtsZICguQ>`__
+
+These questions got replies linking to lots of documents, but they all
+have a problem: I would need to learn quite some stuff because I have
+no experience with PKCS#11 and almost no experience with Java.  I'd
+prefer a plain Python solution...
+
+I asked Google for "belgian eid python" and found Vincent Hardy's
+`eid-mw-sdk-python
+<https://github.com/linuxunderground/eid-mw-sdk-python>`__ repository
+which contains `a single file
+<https://github.com/linuxunderground/eid-mw-sdk-python/blob/master/eid-data.py>`__
+which does exactly what I want! Here is my copy:
+
+.. literalinclude:: 0403/eid-data.py
+
+I installed Ludovic Rousseau's PKCS#11 Wrapper for Python::
+
+    $ sudo apt install swig  # required to install pykcs11
+    $ pip install pykcs1
+
+But then::    
+
+    $ python eid-data.py 
+    src/dyn_unix.c:34:SYS_dyn_LoadLibrary() libbeidpkcs11.so: cannot open shared object file: No such file or directory
+    Traceback (most recent call last):
+      File "eid-data.py", line 48, in <module>
+        beid = getData()
+      File "eid-data.py", line 28, in __init__
+        self.pkcs11.load('libbeidpkcs11.so')
+      File "/py27/local/lib/python2.7/site-packages/PyKCS11/__init__.py", line 482, in load
+        raise PyKCS11Error(-1, pkcs11dll_filename)
+    PyKCS11.PyKCS11Error: Load (libbeidpkcs11.so)
+
+
+I read `some recommendations given
+<https://github.com/Fedict/eid-mw/issues/42>`__ to somebody who had
+the same error when launching :cmd:`eid-viewer` (which runs without
+error on my machine) and tried::
+
+    $ sudo apt install eid-mw
+    ...
+    eid-mw is already the newest version (4.1.18v4.1.18-0trusty1).
+    eid-mw set to manually installed.
+    0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+
+    $ locate libbeidpkcs11.so
+    /usr/lib/x86_64-linux-gnu/libbeidpkcs11.so.0
+    /usr/lib/x86_64-linux-gnu/libbeidpkcs11.so.0.0.0
+
+    $ cat /etc/ld.so.conf.d/x86_64-linux-gnu.conf 
+    # Multiarch support
+    /lib/x86_64-linux-gnu
+    /usr/lib/x86_64-linux-gnu
+
+AFAICS everything seems correctly installed. The error occurs on both
+Python 2 and 3.  I posted `an issue
+<https://github.com/linuxunderground/eid-mw-sdk-python/issues/1>`__ on
+the eid-mw-sdk-python project.
+
+That post was a bit too quick. After looking at the code and trying, I
+found a workaround: replace the line::
+
+    self.pkcs11.load('libbeidpkcs11.so')
+
+by::
+  
+    self.pkcs11.load('libbeidpkcs11.so.0')
+
+Now it seems to work. (Except that I get some other error, but this is
+probably caused by my card because also eid-viewer fails to read my
+card)::
+
+    $ python eid-data.py 
+    cryptokiVersion: 2.11
+    flags: 
+    libraryDescription: Belgium eID PKCS#11 interface v2
+    libraryVersion: 4.1
+    manufacturerID: Belgium Government              
+    ======================================================
+
+    Error: CKR_TOKEN_NOT_PRESENT (0x000000E0)
+    Error: CKR_DEVICE_ERROR (0x00000030)
+
+
+
+Getting acquaintained section
+=============================
+
+I updated the Developer's Guide so that the `Getting acquaintained
+<http://lino-framework.org/dev/acquaintained.html>`__ section has now
+its own page and comes earlier than before in the global reading
+sequence.
+
+
+    

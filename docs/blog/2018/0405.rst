@@ -1,0 +1,60 @@
+:date: 2018-04-05
+
+=======================
+Thursday, April 5, 2018
+=======================
+
+
+Réorganisation des types d'utilisateur
+======================================
+
+Here is the current summary of a list of changes in the permissions
+requested for :ticket:`2089`:
+
+Profil 400 :
+
+- Panneau observations – Le profil reçoit bien la notification de la
+  CRÉATION d’un rapport mais si on MODIFIE ce même rapport plus tard,
+  il n’y a pas de notification (ce qu’il faudrait si c’est
+  techniquement possible).
+
+- Une fois dans le dossier d’un bénéficiaire, peux-tu faire en sorte
+  que le profil 400 ait les mêmes onglets que le profil administrateur
+  ? Il manque PARCOURS – COMPÉTENCES – FREINS - STAGES D’IMMERSION -
+  MÉDIATION DE DETTES.
+
+Profil 120 :
+
+- Les collègues n’ont plus de notification quand on change la phase
+  d’insertion (onglet personne). Techniquement c'est une simple
+  modification dans le signalétique du bénéficiaire, or on avait dit
+  qu'ils ne veulent pas les voir? Il semble donc que pour certains
+  champs ils veulent quand-meme une notification. Il faudrait donc
+  faire une liste de tous les champs et décider pour chaque champ si
+  les 400 veulent etre notifié quand ce champ change? à méditer...
+
+- Atelier : La colonne Workflow est visible mais si on veut cliquer
+  sur un symbole, on a un message qui précise qu’on a pas les
+  droits. Il faut alors entrer dans l’atelier pour faire la
+  manœuvre. Je n'ai pas su reproduire. à voir ensemble.
+
+Code changes:  
+
+- New user type "Social agent (Flexible)"
+
+- Renamed "Integration agent (Newcomers)" to "Integration agent
+  (Flexible)"
+
+- Renamed "Newcomers reception clerk" to "Reception clerk"
+
+- In :mod:`chatelet <lino_welfare.projects.chatelet>` the demo users
+  Hubert (100), Alicia (100), Caroline (200), and Judith (400) now
+  have the "Flexible" variant instead of the base user type.
+  E.g. Hubert gets 100 in eupen but 120 in chatelet.
+  
+- When the :attr:`show_values
+  <lino.core.choicelist.ChoiceList.show_values>` of a choicelist is
+  `True`, until now this had an influence only in
+  :meth:`lino.core.choicelists.ChoiceList.display_text`.  Now also the
+  :meth:`__str__` method of each choice respects this and shows the
+  value.

@@ -1,0 +1,86 @@
+:date: 2018-04-11
+
+=========================
+Wednesday, April 11, 2018
+=========================
+
+Besichtigung testlino@weleup mit Caroline.
+
+Reiter `Verträge` eines Klienten:
+
+- Panel `VSEs` ist nicht sichtbar (für Caroline, 200 Sozi)
+  
+- Historik : wenn mehr als 15 Zeilen sind, dann fehlt die Pseudezeile,
+  auf der man doppelklicken kann, um schnell eine neue Notiz zu
+  erstellen. Lösung: z.B. ein eigener Button dafür. Oder aber Insert
+  im Kontextmenü (rechter Mausklick) müsste auch klappen, wenn man es
+  auf einer Notiz klickt, für die man kein Schreibrecht hat.
+  Oder: Zusammenfassung (slave summary) mit (+)-Button am Ende.
+
+- Kalendereinträge: chronologisch rückwärts sortieren.
+
+- Kontoauszüge werden bei Belfius irgendwann bereitgestellt, einmal am
+  Tag im Sekretariat importiert und auf dem Server abgespeichert, und
+  in der Nacht darauf von Lino eingelesen.  Aber manchmal sind auch
+  die Kontoauszüge von vor mehr als einem Tag nicht da.  TODO: läuft
+  der cron-Job stündlich? Oder nur in der Nacht?
+
+Planung eidreader und davlink mit GX und SW
+
+- Datei test.html erstellt mit einem Link wdav://http://x.y.z.bla.rtf
+
+- custom url protocol handler in Windows: wdav -> test.bat
+
+- Neue Datenbanktabelle "BeIdCards", primary key `card_id`
+
+- Wenn man in Lino auf eid-Karte einlesen klict, dann soll demnächst folgendes passieren:
+
+  - Obigen Link in neuem Fenster öffnen
+  - 
+
+
+
+How to install a Python runtime environment to a Windows file server
+====================================================================
+
+We install a Python runtime environment to a directory
+:file:`f:\anwprog\python` on a Windows file server so that all users
+can run Python scripts.
+
+Select a "manager machine" where you will install the environmen. This
+machine will also need to install Windows C++ compiler and/or Visual
+Studio.
+  
+
+- Install Python for Windows to custom directory :file:`f:\anwprog\python`
+  additional options: only pip
+  
+- Download swigwin-x.y.zip (from swig.org) 
+  
+- Create a file :xfile:`init.bat`::
+    
+    @echo off
+    PATH %PATH%;f:\anwprog\python\scripts
+    PATH %PATH%;f:\anwprog\python\swigwin
+
+- :message:`Don't know how to compile StdAfx.h`
+
+
+
+TODO (Luc):
+
+- pip install beidposter
+  beidposter reads data from eid card and sends it to a web server.
+
+- Button "eId-Karte einlesen" gibt es in 2 Versionen: (1) auf einem
+  Klienten oder (2) global.
+
+  Lino generiert einen URL
+  beid://username_partner_id.eid
+  beid://username.eid
+
+  Lino hat einen neuen Parameter `incoming_eid_path`
+
+  eidposter.bat ruft::
+
+     python -m eidposter f:\lino\incoming_beid\username_partner_id

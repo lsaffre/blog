@@ -1,0 +1,46 @@
+:date: 2018-04-08
+
+=====================
+Sunday, April 8, 2018
+=====================
+
+Command-line program for reading data from a Belgian eid card
+=============================================================
+
+Yesterday I arrived in Eupen.  I posted some pictures in my `private
+blog <http://luc.saffre-rumma.net/blog/2018/0407.html>`__.
+
+I hope to get my own Belgian ID card activated tomorrow, but today a
+friend gave me his Belgian ID card for testing, so I could continue
+the work on :ticket:`2089` started on :doc:`0403`.  It gets the names
+correctly, but issues twice the following question:
+
+  The application [/media/dell1tb/virtualenvs/py3/bin/python3] wants
+  to access the eID card. Do you want to accept it?
+
+And at the command-line I get this (real names replaced by my names)::
+
+    $ python eid-data.py 
+    cryptokiVersion: 2.11
+    flags: 
+    libraryDescription: Belgium eID PKCS#11 interface v2
+    libraryVersion: 4.1
+    manufacturerID: Belgium Government              
+    ======================================================
+    Error: CKR_TOKEN_NOT_PRESENT (0x000000E0)
+    sdialog_call_modal: in child
+    sdialog_call_modal: DISPLAY=:0
+    call_dialog_result: about to exec /usr/lib/eid-mw/beid-askaccess
+    Gtk-Message: GtkDialog mapped without a transient parent. This is discouraged.
+    Saffre
+    sdialog_call_modal: in child
+    sdialog_call_modal: DISPLAY=:0
+    call_dialog_result: about to exec /usr/lib/eid-mw/beid-askaccess
+    Gtk-Message: GtkDialog mapped without a transient parent. This is discouraged.
+    Luc Johannes
+
+Okay, this needs more investigation, e.g. read Ludovic Rousseau's
+`PyKCS11 introduction
+<https://ludovicrousseau.blogspot.be/2010/06/pykcs11-introduction.html>`__
+-- but not today!
+

@@ -1,0 +1,113 @@
+:date: 2018-04-14
+
+========================
+Saturday, April 14, 2018
+========================
+
+Today I mostly worked on :ref:`eidreader` and its integration into
+Lino.  A historic moment: It is now possible to read Belgian eID cards
+into :ref:`avanti` or :ref:`welfare` without a Java. Including the
+picture. Disclaimer: it works with *my* eID card, I didn't test it on
+other cards until now.  TODO: write documentation so that interested
+developers can watch it in action.
+
+Five releases in one day
+========================
+
+The :ref:`eidreader` had 5 releases today.
+
+Marc Rabaey reported a problem with :ref:`eidreader` 0.0.1 (it was not
+possible to install it)::
+
+    $ pip install eidreader
+    Collecting eidreader
+      Downloading eidreader-0.0.1.tar.gz
+        Complete output from command python setup.py egg_info:
+        Traceback (most recent call last):
+          File "<string>", line 1, in <module>
+          File "/tmp/pip-install-2hj2tlzx/eidreader/setup.py", line 3, in <module>
+            exec(compile(open(fn, "rb").read(), fn, 'exec'))
+        FileNotFoundError: [Errno 2] No such file or directory: 'setup_info.py'
+
+        ----------------------------------------
+    Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-install-2hj2tlzx/eidreader/
+
+  
+It took me a few version numbers to fix the issue (because it's
+difficult to test these issues without actually releasing).  Now
+(version 0.0.4) it should work.
+
+.. An important step now is to test the script with all kinds of real
+   eid cards.  I guess that there will be miscellaneous issues and
+   more changes in the field names.
+
+The problem was that my :xfile:`setup_info.py` trick doesn't work for
+single-file projects, it works only when there is a package.
+I read `this document
+<https://packaging.python.org/guides/single-sourcing-package-version/>`__
+but could not find any better solution.
+
+I continued my work on getting the whole system to run. One gotcha was
+that the ``data`` in ``requests.post(url, data=data)`` must not be a
+nested dict (i.e. a dict containing other dicts). Actually they
+explain it well: `More complicated POST requests
+<http://docs.python-requests.org/en/master/user/quickstart/#more-complicated-post-requests>`__.
+
+Another challenge was that the Java version obviously had some
+powerful date parser which understands strings like
+``"01.JUN. 1968"``.  This is how my birth date is stored on my Belgian
+ID card).  My favorite package `python-dateutil
+<https://dateutil.readthedocs.io/en/stable/>`__ which claims to
+provide `Generic parsing of dates in almost any string format
+<https://dateutil.readthedocs.io/en/stable/parser.html>`__ fails when
+parsing that string:
+
+>>> from dateutil.parser import parse as date_parser
+>>> date_parser("01.JUN. 1968", ignoretz=True)
+Traceback (most recent call last):
+...
+ValueError: Unknown string format
+
+The stumblestone is the missing space after the day.  If we add it
+manually, it works:
+
+>>> date_parser("01. JUN. 1968")
+datetime.datetime(1968, 6, 1, 0, 0)
+
+But that's of course just a hint for improving the parser, not a
+solution for our problem.
+
+I tried with `ignoretz` and `fuzzy`, but none helped:
+
+>>> date_parser("01.JUN. 1968", ignoretz=True)
+Traceback (most recent call last):
+...
+ValueError: Unknown string format
+
+>>> date_parser("01.JUN. 1968", fuzzy=True)
+Traceback (most recent call last):
+...
+ValueError: Unknown string format
+
+Then I tried the `dateparser <http://dateparser.readthedocs.io>`__
+package which turned out to be more successful:
+
+>>> import dateparser
+>>> dateparser.parse("01.JUN. 1968")
+datetime.datetime(1968, 6, 1, 0, 0)
+
+I ended up extending the :meth:`lino.utils.IncompleteDate.parse`
+method.
+
+
+And then I pushed a big bunch of changes I had been doing during the
+last week. Thy break the test suites, but I was impatient to publish
+them.  Here is (rather: should be) a summary of these changes.
+
+Subtle changes in :ref:`atelier`:
+
+- :file:`atelier/__init__.py` no longer executes
+  :xfile:`setup_info.py` file
+- Fixed a failure when :cmd:`inv prep` was invoked from a subdir of
+  the project's root.
+  

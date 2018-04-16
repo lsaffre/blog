@@ -1,0 +1,275 @@
+:date: 2018-04-02
+
+=====================
+Monday, April 2, 2018
+=====================
+
+I started to dive into OData with the question "How much work will it
+be to write an OData adapter for Lino?".
+
+It seems that there is no Python library which provides OData *server*
+functionality.  Even Steve Lay's `PySLET <https://www.pyslet.org/>`_
+seems to just forward incoming calls to remote services (`*
+<http://swl10.blogspot.com.ee/2014/02/a-dictionary-like-python-interface-for.html>`__). So
+basically we need to write something from scratch.
+
+My notes while reading
+http://www.odata.org/getting-started/basic-tutorial/ (and
+http://www.odata.org/documentation/).
+
+OData is more than a RESTful interface.  It adds **metadata**
+(description of the data model), **querying** (filtering data),
+**custom operations**.  "The OData Protocol is different from other
+REST-based web service approaches in that it provides a uniform way to
+describe both the data and the data model. This improves semantic
+interoperability between systems and allows an ecosystem to emerge."
+  
+Here is an example of a request for a **collection of entities**::
+  
+  GET serviceRoot/People
+
+Response::
+  
+    {
+        "@odata.context": "serviceRoot/$metadata#People",
+        "@odata.nextLink": "serviceRoot/People?%24skiptoken=8",
+        "value": [
+            {
+                "@odata.id": "serviceRoot/People('russellwhyte')",
+                "@odata.etag": "W/"08D1694BD49A0F11"",
+                "@odata.editLink": "serviceRoot/People('russellwhyte')",
+                "UserName": "russellwhyte",
+                "FirstName": "Russell",
+                "LastName": "Whyte",
+                "Emails": [
+                    "Russell@example.com",
+                    "Russell@contoso.com"
+                ],
+                "AddressInfo": [
+                    {
+                        "Address": "187 Suffolk Ln.",
+                        "City": {
+                            "CountryRegion": "United States",
+                            "Name": "Boise",
+                            "Region": "ID"
+                        }
+                    }
+                ],
+                "Gender": "Male",
+                "Concurrency": 635404796846280400
+            },
+            ...
+            {
+                "@odata.id": "serviceRoot/People('keithpinckney')",
+                "@odata.etag": "W/"08D1694BD49A0F11"",
+                "@odata.editLink": "serviceRoot/People('keithpinckney')",
+                "UserName": "keithpinckney",
+                "FirstName": "Keith",
+                "LastName": "Pinckney",
+                "Emails": [
+                    "Keith@example.com",
+                    "Keith@contoso.com"
+                ],
+                "AddressInfo": [],
+                "Gender": "Male",
+                "Concurrency": 635404796846280400
+            }
+        ]
+    }
+
+
+Explanations:
+
+- ``@odata.context`` is the base URL to apply to any relative URLs
+  in this response.
+
+- ``@odata.nextLink`` : link to the next "page" in a collection with
+  partial results. Indicates that the response is only a subset of the
+  requested collection.
+  
+- The ``value`` is a list of dicts, one dict for each record.
+
+  
+
+Requesting an Individual Entity by ID
+=====================================
+
+Request::
+  
+  GET serviceRoot/People('russellwhyte')
+
+Response::
+
+    {
+        "@odata.context": "serviceRoot/$metadata#People/$entity",
+        "@odata.id": "serviceRoot/People('russellwhyte')",
+        "@odata.etag": "W/"08D1694BF26D2BC9"",
+        "@odata.editLink": "serviceRoot/People('russellwhyte')",
+        "UserName": "russellwhyte",
+        "FirstName": "Russell",
+        "LastName": "Whyte",
+        "Emails": [
+            "Russell@example.com",
+            "Russell@contoso.com"
+        ],
+        "AddressInfo": [
+            {
+                "Address": "187 Suffolk Ln.",
+                "City": {
+                    "CountryRegion": "United States",
+                    "Name": "Boise",
+                    "Region": "ID"
+                }
+            }
+        ],
+        "Gender": "Male",
+        "Concurrency": 635404797346655200
+    }  
+
+  
+Request an **individual property**::
+   
+  GET serviceRoot/Airports('KSFO')/Name
+
+Response::
+  
+  {
+    "@odata.context": "serviceRoot/$metadata#Airports('KSFO')/Name",
+    "value": "San Francisco International Airport"
+  }
+
+Request a **raw value**::
+
+    GET serviceRoot/Airports('KSFO')/Name/$value
+
+Response::
+
+    San Francisco International Airport
+  
+  
+
+Property value of a **complex type**::
+
+    {
+    "@odata.context": "serviceRoot/$metadata#Airports('KSFO')/Location/Address",
+    "value": "South McDonnell Road, San Francisco, CA 94128"
+    }
+
+
+Querying data
+=============
+
+The ``$filter`` query option::
+
+  GET serviceRoot/People?$filter=FirstName eq 'Scott'
+
+Filter on complex type::
+  
+  GET serviceRoot/Airports?$filter=contains(Location/Address, 'San Francisco')  
+
+
+Filter on Enum Properties::
+  
+    GET serviceRoot/People?$filter=Gender eq Microsoft.OData.SampleService.Models.TripPin.PersonGender'Female'
+
+(Returns all female People. The Gender is a property of Enum type.)
+    
+Nested Filter in ``$expand``::
+  
+    GET serviceRoot/People?$expand=Trips($filter=Name eq 'Trip in US')
+
+Return People and all their trips with Name "Trip in US".
+
+
+Query option ``$orderby``::
+
+  GET serviceRoot/People('scottketchum')/Trips?$orderby=EndsAt desc
+  
+The ``$top`` query option requests the number of items in the queried
+collection to be included in the result.
+
+The ``$skip`` query option requests the number of items in the queried
+collection that are to be skipped and not included in the result.
+
+Return the first two people of the People entity set::
+
+  GET serviceRoot/People?$top=2 
+
+Return people starting with the 19th record::
+
+  GET serviceRoot/People?$skip=18 
+  
+The ``$count`` query option requests a count of the matching
+resources.
+
+Return the total number of people::
+
+  GET serviceRoot/People/$count 
+
+Response::
+
+  20
+
+
+The ``$expand`` query option specifies the related resources to be
+included in line with retrieved resources.
+
+Return the Friends of a Person::
+
+  GET serviceRoot/People('keithpinckney')?$expand=Friends
+
+Response::  
+
+    {
+        "@odata.context": "serviceRoot/$metadata#People/$entity",
+        "@odata.id": "serviceRoot/People('keithpinckney')",
+        "@odata.etag": "W/"08D1694E2BB4317A"",
+        "@odata.editLink": "serviceRoot/People('keithpinckney')",
+        "UserName": "keithpinckney",
+        "FirstName": "Keith",
+        "LastName": "Pinckney",
+        "Emails": [
+            "Keith@example.com",
+            "Keith@contoso.com"
+        ],
+        "AddressInfo": [],
+        "Gender": "Male",
+        "Concurrency": 635404806897545600,
+        "Friends": [
+            {
+                "@odata.id": "serviceRoot/People('clydeguess')",
+                "@odata.etag": "W/"08D1694E2BB4317A"",
+                "@odata.editLink": "serviceRoot/People('clydeguess')",
+                "UserName": "clydeguess",
+                "FirstName": "Clyde",
+                "LastName": "Guess",
+                "Emails": [
+                    "Clyde@example.com"
+                ],
+                "AddressInfo": [],
+                "Gender": "Male",
+                "Concurrency": 635404806897545600
+            },
+            { ... }
+        ]
+    }
+
+
+
+The ``$select`` query option requests a limited set of properties for
+each entity or complex type.
+
+Return Name and IcaoCode of all Airports::
+
+  GET serviceRoot/Airports?$select=Name, IcaoCode
+    
+The ``$search`` query option includes only those entities matching the
+specified search expression. The definition of what it means to match
+is dependent upon the implementation.
+
+Get all People who have 'Boise' in their contents::
+
+  serviceRoot/People?$search=Boise
+
+
+(to be continued)  
