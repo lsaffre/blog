@@ -1,0 +1,69 @@
+:date: 2018-04-18
+
+=========================
+Wednesday, April 18, 2018
+=========================
+
+We continued after :doc:`0411` and tested :ref:`eidreader` on their
+test server.  Main problem was a limitation of the Windows registry
+where you --as it seems-- cannot simply redirect to a log file. New
+command-line option ``--logfile`` and released new eidreader 0.0.7
+(:ref:`eidreader.changes`).
+
+We tested a few more eID cards and adapted :mod:`lino_xl.lib.beid`:
+
+- BeIdCardTypes has two new items "01" and "06" (seems that they
+  decided to add a leading "0").
+- Parsing of gender from eID did not recognize "Vrouwelijk" and
+  "Weiblich".
+- New error message "No card data found" e.g. when card reader was
+  empty.
+- Changed error message "Abandoned after {} seconds".
+
+
+General optimizations in :ref:`welfare`:
+
+- Wenn man einen Begleiter zuweist, steht die neue Begleitung jetzt
+  automatisch auf primär. Falls es bereits einen PB gab, wird dieser
+  abgeschaltet.
+
+- Was tun, wenn ein Sozi aufhört?  end_date ausfüllen. Benutzerart
+  nicht auf leer setzen, weil man sonst nicht mehr als dieser User
+  arbeiten kann.
+
+- Panel `VSEs` ist nicht sichtbar (für Caroline, 200 Sozi) -> Caroline
+  kriegt usertype 420.
+  
+- Kalendereinträge: chronologisch rückwärts sortieren.
+
+
+TODO (including the items from :doc:`0411`):
+
+- Historik (Notizen) : wenn mehr als 15 Zeilen sind, dann fehlt die
+  Pseudezeile, auf der man doppelklicken kann, um schnell eine neue
+  Notiz zu erstellen. Lösung: z.B. ein eigener Button dafür. Oder aber
+  Insert im Kontextmenü (rechter Mausklick) müsste auch klappen, wenn
+  man es auf einer Notiz klickt, für die man kein Schreibrecht hat.
+  Oder: Zusammenfassung (slave summary) mit (+)-Button am Ende.
+
+- Kontoauszüge werden bei Belfius irgendwann bereitgestellt, einmal am
+  Tag im Sekretariat importiert und auf dem Server abgespeichert, und
+  in der Nacht darauf von Lino eingelesen.  Aber manchmal sind auch
+  die Kontoauszüge von vor mehr als einem Tag nicht da.  TODO: läuft
+  der cron-Job stündlich? Oder nur in der Nacht?
+
+- Fehlermeldung, wenn `User.newcomer_consultations` eingeschaltet ist
+  und der Benutzer keinen Kalender hat.
+  
+- Wenn ein Sozi aufhört, sollten alle Begleitungen (idealerweise
+  anklickbar) in einem Rutsch transferiert werden können.  Mit
+  Begründung.
+
+- `User.last_login` ist momentan immer leer. Sollte bei Login gesetzt
+  werden.
+
+- Wenn ein User wegen start_date bzw. end_date nicht aktiv ist, sollte
+  er an gewissen Stellen nicht mehr erscheinen.  Insbesondere keine
+  Termine gemacht bekommen und generell in allen Auswahlfeldern.
+
+  
