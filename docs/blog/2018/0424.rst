@@ -1,0 +1,26 @@
+:date: 2018-04-24
+
+=======================
+Tuesday, April 24, 2018
+=======================
+
+I continued to work on :ticket:`2368` (adapt the test suite) in order
+to finish the eidreader project.
+
+One change with rewriting eidreader from Java to the Python is that it
+does not seem to have any middle_name field any more.  I can see only
+two fields: `firstnames` and `first_letter_of_third_given_name` on the
+cards we've read so far.
+
+
+I worked on :ticket:`2363` (Bescheinigung ausserhalb
+Beschlussperiode).  It is a duplicate of :ticket:`1354` (Deferred
+RefundConfirmation : [u'Date range 19.04.16...19.04.16 lies outside of
+granted period 01.01.15...01.04.16.']) which is waiting for their
+feedback.  But when exploring it, I saw that the described less severe
+checker rule for :class:`lino_welfare.modlib.aids.Confirmation` is not
+yet active on their testlino.  The testlino still issues 686 data
+problems when running :manage:`checkdata`.  Now I actually implemented
+the rule::
+
+    if cp[1] is None: cp[1] = cp[0]
