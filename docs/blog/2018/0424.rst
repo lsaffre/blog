@@ -20,7 +20,16 @@ granted period 01.01.15...01.04.16.']) which is waiting for their
 feedback.  But when exploring it, I saw that the described less severe
 checker rule for :class:`lino_welfare.modlib.aids.Confirmation` is not
 yet active on their testlino.  The testlino still issues 686 data
-problems when running :manage:`checkdata`.  Now I actually implemented
-the rule::
+problems when running :manage:`checkdata`.
 
-    if cp[1] is None: cp[1] = cp[0]
+Now I actually implemented the rule::
+
+    if cp[1] is None: cp[1] = cp[0] New option
+
+But this rule is obviously not enough because now they have 200
+confirmations that don't obey the rule.  To prevent Lino from refusing
+them in its database, I added a new :attr:`no_date_range_veto_until
+<lino_welfare.modlib.aids.Plugin.no_date_range_veto_until>`
+
+After a long time I finally got all test suites to pass again. At
+least on my machine and using Python 2.
