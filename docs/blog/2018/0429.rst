@@ -1,0 +1,92 @@
+:date: 2018-04-29
+
+======================
+Sunday, April 29, 2018
+======================
+
+Yesterday and today I explored and fixed a seemingly trivial `failure
+of job 690
+<https://travis-ci.org/lino-framework/book/jobs/371908433>`__ in the
+book project on Travis.
+
+Original problem: The big test suite passes, but then :cmd:`inv bd`
+fails because it cannot find a reference to :ref:`eidreader`.  That's
+strange because ``eidreader`` is correctly being included when calling
+the :func:`interproject.configure
+<atelier.sphinxconf.interproject.configure>` function from
+:xfile:`conf.py` file of the book.
+
+The reason was a mixture of design flaws and side effects in
+:ref:`atelier`.
+
+It took me a whole weekend and a series of changes, including one
+backwards-incompatible change to the :xfile:`tasks.py` file of every
+project. But I fixed it!
+
+
+Internal changes in Atelier
+===========================
+
+Here are some of the changes I did this week-end. I plan to release
+them as version 1.1.0 soon. See :ref:`atelier.changes`.
+
+The :func:`interproject.configure
+<atelier.sphinxconf.interproject.configure>` function has become more
+severe in order to have better error message when intersphinx mappings
+don't work as expected.
+
+I added a warning "No objects.inv for {} of {}" to that function.  BTW
+the new `Sphinx logging API
+<http://www.sphinx-doc.org/en/master/extdev/logging.html>`__ is cool!
+
+This of course causes the whole thing to be more nitpicky, more severe
+and more fragile.  Remember that most projects have
+:envvar:`tolerate_sphinx_warnings` set to `False`.
+
+Running :cmd:`pp inv bd` now fails e.g. in my ``cd`` project
+(:mod:`commondata`) because that project has no `docs` folder.  Or in
+the ``sr`` project which contains a Nikola (not a Sphinx) website.
+
+It was not possible to change the value of :envvar:`doc_trees` in a
+project that defines a namespace module.  The default value for
+:envvar:`doc_trees` is ``['docs']``, and in order to change it, we
+usually simply set it on the main module.  Except when there is no
+main module (e.g. in docs-only projects) or when the main module is a
+namesapace module (TIL that you cannot set attributes on a namespace
+module).  In these cases we define :envvar:`doc_trees` in the
+:xfile:`tasks.py` of the ``commondata`` project.  But that was being
+ignored until now, just nobody noticed.  Now the :envvar:`doc_trees`
+specified in the :xfile:`tasks.py` is used as the default value for
+the optional attribute on the main module.
+
+New rules : the default value for :envvar:`doc_trees` is ``['docs']``
+only for projects without a main module.  When a project has a main
+package, it is no longer allowed to define a :envvar:`doc_trees`
+configuration value.
+
+A special feature of :func:`interproject.configure
+<atelier.sphinxconf.interproject.configure>` is that it adds *all
+projects of the atelier* (as defined in :ref:`atelier.config`) to the
+:envvar:`intersphinx_mapping`.  As a corollaire of our change, this
+feature fails for the projects that come *after* this project in the
+atelier project's list.  So now we add only those the projects come
+*before* the current project.  Which is a normal requirement: the
+sequence order of the atelier project's list must honor intersphinx
+dependencies.  A similar case is the welfare project which has more
+than one `doc_trees` (``['docs', 'docs_de', 'docs_fr']`` to be
+precise): the first doctree cannot expect the following ones to be
+built, so it cannot add intersphinx mappings from `docs` to `docs_de`.
+
+There was a global instance of a Collection in
+:mod:`atelier.invlib.ns` being reused for all projects.  Which caused
+side effects.  To fix this, I had to impose a backwards-incompatible
+change to the :xfile:`tasks.py` file::
+
+    from atelier.invlib.ns import ns
+    ns.setup_from_tasks(globals(), ...)
+
+must change to::
+
+    from atelier.invlib import setup_from_tasks
+    ns = setup_from_tasks(globals(), ...)
+

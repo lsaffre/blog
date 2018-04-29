@@ -15,8 +15,8 @@ TIM_, Lino's predecessor which still runs on 30 sites in Belgium.
 
 Other projects:
 
-- atelier_, eidreader_ and davlink_ are independant projects released
-  under the BSD instead of LGPL.
+- :ref:`atelier`, :ref:`eidreader` and davlink_ are independant
+  projects released under the BSD instead of LGPL.
 
 - `Lino Welfare <http://welfare.lino-framework.org>`__,
   `Lino Noi <http://noi.lino-framework.org>`__,
@@ -146,6 +146,5 @@ Personal views
 .. _Django: https://www.djangoproject.com/
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _atelier: http://atelier.lino-framework.org
-.. _eidreader: https://github.com/lsaffre/eidreader
 .. _davlink: https://github.com/lsaffre/davlink
 

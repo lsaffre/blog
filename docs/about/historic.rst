@@ -132,7 +132,6 @@ getting more invoices for license fees.
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _Eupen: http://en.wikipedia.org/wiki/Eupen
 .. _atelier: http://atelier.lino-framework.org
-.. _eidreader: https://github.com/lsaffre/eidreader
 .. _davlink: https://github.com/lsaffre/davlink
 
 
