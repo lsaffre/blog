@@ -1,0 +1,36 @@
+:date: 2018-05-02
+
+======================
+Wednesday, May 2, 2018
+======================
+
+I understood what was happening yesterday: (1) some doctests
+(:ref:`welfare.specs.cal` and welfare.specs.jobs) were modifying the
+database (:attr:`SiteConfig.hide_events_before
+<lino.modlib.system.SiteConfig.hide_events_before>`) and (2) the
+doctests were being executed in arbitrary order.
+
+I released :ref:`atelier` 1.1.6 for above change. See
+:ref:`atelier.changes`.
+
+And then the `{'system_note_type': [u"L'instance Event Type avec 1
+dans id n'existe pas."]}` (:ticket:`2296`).  I am quite sure that it
+has to do with our cahced SiteConfig.  I added some debug messages to
+see what's happening.  The `first attempt
+<https://travis-ci.org/lino-framework/welfare/jobs/373706473>`__
+failed because --of course-- now most doctests are failing due to the
+additional messages.  But the second attempt
+<https://travis-ci.org/lino-framework/welfare/jobs/373761588>`__ was
+intersting.
+
+
+::
+   
+    Creating test database for alias 'default'...
+    20180502 <lino_welfare.projects.eupen.settings.demo.Site object at 0x7f9b6aed3350> clear_site_config None
+    ...
+    System check identified no issues (0 silenced).
+    ...
+    20180502 Created SiteConfig object SiteConfig(.id=1,next_partner_id=100,max_auto_events=72)
+    20180502 save() SiteConfig(id=1,next_partner_id=100,max_auto_events=72,system_note_type=1)
+

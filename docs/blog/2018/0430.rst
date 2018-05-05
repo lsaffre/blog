@@ -4,8 +4,43 @@
 Monday, April 30, 2018
 ======================
 
-When I wrote yesterday "but I fixed it!", it was fixed "in my mind"
-but it wasn't yet actually fixed in reality.  I needed two new
-versions of :ref:`atelier` before it was visible to the world.
+When I wrote yesterday that "I fixed it!", it was actually fixed "in
+my mind" but not yet in reality.  I needed two several versions of
+:ref:`atelier` before it was visible to the world.
 
-Also fixed some failures in Python 3 environment.
+Motivated by this action, I continued also today to work for getting
+the test suites to pass on Travis. (There's is much to do outside as
+well, and it suited me to work in chunks: do some fix, let Travis run
+the tests while I was outside, then come back and see the results and
+do some more fixes.
+
+I removed the 'Sphinx<1.7.1' requirement for :ref:`atelier`, and it
+still caused that failure during :cmd:`inv bd` in :ref:`book` which
+made me add the requirement::
+
+  SphinxWarning: .../lino/lino/core/site.py:docstring of lino.core.site:1:Literal block expected; none found.
+
+It took me some time to find the explanation: I had docstrings of
+type::
+
+    """
+    Blabla bla. 
+    Usage example::
+    
+      site_config_defaults = dict(default_build_method='appypdf')
+
+    """
+
+And autosummary includes only the first paragraph of every docstring
+into its summary table.  It's indeed a syntax error when you announce
+a literal block which isn't there.  And Sphinx has obviously become
+better in finding this error.
+
+I also fixed more failures in Python 3 environment and, believe it or
+not: the Lino Book test suite now passes on Travis in both Pythons!  A
+historic day!
+
+And then I attacked :ticket:`2296`, yet another mysterious failure in
+:ref:`welfare`.  Happens only on Travis, not on my machine.  It had to
+do with :attr:`SITE.site_config <lino.core.site.Site.site_config`, our
+cached copy of SiteConfig. 

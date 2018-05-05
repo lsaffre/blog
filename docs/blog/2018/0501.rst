@@ -1,0 +1,99 @@
+:date: 2018-05-01
+
+====================
+Tuesday, May 1, 2018
+====================
+
+The :ref:`book` is green on :ref:`travis`, now I also want
+:ref:`welfare` to become green.
+It is still failing 
+https://travis-ci.org/lino-framework/welfare/jobs/373179832
+
+More changes in :ref:`atelier`: the :attr:`config` of a project now
+always has all keys.  A bugfix: when :cmd:`per_project git st` would
+fail with a traceback.
+
+I discovered that some doctests did not fail on my machine when I run
+the suite as :cmd:`inv prep test`, but invoking manually
+e.g. :cmd:`doctest docs/specs/eupen.rst` would produce the failure
+also on my machine.  The failure also works when I run :cmd:`inv prep`
+followed by :cmd:`inv test`.
+
+Strange::
+
+    (py27) luc@doll:~/work/welfare$ inv prep test
+    --------------------------------------------------------------------------------
+    Run in demo project lino_welfare/projects/std
+    (...)
+    Updating ESF Summaries ...
+    Installed 2740 object(s) from 50 fixture(s)
+    Loaded 249 doctests from docs
+    ................................................................................
+    ................................................................................
+    ................................................................................
+    .............
+    ----------------------------------------------------------------------
+    Ran 253 tests in 896.462s
+
+    OK
+    (py27) luc@doll:~/work/welfare$ inv test
+    Loaded 249 doctests from docs
+    ................................................................................
+    ................................................................................
+    .....................................F................................F.........
+    .............
+    (...)
+    ======================================================================
+    FAIL: atelier.test.DocTestCase (docs/specs/eupen.rst)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 45, in func
+        self.run_subprocess(args)
+      File "/media/dell1tb/work/atelier/atelier/utils.py", line 407, in run_subprocess
+        self.fail(msg)
+    AssertionError: /media/dell1tb/virtualenvs/py27/bin/python2 -m atelier.doctest_utf8 docs/specs/eupen.rst ({}) returned 1:
+    -----
+    **********************************************************************
+    (...)
+    ======================================================================
+    FAIL: atelier.test.DocTestCase (docs/specs/cal.rst)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 45, in func
+        self.run_subprocess(args)
+      File "/media/dell1tb/work/atelier/atelier/utils.py", line 407, in run_subprocess
+        self.fail(msg)
+    AssertionError: /media/dell1tb/virtualenvs/py27/bin/python2 -m atelier.doctest_utf8 docs/specs/cal.rst ({}) returned 1:
+    -----
+    **********************************************************************
+    (...)
+    ***Test Failed*** 3 failures.
+    ----------------------------------------------------------------------
+    Ran 253 tests in 663.188s
+    FAILED (failures=2)
+    Test failed: <unittest.runner.TextTestResult run=253 errors=0 failures=2>
+    error: Test failed: <unittest.runner.TextTestResult run=253 errors=0 failures=2>
+  
+    $ python setup.py test
+    running test
+    running egg_info
+    writing requirements to lino_welfare.egg-info/requires.txt
+    writing lino_welfare.egg-info/PKG-INFO
+    writing top-level names to lino_welfare.egg-info/top_level.txt
+    writing dependency_links to lino_welfare.egg-info/dependency_links.txt
+    reading manifest file 'lino_welfare.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    writing manifest file 'lino_welfare.egg-info/SOURCES.txt'
+    running build_ext
+    Loaded 249 doctests from docs
+    test_chatelet (tests.DemoTests) ... ok
+    test_eupen (tests.DemoTests) ... ok
+    test_std (tests.DemoTests) ... ok
+    test_packages (tests.PackagesTests) ... ok
+    atelier.test.DocTestCase (docs/changes.rst) ... ok
+    atelier.test.DocTestCase (docs/index.rst) ... ok
+    (...)
+    atelier.test.DocTestCase (docs/specs/eupen.rst) ... FAIL
+    (...)
+    atelier.test.DocTestCase (docs/specs/cal.rst) ... FAIL
+    (...)

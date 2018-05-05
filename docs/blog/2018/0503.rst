@@ -1,0 +1,58 @@
+:date: 2018-05-03
+
+=====================
+Thursday, May 3, 2018
+=====================
+
+I continued to work on :ticket:`2296`.
+
+I tried to reproduce it on my machine by installing exactly the same
+environment as on travis (using the output of their "pip freeze" as
+requirement in a virgin environment.  Nope! The problem remains
+unreproducible!
+
+But then I stumbled over the
+`Order in which tests are executed
+<https://docs.djangoproject.com/en/1.11/topics/testing/overview/#order-in-which-tests-are-executed>`__ section of the Django docs.
+
+IOW: while Django differentiates three groups of test cases, and while
+the test methods of a single TestCase class are ordered
+alphabetically, no such ordering rule is defined for the files
+themselves.  They are run with no particular ordering guaranteed nor
+enforced among them.  It might therefore be possible that the order is
+always a particular one (but always the same) on my machine and always
+another on the travis machine.
+
+And here is a first partly success: indeed I can reproduce the problem
+on my machine by the `--reverse
+<https://docs.djangoproject.com/en/1.11/ref/django-admin/#cmdoption-test-reverse>``
+option::
+
+  $ dm test --reverse
+
+My explanation for the problem: my `testcase_setup
+<lino.core.signals.testcase_setup>` signal (which is used to call
+:meth:`clear_site_config <lino.core.site.Site.clear_site_config>` is
+being emitted by
+:meth:`lino.utils.djangotest.DjangoManageTestCase.__call__` but that's
+too late.  Django loads the fixtures before calling the test method.
+
+By looking into the code of :mod:`django.test.testcases` I saw that it
+emits a signal :attr:`django.test.signals.setting_changed` before
+loading the `fixtures
+<https://docs.djangoproject.com/en/1.11/topics/testing/tools/#django.test.TransactionTestCase.fixtures>`__.  
+
+So the solution for :ticket:`2296` is to simply connect
+:func:`lino.modlib.system.my_handler` (which calls
+:meth:`clear_site_config <lino.core.site.Site.clear_site_config>`) to
+Django's :data:`setting_changed <django.test.signals.setting_changed>`
+signal as well.
+
+Side effect: I removed the
+:data:`lino.core.signals.database_connected` signal as it is never
+used.
+
+Wow! This ticket has been haunting me for several months, with a few
+occasional attempts to fix it (each time just to discover that it is a
+tough one), and now it took me about two working days of intensive bug
+hunting to find it!
