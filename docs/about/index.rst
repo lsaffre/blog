@@ -21,7 +21,7 @@ and live in a small village.
 I work as senior developer at `Rumma & Ko OÜ
 <http://www.saffre-rumma.net/>`_ where we provide development,
 maintenance and customer support of `free
-<https://en.wikipedia.org/wiki/Free_software>`__ customized database
+<http://www.saffre-rumma.net/free/>`__ customized database
 applications, mainly using the `Lino framework
 <http://www.lino-framework.org/>`__ and its older brother `TIM
 <http://tim.lino-framework.org/129.html>`__.

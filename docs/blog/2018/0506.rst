@@ -1,0 +1,135 @@
+:date: 2018-05-06
+
+===================
+Sunday, May 6, 2018
+===================
+
+I fiddled around on :ref:`travis` and readthedocs with pip, the
+package names of dependencies, especially appy.
+
+We must differentiate between the *dependency* name and the *package*
+name.  A dependency usually has the same name as the package it
+installs.  But not always.
+
+In the :xfile:`requirements.txt` file of :ref:`book` I had until now::
+
+  -e git+https://github.com/lino-framework/appypod.git#egg=appy
+
+Maybe that line should rather be::
+
+  git+https://github.com/lino-framework/appypod.git#egg=appypod
+
+Some quotations from the pip docs at `pip.pypa.io
+<https://pip.pypa.io/en/stable/user_guide/#requirements-files>`__:
+
+
+- Requirements files are used to override a dependency with a local
+  patch that lives in version control. For example, suppose a
+  dependency, SomeDependency from PyPI has a bug, and you can't wait
+  for an upstream fix. You could clone/copy the src, make the fix, and
+  place it in VCS with the tag sometag. You'd reference it in your
+  requirements file with a line like so::
+
+    git+https://myvcs.com/some_dependency@sometag#egg=SomeDependency
+    
+- If *SomeDependency* was previously a top-level requirement in your
+  requirements file, then **replace** that line with the new line. If
+  *SomeDependency* is a sub-dependency, then **add** the new line.
+
+- It's important to be clear that pip determines package dependencies
+  using install_requires metadata, not by discovering requirements.txt
+  files embedded in projects.
+
+  
+I tried the following in my local py3 environment::
+
+    $ pip freeze | grep appy
+    -e git+git@github.com:lino-framework/appypod.git@acefc6634f498a7f64c12ae9794f572357566811#egg=appy
+    appypod==0.1
+  
+Not sure why I have two lines there.  And more surprisingly, I can
+uninstall them both with a single command::
+
+    $ pip uninstall appy
+    Uninstalling appy-0.1:
+      Would remove:
+        /media/dell1tb/virtualenvs/py3/lib/python3.5/site-packages/appy.egg-link
+    Proceed (y/n)? y
+      Successfully uninstalled appy-0.1
+
+    $ pip freeze | grep appy
+
+    $ go appypod
+
+    $ pip install -e .
+    Obtaining file:///media/dell1tb/work/appypod
+    Requirement already satisfied: future in /media/dell1tb/virtualenvs/py3/lib/python3.5/site-packages (from appypod==0.1) (0.16.0)
+    lino-welfare 17.10.0 requires suds, which is not installed.
+    lino-xl 17.10.0 requires appy, which is not installed.
+    Installing collected packages: appypod
+      Running setup.py develop for appypod
+    Successfully installed appypod
+
+    $ pip freeze | grep appy
+    appy==0.1
+    -e git+git@github.com:lino-framework/appypod.git@acefc6634f498a7f64c12ae9794f572357566811#egg=appypod
+
+Now the dependency name is "appypod" and not "appy"::
+    
+    $ pip uninstall appy
+    Not uninstalling appy at /media/dell1tb/work/appypod, outside environment /media/dell1tb/virtualenvs/py3
+    Can't uninstall 'appy'. No files were found to uninstall.
+    
+    $ pip uninstall appypod
+    Uninstalling appypod-0.1:
+      Would remove:
+        /media/dell1tb/virtualenvs/py3/lib/python3.5/site-packages/appypod.egg-link
+    Proceed (y/n)? y
+      Successfully uninstalled appypod-0.1
+
+
+Oops, I learned only today that there is already a dependency named
+*appypod* on PyPI::
+
+    $ pip install appypod
+    Collecting appypod
+      Downloading https://files.pythonhosted.org/packages/0d/52/0bd6ed03c5e2795ef648312e055db65496274833e9912ed0dc1ea25bad8a/appypod-0.9.6.tar.gz (121kB)
+        100% |████████████████████████████████| 122kB 2.5MB/s 
+    Building wheels for collected packages: appypod
+      Running setup.py bdist_wheel for appypod ... done
+      Stored in directory: /home/luc/.cache/pip/wheels/24/29/fc/96dbd1fa4d9fec170e4ef29f3f6701a8e3720e7b8f1ed1768e
+    Successfully built appypod
+    lino-welfare 17.10.0 requires suds, which is not installed.
+    lino-xl 17.10.0 requires appy, which is not installed.
+    Installing collected packages: appypod
+    Successfully installed appypod-0.9.6
+
+
+
+TIL what the ``-e`` options (`editable
+<https://pip.pypa.io/en/stable/reference/pip_install/#editable-installs>`__
+install using `development mode
+<https://setuptools.readthedocs.io/en/latest/setuptools.html#development-mode>`__)
+at the beginning of each line in our :xfile:`requirements.txt` files
+are good for: without them the template files in :xfile:`config`
+directories are missing.  Most projects with Lino plugins have some
+template file.  Also Appy has at least one::
+
+    FileNotFoundError: [Errno 2] No such file or directory: '/home/travis/virtualenv/python3.6.3/lib/python3.6/site-packages/appy/pod/content.xmlt'
+
+Projects that need the ``-e`` option, actually have a problem when
+installed by simply using ``pip install``.  Actually all template
+files should be declared somewhere in the :xfile:`setup.py` or the
+:xfile:`MANIFEST.in` file
+
+This should actually not be a problem if we declare the package data
+correctly.  For example this error message::
+
+    IOError: [Errno 2] No such file or directory: '/home/travis/virtualenv/python2.7.14/lib/python2.7/site-packages/etgen/sepa/XSD/pain.001.001.02.xsd'
+
+Should get fixed by saying::
+    
+    SETUP_INFO.update(include_package_data=True, zip_safe=False)
+    SETUP_INFO.update(package_data={
+        'etgen.sepa': ['XSD/pain.001.001.02.xsd'],
+    })

@@ -1,0 +1,49 @@
+:date: 2018-05-07
+
+===================
+Monday, May 7, 2018
+===================
+
+Travis and RTD
+==============
+
+There is still some instability in our projects on :ref:`travis` and
+`rtd`.  I continue to play there in the background. For example this
+morning I am trying to fix an `error
+<https://travis-ci.org/lino-framework/book/jobs/375579936>`__ that
+occurs towards the end of the :cmd:`inv bd` process::
+
+  SphinxWarning: /home/travis/build/lino-framework/book/docs/dev/invlib.rst:14:undefined label: atelier.invlib (if the link has no caption the label must precede a section header)
+
+Sphinx (intersphinx) does not seem to find the `objects.inv` for
+:ref:`atelier`.  I added a logger info::
+
+    logger.info("intersphinx_mapping set to {}".format(
+        intersphinx_mapping))
+
+The resulting `output
+<https://travis-ci.org/lino-framework/book/jobs/375753927#L3581>`__ is
+indeed not sufficient::
+
+  intersphinx_mapping set to {
+    Path('lino-noidocs'): ('http://noi.lino-framework.org', None),
+    Path('site-packagesdocs'): ('http://etgen.lino-framework.org', None),
+    Path('lino-cosidocs'): ('http://cosi.lino-framework.org', None)}
+
+
+So something is still wrong with how
+:mod:`atelier.sphinxconfig.interproject` gets the intersphinx urls for
+packages that are not a local project.
+
+
+Notiz erstellen vom Kunden aus
+==============================
+
+A little optimization: :class:`lino.modlib.users.Authored` must verify
+authorship permission only for row actions that have
+:attr:`select_rows <lino.core.actions.Action.select_rows>` set to
+`True`, not for list actions like `ShowInsert` or `CreateRow`.
+
+This might be a valid fix for :ticket:`2380` (Notiz erstellen vom
+Kunden aus).
+

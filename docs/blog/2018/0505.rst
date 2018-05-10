@@ -11,7 +11,50 @@ job for which no customer will pay a cent because it doesn't give them
 any tangible result.  I'd fully agree if somebody who follows my
 activities would tell me that I am crazy...
 
-But I continued also today with this.  
+But also today I continued with this.  Because now it's almost done,
+and now *I want to* have it done.
+
+AttributeError: 'bool' object has no attribute 'model'
+======================================================
+
+The :ref:`welfare` project on :ref:`travis` is still failing in
+Python 3.  Here is one traceback::
+
+
+    $ doctest docs/specs/dumps.rst
+    **********************************************************************
+    File "/work/book/docs/specs/dumps.rst", line 88, in dumps.rst
+    Failed example:
+        shell("python manage_a.py dump2py tmp/a --overwrite")
+        #doctest: +ELLIPSIS
+    Expected:
+        Writing .../lino_book/projects/dumps/tmp/a/restore.py...
+        Wrote 3 objects to .../lino_book/projects/dumps/tmp/a/restore.py and siblings.
+    Got:
+        Writing /work/book/lino_book/projects/dumps/tmp/a/restore.py...
+        Traceback (most recent call last):
+          File "manage_a.py", line 7, in <module>
+            execute_from_command_line(sys.argv)
+          File "/python2.7/site-packages/django/core/management/__init__.py", line 364, in execute_from_command_line
+            utility.execute()
+          File "/python2.7/site-packages/django/core/management/__init__.py", line 356, in execute
+            self.fetch_command(subcommand).run_from_argv(self.argv)
+          File "/python2.7/site-packages/django/core/management/base.py", line 283, in run_from_argv
+            self.execute(*args, **cmd_options)
+          File "/python2.7/site-packages/django/core/management/base.py", line 330, in execute
+            output = self.handle(*args, **options)
+          File "/work/lino/lino/management/commands/dump2py.py", line 529, in handle
+            self.write_files()
+          File "/work/lino/lino/management/commands/dump2py.py", line 296, in write_files
+            self.models = self.sort_models(self.models)
+          File "/work/lino/lino/management/commands/dump2py.py", line 422, in sort_models
+            if f.remote_field is not None and f.remote_field.model is not model and f.remote_field.model in unsorted])
+        AttributeError: 'bool' object has no attribute 'model'
+    **********************************************************************
+    1 items had failures:
+      10 of  20 in dumps.rst
+    ***Test Failed*** 10 failures.
+
 
 
 >>> from lino import startup
@@ -21,37 +64,8 @@ But I continued also today with this.
 ...     for f in model._meta.fields:
 ...         print(f.remote_field, f)
 
+    
 
-$ doctest docs/specs/dumps.rst
-**********************************************************************
-File "/media/dell1tb/work/book/docs/specs/dumps.rst", line 88, in dumps.rst
-Failed example:
-    shell("python manage_a.py dump2py tmp/a --overwrite")
-    #doctest: +ELLIPSIS
-Expected:
-    Writing .../lino_book/projects/dumps/tmp/a/restore.py...
-    Wrote 3 objects to .../lino_book/projects/dumps/tmp/a/restore.py and siblings.
-Got:
-    Writing /media/dell1tb/work/book/lino_book/projects/dumps/tmp/a/restore.py...
-    Traceback (most recent call last):
-      File "manage_a.py", line 7, in <module>
-        execute_from_command_line(sys.argv)
-      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 364, in execute_from_command_line
-        utility.execute()
-      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 356, in execute
-        self.fetch_command(subcommand).run_from_argv(self.argv)
-      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/core/management/base.py", line 283, in run_from_argv
-        self.execute(*args, **cmd_options)
-      File "/media/dell1tb/virtualenvs/py27/local/lib/python2.7/site-packages/django/core/management/base.py", line 330, in execute
-        output = self.handle(*args, **options)
-      File "/media/dell1tb/work/lino/lino/management/commands/dump2py.py", line 529, in handle
-        self.write_files()
-      File "/media/dell1tb/work/lino/lino/management/commands/dump2py.py", line 296, in write_files
-        self.models = self.sort_models(self.models)
-      File "/media/dell1tb/work/lino/lino/management/commands/dump2py.py", line 422, in sort_models
-        if f.remote_field is not None and f.remote_field.model is not model and f.remote_field.model in unsorted])
-    AttributeError: 'bool' object has no attribute 'model'
-**********************************************************************
-1 items had failures:
-  10 of  20 in dumps.rst
-***Test Failed*** 10 failures.
+
+'Partner' object has no attribute 'partner_ptr_id'
+==================================================

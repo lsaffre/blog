@@ -1,0 +1,154 @@
+:date: 2018-05-10
+
+======================
+Thursday, May 10, 2018
+======================
+
+A Kanban board for Lino Noi
+===========================
+
+I read Robin Parmar's article`A crash course in project management
+<http://www.theatreofnoise.com/2018/04/a-crash-course-in-project-management.html>`__
+where he introduces the *Kanban board*.  `Wikipedia
+<https://en.wikipedia.org/wiki/Kanban_board>`__.  explains that
+
+    A popular example of a Kanban board for agile or lean software
+    development consists of: Backlog, Ready, Coding, Testing, Approval,
+    and Done columns. It is also a common practice to name columns in a
+    different way, for example: Next, In Development, Done, Customer
+    Acceptance, Live. [`6 <https://codeweavers.net/agile-design-kanban-with-our-web-designers>`__]
+
+This might be something we need in Jane.  The columns of the Kanban
+board remind our ticket states (excerpt from
+:ref:`noi.specs.tickets`):
+
+>>> rt.show(tickets.TicketStates)
+======= =========== ========== ======== ========
+ value   name        text       Symbol   Active
+------- ----------- ---------- -------- --------
+ 10      new         New        ⛶        Yes
+ 15      talk        Talk       ☎        Yes
+ 20      opened      Open       ☉        Yes
+ 22      started     Started    ⚒        Yes
+ 30      sleeping    Sleeping   ☾        No
+ 40      ready       Ready      ☐        Yes
+ 50      closed      Closed     ☑        No
+ 60      cancelled   Refused    ☒        No
+======= =========== ========== ======== ========
+<BLANKLINE>
+
+I'd say that Kanban is the wheel I was reinventing with the `Active`
+column of a ticket state.  We might replace that column with a new
+choicelist for the *Kanban column* to use:
+
+=============== ==========================
+Ticket state    Kanban column
+--------------- --------------------------
+New             Backlog
+Talk            Backlog
+Open            Ready
+Started         Coding/Testing
+Sleeping        Done
+Ready           Approval
+Closed          Done
+Refused         Done
+=============== ==========================
+
+The :class:`KanbanColumns` on Jane would then be:
+
+- Backlog   (waiting for management decision)
+- Ready     (for the team to work on)
+- Coding & Testing (we currently don't differentiate them)
+- Approval  (waiting for confirmation that the job is done)
+- Done      (including "Refused" and "Sleeping")
+
+And every user would have in their dashboard a summary listing show
+tickets assigned to them, using this classification.  The "Done"
+column, of course, is not shown in the Dashboard.
+
+This will functionally replace the welcome messages "Your stars
+are (...)" and "You have 78 items in Tickets to triage. "
+
+The Backlog is the list of tickets used by managers to discuss about
+what we want and how important each of them is.  Our "Sleeping" state
+can be considered a pre-backlog stage because a sleeping ticket might
+wake up at any moment.  OTOH it sleeping because we do *not* want it
+in the Backlog (otherwise it would be Talk). If some team member finds
+a sleeping ticket and thinks it should wake up, they would set it to
+Talk to make it (re)appear on the backlog.
+
+The *ticket state* is almost the same as the *Kanban column*, but only
+almost.  The ticket state is more granular, the :class:`KanbanColumns`
+list groups several states in order to help with classifying them and
+discussing about them.  It replaces and refines the current
+`TicketSate.active` checkbox.
+
+Yes, this seems to be a missing piece in Jane.  I opened :ticket:`2384`.
+
+EDIT: Maybe we can just do that summary list directly on the
+TicketStates (potentially renaming some of them or reviewing our
+ticket states).
+
+
+Appy-dev
+========
+
+Here is a failure caused by appy.pod in :ref:`welfare`:
+https://travis-ci.org/lino-framework/welfare/jobs/375856380
+
+That failure is somewhere in appy.pod, so this is where we should
+switch back to Gaëtan's original `appy-python-3
+<https://forge.pallavi.be/projects/appy-python-3>`__ project instead
+of `appypod <https://github.com/lino-framework/appypod>`__, my
+obsolete partial fork of it.
+
+Gaëtan still insists on distributing his project without adding a
+:xfile:`setup.py`.  You might say that he is crazy, and you might be
+right, but I'd then add that we are all crazy...
+
+But he found a workaround for his crazy obstination.  He created a
+separate project `appy-dev
+<https://forge.pallavi.be/projects/appy-dev>`__ on `pallavi.be` which
+contains a :xfile:`setup.py` and then uses Subversion's `svn:externals
+<https://blog.kowalczyk.info/article/q8/short-tutorial-on-svn-propset-for-svnexternals-property.html>`__
+feature.  Instead of creating two projects, one for each Appy branch,
+he writes "Mais au lieu de créer un repository entier à part, j'ai
+réaménagé le repository appy-dev avec 2 répertoires de base: dev0 pour
+Appy 0.x en Python2 et dev1 pour Appy 1.x en Python3.  J'ai changé la
+page explicative ici:
+https://forge.pallavi.be/projects/appy-dev/wiki/Wiki"
+
+After reading the docs about `requirements files
+<https://pip.pypa.io/en/stable/user_guide/#requirements-files>`__ and
+some local experiments I try with the requirement::
+  
+    -e svn+https://svn.forge.pallavi.be/appy-dev/dev1#egg=appy
+
+And yes! It works!  My `appypod
+<https://github.com/lino-framework/appypod>`__ project can go away,
+it's no longer needed!
+
+I updated the :xfile:`requirements-python3.txt` files for :ref:`book`
+and :ref:`welfare`.
+
+Later I reported my first bug in appy-python-3:
+https://forge.pallavi.be/issues/204
+
+The :ref:`welfare` docs tree had dependencies to
+:ref:`lino.dev.install` and the java projects.  I removed it because
+it made things unnecessarily complicated.
+
+Fixed another bug in atelier
+============================
+
+I explored the failures on :ref:`travis` where :cmd:`inv bd` said
+`undefined label:atelier.invlib
+<https://travis-ci.org/lino-framework/book/jobs/377290766>`__.  Yes,
+:func:`atelier.projects.get_project_info_from_mod` didn't yet work in
+environments without a local :xfile:`config.py` file.  Such projects
+have neither a :xfile:`tasks.py` file not a :xfile:`setup.py` file,
+but at least thei have a :attr:`main_package
+<atelier.projects.Project.main_package>` (and that's what intersphinx
+needs).
+
+
