@@ -1,0 +1,35 @@
+:date: 2018-05-12
+
+======================
+Saturday, May 12, 2018
+======================
+
+Hoppel has a problem::
+
+    /dev/sda1 contains a file system with errors, check forced.
+    Inodes that were part of a corrupted orphan linked list found.
+    /dev/sda1: UNEXPETED INCONSISTENCY; RUN fsck MANUALLY (i.e. without -a or -p options)
+    fsck exited with status code 4
+    The root filesystem on /dev/sda1 requires a manual fsck
+    BusyBox
+    (initramfs)
+
+
+Thanks to `askubuntu.com
+<https://askubuntu.com/questions/697190/fsck-error-on-boot-dev-sda6-unexpected-inconsistency-run-fsck-manually>`__
+and here we go.  I typed :cmd:`fsck /dev/sda1` and here we go::
+
+    e2fsck 1.43.5 (04-Aug-2017)
+
+    Inode 34124665 was part of the orphaned inode list. FIXED.
+    Inode 35001113 extent tree (at level 1) could be shorter. Fix<y>? yes
+    (...)
+    Block bitmap differences: (...)
+
+
+I also had `this problem <https://askubuntu.com/questions/760825/cannot-boot-system-due-to-start-job-running-for-hold?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa>`__   
+
+Afterwards I could start into recovery (hold INS key at startup?)
+mode and run a root shell.
+
+

@@ -1,0 +1,25 @@
+:date: 2018-05-13
+
+====================
+Sunday, May 13, 2018
+====================
+
+Abdelkader did penetration tests on a Lino site and reported that it
+is not protected against clickjacking.  Indeed, Lino doesn't provide
+this as a default.  But Django provides a simple solution (at least
+for modern browsers): `Clickjacking Protection
+<https://docs.djangoproject.com/en/2.0/ref/clickjacking/>`__
+
+So in order to to protect a Lino application against clickjacking, you
+add one line to your :xfile:`settings.py`::
+
+    class Site(Site):
+        ...
+
+    SITE = Site(globals())
+
+    MIDDLEWARE_CLASSES += (
+        'django.middleware.clickjacking.XFrameOptionsMiddleware',)
+
+
+See also :ref:`lino.admin.security`.
