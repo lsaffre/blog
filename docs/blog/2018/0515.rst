@@ -4,7 +4,145 @@
 Tuesday, May 15, 2018
 =====================
 
-I reviewed the :ref:`devblog` page
+Reporting what you do
+=====================
 
-- I moved it from the :ref:`writedocs` section to :ref:`lino.dev.team`
-  because it is rather about teamwork than about documentation.
+I reviewed the :ref:`devblog` page and moved it from the
+:ref:`writedocs` section to :ref:`lino.dev.team` because it is rather
+about teamwork than about documentation.
+
+
+A Kanban board for Jane
+=======================
+
+I probably fixed :ticket:`2384` (Kanban for Jane) in a simple way:
+
+I changed :class:`lino_xl.lib.tickets.MyTicketsToWork` as follows:
+
+- now it shows tickets in an *active* state (having `active=True`)
+  instead of those in a state having `show_in_todo=True`.
+  
+- I changed order_by from `["priority", "-id"]` to `["state",
+  "priority", "-id"]` (i.e. the tickets are sorted by their state in
+  first place.  This should not be a big problem since anyway the
+  priority makes no sense when used across states.
+  
+- I wrote a summary view which shows them grouped by state in an
+  `<UL>`.
+- Of course I also set :attr:`slave_grid_format` to ``summary`` in
+  order to activate the summary.
+
+- I changed the `active` of TicketStates.ready from True to False:
+  when a ticket is marked "ready", I don't want to see it in my to-do
+  list anymore (I revoked this change afterwards. See below).
+
+I was surprised to see that these changes did not require any change
+in the test suite.  Which actually just shows that the dashboard of
+:mod:`lino_book.projects.team` is not covered completely.
+
+Thunderbird does not start
+==========================
+
+Thunderbird does not start. The launcher switches to a hourglass
+cursor for a minute or so, but nothing happens.  And oops, when I
+invoke it from a terminal::
+  
+    $ thunderbird
+    Segmentation fault (core dumped)
+
+    $ thunderbird --help
+    Segmentation fault (core dumped)
+
+          -g or --debug          Start within debugger
+          -d or --debugger       Specify debugger to start with (eg, gdb or valgrind)
+          -a or --debugger-args  Specify arguments for debugger
+
+The problem disappeared after a restart of my machine. Don't ask me
+what it was...
+
+
+More optimizations in Jane
+==========================
+
+The fact that "I don't want to see tickets marked "ready" in my to-do
+list" indicates that there are at least two "contexts" of working:
+when I am "alone" and when I am "with a client".  When I am with a
+client, then I actually *do* want to see those tickets that are marked
+"ready" (because "ready" means "waiting for test results to confirm
+that it is done").  But only those of the site we are working on.
+  
+I did some changes in the "Sites overview" table:
+
+- I removed the summary fields about worked hours and moved the table
+  back from :mod:`lino_xl.lib.working` to :mod:`lino_xl.lib.tickets`.
+
+- I continued to hide the concept of "mission" (which is internally
+  called "project") from Lino Noi: removed the TicketsByProject table
+  and the parameter field "project", and changed `has_project` to
+  `has_site`.
+
+- I activated the summary view of :class:`MyTicketsToWork
+  <lino_xl.lib.tickets.MyTicketsToWork>` also for
+  :class:`TicketsBySite <lino_xl.lib.tickets.TicketsBySite>` and
+  reviewed the detail layout of :class:`Site
+  <lino_xl.lib.tickets.Site>`.
+
+All Lino Noi users except EndUser are now Helpers
+(:class:`lino.modlib.users.Helper`), and the AssignToMe action is no
+longer disabled when you are the author. Because for a ticket in Lino
+Noi you want to be able to assign yourself to your own ticket.  This
+caused a side effect in :ref:`welfare` where they use assignment of
+calendar entries in order to specify that a user A agreed with a
+client an appointment for another user B. In that context you don't
+want the author of an entry to assign themselves.  Added
+:attr:`lino.modlib.users.Assignable.disable_author_assign` to allow
+both behavours.
+
+I pushed these changes to master and tried them on :ref:`jane` without
+previously verifying the test suite. After having done a few releases
+to Jane I got satisfied (for this time) and ran the test suite on my
+computer.  This time there were some changes in the test suite:
+:ref:`noi.specs.tickets`.
+
+
+Here is a funny failure that happened today::
+
+    FAIL: atelier.test.DocTestCase (docs/specs/search.rst)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+      File "/media/dell1tb/work/atelier/atelier/test.py", line 45, in func
+        self.run_subprocess(args)
+      File "/media/dell1tb/work/atelier/atelier/utils.py", line 407, in run_subprocess
+        self.fail(msg)
+    AssertionError: /media/dell1tb/virtualenvs/py27/bin/python2 -m atelier.doctest_utf8 docs/specs/search.rst ({}) returned 1:
+    -----
+    **********************************************************************
+    File "/media/dell1tb/work/book/docs/specs/search.rst", line 17, in search.rst
+    Failed example:
+        rt.show('about.SiteSearch', quick_search="foo")
+    Expected:
+        No data to display
+    Got:
+        ========================== ============================================================================================
+         Description                Matches
+        -------------------------- --------------------------------------------------------------------------------------------
+         *Romain Raffault* (User)   password:pbkdf2_sha256$36000$MF5Vl**fOo**1Rwm$OiSIiNl3E4X4mh1z0FgjrwD60W9CD5PjSRVgKdit1vU=
+        ========================== ============================================================================================
+        <BLANKLINE>
+    **********************************************************************
+    1 items had failures:
+       1 of   6 in search.rst
+    ***Test Failed*** 1 failures.
+
+Explanation: the random hash of the password contained the sequence of
+letter "foo".  We might ignore this failure and assume that it won't
+happen very often.  But it is clear that the :attr:`password
+<lino.modlib.users.User.password>` field should definitively *not* be
+searchable, i.e. included in the default value for
+:attr:`quick_search_fields
+<lino.core.model.Model.quick_search_fields>`.  The problem is: I see
+no good way for Lino to "automatically" recognize a password field.
+So I now specified an explicit :attr:`quick_search_fields
+<lino.core.model.Model.quick_search_fields>` on
+:class:`lino.modlib.users.User`.
+
