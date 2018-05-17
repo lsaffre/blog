@@ -1,0 +1,69 @@
+:date: 2018-05-16
+
+=======================
+Wednesday, May 16, 2018
+=======================
+
+More about security
+===================
+
+Abdelkader reported that my trick for activating clickjacking
+protection (see :doc:`0513`) was buggy (I forgot that
+:xfile:`settings.py` is being imported twice) and insufficient (there
+are more protection mechanismes described in Django's topic guide
+about `Security in Django
+<https://docs.djangoproject.com/en/1.11/topics/security/>`__).  He
+suggested to add security already in the Lino core "to be in security
+by default".  As a first step into this direction I added a new
+attribute :attr:`use_security_features
+<lino.core.site.Site.use_security_features>` to
+:class:`lino.core.site.Site`.  I also adapted the
+:ref:`lino.admin.security` page and 4 test cases in :ref:`book`.
+     
+I deployed this to :ref:`jane` in order to see whether it behaves as
+expected, which showed that for :class:`CsrfViewMiddleware
+<django.middleware.csrf.CsrfViewMiddleware>` it is not enough to
+simply add the middleware.  When the middleware is active, Django
+requires every POST to also have a CSRF token.  Without that token,
+every POST (and PUT and DELETE) will get "Forbidden (CSRF cookie not
+set.)"
+
+https://docs.djangoproject.com/en/1.11/ref/csrf/
+
+So in order to get CSRF protection, we must add the `csrf_token` to
+our forms and make the client extract that token and add it to their
+POST.  It's probably not a big code change, but it won't be trivial to
+find out how to weave it into Lino and test it.  I opened
+:ticket:`2389`. Maybe this should wait until the OpenUI5 user interface
+is ready...
+
+>>> from django.template.context_processors import csrf
+>>> d = csrf(req)
+
+Also I noticed that the demo projects don't work when
+:attr:`use_security_features
+<lino.core.site.Site.use_security_features>` is `True`.  Yes, of
+course: they don't run behind a secure (https) server.
+
+The easiest solution for this is to make :attr:`use_security_features
+<lino.core.site.Site.use_security_features>` default to `False`.  And
+adpat :ref:`lino.admin.security` again.
+
+
+
+Maximum time limit for jobs on Travis
+=====================================
+
+Oops, I got a "The job exceeded the maximum time limit for jobs, and
+has been terminated" on `travis
+<https://travis-ci.org/lino-framework/book/jobs/379361485>`__.
+
+It seems that this limit is 120 minutes and cannot be changed
+(`* <http://mail.haskell.org/pipermail/ghc-devs/2017-February/013731.html>`__)
+
+But the next build then passed again.  So maybe it was a temporary
+problem, maybe a blocking download of some dependency.
+
+
+
+
