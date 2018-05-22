@@ -1,0 +1,50 @@
+:date: 2018-05-19
+
+======================
+Saturday, May 19, 2018
+======================
+
+Reactivating the **lino-developers** mailing list
+=================================================
+
+Yesterday Abdelkader asked me two questions via Hangouts. My problem
+with giving 1:1 support on HO is that nobody else can see it.  And
+that's a pity because Abdelkader's questions are *as such* already a
+valuable contribution to the Lino project.
+
+The `lino-developers
+<http://lino-framework.org/cgi-bin/mailman/listinfo/lino-developers>`__
+mailing list created in 2015 was meant to fix that problem.  I think
+it is time to activate it.  I remind what I wrote on this list in
+`December 2015
+<http://lino-framework.org/pipermail/lino-developers/2015-December/000011.html>`__:
+
+    I suggest that you all try to use this list when talking with me
+    about Lino so that the others have a chance to participate. This
+    list is not meant as a newsletter but as a discussion forum, so
+    please don't fear to ask stupid questions. This list is not meant
+    for non-technical stakeholders, so don't hesitate to speak openly
+    about problems and criticize things you dislike.
+
+This list had a little problem: the public archives
+(http://lino-framework.org/pipermail/lino-developers/) were not
+visible.  When you went there, Apache told you:
+
+    **Forbidden**
+
+    You don't have permission to access /pipermail/lino-developers/ on
+    this server.
+
+The problem was a missing ``x`` permission for ``others`` on the
+archives directory `as explained here
+<https://mail.python.org/pipermail/mailman-users/2011-February/071144.html>`__,
+and here is how I fixed it::
+
+    $ sudo ls -ld /var/lib/mailman/archives/private/
+    drwxrws--- 48 list list 4096 Apr 26  2016 /var/lib/mailman/archives/private/
+    $ sudo chmod o+x /var/lib/mailman/archives/private/
+    $ sudo ls -ld /var/lib/mailman/archives/private/
+    drwxrws--x 48 list list 4096 Apr 26  2016 /var/lib/mailman/archives/private/
+
+Yes the Mailman layout is not very modern.  But it works and is mature
+technology...

@@ -1,0 +1,210 @@
+:date: 2018-05-18
+
+====================
+Friday, May 18, 2018
+====================
+
+Diving into Lino's URL design
+=============================
+
+I opened :ticket:`2392` : Lino's URL design has grown historically, it
+is full of dragons, poorly documented, based on the ExtJS way of doing
+things, and probably a full chaos.
+
+Here is the code (from :class:`lino.modlib.extjs.Plugin` ) that
+defines Lino's URL patterns::
+
+    urlpatterns = [
+        url(rx + '$', views.AdminIndex.as_view()),
+        url(rx + r'api/main_html$', views.MainHtml.as_view()),
+        url(rx + r'grid_config/(?P<app_label>\w+)/(?P<actor>\w+)$',
+            views.GridConfig.as_view()),
+        url(rx + r'api/(?P<app_label>\w+)/(?P<actor>\w+)$',
+            views.ApiList.as_view()),
+        url(rx + r'api/(?P<app_label>\w+)/(?P<actor>\w+)/(?P<pk>.+)$',
+            views.ApiElement.as_view()),
+        url(rx + r'restful/(?P<app_label>\w+)/(?P<actor>\w+)$',
+            views.Restful.as_view()),
+        url(rx + r'restful/(?P<app_label>\w+)/(?P<actor>\w+)/(?P<pk>.+)$',
+            views.Restful.as_view()),
+        url(rx + r'choices/(?P<app_label>\w+)/(?P<rptname>\w+)$',
+            views.Choices.as_view()),
+        url(rx + r'choices/(?P<app_label>\w+)/(?P<rptname>\w+)/'
+            '(?P<fldname>\w+)$',
+            views.Choices.as_view()),
+        url(rx + r'apchoices/(?P<app_label>\w+)/(?P<actor>\w+)/'
+            '(?P<an>\w+)/(?P<field>\w+)$',
+            views.ActionParamChoices.as_view()),
+        # the thread_id can be a negative number:
+        url(rx + r'callbacks/(?P<thread_id>[\-0-9a-zA-Z]+)/'
+            '(?P<button_id>\w+)$',
+            views.Callbacks.as_view())
+    ]
+
+
+Summary of above code in English:
+
+- ``/`` returns the index page which does an AJAX call to
+  ``/api/main_html``.
+  
+- ``/api/main_html`` returns the dashboard or more precisely the
+  "inner html" to be rendered in the body of the main window.
+  
+- ``/api/app_label/actor_name`` and 
+  ``/api/app_label/actor_name/pk`` do almost everything.
+  
+- ``/restful/app_label/actor_name`` and
+  ``/restful/app_label/actor_name/pk`` are like ``/api`` with some
+  subtile differences.  Used only by
+  :class:`lino_xl.lib.extensible.CalendarPanel`.
+  
+- ``/choices/app_label/actor_name`` : show the choices of a foreignkey
+  field
+  
+- ``/apchoices/app_label/actor_name`` : same as choices but for action
+  parameters
+- ``/grid_config`` : not used
+- ``/callbacks/thread_id`` : used by Lino's unique action callback
+  system.
+
+
+How should a good system look like? First thoughts...
+
+First of all make it resource-centric: every actor is a "resource".
+
+Actions that open a window:        
+
+- ShowTable : ``GET /contacts/Persons/grid`` -->  `{ "eval_js": "Lino.contacts.Persons.open_grid(...)"}`
+- ShowDetail : ``GET /contacts/Persons/detail?pk=1`` --> `{ "eval_js": "Lino.contacts.Persons.open_detail(...)"}`.
+- ShowInsert : ``GET /contacts/Persons/insert`` --> `{ "eval_js": "Lino.contacts.Persons.open_grid(...)"}`.
+- ShowEmptyTable : ``GET /courses/StatusReport/show`` --> `{ "eval_js": "Lino.courses.StatusReport.show(...)"}`.
+- ShowSlaveTable : ``GET /checkdata/ProblemsByOwner/show`` --> `{ "eval_js": "Lino.checkdata.ProblemsByOwner.show(...)"}`.
+  
+Submit actions from a grid
+
+- SaveRow : ``PUT /contacts/Persons/grid_put`` --> `{ success:...}`
+- CreateRow : ``POST /contacts/Persons/``
+  
+Submit actions from a form
+
+- SubmitDetail : ``PUT /contacts/Persons/submit_detail`` --> `{success:...}`
+- SubmitInsert  : ``POST /contacts/Persons/``
+
+Row actions:
+
+- DeleteSelected : ``DELETE /contacts/Persons/?sr=1``
+
+Custom actions:  
+
+- users.AssignToMe : ``POST /users/User/assign_to_me?sr=1``
+
+Observation: Currently many buttons in the ExtJS interface don't do an
+AJAX request, they are defined to directly call a Javascript function.
+
+For example the :menuselection:`Contacts --> Person` menu item is
+defined with this handler::
+  
+  "handler": function() {Lino.contacts.Persons.grid.run(null)}
+
+Or the `Insert` button on a grid will directly call
+:func:`Lino.contacts.Persons.insert.run`.
+  
+This approach has the advantage of reducing network traffic, but it's
+not RESTful.
+
+API change in :meth:`Actor.get_actions`
+=======================================
+
+I have been thinking about :meth:`is_callable_from
+<lino.core.actions.Action.is_callable_from>`.  This method should be
+renamed to `is_available_from` or sth similar to express better what
+it does.  For example the ShowTable action ("open a grid window")
+exists on all table actors, but it should not appear in the toolbar of
+its own grid or detail.  Most toolbar actions should show both in a
+grid and in a detail window, but not in an insert window.
+
+API change : :meth:`Actor.get_actions` no longer has an optional
+argument `called_from` but always returns all actions.  The few places
+where we called it with an argument must now call the new method
+:meth:`get_button_actions
+<lino.core.actors.Actor.get_button_actions>`.
+
+That method now raises an exception "20180518 {} is not a windows
+action" because it makes no sense to ask for available buttons when
+you don't specify which type of window.  This exception unveiled one
+such nonsense call
+
+SubmitInsert is not a window action but calls
+:meth:`lino.core.store.Store.form2obj` which wants to know the
+disabled fields, and for this it ultimately calls
+:meth:`lino.core.dbtables.Table.make_disabled_fields`.  This method
+now no longer disables actions when the parent is not a window action.
+
+Miscellaneous code changes
+==========================
+
+- I removed RedirectAction because it is not being used.
+
+
+
+Removed some uselessly generated JS code
+========================================
+
+Side effect: I noticed that Lino generated a lot of useless functions
+into the :file:`lino_900_en.js` file.  For example this one::
+
+    Lino.contacts.Persons.grid_put = function(rp, is_main, pk, params) { 
+      var h = function() { 
+        Lino.run_row_action(rp, is_main, "/contacts/Persons", "GET", pk, "grid_put", params, null);
+      };
+      var panel = Ext.getCmp(rp);
+      if(panel) panel.do_when_clean(true, h); else h();
+    };
+
+I fixed this problem by extending the test whether we need to call
+:meth:`js_render_custom_action
+<lino.modlib.extjs.ext_renderer.ExtRenderer.js_render_custom_action>`.
+
+The :file:`lino_900_en.js` for team had 48711 lines. After fixing the
+problem, it's only 44392 lines.  We saved more than 4000 useless lines
+of JS code.
+
+There is more useless JS code in the :file:`lino_XXX_yy.js` file : for
+example it generates a GridPanel and related functions for
+`Lino.countries.PlaceTypes`.  This table is never used because there
+is no menu item for it.  We might extend the code which decides
+whether :meth:`js_render_GridPanel_class` must be called or not.  The
+condition would be: if it is a master table but does not have any menu
+item.  But that might be dangerous (cause uncovered regressions), so I
+prefer to leave this for another time.
+
+
+Wrong error message when no eid card found
+===========================================
+
+When a user invokes the :class:`FindByBeIdAction
+<lino_xl.lib.beid.FindByBeIdAction>` while there is no card in the
+read, Lino says "AttributeError: AttrDict instance has no key
+'national_number' (keys are success, eidreader_version)" instead of
+"No card data found".
+
+That's because the value of ``data.success`` in the following code is
+``"False"`` (a non-empty string) and not `False` (a boolean)::
+
+    data = load_card_data(ar.request.POST['uuid'])
+    data = AttrDict(data)
+    if not data.success:
+        raise Warning(_("No card data found."))
+
+Indeed, the test files used by
+:mod:`lino_book.projects.adg.tests.test_beid` don't simulate exactly
+what happens in reality.
+
+
+>>> import json
+>>> d = {'eidreader_version': '0.0.8', 'success': False}
+>>> json.dumps(d)
+
+>>> data = "{'eidreader_version': '0.0.8', 'success': False}"
+>>> # data = '{"success": "False", "eidreader_version": "0.0.8"}'
+>>> json.loads(data)
