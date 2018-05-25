@@ -13,9 +13,9 @@ print("""# -*- coding: UTF-8 -*-
 from __future__ import print_function
 from lino.api import rt
 
-ledger = rt.modules.ledger
-finan = rt.modules.finan
-vatless = rt.modules.vatless
+ledger = rt.models.ledger
+finan = rt.models.finan
+vatless = rt.models.vatless
 
 
 def check_journal(ref, name, view, group):

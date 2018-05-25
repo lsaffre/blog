@@ -107,17 +107,17 @@ Here is a script that I used to report the distribution of clients::
 
     from lino.api.shell import *
     from django.utils import translation
-    CS = rt.modules.pcsw.CivilState
+    CS = rt.models.pcsw.CivilState
     ses = rt.login()
     num = 0
     with translation.override('de'):
       for cs in CS.objects():
       #for k in '13 18 21 22 33'.split():
       #  cs = CS.get_by_value(k)
-        qs = rt.modules.pcsw.Client.objects.filter(civil_state=cs)
+        qs = rt.models.pcsw.Client.objects.filter(civil_state=cs)
         print cs.value, cs, ":", qs.count(), "Klienten"
         num += qs.count()
-      qs = rt.modules.pcsw.Client.objects.filter(civil_state='')
+      qs = rt.models.pcsw.Client.objects.filter(civil_state='')
       print "Ohne Angabe:", qs.count(), "Klienten"
     
 Output of above script in the current production database::

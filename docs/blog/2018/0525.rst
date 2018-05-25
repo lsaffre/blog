@@ -1,0 +1,88 @@
+:date: 2018-05-25
+
+====================
+Friday, May 25, 2018
+====================
+
+Main page is not refreshed when browser starts
+==============================================
+
+I opened :ticket:`2401` (Main page is not refreshed when browser
+starts) and did some research.
+
+I guess that the browser asks Lino whether that page needs to refresh,
+and the server answers "No".  Because indeed the index page itself
+rarely changes.
+
+
+http://docs.sencha.com/extjs/3.4.0/#!/api/Ext.Viewport-event-staterestore
+
+I read the topic guide about `Django’s cache framework
+<https://docs.djangoproject.com/en/1.11/topics/cache>`__.
+
+Yes, we do have the :setting:`CACHES` set on Jane with its default
+value::
+
+    {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+
+
+But IFAICS we don't use Django's caching feature because we don't add
+any middleware for it.  "Once the cache is set up, the simplest way to
+use caching is to cache your entire site. You’ll need to add
+'django.middleware.cache.UpdateCacheMiddleware' and
+'django.middleware.cache.FetchFromCacheMiddleware' to your MIDDLEWARE
+setting..."
+
+`This thread on SO
+<https://stackoverflow.com/questions/2095520/fighting-client-side-caching-in-django>`__
+seems to indicate that Django's `never_cache` also adds page headers.
+
+And how to do this in Lino? Aha, after reading
+`Introduction to class-based views --> Decorating the class
+<https://docs.djangoproject.com/en/1.11/topics/class-based-views/intro/#decorating-the-class>`__
+
+
+::
+
+    from django.views.decorators.cache import never_cache
+    from django.utils.decorators import method_decorator
+
+    @method_decorator(never_cache, name='dispatch')
+    class AdminIndex(View):
+        ...
+
+Actually the problem is easily reproduceable on a development server:
+
+- Run a development server in :mod:`lino_book.projects.team`.
+  
+- Go to http://127.0.0.1:8000/ using your default browser and sign in
+  (as robin). Note one of the welcome messages says *You are busy with
+  #1 (⛶ Föö fails to bar when baz) (■).*
+
+- Make sure that your default browser is set up to re-open all tabs of
+  previous session on startup.
+
+- Close your default browser.
+  
+- Open a window of your alternative browser and sign in there as well
+  as robin.
+  
+- Click the `(■)` in order to stop working. The *You are busy with #1*
+  message disappears.
+  
+- Open your default browser (which will reopen the team index)
+  
+- The *You are busy with #1* message is still there.
+
+The problem disappeared after adding `never_cache` to
+:class:`lino.modlib.extjs.views.AdminIndex`.
+
+
+
+Miscellaneous
+=============
+
+I made an upgrade on :ref:`lf`.
+
+I fixed :ticket:`1951` (Merge `Site.actors` into `Site.models`):
+Both names ``rt.actors`` and ``rt.modules`` are gone.

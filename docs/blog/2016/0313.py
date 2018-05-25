@@ -3,7 +3,7 @@ startup('lino_welfare.projects.std.settings.demo')
 from django.conf import settings
 settings.SITE.appy_params.update(raiseOnError=True)
 from lino.api import rt
-Excerpt = rt.modules.excerpts.Excerpt
+Excerpt = rt.models.excerpts.Excerpt
 ses = rt.login('robin')
 # qs = Excerpt.objects.filter(build_time__isnull=True)
 qs = Excerpt.objects.all()
