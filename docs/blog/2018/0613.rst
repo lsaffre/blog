@@ -1,0 +1,80 @@
+:date: 2018-06-13
+
+========================
+Wednesday, June 13, 2018
+========================
+
+Working on Lino Tera
+====================
+
+Here is how I currently start the process for :ticket:`2162`.
+It uses :mod:`lino_xl.lib.tim2lino.spzloader2`.
+In the project direcory on their production server I have a script
+:file:`tl2.py`::
+
+    from lino_xl.lib.tim2lino.spzloader2 import TimLoader
+    TimLoader.run()
+
+That script runs for quite some time. So I invoke it using nohup to
+avoid having it killed when my terminal closes::
+
+    $ nohup python manage.py run tl2.py &
+    [1] 18804
+    $ nohup: ignoring input and appending output to ‘nohup.out’
+
+I can afterwards check that the process is running::
+
+    $ ps -uf
+    USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+    lsaffre  18576  0.0  0.2  23424  5380 pts/0    Ss   04:11   0:00 -bash
+    lsaffre  18804 88.6 40.9 1029360 843084 pts/0  R    04:20   8:27  \_ python manage.py run tl2.py
+    lsaffre  18881  0.0  0.1  19100  2508 pts/0    R+   04:29   0:00  \_ ps -uf
+  
+And when the script has finished, I can see the results in the
+:xfile:`nohup.out` file.  For example here is a traceback I had today::
+
+    Loading readonly /mnt/tim/tera/PAR.FOX...
+    Traceback (most recent call last):
+      File "manage.py", line 6, in <module>
+        from lino_local import manage ; manage(__file__)
+      File "~/mypy/lino_local.py", line 37, in manage
+        execute_from_command_line(sys.argv)
+      File "~/virtualenvs/a/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 364, in execute_from_command_line
+        utility.execute()
+      File "~/virtualenvs/a/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 356, in execute
+        self.fetch_command(subcommand).run_from_argv(self.argv)
+      File "~/virtualenvs/a/local/lib/python2.7/site-packages/django/core/management/base.py", line 283, in run_from_argv
+        self.execute(*args, **cmd_options)
+      File "~/virtualenvs/a/local/lib/python2.7/site-packages/django/core/management/base.py", line 330, in execute
+        output = self.handle(*args, **options)
+      File "~/repositories/lino/lino/management/commands/run.py", line 90, in handle
+        execfile(fn, globals())
+      File "tl2.py", line 2, in <module>
+        TimLoader.run()
+      File "~/repositories/xl/lino_xl/lib/tim2lino/utils.py", line 329, in run
+        for o in self.expand(self.objects()):
+      File "~/repositories/xl/lino_xl/lib/tim2lino/utils.py", line 308, in expand
+        for so in self.expand(o):
+      File "~/repositories/xl/lino_xl/lib/tim2lino/utils.py", line 308, in expand
+        for so in self.expand(o):
+      File "~/repositories/xl/lino_xl/lib/tim2lino/utils.py", line 307, in expand
+        for o in obj:
+      File "~/repositories/xl/lino_xl/lib/tim2lino/spzloader2.py", line 172, in load_par
+        dd.logger.info("Create new %s : %s", obj, kw)
+    UnboundLocalError: local variable 'obj' referenced before assignment
+
+
+    
+ExtJS is no longer free software
+================================
+
+I read an article published by Sencha `Top Considerations for Web
+Development in a Free Open Source World
+<https://www.sencha.com/blog/top-considerations-for-web-development-in-free-open-source-world/>`__.
+It basically explains that some free software products (Angular, Node,
+React) are really cool, and that it's just difficult to become
+productive with them because they evolve so dynamically, and therefore
+we should use their (Sencha's) proprietary products because we can
+then concentrate on the important things instead of hassling around
+with a changing toolbox.  It confirms once more that ExtJS is no
+longer free software.

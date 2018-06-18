@@ -1,0 +1,24 @@
+:date: 2018-05-30
+
+=======================
+Wednesday, May 30, 2018
+=======================
+
+During the last days I continued to work on :ticket:`2391`. Gerd
+convinced me that the most realistic method is to set up myself a
+Windows machine with the development environment and cx_freeze.
+
+
+TIL: The :xfile:`setup_info.py` needs to be loaded using ``exec`` only
+from the :xfile:`setup.py` file.  The main package's
+:file:`__init__.py` file must not do this because the file won't be
+there when the script has been built with cx_freeze.  Instead of
+saying::
+
+  from eidreader import SETUP_INFO
+
+we can say::
+  
+  from eidreader.setup_info import SETUP_INFO
+
+

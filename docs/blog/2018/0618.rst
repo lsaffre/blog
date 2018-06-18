@@ -1,0 +1,84 @@
+:date: 2018-06-18
+
+=====================
+Monday, June 18, 2018
+=====================
+
+OpenUI5 ui advancing
+====================
+
+Hamza and I had a hangouts session where we dived into the delete
+action using OpenUI
+
+What to do after deleting a record? The current behaviour in ExtJS is
+more or less mature, and something similar seems okay for OpenUI as
+well: Remain in the detail window and go to the next row. If this was
+the last row of the table, go to the previous row. If the table has
+become empty (no more records), close the detail window after
+displaying a suitable message.  We explored an edge case of the
+DeleteSelected action : in lydia demo project (Lino Tera), the detail
+layout for life groups is different to the detail layout of an
+individual therapy ("life group" and "individutal" therapy are two
+choices in the CourseAreas choicelist). This logic is defined by
+:meth:`lino_xl.lib.courses.Course.get_detail_action`. If I open
+"Therapies held by me" (or "Therapies managed by me"), Lino shows a
+mixture of therapies from different course areas. The detail layout to
+use depends on the current row. If I go to the detail view and delete
+one of them, Lino must potentially "switch to another layout".
+
+How to implement this behaviour, depends on the user interface. The
+DeleteSelected action should just delete the record and return
+success-or-not.
+
+The detail_handler_name key in the action response of DeleteSelected
+is rather a hack used for ExtJS. It means "in case you are in detail
+view, I remind you the name of the current detail view". I think we
+should try to not use this in openui and instead have it remind that
+name itself.
+
+grid.changes.ChangesByMaster was not available as a route because the
+controller defined only master reports. Seems that there must also be
+a route for slave tables.  You must change what Lino returns in
+eval_js. This is easily done, you just need to override the
+request_handler() method and the instance_handler() method of the
+OpenUI renderer. Currently you let Lino return a string like
+"Lino.grid.changes.ChangesByMaster(...)", then the JS client modifies
+this string and defines a wrapper function window_action()... but all
+this is not needed if you so that they return the "openui5 js
+implementation" for that action.
+
+Lino Tera continued
+===================
+
+I continued to work on :ticket:`2162` for :ref:`tera`.
+
+- Status der importierten Anwesenheiten ist immer leer.  Status
+  "Verpasst" heißt "abwesend" in Lino.
+
+In :ref:`tera` we have an additional field "Payment mode"
+(Zahlart) with four values::
+
+    B Bar           Cash (paid)
+    Z Zu kassieren  Cash to pay
+    R Rechnung      Invoice
+    G Kostenlos     Free
+
+In TIM this field was on both `cal.Event` and `cal.Guest`, but I guess
+that in Lino we will put it only on `cal.Guest` because on Event it
+was rather a fallback value for the field on Guest.
+
+This field might be useful for other applications.  Of course not for
+Welfare and Avanti because the clients don't pay there.  In Voga the
+clients do pay, but we also don't want it because in Voga they always
+get an invoice.  This field is needed only when the course leaders
+have their individual "decentralized" accounting which enables cash
+payments by the clients.  Cash payments introduce additional
+complexity because the course leaders must introduce the collected
+money into the central accounting system.  So actually next to
+`payment_mode` we also have two more fields `amount_to_pay` and
+`amount_received`.
+
+- Wird das bisherige System mit der Kassenverwaltung durch Therapeuten
+  beibehalten?
+
+  
