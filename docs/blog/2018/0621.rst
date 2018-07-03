@@ -1,0 +1,34 @@
+:date: 2018-06-21
+
+=======================
+Thursday, June 21, 2018
+=======================
+
+I think I found a good answer to
+my questions
+on :doc:`0619`
+for :ticket:`2382` (Rendez-vous extérieurs visibles pour l'accueil)
+
+A new choicelist cal.PlannerColumns, a field EventType.planner_column,
+and a new table `DayPlanner` which displays calendar entries using
+these columns and one row per *time slot*.  Something like this:
+
+
+===== ===============  ================      
+Time  External         Internal
+===== ===============  ================      
+8:00  Jean, Luc
+8:30  Mathieu
+9:00                   Robin
+9:30                   Jean
+===== ===============  ================      
+
+
+But how to configure the rows of that table? It should be configurable
+per site (not e.g. per user) and via the web interface.
+
+So we also need a new model PlannerRow.  A planner row contains the
+threshold time and (potentially later) formatting instructions.
+
+I don't think we want a new plugin ("planner") for this. I just add
+them to the :mod:`lino_xl.lib.cal` plugin.

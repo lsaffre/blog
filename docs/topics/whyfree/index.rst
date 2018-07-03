@@ -23,7 +23,10 @@ Summary
 
 Software must be free because the more your everyday life depends on
 computers, the more it is important to ask who controls these
-computers. Your sovereignty is not alienable.
+computers.  Proprietary software causes its users to depend on the
+software owner regarding decisions like when it makes sense to
+innovate or how to implement security controls.
+
 
 Content
 =======

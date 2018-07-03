@@ -1,0 +1,35 @@
+:date: 2018-07-03
+
+=====================
+Tuesday, July 3, 2018
+=====================
+
+A new version of the TIM tools
+==============================
+
+I started to work on :ticket:`2352` (E-Mail aus TIM raus : Kodierung
+falsch seit neuer GW). The problem is because the :cmd:`timtools openmail`
+command
+:func:`timtools.tools.mail.openmail`
+uses which encodes the content using a hard-coded encoding::
+
+    text = text.encode("iso-8859-1","replace")
+
+I simply changed this to::    
+    
+    text = text.encode("utf-8", "replace")
+
+We could of course make it configurable, but I guess that anyway this
+production site is the only user.  The real problem is that we must
+now build a new timtools release.  The last release was somewhere in
+2009, and the environment I used then no longer exeists, and McMillian
+installer no longer exists.  I plan to do it as I did with
+:ref:`eidreader`.
+
+     
+New day planner table for calendar plugin
+=========================================
+
+I finished adapting the test suites after my changes for
+:ticket:`2382` (Rendez-vous extérieurs visibles pour l'accueil) and
+now finally checked them in.
