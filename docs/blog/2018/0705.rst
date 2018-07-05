@@ -1,0 +1,33 @@
+:date: 2018-07-05
+
+======================
+Thursday, July 5, 2018
+======================
+
+I did several releases to Jane and some optimizations:
+
+I removed `project` and `topic` from
+:class:`lino_xl.lib.tickets.RefTickets` and added `site`.
+I reactivated :class:`lino_xl.lib.tickets.PublicTickets`.
+
+
+I would like to be able to record some of my daily activities more
+accurately, but I often do things "for which there is no ticket".  I
+don't want to invoice them, just record them and maybe later assign
+them to some ticket.  In a first attemt I changed
+:attr:`lino_xl.lib.working.Session.ticket` to nullable, but then undid
+that change because it would require more code changes to test for an
+empty ticket of a session and because this doesn't seem a good
+solution.
+
+Maybe rather a notion of `default_ticket` for unclassified sessions?
+But where to put that field?  If I simply inject a field
+`default_ticket` to User, we have a circular reference when dumping
+which might increase restore time or even cause deadlocks (if the
+author of a ticket selects this ticket as its default_ticket).  Or per
+site subscription?  Or a list of recently used tickets? No, because
+this would require me to choose a site before starting a session.  So
+it seems that the best solution is a field in the global
+:class:`lino.modlib.system.SiteConfig`. One default ticket for all
+users.  Why not. To be meditated.
+
