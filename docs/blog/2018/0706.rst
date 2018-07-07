@@ -1,0 +1,225 @@
+:date: 2018-07-06
+
+====================
+Friday, July 6, 2018
+====================
+
+Released timtools 2.0.0
+=======================
+
+Ta-daa, timtools version 2 is out: :ref:`tt2_0_0`.
+
+It wasn't easy because the last release was in September 2010 and
+quite some things had changed since then.  For example at that time I
+was still using Windows as operating system (something I barely can
+believe today).
+
+This release is still under Python 2.  Which means that I can do it in
+my old Windows XP virtual machine.  Some problems I encountered and
+how I fixed them.
+
+Installing pyinstaller::
+
+    t:\hgwork\tt> pip install pyinstaller
+
+    Downloading/unpacking pywin32>=223 (from pypiwin32->pyinstaller)
+      Could not find any downloads that satisfy the requirement pywin32>=223 (from pypiwin32->pyinstaller)
+    Cleaning up...
+    No distributions at all found for pywin32>=223 (from pypiwin32->pyinstaller)
+    Storing debug log for failure in T:\DATA\LUC\HOME\pip\pip.log
+
+Aha, this is because pip support is experimental.  I downloaded
+`pywin32-223.win32-py2.7.exe` and installed this one.
+
+
+Another challenge was that I want to deploy several scripts in a
+single zip file.  I saw that Felix-neko asked on github `#2547
+<https://github.com/pyinstaller/pyinstaller/issues/2547>`__:
+
+    I'm developing a Python package and have about 10 demo Python scripts
+    that show its capabilities.  I want to distribute the demo scripts
+    with PyInstaller: create 10 exe files and put them in one folder with
+    all libraries they depend on.  Can it be somehow supported?
+
+tallforasmurf answered:    
+
+    You are describing the multipackage feature which is currently
+    broken. See `#1527
+    <https://github.com/pyinstaller/pyinstaller/issues/1527>`__ and
+    feel free to help investigate and fix.
+
+htgoebel suggested:
+
+    Why not simply copy all dist/* directories into the same
+    destination directory. This costs a bit of space, but solves the
+    problem.
+
+To which Felix-neko answered:
+
+    Well, just now we are using it as a temporary workaround, but it
+    look a bit too ugly even for us...
+
+
+Since `#1527
+<https://github.com/pyinstaller/pyinstaller/issues/1527>`__ looks
+rather active and rather technical, I won't dive into this now but try
+the bold approach suggested by htgoebel.
+
+Then I still needed to change the Python code because of
+runtime-errors like these::
+
+    T:\hgwork\tt\dist\timtools>prnprint.exe
+    Traceback (most recent call last):
+      File "timtools\scripts\prnprint.py", line 7, in <module>
+      File "c:\Python27\Lib\site-packages\PyInstaller\loader\pyimod03_importers.py", line 396, in load_m
+    odule
+        exec(bytecode, module.__dict__)
+      File "timtools\__init__.py", line 15, in <module>
+    IOError: [Errno 2] No such file or directory: 'T:\\hgwork\\tt\\dist\\timtools\\timtools\\project_inf
+    o.py'
+    [1536] Failed to execute script prnprint
+
+
+When these problems were fixed, another problem became visible: PIL
+somehow was missing or did not get bundled.  I think I fixed this by
+simply installing PIL into the environment.
+
+I tested the new timtools on their TIM by trying to print a table view
+using :kbd:`SHIFT+F7`, which seems to work::
+  
+    timtools prnprint
+    Homepage: http://timtools.lino-framework.org
+    Copyright (c) 2004-2018 Rumma & Ko Ltd
+    Using TimTools 2.0.0, Python 2.7.8 final, Python Windows Extensions, PIL
+    Printing on '\\OSHZ-CPAS\KOPOSHZ'
+    [1080] Failed to execute script prnprint
+    L:\kunden\gx\tim\timtools\timtools\textprinter\winprn.py:171: RuntimeWarning: Truncation of value to char
+    Traceback (most recent call last):
+      File "timtools\scripts\prnprint.py", line 134, in <module>
+      File "timtools\scripts\prnprint.py", line 131, in main
+      File "timtools\console\application.py", line 193, in main
+      File "timtools\scripts\prnprint.py", line 120, in run
+      File "timtools\textprinter\textprinter.py", line 212, in readfile
+      File "timtools\textprinter\textprinter.py", line 264, in writeln
+      File "timtools\textprinter\textprinter.py", line 282, in writechars
+      File "timtools\textprinter\textprinter.py", line 277, in beforeWrite
+      File "timtools\textprinter\textprinter.py", line 164, in beginDoc
+      File "timtools\textprinter\winprn.py", line 235, in onBeginDoc
+    pywintypes.error: (1801, 'OpenPrinter', 'The printer name is invalid.')
+
+
+
+I wrote documentation and added a file :file:`mkdist.bat`.
+I adapted the Sphinx config for the documentation.
+I configured and activated the subdomain
+http://timtools.lino-framework.org/
+
+I published everything to https://github.com/lsaffre/timtools
+
+
+Trying to add disk space to a vps
+=================================
+
+I followed the guide `Create and configure an additional disk on an
+instance
+<https://docs.ovh.com/gb/en/public-cloud/create_and_configure_an_additional_disk_on_an_instance/>`__.
+The guide needs a fuzzy reading because it is written for the old
+control panel.
+
+I selected a 50GB disk for 1.94€/month.
+
+In a first attempt I created a disk in Warsaw (the suggested default
+location), but when I wanted to attach it to a server, the control
+panel said "You have no compatible instance that you can attach this
+volume to".  I deleted my disk in Warsaw and created a new one in
+Strasbourg.
+
+Before::
+
+    luc@ovh2:~$ lsblk
+    NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+    sda      8:0    0  10G  0 disk 
+    `-sda1   8:1    0  10G  0 part /
+
+After::
+  
+    luc@ovh2:~$ lsblk
+    NAME   MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+    sda      8:0    0  10G  0 disk 
+    `-sda1   8:1    0  10G  0 part /
+    sdb      8:16   0  50G  0 disk 
+
+I run fdisk to change the partition table of my new disk::
+
+    $ sudo fdisk /dev/sdb
+
+First I ask it to create a new partition::    
+    
+    Command (m for help): n
+    Partition type
+       p   primary (0 primary, 0 extended, 4 free)
+       e   extended (container for logical partitions)
+    Select (default p): 
+
+    Using default response p.
+    Partition number (1-4, default 1): 
+    First sector (2048-104857599, default 2048): 
+    Last sector, +sectors or +size{K,M,G,T,P} (2048-104857599, default 104857599): 
+
+    Created a new partition 1 of type 'Linux' and of size 50 GiB.
+
+Now I tell fdisk to write my partition table and exit::
+
+    Command (m for help): w
+    The partition table has been altered.
+    Calling ioctl() to re-read partition table.
+    Syncing disks.
+    
+Then I format my new partition::
+
+    luc@ovh2:~$ sudo mkfs.ext4 /dev/sdb1
+    mke2fs 1.42.12 (29-Aug-2014)
+    Discarding device blocks: done                            
+    Creating filesystem with 13106944 4k blocks and 3276800 inodes
+    Filesystem UUID: 4e8d6d43-9e7d-4e16-a23c-4aa50076c826
+    Superblock backups stored on blocks: 
+            32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+            4096000, 7962624, 11239424
+
+    Allocating group tables: done                            
+    Writing inode tables: done                            
+    Creating journal (32768 blocks): done
+    Writing superblocks and filesystem accounting information: done
+
+I manually mount the partition for a first time::
+
+    luc@ovh2:~$ sudo mkdir /mnt/disk
+    luc@ovh2:~$ sudo mount /dev/sdb1 /mnt/disk/
+    
+I note my block device IDs::
+
+    luc@ovh2:~$ sudo blkid
+    /dev/sda1: UUID="d0762fba-e9b1-4692-b20c-26b6daf0f119" TYPE="ext4" PARTUUID="4585c18d-01"
+    /dev/sdb1: UUID="4e8d6d43-9e7d-4e16-a23c-4aa50076c826" TYPE="ext4" PARTUUID="7cf937be-01"
+    
+
+I add the disk to the :file:`/etc/fstab` file in order to have it
+mounted automatically at startup. Before::
+
+    /dev/sda1  /  ext4  errors=remount-ro,discard  0  1
+
+After::  
+    
+    UUID=d0762fba-e9b1-4692-b20c-26b6daf0f119 /  ext4  errors=remount-ro,discard  0  1
+    UUID=4e8d6d43-9e7d-4e16-a23c-4aa50076c826 /mnt/disk ext4 nofail 0 0
+
+IOW I also switched to UUID for my :file:`/dev/sda1` which seems
+to be a more robust way to name devices
+
+And now::
+
+  $ sudo reboot
+
+And then as a first step I moved `public_html` to the new disk
+(leaving a symbolic link to the new location so I don't need to change
+any related configuration files).
