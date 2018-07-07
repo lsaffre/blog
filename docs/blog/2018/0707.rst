@@ -16,3 +16,88 @@ I fixed a problem which caused the lightbox to not work on my `German
 blog <http://luc.saffre-rumma.net/blog/2018/0706.html>`__.  The actual
 problem was in the :xfile:`layout.html` template, but *en passant* I
 updated the docstring of :mod:`atelier.sphinxconf.sigal_image`.
+
+
+Responsive layouts for Lino
+===========================
+
+Hamza and I had a look at the following examples:
+
+- `Responsive Table
+  <https://openui5.hana.ondemand.com/#/sample/sap.m.sample.Table/preview>`_
+
+- `Examples
+  <https://openui5.hana.ondemand.com/#/sample/sap.ui.layout.sample.SimpleForm480_Trial/preview>`__
+  using `SimpleForm
+  <https://openui5.hana.ondemand.com/#/api/sap.ui.layout.form.SimpleForm>`__
+
+
+For tables we introduce three new class attributes:
+:attr:`tablet_columns <lino.core.tables.Table.tablet_columns>`
+:attr:`mobile_columns <lino.core.tables.Table.mobile_columns>`
+:attr:`popin_columns <lino.core.tables.Table.popin_columns>`
+
+
+As the first example we make the Tickets table responsive::
+
+    class Tickets(dd.Table):
+        column_names = 'id summary:50 priority workflow_buttons:30 site:10'
+        tablet_columns = "id summary workflow_buttons"
+        mobile_columns = "summary workflow_buttons"
+
+Test:
+      
+>>> import lino
+>>> lino.startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> pprint(rt.models.tickets.AllTickets.mobile_columns)
+set([<django.db.models.fields.CharField: summary>,
+     lino.core.model.Model.workflow_buttons])
+
+
+
+For details we will probably abandon the concept of detail layouts (or
+extend it) in order to use SimpleForm.  But basically a detail form
+would be a <VBox> containing a <SimpleForm>.  And the application
+developer must somehow specify resaonable "layout blocks".
+     
+
+For example :class:`lino_noi.lib.tickets.TicketDetails` is currently
+defined like this::
+
+    class TicketDetail(TicketDetail):
+        main = "general more"
+
+        general = dd.Panel("""
+        general1:60 comments.CommentsByRFC:30
+        """, label=_("General"))
+
+        general1 = """
+        summary id:6
+        user end_user site ticket_type private:10
+        workflow_buttons:30 priority:10 assigned_to planned_time
+        bottom_box
+        """
+
+        bottom_box = """
+        description:30 working.SessionsByTicket:20
+        """
+
+        more = dd.Panel("""
+        more1 DuplicatesByTicket:20
+        upgrade_notes LinksByTicket uploads.UploadsByController 
+        """, label=_("More"))
+
+
+        more1 = """
+        created modified fixed_since
+        state ref duplicate_of deadline
+        """
+
+<VBox>
+<SimplePage>
+   comments.CommentsByRFC:30
+
+   summary
+   
