@@ -21,29 +21,66 @@ updated the docstring of :mod:`atelier.sphinxconf.sigal_image`.
 Responsive layouts for Lino
 ===========================
 
-Hamza and I had a look at the following examples:
+Hamza and I had a look at the `Responsive Table
+<https://openui5.hana.ondemand.com/#/sample/sap.m.sample.Table/preview>`__
+example.  In the `Table.view.xml` source code we see::
 
-- `Responsive Table
-  <https://openui5.hana.ondemand.com/#/sample/sap.m.sample.Table/preview>`_
+    <Column
+            minScreenWidth="Desktop"
+            demandPopin="true"
+            hAlign="End">
+            <Text text="Dimensions" />
+    </Column>
 
-- `Examples
-  <https://openui5.hana.ondemand.com/#/sample/sap.ui.layout.sample.SimpleForm480_Trial/preview>`__
-  using `SimpleForm
-  <https://openui5.hana.ondemand.com/#/api/sap.ui.layout.form.SimpleForm>`__
+Looking at the `sap.m.Column
+<https://openui5.hana.ondemand.com/#/api/sap.m.Column/controlProperties>`__
+API reference I note:
 
+- The *minScreenWidth* of a *Column* causes OpenUI5 to hide this
+  column when the screen width is below the specified minimum width.
+  You can specify that width either using CSS sizes (e.g: "480px" or
+  "40em"), or using one of the names of the `sap.m.ScreenSize
+  <https://openui5.hana.ondemand.com/#/api/sap.m.ScreenSize>`__
+  enumeration (e.g: "Phone", "Tablet", "Desktop", "Small", "Medium",
+  "Large", ...).
 
-For tables we introduce three new class attributes:
-:attr:`tablet_columns <lino.core.tables.Table.tablet_columns>`
-:attr:`mobile_columns <lino.core.tables.Table.mobile_columns>`
-:attr:`popin_columns <lino.core.tables.Table.popin_columns>`
+- When a column becomes hidden because there is not enough space,
+  OpenUI5 looks at `demandPopin` : if this is *true*, the column is
+  shown as *pop-in* instead of hiding it.
 
+This is an API feature of OpenUI5 which did not exist in ExtJS.
 
-As the first example we make the Tickets table responsive::
+The important question for us us now: what information should an
+application developer provide so that Lino can use these features
+in a meaningful way?
+
+Our first spontaneous suggestion was to introduce three new class
+attributes: :attr:`tablet_columns
+<lino.core.tables.Table.tablet_columns>`, :attr:`mobile_columns
+<lino.core.tables.Table.mobile_columns>` and :attr:`popin_columns
+<lino.core.tables.Table.popin_columns>`.
+
+IOW we made the intuitive design choice that Lino provides three
+possible screen sizes: "desktop", "tablet" and "phone".  The default
+size is *desktop*.
+
+As the first example we made the :class:`lino_noi.lib.tickets.Tickets`
+table responsive::
 
     class Tickets(dd.Table):
         column_names = 'id summary:50 priority workflow_buttons:30 site:10'
         tablet_columns = "id summary workflow_buttons"
         mobile_columns = "summary workflow_buttons"
+        popin_columns = "id priority site"
+
+That means: the basic layout is *column_names*. These columns are
+visible when there is enough space.  On a tablet (medium screen size)
+we want only the *tablet_columns*  to be visible.
+
+These new attributes are *sets of field names* that can be specified
+as a single string with a space-separated list of field names, and we
+extended the :func:`expand_field_names
+<lino.core.utils.expand_field_names>` function for handling them.
 
 Test:
       
@@ -57,50 +94,3 @@ set([<django.db.models.fields.CharField: summary>,
 
 
 
-For details we will probably abandon the concept of detail layouts (or
-extend it) in order to use SimpleForm.  But basically a detail form
-would be a <VBox> containing a <SimpleForm>.  And the application
-developer must somehow specify resaonable "layout blocks".
-     
-
-For example :class:`lino_noi.lib.tickets.TicketDetails` is currently
-defined like this::
-
-    class TicketDetail(TicketDetail):
-        main = "general more"
-
-        general = dd.Panel("""
-        general1:60 comments.CommentsByRFC:30
-        """, label=_("General"))
-
-        general1 = """
-        summary id:6
-        user end_user site ticket_type private:10
-        workflow_buttons:30 priority:10 assigned_to planned_time
-        bottom_box
-        """
-
-        bottom_box = """
-        description:30 working.SessionsByTicket:20
-        """
-
-        more = dd.Panel("""
-        more1 DuplicatesByTicket:20
-        upgrade_notes LinksByTicket uploads.UploadsByController 
-        """, label=_("More"))
-
-
-        more1 = """
-        created modified fixed_since
-        state ref duplicate_of deadline
-        """
-
-Something like this::
-  
-    <VBox>
-    <SimplePage>
-       comments.CommentsByRFC:30
-
-       summary
-
-       (todo)
