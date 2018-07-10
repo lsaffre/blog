@@ -1,0 +1,35 @@
+:date: 2018-07-10
+
+======================
+Tuesday, July 10, 2018
+======================
+
+I fixed some :ref:`welfare` test suite failures caused by
+:ticket:`2433`.
+
+
+Responsive-friendly TicketDetail layout
+=======================================
+
+The :class:`lino_noi.lib.tickets.TicketDetail` is now
+"responsive-friendly".  I upgraded Jane.
+
+Note that yesterday we had this::
+
+    general1a = """
+    summary id:6
+    user end_user
+    site ticket_type 
+    description
+    """
+
+And I said that "summary id:6" is equivalent to "summary:50 id:6" but
+that was wrong, actually it is "summary:21 id:6".  The default
+:attr:`preferred_width` for a
+:class:`lino.core.elems.CharFieldelement` is ``1 + min(20, max(3,
+self.field.max_length or 0))``, so for fields having `max_length` 20
+or more the preferred default width is 21.
+
+
+
+
