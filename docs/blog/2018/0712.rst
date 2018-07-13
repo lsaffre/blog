@@ -1,0 +1,72 @@
+:date: 2018-07-12
+
+=======================
+Thursday, July 12, 2018
+=======================
+
+While thinking about how to import legacy data from a TIM to Lino
+(:ticket:`2364`) I realized that our :attr:`invoice_recipient` field
+should rather be implemented as a `OneToOneField
+<https://docs.djangoproject.com/en/1.11/topics/db/examples/one_to_one/>`__
+than as an injected ForeignKey field.  The problem with
+:func:`lino.core.fields.OneToOneField` fields was that Lino did not
+yet handle them in a useful way.  Now it does.
+
+
+
+
+>>> from lino import startup
+>>> startup('lino_book.projects.lydia.settings.doctests')
+>>> from lino.api.doctest import *
+>>> from django.db import models
+
+>>> SalesRules = rt.models.invoicing.SalesRules
+>>> SalesRule = rt.models.invoicing.SalesRule
+>>> th = SalesRules.get_handle()
+>>> th  #doctest: +ELLIPSIS
+<lino.core.tables.TableHandle object at ...>
+>>> th.store  #doctest: +ELLIPSIS
+<lino.core.store.Store object at ...>
+
+>>> SalesRules.column_names
+'*'
+>>> [sf.name for sf in th.store.list_fields]
+['seqno', 'partner', 'invoice_recipient', 'paper_type', 'move_buttons', 'workflow_buttons', 'mobile_item', 'overview', 'disabled_fields', 'disable_editing']
+
+>>> ar = None # SalesRules.request()
+>>> partner = rt.models.contacts.Partner.objects.get(pk=124)
+>>> partner.salesrule.invoice_recipient
+Partner #121 ('Dericum Daniel')
+
+When looking at a SalesRule object, the `partner` field is similar to
+a ForeignKey field:
+
+>>> obj = SalesRule.objects.get(partner=partner)
+>>> rmu(th.store.row2list(ar, obj))
+[2, 'Dobbelstein Doroth\xe9e', 124, 'Dericum Daniel', 121, None, None, '', '', '', '', {}, True]
+
+>>> pprint(th.store.row2dict(ar, obj))
+{'disable_editing': True,
+ 'disabled_fields': {},
+ 'invoice_recipient': 'Dericum Daniel',
+ 'invoice_recipientHidden': 121,
+ 'paper_type': None,
+ 'paper_typeHidden': None,
+ 'partner': 'Dobbelstein Doroth\xe9e',
+ 'partnerHidden': 124}
+
+
+>>> sf = th.store.list_fields[1]
+>>> sf
+OneToOneStoreField 'partner'
+
+>>> sf.full_value_from_object(obj)
+Partner #124 ('Dobbelstein Doroth\xe9e')
+
+
+>>> de = SalesRules.get_data_elem('partner')
+>>> de
+<django.db.models.fields.related.OneToOneField: partner>
+
+>>> sf.field is de 
+True
