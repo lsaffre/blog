@@ -1,0 +1,43 @@
+:date: 2018-07-18
+
+========================
+Wednesday, July 18, 2018
+========================
+
+Lino Tera
+=========
+
+This morning I finally found the explanation for a phenomen (in
+:ticket:`2364`) that I had been exploring yesterday the whole day: the
+enrolments did not get imported any more.  The table in
+:menuselection:`Explorer --> Courses --> Enrolments` showed only 4
+rows when there should have been some 16000.  Here is what made me
+understand:
+
+>>> from lino.api.shell import *
+>>> courses.Enrolment.objects.count()
+18786
+
+Yes, most enrolments now have state :attr:`requested`, and
+:class:`AllEnrolments <lino_xl.lib.courses.AllEnrolments>` has a
+default filter that hides them.  That was a mouse trap.  Be careful
+when using a default filter in the tables of the Explorer menu.
+
+
+
+New user role :class:`NotesUser`, and notes now require this role
+instead of `(OfficeUser, OfficeOperator)`.  This requires the
+:xfile:`user_types.py` in :ref:`tera` and :ref:`welfare` to be
+adapted.
+
+It seems that there is some design flaw in the
+:meth:`lino.utils.config.ConfigDirCache.scan_config_dirs`: the local
+config directory is not necessarily below the cache_dir
+
+
+Lino Welfare
+============
+
+I opened and fixed :ticket:`2439` : Filtrer une liste de bénéficiaires
+par "Évènement observé".
+
