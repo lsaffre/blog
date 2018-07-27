@@ -1,0 +1,103 @@
+:date: 2018-07-26
+
+=======================
+Thursday, July 26, 2018
+=======================
+
+My first steps with Ajapaik
+===========================
+
+To get into the ajapaik project, I tried to run a development server
+locally on my machine.  Here are my steps.
+
+
+- Clone the https://github.com/Ajapaik/ project.
+  
+- create and activate a virtualenv
+  
+- pip install -r requirements.txt
+  
+  NB I changed "Django==1.8.18" to simply Django
+
+- Here is a first problem::
+
+    $ cd project
+    $ python manage.py help
+    ...
+    ValueError: Unable to configure handler 'time_rotating_handler':
+    [Errno 2] No such file or directory:
+    '/var/log/ajapaik/production/ajapaik.ee.log'
+
+    
+  Okay, the default settings has a hard-coded filename for the log
+  file. You may not run it directly from within the repository. So I
+  did my own :xfile:`settings.py` file::
+
+    import sys
+    sys.path.insert(0, "/home/luc/repositories/ajapaik-web/project")
+    from ajapaik.settings.default import *
+
+    fn = "ajapaik.log"
+    LOGGING['handlers']['time_rotating_handler']['filename'] = fn
+
+- Next problem::
+  
+    django.core.exceptions.ImproperlyConfigured: GEOS is required and has not been detected. Are you sure it is installed? See also https://docs.djangoproject.com/en/1.8/ref/contrib/gis/install/geolibs/
+
+  I read the `1.11 version
+  <https://docs.djangoproject.com/en/1.11/ref/contrib/gis/install/geolibs/>`__ and consultd with Kimmo. Solution::
+
+    $ sudo apt install postgis
+
+- Next problem::
+
+    Traceback (most recent call last):
+      File "manage.py", line 8, in <module>
+        execute_from_command_line(sys.argv)
+      File "/site-packages/django/core/management/__init__.py", line 354, in execute_from_command_line
+        utility.execute()
+      File "/site-packages/django/core/management/__init__.py", line 328, in execute
+        django.setup()
+      File "/site-packages/django/__init__.py", line 18, in setup
+        apps.populate(settings.INSTALLED_APPS)
+      File "/site-packages/django/apps/registry.py", line 108, in populate
+        app_config.import_models(all_models)
+      File "/site-packages/django/apps/config.py", line 198, in import_models
+        self.models_module = import_module(models_module_name)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+      File "/ajapaik-web/project/ajapaik/models.py", line 46, in <module>
+        from project.ajapaik.settings import GOOGLE_API_KEY, DEBUG, STATIC_ROOT, MEDIA_ROOT
+    ImportError: cannot import name GOOGLE_API_KEY
+    
+
+To be continued.    
+
+
+
+
+
+Kimmo discovered that most GET requests by anonymous users cause
+creation of a new users.User row with a random username.  The guilty
+code was in :file:`project/ajapaik/user_middleware.py` where
+:meth:`AuthBackend.authenticate` method created a new user for each
+authentication attempt without password::
+
+        random_username = u'_%s_%s' % (username[:25], User.objects.make_random_password(length=3))
+        user = User.objects.create_user(username=random_username)
+        user.save()
+        Action.log('user_middleware.create', related_object=user)
+        return user
+
+I don't know why this behaviour is there, but it clearly wrong since
+the `Django documentation
+<https://docs.djangoproject.com/en/1.8/topics/auth/default/#django.contrib.auth.authenticate>`__
+says that the :meth:`authenticate` of a backend "returns a User object
+if the password is valid for the given username. If the password is
+invalid, authenticate() returns None."
+
+Vadim obviously also saw this problem and removed this backend in the
+current develop branch.
+
+
+

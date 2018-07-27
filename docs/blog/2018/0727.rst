@@ -1,0 +1,37 @@
+:date: 2018-07-27
+
+=====================
+Friday, July 27, 2018
+=====================
+
+
+I did some optimizations in :mod:`lino_xl.lib.ana` for :ref:`tera`:
+:ticket:`2454`, :ticket:`2455` and :ticket:`2456`.
+
+Some of them are in the :xfile:`linoweb.js` file, so there is no test
+suite to cover them.  That's why I did a relase on :ref:`jane` and a
+:ref:`amici` production site so that any bugs would go to these as
+well.  That's called "testing by end-users".  In general our end-users
+manage quite well with this philosophy (with some exceptions), and
+it's so much cheaper.
+
+I also did a release for :ref:`welfare` (mostly for :ticket:`2382`
+daily calendar planner). During the :xfile:`restore.py` I had problems
+of style :message:`Event lasts 140 days but only 1 are allowed` which
+lead to :message:`Abandoning with 297 unsaved instances`.  Without
+verifying I guess that most of these calendar entries are actually
+single day and that users forget to look at the `end_date` when moving
+an appointment to another date in the calendar.  Or maybe they changed
+the :attr:`max_days <lino_xl.lib.cal.EventType.max_days>` of some
+event type to 1.  Theoretically I could have run a :manage:`checkdata`
+before doing the upgrade, so that
+:class:`lino_xl.lib.cal.LongEntryChecker` would have fixed them.
+
+To have Lino fix it now during restore, I updated
+:meth:`Event.full_clean` so that it now sets the `end_date` to `None`
+on every entry whose type has a :attr:`max_days
+<lino_xl.lib.cal.EventType.max_days>` value of 1 (instead of raing a
+ValidationError).  I think we should even to leave this behaviour for
+good.
+
+I started a new page of the Developers Guide: :ref:`disabled_fields`.

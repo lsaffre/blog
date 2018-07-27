@@ -1,0 +1,77 @@
+:date: 2018-07-24
+
+======================
+Tuesday, July 24, 2018
+======================
+
+Today we started a developer camp for the ajapaik project in Nõva.
+Vahur, Kimmo, Kristo and I.
+
+Here is my summary of the :xfile:`models.py`.
+
+- Area(name, lat, lon)  project_area
+
+- AlbumPhoto(album, photo, profile, type, created)
+
+  integer type : one of CURATED RECURATED MANUAL STILL UPLOADED
+  
+- Album(name, slug, description, subalbum_of, atype, profile,
+  is_public, ordered, photos(m2m), videos(m2m), lat, lon, geography,
+  cover_photo, cover_photo_flipped, photo_count_with_subalbums
+  rephoto_count_with_subalbums geotagged_photo_count_with_subalbums
+  comments_count_with_subalbums is_film_still_album created modified)
+
+  integer atype : one of CURATED, FAVORITES, AUTO
+  
+- Photo(image, image_unscaled, image_no_watermark, height, width, ...)
+
+- PhotoMetadataUpdate(photo, old_title, new_title, old_description,
+  new_description, old_author, new_author, created)
+
+- PhotoComment(photo,fb_comment_id, fb_object_id,
+  fb_comment_parent_id, fb_user_id, text, created)
+
+- PhotoLike(photo, profile, level, created)
+
+- DifficultyFeedback(photo, user_profile, level, trustworthiness,
+  geotag, created)
+
+- FlipFeedback(photo user_profile flip created)
+
+- Points(user action photo album geotag dating dating_confirmation
+  points created)
+
+- GeoTag(lat lon geography azimuth ...)  
+  
+- Profile(first_name last_name fb_name fb_link ... google_plus_id
+  ... score send_then_and_now_photos_to_ajapaik)
+
+- FlowModel (adds a o2o field `cflow` to Profile)
+- CredentialsModel (adds a o2o field `credential` to Profile)
+
+- Source(name desciption created modified)
+- Device(camera_make camera_model lens_make lens_model software)
+- Skip(user photo created) 
+  
+- Action(type related_object params)
+  TODO: Do we need this? Kind of violating users' privacy, no?
+
+- Licence(name url image_url is_public)
+  
+- GoogleMapsReverseGeocode(lat lon response)
+  jsonfield response : 
+- Newsletter(slug created modified)
+
+- Dating(photo profile raw comment start end ...)
+- DatingConfirmation(confirmation_of profile created modified)
+  
+- Tour(photos name description user ordered grouped photo_set_type)
+  
+- TourGroup(tour name max_members members(m2m))
+
+- TourPhoto(photo tour order)
+- TourPhotoOrder(photo tour order)
+- TourUniqueView(tour profile created)
+- TourRephoto(image tour original user width height author date source)
+- Video(name slug file width height)
+- MyXtdComment(XtdComment)

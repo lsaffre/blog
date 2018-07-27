@@ -1,0 +1,76 @@
+:date: 2018-07-23
+
+=====================
+Monday, July 23, 2018
+=====================
+
+'datetime.time object' has no attribute 'date'
+==============================================
+
+How can :attr:`lino_xl.lib.cal.Guest.waiting_since` contain a
+`datetime.time` value?
+
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.doctests')
+>>> from lino.api.doctest import *
+>>> translation.activate('fr')
+
+>>> from django.utils import timezone
+>>> now = timezone.now()
+>>> now.date()
+datetime.date(2018, 7, 23)
+>>> type(now)
+<type 'datetime.datetime'>
+
+
+
+The
+:xfile:`presence_certificate.body.html` was using
+:attr:`lino_xl.lib.excerpts.Excerpt.time` instead of
+:attr:`lino_xl.lib.excerpts.Excerpt.date`.
+
+It took me half an hour to verify that this issue was actually already
+fixed in January 2018.  But they didn't yet upgrade since then, and I
+didn't register the issue as a ticket. So now I opened :ticket:`2443`.
+
+
+
+Using data from Wikidata
+========================
+
+Yesterday I did my first steps with pywikibot.
+
+My first script:
+
+..literalinclude:: pwb/t1.py
+
+My second script:
+
+..literalinclude:: pwb/t2.py
+
+My first script with a concrete goal (it would be nice if my
+`commondata` project would become useless):
+
+..literalinclude:: pwb/list_countries_and_isocode.py
+
+Next step on that script would be to also print the claims (as
+explained in Data Harves tutorial).  I got stuck when I realized that
+the ISO code fields seem to be empty when I run that query
+on https://query.wikidata.org
+
+
+EDIT: I later also forked the `wikidata
+<https://github.com/lsaffre/wikidata>`__ project on GitHub and got the
+following script to tun:
+
+..literalinclude:: pwb/t3.py
+
+TODO:
+
+- Continue with `this <https://www.wikidata.org/wiki/Wikidata:Pywikibot_-_Python_3_Tutorial/Data_Harvest>`__ tutorial.
+
+- https://query.wikidata.org
+
+- Continue reading `this
+  <https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/queries>`__

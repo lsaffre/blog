@@ -2,7 +2,7 @@
 Copyright is a bug
 ==================
 
-The mere *word* "copyright" is actually wrong.  The laws about what we
+The mere *word* "copyright" is misleading.  The laws about what we
 commonly call "copyright" are actually about two very different
 things.
 
