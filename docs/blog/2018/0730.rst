@@ -1,0 +1,30 @@
+:date: 2018-07-30
+
+=====================
+Monday, July 30, 2018
+=====================
+
+I reviewed the :ref:`dev.overview` page of the Developer's Guide.
+
+I had a HO session with Hamza.  We did some triaging.  It was
+disturbing that we cannot change the state of a ticket from new to
+closed directly.
+
+I found the explanation for :ticket:`2462` (L'accueil n'arrive plus à
+encoder de nouveaux bénéficiaires).  It was a side effect of
+:ticket:`2436` 
+
+Two weeks ago while working on :ticket:`2436` (editable remote fields
+/ SalesRule.invoice_recipient).  I changed the definition of
+OneToOneStoreField because I thought that this was needed for #2436.
+This change was actually not needed.  And it turned out to be
+disturbing only now.  Because it changed the behaviour of
+OneToOneField.  I only now realized that in `reception.Clients` the
+`person_ptr` field is being used as primary key.
+
+See "When the primary key is a OneToOneField" section in
+:ref:`welfare.specs.reception`.
+
+I also added a case in :ref:`tera.specs.misc` to verify that the
+editable remote field still works after undoing above change.
+
