@@ -1,0 +1,110 @@
+:date: 2018-08-01
+
+=========================
+Wednesday, August 1, 2018
+=========================
+
+How to archive our chat history to Jane?
+========================================
+
+I opened ticket :ticket:`2467`.
+
+Hamza, Tonis and I currently use Google Hangouts for chatting.  Our
+main reason for using HO is that it offers everything we need (screen
+sharing, voice conferences).  Why not use it?
+
+The main problem is that we can't archive our chat history to Jane.  I
+can search it online, but if Google decides to block my account, I am
+excluded from seeing it.
+
+There is a messenger called `Signal <https://signal.org/>`__ which
+uses an open protocol. Should we start using it?  The protocol is
+open, but it has no Python API. Somebody asked `How to use Whisper
+Systems Signal with Python
+<https://stackoverflow.com/questions/50933036/how-to-use-whisper-systems-signal-with-python>`__
+on Stackoverflow but noboday answered.  So far.
+
+
+
+For screen-sharing there are other possiblities
+`How To Enable Desktop Sharing In Ubuntu and Linux Mint
+<https://www.tecmint.com/enable-desktop-sharing-in-ubuntu-linux-mint/>`__
+
+On Slant they ask `What is the best team chat software?
+<https://www.slant.co/topics/1359/~team-chat-software>`__ and they
+answer: `Slack <https://slack.com/intl/de>`__.  I installed the Slack
+app on my Phone.  Slack ask 6€/user/month if you want a workspace with
+unlimited search.  They also have a `python client
+<https://github.com/slackapi/python-slackclient>`__. We might check if
+it is possible to poll our chat history every day and store it in
+Jane.
+
+One thing seems clear: Telegram is not a candidat. See `Telegram vs
+Signal
+<https://www.reddit.com/r/privacy/comments/7fq16e/telegram_vs_signal/>`__
+
+Hangouts also a Python API::
+
+  pip install --upgrade google-api-python-client
+  
+Read `more about it
+<https://developers.google.com/api-client-library/python/apis/chat/v1>`__.
+
+My summary: next step is to try to poll our HO chat history with the
+Google Python API.  If that is difficult, we can try the same for
+Slack.
+
+
+Optimizations for Lino Tera
+===========================
+
+I had a four hour training session with Vera.  We are entering
+purchase invoices, including new partners and accounts, merge
+partners.  I wrote down a nice list of ideas for optimizing her work
+(yes sorry it's in German):
+
+TODO:
+
+- Pro Lieferant (und Journal?) sollte man angeben können, welches
+  G-Konto Lino beim Buchen einer Rechnung in diesem Journal
+  vorschlagen soll
+  
+- Wenn man neue EKR in Tabellenansicht entregistriert, dann
+  Doppelklick macht, sie bearbeitet und im Detail registriert, und
+  dann das Fenster schließt, dann wird die Tabellenansicht nicht
+  aktualisiert.
+  
+- Im Dialogfenster von "Kopie erstellen", wenn man ein G-Konto
+  eingibt, sollte Lino das A-Konto sofort ausfüllen.
+  
+- Im Inhalt einer EKR macht Lino nach jeder Eingabe in einer Zelle ein
+  automatisches Refresh, dadurch geht der Cursor verloren. Lästig.
+  
+- Wenn man in der Liste aller EKR steht und eine davon entregistriert,
+  dann aktualisert Lino die komplette Liste.  Was ein bisschen doof
+  und zeitverschwenderisch ist.
+ 
+- Wir hatten gelegentlich den Effekt, dass Lino den Bildschirm nicht
+  aktualisierte. Bisher nicht reproduzierbar.
+  
+DONE:
+
+- Nach MakeCopy ohne Betrag verändert Lino die Reihenfolge der Zeilen
+  
+- Wenn man eine EKR erstellt für einen Partner, dessen Land leer ist,
+  dann meldet Lino "AttributeError: 'NoneType' object has no attribute
+  'isocode'"
+  
+- Nach Ändern G-Konto in einer Rechnungszeile sollte Lino immer das
+  A-Konto setzen (bestehenden Wert überschreiben)
+  
+- Wenn man eine EKR entregistriert, dann sollte Lino die Gesamtbeträge
+  auf leer setzen und erst beim Registrieren wieder eintragen, weil
+  die sonst irritieren.
+
+Understanding and fixing :ticket:`2470` was a matter of 2 minutes, but
+I also wrote a test case
+:mod:`lino_book.projects.lydia.tests.test_makecopy` to cover it.
+
+
+  

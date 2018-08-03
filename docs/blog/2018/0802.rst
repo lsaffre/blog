@@ -1,0 +1,68 @@
+:date: 2018-08-02
+
+========================
+Thursday, August 2, 2018
+========================
+
+I adapted some testcases in :ref:`welfare` that were still failing
+after my recent code changes.
+
+En passant I changed the :ref:`welfare.specs.checkdata` to use demo
+project "eupen" instead of "std". (I plan to move all tests from std
+to eupen or chatelet and then to remove std because that project has
+no real-world usage).
+
+Specifying a default invoice account of a partner
+=================================================
+
+In Lino you can now define the purchase invoice account of a partner.
+This is the default value to use in invoices.
+
+When the partner of an empty invoice has a purchase account, Lino now
+automatically creates an invoice item using this account with empty
+amount.
+
+Vera our power tester
+=====================
+
+Another training session with Vera revealed another nice problem:
+
+- MakeCopy and entering a narration with more than 200 characters.
+  Actually the problem was that if an exception raises during a
+  parameter action after submitting the ParamFormPanel
+  (e.g. MakeCopy), Lino remains in the dialog window with active
+  loadmask ("Please wait").
+  
+
+- There was a bug in the recently changed behaviour about setting the
+  analytic account in invoice items from the general account:
+
+  Wenn ich EKR mit Konto 454000 erfasse, dann sagt Lino "No analytic
+  account".  Weil im Konto 454000 "Braucht AK" angekreuzt ist, aber
+  "Analysekonto" leer ist.
+
+
+Ticket :ticket:`2474` was a tricky one, and I fixed it with a very
+simple code change in :xfile:`linoweb.js`.
+:meth:`Lino.ActionFormPanel.on_ok` called
+:func:`Lino.call_ajax_action` as follows::
+
+      Lino.call_ajax_action(
+          panel, 'GET', url, p, actionName, step, fn); //  , on_success);
+      
+Where the first parameter was `this.requesting_panel`.  I replaced
+that `panel` by `self`.  This fixed the issue and made unnecessary the
+manual calls to `loadMask.show()` and `loadMask.hide()` I introduced
+on 20180727 because :func:`Lino.call_ajax_action` shows and hides the
+loadmask if the panel has one.
+
+I stumbled over another subtle bug : the help texts of the fields of
+action dialog windows were not being installed.  Fixed.  Usage example
+:class:`lino_xl.lib.ana.MakeCopy`.
+
+I tested whether this change has side effects: running workflow
+actions of a newly created record detail must refresh the screen.
+Passed.
+
+
+       

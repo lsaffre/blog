@@ -1,0 +1,110 @@
+:date: 2018-08-03
+
+======================
+Friday, August 3, 2018
+======================
+
+I couldn't restrain from fiddlling in the docs (:ref:`xl.specs.ana`
+and :ref:`xl.specs.ledger`).
+
+Hangout with Hamza
+==================
+
+Pronounciation:
+
+- [paipi] : PyPI : Python Package Index
+- [pip] : pip Python Installer
+  
+Hamza told me that also the test pypi requires a new release number
+each time.  Which might become irritating because we might have lots
+of pseudo releases when we start doing official releases.
+
+Okay, we use a month-based version numbering (18.8.0 in August 2018),
+and the minor version can go as high as needed.  We might add a
+command-line option ``--test`` to :cmd:`inv release`.
+
+But a better solution is to use our own server as a personalized
+version of PyPI that has the particularity of permitting the files to
+change without changing the version number:
+
+  http://www.lino-framework.org/dl/
+
+We tested this together.  It didn't work out of the box, I had to do
+some minor changes in atelier (see :ref:`atelier.changes`).
+
+Now we must document how we did this.  Here is what I explained to
+Hamza:
+
+- The  :xfile:`~/.invoke.py` file is used for local settings
+- The :cmd:`inv sdist` command
+  
+- The :envvar:`sdist_dir` setting
+- The :envvar:`docs_rsync_dest` setting
+
+- The :cmd:`inv test_sdist` command
+
+I changed the :envvar:`sdist_dir` in my :xfile:`~/.invoke.py` 
+from ``'/home/luc/work/book/docs/dl'``
+to ``'/home/luc/work/book/docs/dl/{prj}'``.
+
+So when I run :cmd:`pp inv sdist`, it will build a zip file of style
+project-18.8.x.tar.gz for every project.
+  
+So we use twine only when test_sdist has passed for all projects
+
+
+
+It seems that we need to split the developer's guide : one for core
+developers and one for application developers.
+
+- /docs/dev  : Core Developer's Guide
+- /docs/appdev : Application Developer's Guide
+
+For example the "Diving into Lino" and "Getting aquaintaned" sections
+are for application developers.
+
+
+
+
+
+Misc optimizations in Lino Noi
+==============================
+
+It started with two little changes I wanted to do for Jane:
+
+- TicketsToTriage : replace topic by site
+
+- Certain state transitions are now allowed only when the ticket has a
+  site
+
+En passant I did this:  
+
+- I removed projects from demo fixture and replaced the series of ugly
+  "Ticket 1" ticket summaries to a cycling of more textual summaries.
+  Of course there were some doctest failures afterwards.
+
+Then I decided to also attack this one:  
+
+The :class:`lino_xl.lib.working.working.WorkedHours` table was being displayed in the
+dashboard, but clicking the ⏏ button causes an error
+:message:`Uncaught TypeError: Cannot read property 'grid' of
+undefined` in the Javascript console.
+
+I added :class:`working.WorkedHours` as a menu item to the user menu,
+with the same result.
+
+I noticed that it is a VentilatingTable.  And that
+:meth:`js_render_window_action` was never called for this.  And then I
+found the explanation: VirtualTables weren't registered correctly.  I
+added some text and code snippets in :ref:`dev.actors` while exploring
+this.  And then I had an inspiration about who to reorganize this part
+of the Lino startup which was really very chaotic.  Now it is more
+clear, and it's documented and tested in :ref:`dev.actors`.  Nice!
+Lino has become more beautiful!
+
+
+I noticed that the ui5 demo project used the database of the team
+project.  But it adds :mod:`lino_xl.lib.stars`.  So there is one model
+more.  That's caused the :ref:`noi.specs.db` test to fail depending on
+where :cmd:`inv prep` had been done last (because ContentTypes
+contained sometimes 57 sometimes 66 rows.
