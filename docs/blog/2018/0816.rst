@@ -1,0 +1,113 @@
+:date: 2018-08-16
+
+=========================
+Thursday, August 16, 2018
+=========================
+
+About pushing too quickly to master
+===================================
+
+Oops, yesterday evening Hamza reported a test failure caused by my
+changes.  I quickly answered "These failures are my mistake. I also
+had them yesterday and fixed them and pushed the fix. So I was just
+too quick with pushing my changes to github."  Now I ran the test
+suite again on my machine and saw that there was yet another failure,
+caused by the fact that I changed the verbose_name of one field from
+"Sales Base account" to "Sales account".  Such failures are trivial to
+fix *for me* because I caused them, but they are *not* trivial to
+Hamza.
+
+
+
+Switching from Ubuntu Desktop to xfce
+=====================================
+
+I tried to switch from Ubuntu Desktop to xfce.  Looks sympathic, but
+ssh-agent doesn't seem to work. For every :cmd:`inv pd` I am getting
+asked again and again::
+
+  Enter passphrase for key '/home/luc/.ssh/id_rsa':
+
+I just want it to work as it does in Ubuntu Desktop: pop up a window
+when some program needs my passphrase for the first time.
+
+`This thread
+<https://confluence.clazzes.org/pages/viewpage.action?pageId=6848556>`__
+explains how they did a similar solution (asking the password after
+starting the session, which would be suboptimal for me, but maybe I
+would get used to it).  made me try to install `ssh-askpass`:
+
+  $ sudo apt install ssh-askpass
+
+But no change.  I also read `this
+<https://docs.xfce.org/xfce/xfce4-session/advanced>`__ and `this
+<https://askubuntu.com/questions/412793/xubuntu-stop-gnome-keyring-daemon-from-impersonating-ssh-agent>`__,
+but I don't understand them.  Yes, there are different programs to do
+this, and it seems not trivial to configure them.  I don't understand
+why this is such a problem.  I don't want to dive that deep into this,
+at least not right now.  I switch back to Ubuntu Desktop where it
+works out of the box.
+
+Manually entering invoices - optimizations
+==========================================
+
+I opened :ticket:`2490`.  I added a new choice ``waiting`` in
+:attr:`lino_xl.lib.accounts.CommonAccounts` and changed
+:class:`lino_xl.lib.vat.VatDocument` so that it uses this as the
+default account (instead of the TradeType's `main_account`).
+       
+The :class:`lino.core.actions.ShowInsert` action has now
+:attr:`readonly <lino.core.actions.Action.readonly>` = `True` because
+otherwise it was disabled when the current row was a registered
+document.
+
+
+Making Lino installable using pip
+=================================
+
+Hamza, please note that noi, xl, avanti and voga have currently
+version "18.04."  which causes a UserWarning "Normalizing '18.04.0' to
+'18.4.0'".  The version should be without a leading 0.  And it should
+be set to 18.8.0 for all projects soon (before doing the first
+official PyPI release).
+
+
+Lino Tera continued
+===================
+
+I had a meeting with Daniel, Harry and Gregor about the therapeutic
+functions in :ref:`tera`.  Here is my new task list.
+
+I closed the release notes for :ref:`tera_18_8_16` and started a new
+page :ref:`tera.coming`.
+
+
+Making Lino installable using pip
+=================================
+
+Hamza and I did research for the release process.
+
+We would like to separate our private temporary package repository
+from the book.  Because if Hamza works on the deployment and I change
+documentation and publish them, the LF site would server my version of
+the dl files.
+
+One idea was to use `twine
+<https://pypi.org/project/twine/>`__ directly on test pypi.
+Twine has an option
+``--skip-existing`` which should make it possible to 
+overwrite our files
+But test.pypi.org unfortunately doesn't permit it.
+
+Here our connection broke. But I continued because the solution was so
+close: using `pypiserver <https://pypi.org/project/pypiserver/>`__ I
+got it to work.
+
+I updated :ref:`dev.sdist` and :ref:`user.install`.
+
+But there is still at least one problem (obviously not detected by the
+test suite): :manage:`runserver` starts but does not find the static
+files.  So there is only a white screen.  Hamza, I leave this for you.
+See in :mod:`lino.core.urls` where it adds a pattern to MEDIA_ROOT.
+And see how the MEDIA_ROOT setting is set as a child of
+:attr:`lino.core.site.Site.cache_dir` in :mod:`lino.core.site`.

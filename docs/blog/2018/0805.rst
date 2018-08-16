@@ -1,0 +1,95 @@
+:date: 2018-08-05
+
+======================
+Sunday, August 5, 2018
+======================
+
+Lino Tera going on
+==================
+
+I started a new import from TIM to Lino for :ref:`tera`.  Notably
+`PAR->IdGen` will now go to the new :attr:`purchase_account
+<lino_xl.lib.contacts.Partner.purchase_account>` field.
+
+I removed :mod:`lino_xl.lib.extensible` from Tera: they didn't yet see
+it, and I don't want them to get used to it because it is not well
+integrated to Lino.  I would rather write WeeklyPlanner and
+MonthlyPlanner similar to the new
+:class:`lino_xl.lib.cal.DailyPlanner`.
+
+       
+Duplicate object description of lino_xl.lib.faculties.demander_model
+====================================================================
+
+There was a mysterious `failure on Travis <https://travis-ci.org/lino-framework/book/jobs/412228960>`__::
+
+  SphinxWarning:
+  /home/travis/virtualenv/python2.7.14/src/lino-xl/lino_xl/lib/faculties/__init__.py:
+  docstring of lino_xl.lib.faculties.Plugin:1:<autosummary>:1:duplicate object description of lino_xl.lib.faculties.demander_model,
+  other instance in
+  /home/travis/build/lino-framework/book/docs/api/lino_xl.lib.faculties.rst, use :noindex: for one of them
+
+
+It was caused by docstrings of the following type::
+
+    class MyModel(Model):
+        """
+        .. attribute:: field_a
+
+            Blabla
+
+        """
+
+The autosummary extension uses the first sentence of a docstring in
+its summary table, so this sentence gets indeed duplicated in the rst
+files.  And if it contains an :rst:dir:`attribute` directive, that
+directive will get duplicated.
+
+On my machine I was still using Sphinx 1.7.4 where the descriptive
+text in the summary table was simply empty in such a case, so this
+problem didn't arise.  They probably optimized the algorithm for
+detecting what the first sentence is.
+
+
+
+The easiest fix is to add a short sentence::
+
+    class MyModel(Model):
+        """
+        Adds the following database fields to the User model.
+
+        .. attribute:: field_a
+
+            Blabla
+
+        """
+
+Optimizations
+=============
+
+I found several places with code like this::
+
+    for a in list(kernel.CHOICELISTS.values()):
+        if settings.SITE.is_installed(a.app_label):
+            f.write("Lino.%s = %s;\n" %
+                    (a.actor_id, py2js(a.get_choices())))
+
+and found two optimizations to apply: (1) no need to convert the
+result of :meth:`values` to a list before iterating over it and (2) no
+more need to remote choicelists of plugins that are not installed
+since this filtering is done already in
+:func:`lino.core.actors.register_actor`.  So the optimized code looks
+like this::
+
+    for a in kernel.CHOICELISTS.values():
+        f.write("Lino.%s = %s;\n" %
+                (a.actor_id, py2js(a.get_choices())))
+                    
+A User's Manual for Lino Tera
+=============================
+
+I started an official --and uncomplete-- `User's Manual
+<https://github.com/lino-framework/tera/raw/master/docs/dl/Handbuch_Lino_Tera.pdf>`__
+for :ref:`tera` (in German).
+
+                

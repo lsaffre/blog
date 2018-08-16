@@ -1,0 +1,58 @@
+:date: 2018-08-09
+
+========================
+Thursday, August 9, 2018
+========================
+
+Public money -- public code
+===========================
+
+I fully agree with Peter Sierig when he writes:
+
+    "Es wird Zeit, dass wir begreifen, was wir an Linux haben. [...]
+    Es wird Zeit, die Politik daran zu erinnern: Jede Steuermillion,
+    die für eigene Fachkräfte aufgewendet wird, ist gut
+    investiert. Wer Steuergelder stattdessen für proprietäre Software
+    und Mietlizenzen ins Ausland überweist, verschwendet sie." --
+    Peter Siering in `c't 2018-17
+    <https://www.heise.de/ct/ausgabe/2018-17-Editorial-Armer-armer-Pinguin-4124004.html>`__
+
+Making screenshot tours using selenium
+======================================
+
+I did pip install -U selenium and tried :xfile:`maketours.py` script
+once more. Still failing::
+
+    (py3) ~/work/book/docs/tours/team$ python maketour.py 
+    Traceback (most recent call last):
+      File "maketour.py", line 129, in <module>
+        runserver('lino_book.projects.team.settings.demo', main)
+      File "/lino/lino/api/selenium.py", line 50, in runserver
+        driver = webdriver.Chrome('/usr/bin/chromium-browser')
+      File "/py3/lib/python3.5/site-packages/selenium/webdriver/chrome/webdriver.py", line 68, in __init__
+        self.service.start()
+      File "/py3/lib/python3.5/site-packages/selenium/webdriver/common/service.py", line 98, in start
+        self.assert_process_still_running()
+      File "/py3/lib/python3.5/site-packages/selenium/webdriver/common/service.py", line 111, in assert_process_still_running
+        % (self.path, return_code)
+    selenium.common.exceptions.WebDriverException: Message: Service /usr/bin/chromium-browser unexpectedly exited. Status code was: 0
+
+
+With Firefox the error message is similar:
+:message:`selenium.common.exceptions.WebDriverException: Message:
+connection refused`.
+
+The browser starts up in a new window, but nothing else happens.  It
+doesn't even seem to try the first URL.
+
+Same problem in Python 2 and 3.
+
+A file :file:`geckodriver.log` gets written, it contains::
+
+    1533821329861	geckodriver	INFO	Listening on 127.0.0.1:32965
+    1533821330866	mozprofile::profile	INFO	Using profile path /tmp/rust_mozprofile.vZnpMhFPdk5N
+    1533821330868	geckodriver::marionette	INFO	Starting browser /usr/bin/firefox
+    1533821330870	geckodriver::marionette	INFO	Connecting to Marionette on localhost:32807
+    1533821332588	Marionette	INFO	Listening on port 2828
+    [Parent 6772, Gecko_IOThread] WARNING: pipe error (54): Connection reset by peer: file /build/firefox-mWstsA/firefox-61.0.1+build1/ipc/chromium/src/chrome/common/ipc_channel_posix.cc, line 353
+    JavaScript error: jar:file:///usr/lib/firefox/omni.ja!/components/nsUrlClassifierListManager.js, line 321: NS_ERROR_NOT_INITIALIZED: Component returned failure code: 0xc1f30001 (NS_ERROR_NOT_INITIALIZED) [nsIUrlClassifierDBService.getTables]

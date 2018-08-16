@@ -1,0 +1,28 @@
+:date: 2018-08-13
+
+=======================
+Monday, August 13, 2018
+=======================
+
+Vera complained that while MakeCopy has a bug: after selecting the
+partner, you don't know whether that partner has a `purchase_account`.
+You see this only after confirming the dialog.  And if it had no
+purchase account, Lino even copies the account of the last invoice.  I
+opened :ticket:`2483`.
+
+Our first idea was to have the account field in the dialog window get
+modified when the user selects a partner.  But there is currently no
+way to do it.  This would have to be a kind of active field for action
+dialog forms.
+
+But then I had a better idea: make the `make_copy` action useless.
+
+I added a new boolean field `items_edited` on the invoice, which
+defaults to False and is set to True as soon as user edited some item.
+When it is False, changes in the upper part of the voucher (totals,
+partner, vat_regime, ...) cause the item to be changed automatically.
+Needed some meditation and understanding the
+:mod:`lino_xl.lib.vat.mixins` module. My first manual tests look
+promising.  I expect regressions and other surprises, but I fully
+trust that Vera will find them.
+

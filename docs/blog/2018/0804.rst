@@ -1,0 +1,68 @@
+:date: 2018-08-04
+
+========================
+Saturday, August 4, 2018
+========================
+
+
+Python can import it, but django-admin can't
+============================================
+
+For the :ref:`user.install` page
+I tried to run a demo project (:mod:`lino_book.projects.min1`) using
+`django-admin
+<https://docs.djangoproject.com/en/1.11/ref/django-admin/>`__,
+i.e. without needing a :xfile:`manage.py` file::
+
+    $ go min1
+    $ python -c "import settings.demo"
+
+Works perfectly. But then::
+
+    $ django-admin runserver --settings settings.demo
+    Traceback (most recent call last):
+      File "/py27/bin/django-admin", line 11, in <module>
+        sys.exit(execute_from_command_line())
+      File "/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 364, in execute_from_command_line
+        utility.execute()
+      File "/py27/local/lib/python2.7/site-packages/django/core/management/__init__.py", line 308, in execute
+        settings.INSTALLED_APPS
+      File "/py27/local/lib/python2.7/site-packages/django/conf/__init__.py", line 56, in __getattr__
+        self._setup(name)
+      File "/py27/local/lib/python2.7/site-packages/django/conf/__init__.py", line 41, in _setup
+        self._wrapped = Settings(settings_module)
+      File "/py27/local/lib/python2.7/site-packages/django/conf/__init__.py", line 110, in __init__
+        mod = importlib.import_module(self.SETTINGS_MODULE)
+      File "/usr/lib/python2.7/importlib/__init__.py", line 37, in import_module
+        __import__(name)
+    ImportError: No module named settings.demo
+  
+Strange...
+
+Here is the same problem using newest Django and without Lino.
+
+In an empty directory I create a very minimal :file:`settings.py` with
+the following content::
+
+    INSTALLED_APPS = []
+    DEBUG = True
+
+I install and activate a fresh environment with a Django::
+
+    $ virtualenv -p3 env
+    $ . env/bin/activate
+    $ pip install django
+
+Now I am surprised that the following fails::
+
+    $ django-admin check --settings settings
+    Traceback (most recent call last):
+    ...
+    ImportError: No module named 'settings'
+
+This is strange because Python can import my :file:`settings.py`
+without problem::
+
+    $ python -m settings
+    $ python -c "import settings"
+  
