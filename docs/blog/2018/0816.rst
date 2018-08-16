@@ -88,24 +88,24 @@ Making Lino installable using pip
 Hamza and I did research for the release process.
 
 We would like to separate our private temporary package repository
-from the book.  Because if Hamza works on the deployment and I change
-documentation and publish them, the LF site would server my version of
-the dl files.
+from the book because e.g. if Hamza works on the deployment and I
+change documentation and publish them, the LF site would serve my
+version of the dl files instead of his version.
 
-One idea was to use `twine
-<https://pypi.org/project/twine/>`__ directly on test pypi.
-Twine has an option
-``--skip-existing`` which should make it possible to 
-overwrite our files
-But test.pypi.org unfortunately doesn't permit it.
+One idea was to use `twine <https://pypi.org/project/twine/>`__
+directly on test.pypi.  Twine has an option ``--skip-existing`` which
+should make it possible to overwrite our packages without changing the
+version (an important feature since there are quite some issues which
+appear only when installing apypi version of Lino).  But test.pypi.org
+unfortunately doesn't support this option.
 
-Here our connection broke. But I continued because the solution was so
-close: using `pypiserver <https://pypi.org/project/pypiserver/>`__ I
-got it to work.
+At this point our internet connection broke. But I continued because
+the solution was so close: using `pypiserver
+<https://pypi.org/project/pypiserver/>`__ I got it to work.
 
 I updated :ref:`dev.sdist` and :ref:`user.install`.
 
-But there is still at least one problem (obviously not detected by the
+There is still at least one problem (obviously not detected by the
 test suite): :manage:`runserver` starts but does not find the static
 files.  So there is only a white screen.  Hamza, I leave this for you.
 See in :mod:`lino.core.urls` where it adds a pattern to MEDIA_ROOT.
