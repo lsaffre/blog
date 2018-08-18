@@ -51,12 +51,39 @@ works out of the box.
 Manually entering invoices - optimizations
 ==========================================
 
-I opened :ticket:`2490`.  I added a new choice ``waiting`` in
+
+I had another phone meeting with Vera.  She is really doing a hard and
+frustrating job: she must continue what had been done during 20 years
+by Lydia who had to stop for health reasons.  Both she and me knew in
+advance that it would be hard.  But yesterday morning she told me for
+the first time that she had had some moments of happiness with Lino.
+
+After the phone meeting I opened :ticket:`2490`.  Since Vera is
+entering purchase invoices which are half a year old, she didn't want
+Lino to suggest :func:`dd.today` as the entry date for each new
+invoice.  Also for suppliers having an empty :attr:`purchase_account`
+Lino was suggesting the rather arbitrary account I chose as the
+:attr:`base_account <lino_xl.lib.ledger.TradeTypes.base_account>` for
+purchases.
+
+I added the notion of "Waiting account": a new choice ``waiting`` in
 :attr:`lino_xl.lib.accounts.CommonAccounts` and changed
 :class:`lino_xl.lib.vat.VatDocument` so that it uses this as the
-default account (instead of the TradeType's `main_account`).
+default account (instead of the TradeType's :attr:`main_account
+<lino_xl.lib.ledger.TradeTypes.main_account>`).
+
+As for the entry date I used the recently discovered approach of using
+a new database model :class:`lino_xl.lib.ledger.LedgerInfo` with a
+OneToOneField (similar to :class:`lino_xl.lib.invoicing.SalesRule`,
+see :doc:`0712`).  Before that date I would have used
+:func:`dd.inject_field <lino.core.fields.inject_field>` in such a
+case.
        
-The :class:`lino.core.actions.ShowInsert` action has now
+En passant I fixed another stupid bug that would cause frustration
+once Vera would discover it: after having registered an invoice, the
+insert button was disabled as long as you were in detail view.  You
+had to close the detail view to re-enable the button.  The
+:class:`ShowInsert <lino.core.actions.ShowInsert>` action has now
 :attr:`readonly <lino.core.actions.Action.readonly>` = `True` because
 otherwise it was disabled when the current row was a registered
 document.

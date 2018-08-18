@@ -1,0 +1,133 @@
+:date: 2018-08-17
+
+=======================
+Friday, August 17, 2018
+=======================
+
+A typical production release with migration
+===========================================
+
+I released my yesterday's changes for :ticket:`2490` to the
+:ref:`tera` production site because Vera will appreciate it when she
+will continue to enter purchase invoices in a few hours.
+
+It needs a data migration because we have a new database model
+:class:`lino_xl.lib.ledger.LedgerInfo`.
+
+
+Here is a summary of how a release with data migration goes::
+
+    $ go spz
+    $ ./make_snapshot.sh
+    $ tail log/lino.log
+    201808-17 04:46:27 INFO [kernel 11546 140199822489344] : Started manage.py dump2py snapshot (using prod_sites.spz.settings) --> PID 11546
+    201808-17 04:52:29 INFO [dump2py 11546 140199822489344] : Wrote 525610 objects to .../prod_sites/spz/snapshot/restore.py and siblings.
+    201808-17 04:52:29 INFO [kernel 11546 140199822489344] : Done manage.py dump2py snapshot (PID 11546)
+
+So a :manage:`dump2py` takes 6 minutes.
+
+But that's not the big one.  The big one is this::
+  
+    $ nohup time python manage.py run snapshot/restore.py --noinput &
+
+This process lasts about 2 hours. I can close the remote terminal and
+run the following command on my local terminal to see what it's
+doing::
+
+  ssh user@example.com -p 2345 tail -f .../prod_sites/spz/nohup.out
+
+
+Smart quotes
+=============
+
+The `book` project has a file :xfile:`docutils.conf` with this content::
+
+    [parsers]
+    smart_quotes: false
+
+That's because smart quotes somehow cause problems to Sphinx::
+
+    writing output... [  0%] about/auth                                             
+    Traceback (most recent call last):
+      File "/site-packages/sphinx/cmdline.py", line 304, in main
+        app.build(args.force_all, filenames)
+      File "/site-packages/sphinx/application.py", line 331, in build
+        self.builder.build_update()
+      File "/site-packages/sphinx/builders/__init__.py", line 342, in build_update
+        'out of date' % len(to_build))
+      File "/site-packages/sphinx/builders/__init__.py", line 403, in build
+        self.write(docnames, list(updated_docnames), method)
+      File "/site-packages/sphinx/builders/__init__.py", line 440, in write
+        self._write_serial(sorted(docnames))
+      File "/site-packages/sphinx/builders/__init__.py", line 449, in _write_serial
+        self.write_doc(docname, doctree)
+      File "/site-packages/sphinx/builders/html.py", line 608, in write_doc
+        self.handle_page(docname, ctx, event_arg=doctree)
+      File "/site-packages/sphinx/builders/html.py", line 1038, in handle_page
+        (pagename, exc))
+    ThemeError: An error happened in rendering the page about/auth.
+    Reason: AttributeError("'NoneType' object has no attribute 'replace'",)
+
+
+Make Lino installable via pip
+=============================
+
+I am profoundly happy.  Yesterday evening Hamza and I fixed a problem
+which had been waiting for *years*.  I speak about :ticket:`2347`. I
+don't want to know how many hours I have been working on this issue.
+I actually stopped working on it some years ago.  Hamza worked on it
+37 hours (according to :ref:`jane`).  Okay it is not yet *fully* fixed
+(:manage:`runserver` doesn't yet find the static files, and then we
+need to implement and document the regular release procedure), but the
+main issue is done.  Cool!
+
+I remember two moments yesterday with Hamza where I laughed.  Hamza
+asked "Why do you laugh?".  These moments we when I realized how
+complex it all is.  I had been believing that `pip --index-url` could
+simply accept a local path as source for the packages. Yes, it does,
+but the path must also contain a series of html files as described in
+:pep:`503`.
+
+
+
+A new task list for Lino Avanti
+===============================
+
+Places without type
+===================
+
+And here is a subtle bug::
+
+    Traceback (most recent call last):
+      File ".../site-packages/django/core/handlers/base.py", line 185, in _get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File ".../site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File ".../site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File ".../lino/lino/modlib/extjs/views.py", line 570, in put
+        return settings.SITE.kernel.run_action(ar)
+      File ".../lino/lino/core/kernel.py", line 903, in run_action
+        a.run_from_ui(ar)
+      File ".../lino/lino/core/actions.py", line 679, in run_from_ui
+        self.save_existing_instance(elem, ar)
+      File ".../lino/lino/core/actions.py", line 621, in save_existing_instance
+        elem.full_clean()
+      File ".../xl/lino_xl/lib/contacts/models.py", line 351, in full_clean
+        super(Person, self).full_clean(*args, **kw)
+      File ".../xl/lino_xl/lib/countries/mixins.py", line 87, in full_clean
+        super(CountryCity, self).full_clean(*args, **kw)
+      File ".../xl/lino_xl/lib/beid/mixins.py", line 167, in full_clean
+        super(BeIdCardHolder, self).full_clean()
+      File ".../site-packages/django/db/models/base.py", line 1227, in full_clean
+        self.clean_fields(exclude=exclude)
+      File ".../site-packages/django/db/models/base.py", line 1265, in clean_fields
+        raw_value = getattr(self, f.attname)
+      File ".../lino/lino/core/fields.py", line 530, in __get__
+        return self.value_from_object(instance, None)
+      File ".../lino/lino/core/fields.py", line 525, in value_from_object
+        return m(obj, ar)
+      File ".../avanti/lino_avanti/lib/avanti/models.py", line 237, in municipality
+        while pl and pl.parent_id and pl.type.value > mt:
+    AttributeError: 'NoneType' object has no attribute 'value'
+
