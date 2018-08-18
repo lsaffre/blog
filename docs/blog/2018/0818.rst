@@ -38,7 +38,34 @@ Backup my own data
 ==================
 
 It seems that DejaDup backup simply fails for me because it takes more
-than a night on my notebook. And I don't see how I can verify what's
-on a backup.  I turn back to good old rsync. First I move 23 GB of
-Kusta's data from the external Touro disk to the archive on doll. Then
-I adapted my :file:`~/bin/backup2exthdd.sh` file.
+than a night on my notebook. And I don't see how I can verify whether
+the backup copy is complete.  I turn back to good old rsync to an
+external usb disk. First I moved 23 GB of Kusta's data from the Touro
+disk to my archive on doll. Then I adapted my
+:file:`~/bin/backup2exthdd.sh` file.
+
+
+Abdelkader getting back
+========================
+
+Abdelkader has been inactive for a while because he moved to Canada.
+Now reported that he found himself the solution for a problem on which
+he was stuck (and Hamza and I weren't able to help him):
+
+    The problem is in declaration.  I found the desciption of the
+    field in lino core so i did: just put null=True::
+      
+      discount=dd.QuantityField(null=True)
+
+Yes, you must indeed decide yourself whether a field has `null=True`.
+Note that when you have `null=True`, you probably also want
+`blank=True`.  But also note: since a QuantityField is technically a
+CHARFIELD, you probably should rather specify *only* `blank=True`.
+
+At some moment in the past, Django people had to decide whether
+database fields in general should be nullable by default or not.  They
+decided that database fields should *not* be nullable by default. I
+would probably have voted for the opposite. And as we can see, your
+case confirms it.  You have been stuck by a frustrating newbie problem
+because of this design decision.
+
