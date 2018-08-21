@@ -1,0 +1,111 @@
+:date: 2018-08-21
+
+========================
+Tuesday, August 21, 2018
+========================
+
+Atelier  now supports Sphinx 1.8
+================================
+
+Takeshi Komiya asked the community to test Sphinx 1.8.0 preview.  I
+found two problems, both located in my own code.
+
+In my projects it issued a warning :message:`autodoc_default_flags is
+now deprecated. Please use autodoc_default_options instead.` (which
+caused the build to fail because most projects have
+:envvar:`tolerate_sphinx_warnings` set to False.
+
+First of all I had to read the docs about `autodoc_default_options
+<http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`__
+to get back into why I want them.  I also read the developer
+discussion about this change `Add autodoc_default_options (#5315)
+<https://github.com/sphinx-doc/sphinx/pull/5315>`__.  Yes, specifying
+an empty ``:members:`` option to :rst:dir:`automodule` or
+:rst:dir:`autoclass` will automatically document members.  That's what
+we want.  We use autodoc to generate the API automatically and we
+don't want a half-automated API, we want it to always generate all
+members.
+
+The issue was in :func:`atelier.sphinxconf.configure` which sets
+general default values.
+
+Old default value was::
+
+  autodoc_default_flags=[ 'show-inheritance', 'members']
+
+New value must be::
+
+  autodoc_default_options={
+            'members': None,
+            'show-inheritance': None}
+
+
+So now atelier must set the default value depending on the Sphinx
+version.  How to compare versions in Python elegantly?
+`stackoverflow
+<https://stackoverflow.com/questions/11887762/how-do-i-compare-version-numbers-in-python>`__ gives the answer:
+
+>>> from distutils.version import LooseVersion
+>>> import sphinx
+>>> sphinx.__version__
+'1.8.0b1'
+>>> LooseVersion(sphinx.__version__) < LooseVersion("1.8")
+False
+
+            
+Another problem was with documents that run graphviz from within a
+:rst:dir:`py2rst` directive. For example::
+
+    .. py2rst::
+
+       from lino import startup
+       startup('lino_book.projects.lydia.settings.demo')
+       from lino.api import rt
+       rt.models.contacts.Partner.print_subclasses_graph()
+
+In :meth:`sphinx.ext.graphviz.Graphviz.run` Sphinx now says::
+
+        node['options'] = {
+            'docname': path.splitext(self.state.document.current_source)[0],
+        }
+   
+This feature ("add document name to graphviz node") was added 21 days
+ago in `16734bb1
+<https://github.com/sphinx-doc/sphinx/commit/16734bb11c2652ef92064aaa3226fb59cc555646#diff-aba85588b6b17125d4ab0edd4ea8a9ca>`__.
+
+But :attr:`state.document.current_source` is `None` when the code is
+run from within a :rst:dir:`py2rst` directive.
+
+The problem was in :class:`InsertInputDirective
+<atelier.sphinxconf.insert_input.InsertInputDirective>` where it
+created a new statemachine without specifying the source.  Before::
+
+        content = statemachine.StringList(output.splitlines())
+
+Now::        
+
+        content = statemachine.StringList(
+            output.splitlines(), self.state.document.current_source)
+
+
+Summary: Atelier now supports Sphinx version is 1.8 or later.
+:func:`atelier.sphinxconf.configure` now checks the Sphinx version and
+sets the new `autodoc_default_options
+<http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`__
+configuration value instead of the deprecated `autodoc_default_flags
+<http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html?highlight=autodoc_default_flags#confval-autodoc_default_flags>`__
+(if Sphinx is 1.8 or newer).
+
+
+     
+
+Side effect
+===========
+
+Note that :cmd:`inv clean` now also removes :xfile:`.eggs`
+directories.
+
+I am tempted to do something similar with
+:xfile:`__pychache__` directories because they nag me when opening the
+:xfile:`__init__.py` file with Emacs.
+
