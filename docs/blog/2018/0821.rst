@@ -99,13 +99,29 @@ configuration value instead of the deprecated `autodoc_default_flags
 
      
 
-Side effect
-===========
+Side effects
+============
 
-Note that :cmd:`inv clean` now also removes :xfile:`.eggs`
-directories.
+The :cmd:`inv clean` command now removes *all* :xfile:`.pyc` files,
+not only *dangling* ones.  And also :xfile:`.eggs` directories and
+:xfile:`__pycache__` directories. The latter because they require me
+to type an additional "i" each time I open an :xfile:`__init__.py`
+file with Emacs.  So basicaly it now full cleans the generated Python
+cache files.  Which makes the `--batch` option almost mandatory in
+practice.
 
-I am tempted to do something similar with
-:xfile:`__pychache__` directories because they nag me when opening the
-:xfile:`__init__.py` file with Emacs.
+I moved :class:`DjangoTemplateBridge` from :mod:`atelier.sphinxconf`
+to :mod:`lino.sphinxcontrib` and then removed it altogether.
 
+
+Started TimTools 2.0.2
+======================
+
+The timtools :cmd:`sync` command failed with a traceback::
+
+    Traceback (most recent call last):
+      File "timtools\scripts\sync.py", line 18, in <module>
+    ImportError: cannot import name __url__
+    [292] Failed to execute script sync
+
+Fixed and committed, but not yet released officially.
