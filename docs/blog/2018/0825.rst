@@ -1,0 +1,81 @@
+:date: 2018-08-25
+
+=========================
+Saturday, August 25, 2018
+=========================
+
+A jobs database for free software
+=================================
+
+I discovered https://www.fossjobs.net where we should post our job
+offers.  One thing is that we probably need to reformulate our job
+offers.  They have an intersting classification of the different
+responsibilities:
+
+- Administrators     x
+- Writers & Editors  x
+- Marketing & Sales  x
+- Managers           x
+- Testers            x
+- Consultants        x Belgium
+
+The follwing categories are probably less urgent for us:
+
+- Designers          
+- Programmers
+- Researchers
+- Translators
+- Support
+
+Balance and result sheets continued
+===================================
+
+Most of my yesterday thoughts about how to implement balance sheets
+are invalid.  Here is a new version of my plans.
+
+We rename accounts.AccountTypes to sheets.CommonItems and add a
+database model sheets.Item and a system with a method per choice
+:meth:`get_object` to retrieve the Item object corresponding to a
+CommonItem (same system as we have already for CommonAccounts).
+Group.account_type and Account.type (currently AccountTypes fields)
+will become injected pointers to sheets.Item.  accounts.AccountGroup
+will be renamed to sheets.ItemGroup. references to Account.group will
+be replaced by Account.sheet_item.group
+
+The :mod:`lino_xl.lib.sheets` plugin defines three models (Item, Sheet
+and Entry) and three choicelists (CommonItems, EntryType and
+SheetType).
+
+Not yet sure whether sheets should be vouchers or not. That's not
+relevant at the moment.
+
+Not yet sure whether we should continue to use groups or rather a
+hierarchized reference.  I tend to remove them because a hierarchical
+reference is more intuitive to use and maintain.
+
+
+
+::
+   
+    Item(Referrable)
+      ref
+      designation
+      common_item
+      mirror_item
+      sheet_type
+
+    Entry(Model):
+      sheet
+      item
+      group
+      entry_type 
+
+    Sheet(PeriodRange, UserAuthored)
+      date_published
+
+    CommonItem(ChoiceList):
+    EntryType(ChoiceList):
+      ('heading', 'value', and 'sum')
+      
+    SheetType(ChoiceList):
+      ('balance' and 'result')

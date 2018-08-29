@@ -4,16 +4,18 @@
 Friday, August 24, 2018
 =======================
 
-       
+Improving the Developer's Guide
+===============================
+
 I have been wondering why Abdelkader did have to ask the two questions
 he asked yesterday.  Because theoretically they were answered in the
-developer's guide, but he obviously didn't find them, or if he read
+Developer's Guide, but he obviously didn't find them, or if he read
 them before asking, they were not clear enough.
 
-As a result of my meditations I moved three pages from
-:ref:`dev.acquaintained` to :ref:`dev.diving`: :ref:`dev.menu`
-:ref:`virtualfields` and :ref:`actions`.
-And I moved :ref:`dev.lets` in the other direction.
+As a result of my meditations I moved three pages (:ref:`dev.menu`,
+:ref:`dev.virtualfields` and :ref:`dev.actions`) from
+:ref:`dev.acquaintained` to :ref:`dev.diving` and one page
+(:ref:`dev.lets`) in the other direction.
 
 Otherwise it's clear that the pages under :ref:`dev.diving` lack
 concrete code examples.  A newbie is probably overwhelmed with too
@@ -22,14 +24,88 @@ examples (1) are difficult to write and (2) should be tested.
 
 I saw that Abdelkader is using :meth:`__str__` to compute and set some
 values of a database object. He obviously doesn't know about the
-:meth:`full_clean` method.  I added documentation about in
+:meth:`full_clean` method.  I added an introduction to this in
 :ref:`dev.models`.  Which caused me to write a new method
 :meth:`lino.core.iste.Site.format_currency`.
-
-locale
 
 Other ideas are haunting my brain must wait until I have more time:
 
 - per-plugin migrators
 - country-based names for the fictive persons and companies in the
   contacts fictures.
+
+
+
+A new accounting plugin: Balance sheets
+=======================================
+
+I started to think about how a new plugin :mod:`lino_xl.lib.sheets`
+would work.
+
+The following is bullshit. See :doc:`0825`.
+
+A **balance sheet** (French "bilan", German "Bilanz") is an accounting
+report which summarizes the more detailed *account balances* of the
+general ledger (:class:`GeneralAccountBalances
+<lino_xl.lib.ledger.GeneralAccountBalances>`) for a given period.
+
+**Sheet fields** describe the rows of a balance sheet.  They are
+stored in the database.  There are different types of fields
+(:class:`SheetFieldTypes`): computed according to a formula, manually
+entered by the user, headings, sub-totals, spacers...
+
+For example :attr:`SheetFieldTypes.sum_by_ref` is to sum balances of
+general accounts whose :attr:`ref` starts with a given string.  Per
+general account we would like to see a set of rules where this account
+will influence the balance.
+
+A sheet contains a sequence of **sheet items**.  Every item has a
+pointer to the field and the value corresponding to that field for the
+observed period.
+
+This is technically similar to VAT declarations, but the fields are
+stored in database and have different attributes.  Should the balance
+sheet itself be a voucher, i.e. able to produce new ledger movements
+(similar to a VAT declaration)?  Sounds rather strange but
+theoretically it makes sence.  So why not.
+
+Since the fields are stored in database, we don't need additional
+per-country plugins like bevat and bevats that populate choicelists.
+
+We cannot use :func:`inject_field` to add one database field per
+declaratioin field because the fields are configurable.  You don't
+want to migrate the database after a local configuration change.
+
+Should we somehow use :mod:`lino.modlib.summaries`? With one summary
+row per fiscal year and computed sheet field type? No, that wouldn't
+be of practical use since anyway there are items with manual values.
+
+Not yet sure how to implement sheets that cover multiple periods and
+include a budget (anticipated numbers).
+
+.. A **budget sheet** estimates the *anticipated* revenues and
+   expenditures for the current or a future financial year.  It is
+   technically very similar to a *balance sheet*.  The balances plugin
+   can be used to produce budgets sheets.  For this you just need to
+   add a new *accounting realm*.  We would implement this as a
+   choicelist :class:`ledger.AccountingRealms` with two choices
+   :attr:`default` and :attr:`budget`.  And per Journal a field
+   :attr:`realm` which defines whether the movements are "predicted"
+   or "real".
+
+
+
+
+
+GitHub notifications
+====================
+
+I noted that I have never been getting email notifications when Tonis
+or Hamza pushed a change to a github repository.  I verified in my
+`Settings --> Notifications
+<https://github.com/settings/notifications>`__, everything looks okay
+there.  Maybe it is because of the *Email preferences* in my
+:menuselection:`Settings --> Emails`?  I changed from "Only receive
+account related emails, and those I subscribe to" to "Receive all
+emails, except those I unsubscribe from" and hope that I will now get
+notified.

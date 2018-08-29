@@ -1,0 +1,42 @@
+:date: 2018-08-29
+
+==========================
+Wednesday, August 29, 2018
+==========================
+
+New plugin :ref:`xl.specs.sheets`
+=================================
+
+I published more than four days of work for :ticket:`2510`.  The
+following is a summary of the changes.
+
+**Fiscal years** are now stored in the database instead of being a
+choicelist. :class:`lino_xl.lib.ledger.FiscalYear` is now a model.
+
+New plugin :mod:`lino_xl.lib.sheets` documented in
+:ref:`xl.specs.sheets`.  Changes in :ref:`xl.specs.ledger` and
+:ref:`xl.specs.accounts`.
+
+I discovered a subtle bug in :mod:`lino_xl.lib.ledger`: the virtual
+fields :attr:`debit <lino_xl.lib.ledger.Movement.debit>` and
+:attr:`credit <lino_xl.lib.ledger.Movement.credit>` said the opposite
+of what they should say.  A movement with :attr:`dc
+<lino_xl.lib.ledger.Movement.dc>` having `True` was shown in the
+"Credit" column and vice versa.  As a result, the
+:attr:`lino_xl.lib.ledger.Journal.dc` in demo data were wrong and are
+now inverted.
+
+TODO:
+
+- I will have to write a script for :ref:`tera` which inverts the
+  :attr:`dc` of all existing movements and vouchers journals.  Unless I
+  change the values of :data:`DEBIT <lino_xl.lib.accounts.utils.DEBIT>`
+  and :data:`CREDIT <lino_xl.lib.accounts.utils.CREDIT>`. To be
+  explored.
+
+- The :class:`MovementsByPartner` summary until displayed the open
+  balance as a negative number depending on whether it is debit or
+  creedit.  The sign has changed.
+  
+>>> rt.show(rt.models.ledger.MovementsByPartner, obj.partner)
+**15 offene Bewegungen (93.44 €)**
