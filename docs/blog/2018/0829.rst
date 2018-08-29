@@ -14,36 +14,40 @@ following is a summary of the changes.
 choicelist. :class:`lino_xl.lib.ledger.FiscalYear` is now a model.
 
 New plugin :mod:`lino_xl.lib.sheets` documented in
-:ref:`xl.specs.sheets`.  Changes in :ref:`xl.specs.ledger` and
-:ref:`xl.specs.accounts`.
+:ref:`xl.specs.sheets`.  Changes in :ref:`xl.specs.ledger`.
 
-I discovered a subtle bug in :mod:`lino_xl.lib.ledger`: the virtual
-fields :attr:`debit <lino_xl.lib.ledger.Movement.debit>` and
-:attr:`credit <lino_xl.lib.ledger.Movement.credit>` said the opposite
-of what they should say.  A movement with :attr:`dc
+I discovered a cool and well-hidden bug.  The virtual fields
+:attr:`debit <lino_xl.lib.ledger.Movement.debit>` and :attr:`credit
+<lino_xl.lib.ledger.Movement.credit>` said the opposite of what they
+should say.  A movement with :attr:`dc
 <lino_xl.lib.ledger.Movement.dc>` having `True` was shown in the
 "Credit" column and vice versa.  As a result, the
 :attr:`lino_xl.lib.ledger.Journal.dc` in demo data were wrong and are
 now inverted.
 
+
+
 TODO:
-
-- I will have to write a script for :ref:`tera` which inverts the
-  :attr:`dc` of all existing movements and vouchers journals.  Unless I
-  change the values of :data:`DEBIT <lino_xl.lib.accounts.utils.DEBIT>`
-  and :data:`CREDIT <lino_xl.lib.accounts.utils.CREDIT>`. To be
-  explored.
-
-- The :class:`MovementsByPartner` summary until displayed the open
-  balance as a negative number depending on whether it is debit or
-  credit.  The sign has changed.
-  
-  >>> rt.show(rt.models.ledger.MovementsByPartner, obj.partner)
-  **15 offene Bewegungen (93.44 €)**
 
 - Add a summary table with one row per AccountingPeriod and Account?
   IOW do with AccountingPeriod the same as with FiscalYear.
 
-- Add a feuture to explicitly specify the app_label of a
+- Add a feature to explicitly specify the app_label of a
   `DetailLayout`.  This would make it possible that `sheets` redefines
   the default `accounts.AccountDetail`.
+
+Side effects
+============
+  
+I changed the values of :data:`DEBIT
+<lino_xl.lib.accounts.utils.DEBIT>` and :data:`CREDIT
+<lino_xl.lib.accounts.utils.CREDIT>`.  Otherwise I would have had to
+write a script for :ref:`tera` which inverts the :attr:`dc` of all
+existing movements and vouchers and journals in existing production
+sites.
+
+Later I also merged :mod:`lino_xl.lib.accounts` into
+:mod:`lino_xl.specs.ledger` (:ticket:`2514`).
+
+
+  
