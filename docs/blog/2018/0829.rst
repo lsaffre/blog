@@ -22,10 +22,15 @@ I discovered a cool and well-hidden bug.  The virtual fields
 should say.  A movement with :attr:`dc
 <lino_xl.lib.ledger.Movement.dc>` having `True` was shown in the
 "Credit" column and vice versa.  As a result, the
-:attr:`lino_xl.lib.ledger.Journal.dc` in demo data were wrong and are
-now inverted.
-
-
+:attr:`lino_xl.lib.ledger.Journal.dc` in demo data were wrong because
+I configured their value based on the debit and credit in generated
+movements.  And consequently all `dc` fields theoretically need to get
+inverted.  In a later commit I changed the values of :data:`DEBIT
+<lino_xl.lib.accounts.utils.DEBIT>` and :data:`CREDIT
+<lino_xl.lib.accounts.utils.CREDIT>`.  Otherwise I would have had to
+write a script for :ref:`tera` which inverts the :attr:`dc` of all
+existing movements and vouchers and journals in existing production
+sites.
 
 TODO:
 
@@ -39,13 +44,6 @@ TODO:
 Side effects
 ============
   
-I changed the values of :data:`DEBIT
-<lino_xl.lib.accounts.utils.DEBIT>` and :data:`CREDIT
-<lino_xl.lib.accounts.utils.CREDIT>`.  Otherwise I would have had to
-write a script for :ref:`tera` which inverts the :attr:`dc` of all
-existing movements and vouchers and journals in existing production
-sites.
-
 Later I also merged :mod:`lino_xl.lib.accounts` into
 :mod:`lino_xl.specs.ledger` (:ticket:`2514`).
 

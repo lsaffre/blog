@@ -1,0 +1,43 @@
+:date: 2018-08-31
+
+=======================
+Friday, August 31, 2018
+=======================
+
+I added analytic accounts to the :class:`AccountingReport
+<lino_xl.lib.ledger.AccountingReport>`.  And the partner balances now
+show negative numbers instead of paired debit/credit columns since for
+these tables we know the "normal" booking direction (given by
+:attr:`lino_xl.lib.ledger.TradeType.dc`).  For general and analytic
+accounts the paired columns make sense because here we don't have a
+"normal" booking direction.
+
+I deprecated lino_cosi.lib.contacts because it added a dependency to
+ledger which then caused problems because ledger now imports contacts.
+
+I added a new argument `header_links` for
+:meth:`lino.core.requests.BaseRequest.show`.  The preview of a
+:class:`AccountingReport <lino_xl.lib.ledger.AccountingReport>` has
+now clickable accounts without having clickable column headers.
+
+I started to add support for having a :attr:`max_length` of 0 for a
+displayfield.  Not finished.  Setting the :attr:`max_length` of
+:attr:`empty_column` did not fix the layout problem in the printable
+pdf version.  The problem is deeper: :ticket:`2519`.  That is, we
+should render a report story using :meth:`insert_table
+<lino_xl.lib.appypod.app_renderer.AppyRenderer.insert_table>` which
+converts the Lino table directly to ODF chunks instead of generating
+XHTML and let :meth:`insert_html
+<lino_xl.lib.appypod.app_renderer.AppyRenderer.insert_html>` do the
+conversion.
+
+Before doing :ticket:`2519` I will rather reimplement accounting
+reports as a :class:`lino.modlib.users.UserPlan` because Vera will
+never agree to click the refresh button of the parameter panel after
+having selected an accounting period, and because she will expect
+subtotals.  And then we should maybe rather use a custom odt template.
+It is possible that the new :class:`UserPlan
+<lino.modlib.users.UserPlan>` mixin will replace
+:mod:`lino.utils.reports` completely.
+       
+

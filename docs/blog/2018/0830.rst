@@ -1,0 +1,66 @@
+:date: 2018-08-30
+
+=========================
+Thursday, August 30, 2018
+=========================
+
+I opened :ticket:`2516` because Vera will soon ask me how to print the
+accounting data she's entering.  
+
+First step is a new mixin :class:`lino.modlib.users.UserPlan`, i.e. I
+extracted the logic from invoicing plan to make it useable for ledger
+report.
+
+I ran :cmd:`pp inv mm` after this.
+
+
+
+
+Getting appy.pod run under Python 3
+===================================
+
+Here is how to install `appy-python-3`.  The fact that there is no
+:xfile:`setup.py` file makes things more complicated.
+       
+To get the latest development version published on pallavi, you can
+say ``pip install -r
+"svn+https://svn.forge.pallavi.be/appy-dev/dev1#egg=appy"`` as we do
+in the :file:`requirements.python3.txt` file of the book.
+
+But if you develop yourself, i.e. want to use your local clone of that
+repository, then you cannot use :cmd:`pip install` Here is how to
+work around this.
+
+First find our where is the :xfile:`site-packages` directory of your
+environment::
+
+  $ pywhich django
+  /media/dell1tb/virtualenvs/py3/lib/python3.6/site-packages/django/__init__.py
+
+
+Then add a symbolic link to that directory::
+
+  $ cd /media/dell1tb/virtualenvs/py3/lib/python3.6/site-packages
+  $ ln -s /home/luc/repositories/appy-python-3/trunk appy
+
+The :cmd:`inv test` command failed in :ref:`xl`.  Since under Python
+3, appy is installed using a symbolic link, :cmd:`setup.py test`
+doesn't see it and tries to install it, which fails since appy itself
+works only on Python 2.  So we must not add it to `install_requires`
+in the :xfile:`setup_info.py`::
+
+    import sys
+    PY2 = sys.version_info[0] == 2
+    if PY2:
+        install_requires.append('appy')
+    else:
+        pass
+    
+I could then reproduce the place where Hamza is currently stuck::
+
+  $ go book
+  $ inv prep test
+
+Yes, there are only 5 failures which look like trivial Python 2-to-3
+issues.  I fixed one of them ("doctest docs/dev/builddocs.rst",
+i.e. the source code of :ref:`lino.dev.bd`).

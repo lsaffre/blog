@@ -1,0 +1,86 @@
+:date: 2018-09-01
+
+===========================
+Saturday, September 1, 2018
+===========================
+
+Today is a historic day:
+
+.. image:: 0901a.png
+
+This screenshot shows the :ref:`book` test suite having passed on
+:ref:`travis` under both Python 2 and 3.  This happened for the first
+time in history.  As a consequence I closed :ticket:`36` now.  If new
+problems arise, we will create individual tickets for them.
+
+Thanks to Hamza and Gaetan for their work on this.
+
+Of course there is more to do about it.  Actually the latest big issue
+was :ticket:`1157`, and this one is only half fixed.  It currently
+requires a special line in the :xfile:`requirements-python3.txt`
+file::
+
+  -e svn+https://svn.forge.pallavi.be/appy-dev/dev1#egg=appy
+
+as explained on :doc:`0510`.  And I still don't understand every
+detail.  For example is the `-e` option needed?
+
+The remaining big problem with :ticket:`1157` is that as long as Appy
+for Python 3 is not on PyPI, we cannot ask Lino hosters and
+application developers to use Python 3.  They continue to be stuck on
+Python 2.  We can say that this is mostly their psychologic problem,
+but it becomes our problem since we want them to trust us.
+
+Gaetan wrote "Pour la publication via pip, ce n'est pas encore
+prêt. Il faut que la suite de tests complète puisse fonctionner en
+Python 3, et je pense que c'est loin d'être le cas. Par ailleurs, bien
+que Luc et toi (et pas mal d'autres personnes) n'utilisez que la
+partie "pod" d'Appy, il y a beaucoup d'autres parties du framework sur
+lequel il reste pas mal de boulot (Appy est un framework complet pour
+développer des applis web en Python)."
+
+This shows once more that for us (and those other guys who use only
+appy.pod without the whole web framework) Gaetan should split the pod
+part of appy out of the appy web framework and start maintaining two
+Python packages.  But it seems that he is afraid of doing that
+step. Should I try once more to convince him?
+
+Gaetan, my experience shows that it is easier to maintain several
+small packages than having one monolythic project.  In the beginning
+of Lino I also had one single repository, now the Lino framework
+consists of more than a dozen of packages.  I suggest to choose a
+completely new name for what is currently needed by appy.pod
+e.g. "appytools".  The appytools package would become to appy
+something like :ref:`atelier` and :ref:`etgen` are for Lino:
+independent little packages maintained by the Lino team, which can be
+used by people who don't use Lino.
+
+
+
+General release workflow for Lino
+=================================
+
+I opened :ticket:`2520` and started to write release notes for
+:ref:`v18.8` and :ref:`lino.coming`.
+
+We noted that the tags created by :cmd:`inv release` were only local
+until now.  They exist only on Hamza's machine. For future releases
+they should automatically be pushed to become public::
+
+    git push origin v18.8.0
+
+Hamza changed atelier to issue that addditional `git push` command.
+He also added the "v" in front of the version number (just because I
+have a feeling that numeric tag names might cause issues in git).  He
+will review and update the atelier docs before pushing his work.
+
+Now about the deployment workflow (:ticket:`2520`).  This is important
+because we want to convince hosters that it is safe to provide stable
+hosting for existing Lino applications.
+
+Imagine 18.8.0 is released. And there are hosters with production
+sites using that version.  And then some urgent bug is reported.
+the production sites don't want to upgrade.
+
+We want to provide a version 18.8.1.
+
