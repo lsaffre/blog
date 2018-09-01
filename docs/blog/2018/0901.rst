@@ -63,9 +63,9 @@ General release workflow for Lino
 I opened :ticket:`2520` and started to write release notes for
 :ref:`v18.8` and :ref:`lino.coming`.
 
-We noted that the tags created by :cmd:`inv release` were only local
-until now.  They exist only on Hamza's machine. For future releases
-they should automatically be pushed to become public::
+Hamza and I noted that the tags created by :cmd:`inv release` were
+only local until now.  They exist only on Hamza's machine. For future
+releases they should automatically be pushed to become public::
 
     git push origin v18.8.0
 
@@ -84,3 +84,80 @@ the production sites don't want to upgrade.
 
 We want to provide a version 18.8.1.
 
+
+
+
+
+Getting notified about every commit
+===================================
+
+I still don't get notified when Hamza or Tonis push some code change
+to some repository.  Aha, thanks to `stackoverflow
+<https://stackoverflow.com/questions/9845655/how-do-i-get-notifications-for-commits-to-a-repository>`__
+I learned that GitHub has an RSS feed I can subscribe to:
+
+- https://github.com/lino-framework/lino/commits/master.atom
+- https://github.com/lino-framework/xl/commits/master.atom
+- https://github.com/lino-framework/book/commits/master.atom
+- https://github.com/lino-framework/avanti/commits/master.atom
+- etc
+
+Now that I can more easily review what the others are doing.  I saw
+that Hamza used found a better solution for fixing the Python 2/3
+problem I recently fixed in :ref:`lino.dev.bd`.  I copied his
+solution.
+
+Reviewing Hamza's documentation changes
+=======================================
+
+Cool! Hamza committed two changes in atelier together with the
+documentation:
+https://github.com/lino-framework/atelier/commit/330c6028a43d6146b667e1176e85141cfd090116
+
+But I am nit-picky. I reviewed his changes:
+https://github.com/lino-framework/atelier/commit/0174a583238a14e293f9514b5f3342978725fbe9
+
+My comment: the changes.rst should be short and should not repeat what
+is written in the docs (so I removed the duplicate text). You forget
+to mention that :cmd:`inv release` it now also pushes the version tag.
+
+And then I saw::
+
+    $ inv release --help
+    Usage: inv[oke] [--core-opts] release [--options] [other tasks here ...]
+
+    Docstring:
+      Publish a new version to PyPI.
+
+      :param bool notag: If it's True, the command will not create a new tag.
+
+    Options:
+      -n, --notag
+
+I vaguely remembered that pyinvoke can do better.  A quick
+consultation of the `documentation
+<http://docs.pyinvoke.org/en/1.1/getting-started.html#adding-metadata-via-task>`__
+told me how to make it more elegant::
+
+    $ inv release --help
+    Usage: inv[oke] [--core-opts] release [--options] [other tasks here ...]
+
+    Docstring:
+      Publish a new version to PyPI.
+      See http://atelier.lino-framework.org/invlib.html for details.
+
+    Options:
+      -n, --notag   Skip automatic creation of version tag
+  
+So I did a second review:
+https://github.com/lino-framework/atelier/commit/bf95b199dce1101cd649b423d8fdd0e6ba468005      
+
+Hi Hamza, please don't take my perfectionism too personal- actually I
+am very glad that you start to write docs.  In a free software
+project, documenting what you do is at least as important as actually
+doing it.  We all tend to forget this.  One good reason for not always
+documenting immediately is that the changes might still be
+experimental.
+
+This story also shows the benefits of reviewing the changes of your
+team members: it motivated me to think whether I liked Hamza's change.
