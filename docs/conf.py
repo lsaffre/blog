@@ -331,6 +331,7 @@ inheritance_graph_attrs.update(fontsize=14, ratio='compress')
 # extensions += ['yasfb']
 # extensions += ['sphinxcontrib.feed']
 extensions += ['sphinxfeed']
+# NB : not the public sphinxfeed but my extended version
 feed_base_url = 'http://luc.lino-framework.org'
 feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"

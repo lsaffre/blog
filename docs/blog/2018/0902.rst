@@ -1,0 +1,110 @@
+:date: 2018-09-02 23:59
+
+=========================
+Sunday, September 2, 2018
+=========================
+
+When to bump version numbers
+============================
+
+With Hamza I have been thinking about when to update our
+:xfile:`setup_info.py` files.  We are at the beginning of September so
+the version 18.8 is no longer correct, is it?  Should I change the
+version numbers in those files to 18.9 already now?  But what if there
+will be no release at all in September?
+
+Hamza: We could say that we publish version at the end of the month.
+Version 18.9 then means Lino versions released after the work of the
+09 month has been done, not before.
+
+Luc: The problem is that maybe there is no reason at all to do a
+release for a given month.  I think we should do a release only when
+there is a new feature that is worth doing the effort.
+
+Hamza: Ok, yes.  We do a new release of each new milestone.
+
+Luc: one problem then is: what is a milestone?
+
+Hamza: Maybe for at least 3 months would be more reasonable.
+
+Luc: Currently I guess that there will be a release in September
+because of the new accounting report I am working on...
+
+Hamza: ... and official support for Python 3 and Django 2.
+
+Luc: Yes, there is hope that this will be done before end of
+September.  But "hope" does not mean that we will actually get there.
+Maybe it will be finished only in October.
+
+I would now say: let's leave the 18.8 in our :xfile:`setup_info.py`
+files until we really started the next release.
+
+Hamza: Ok I think its the best idea.
+
+
+How to test database migrations
+===============================
+
+At the moment we are just playing (as long as there is nobody
+providing :ref:`stable hosting <stable_hosting>`), but I would like to
+start playing seriously.  I opened ticket :ticket:`2522`.
+
+Sphinxfeed not publishing to RSS feed
+=====================================
+
+I noticed that the RSS feeds of my blogs have been empty for the last
+week.  That was because when restoring my virtualenvs (after I
+upgraded to Ubuntu 18.04) I accidentally installed the `official
+version of sphinxfeed <https://github.com/junkafarian/sphinxfeed>`__.
+I had forgotten that I use `my own fork
+<https://github.com/lsaffre/sphinxfeed>`__ of this project.
+
+In August 2016 I submitted an upstream `pull request
+<https://github.com/junkafarian/sphinxfeed/pulls>`__ to have the
+official version support what I want to have, but so far there is no
+reaction to this.  The maintainer is `Fergus Doyle
+<https://pypi.org/user/Fergus.Doyle/>`__.  I guess that `this
+<http://www.fergusdoyle.ie/>`__ is his homepage.  I can imagine that
+he did this project once in his young years and that life went on and
+now he has not much motivation to maintain it.
+
+Now I did yet another new feature: add posts to RSS only when
+publication time is *after* current time.  This fixes my following
+problem: Many RSS readers do not check whether an item they have
+imported earlier has been updated meanwhile.  This is a problem for me
+because I tend to run :cmd:`inv bd` several times a day on my blogs.
+So once a follower has downloaded the first version of a blog entry
+they won't see any update.  OTOH I *want* to publish at least on my
+website (not necessarily in the RSS feed) several times per day. I
+could add the `:date:` field only when I really finished the day, but
+I know myself: I will forget this.  I fixed this by introducing a new
+rule: blog posts which *do* have a publication date are still *not*
+published if that date is after today.  And if they don't have a
+publication time specified, sphinxfeed assumes "23:59" as the time.
+As a result, I now can run :cmd:`inv bd` as often as I want, Tonis and
+Hamza get the latest version when they point their browser to my blog,
+but RSS readers get them only the next day.
+
+The change is in `b76b753853
+<https://github.com/lsaffre/sphinxfeed/commit/b76b7538536a0d495a457b2eb61ceb26a003375e>`__.
+
+The following were some preliminary tests.
+
+>>> import time
+>>> fmt = '%Y-%m-%d %H:%M'
+>>> pubdate = "2018-09-02 23:59"
+>>> # pubdate = "2018-09-01 23:59"
+>>> pd = time.strptime(pubdate, fmt)
+>>> pd  #doctest: +SKIP
+time.struct_time(tm_year=2018, tm_mon=9, tm_mday=2, tm_hour=23, tm_min=59, tm_sec=0, tm_wday=6, tm_yday=245, tm_isdst=-1)
+>>> time.gmtime()  #doctest: +SKIP
+time.struct_time(tm_year=2018, tm_mon=9, tm_mday=2, tm_hour=4, tm_min=35, tm_sec=46, tm_wday=6, tm_yday=245, tm_isdst=0)
+>>> pd > time.gmtime()
+True
+>>> pd < time.gmtime()
+False
+
+
+I will sent a mail to Fergus, asking him about his plans with the
+sphinxfeed project.
+
