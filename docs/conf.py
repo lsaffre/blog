@@ -341,4 +341,6 @@ feed_field_name = 'date'
 # autoslides = False
 # slide_numbers = True
 
+import os
+os.environ['LC_TIME'] = 'en_UK.UTF-8'
 

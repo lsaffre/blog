@@ -1,0 +1,38 @@
+:date: 2018-09-17
+
+==========================
+Monday, September 17, 2018
+==========================
+
+This week-end I realized that I cannot add a new calendar entry state
+"missed" for all applications and change the symbol for "cancelled"
+from "☒" to "⚕" because the :ref:`welfare` and :ref:`avanti` users
+will complain.  But :ref:`tera` needs this. It wasn't trivial to
+change it only for tera.  When defining workflows, we need to
+differentiate between the choicelists (used to define the states) and
+the transitions (used to define actions from one state to another
+state).  Until now we often define the choicelists together with their
+transition because this is easier to maintain.  But this use case is
+an example for why it is better to separate them.
+
+That's the reason why in the beginning we had two site attributes
+:attr:`workflows_module <lino.core.site.Site.workflows_module>` and
+:attr:`lino.core.site.Site.choicelists_module`.  The difference was
+just the time of loading during kernel startup.
+
+A workaround for the moment was to redefine the button_text in the
+:attr:`user_types_module <lino.core.site.Site.user_types_module>`.
+
+I am not yet sure how to make this more elegantly.  Probably bring
+back the :attr:`lino.core.site.Site.choicelists_module` and have it
+simply be imported just before the :attr:`workflows_module
+<lino.core.site.Site.workflows_module>`.
+
+I noticed that the documentation about workflows was very bad and
+obsolete.  I reviewed :ref:`workflows` and converted the
+:file:`/docs/tutorials/workflows_tutorial` to
+:mod:`lino_book.projects.workflows`.
+
+Ticket :ticket:`2492` is not finished, but I adapted the test suites
+and pushed my work because before continuing on this ticket I must now
+work for :ticket:`2531`.

@@ -1,0 +1,32 @@
+:date: 2018-09-11
+
+===========================
+Tuesday, September 11, 2018
+===========================
+
+- my fork of sphinxfeed now has "from setuptools import setup" instead
+  of "from distutils.core import setup" because complained about
+  Unknown distribution option 'install_requires' and
+  'include_package_data'.
+
+- I reviewed docs for :ref:`specs.weasyprint` and
+  :ref:`xl.specs.excerpts` and converted them from autodoc to prosa
+  style.
+
+- I updated :ref:`lino.coming`.  
+
+And now I finally seem to have done what I wanted on :doc:`0906`.
+
+
+`This build failure
+<https://travis-ci.org/lino-framework/book/jobs/427078241>`__
+surprised me.  We have specified `sqlparse` in `tests_require` but not
+in `install_requires`.  I know it would pass if we put it to
+`install_requires`, but that would be "wrong".  Why does it fail?  It
+seems that `setup.py test` does not always install the packages
+`tests_require`.
+
+https://github.com/astropy/astropy-helpers/issues/212
+
+I removed also mock from the requirements file and have them now both
+in the install_requires.

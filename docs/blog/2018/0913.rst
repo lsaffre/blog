@@ -1,0 +1,241 @@
+:date: 2018-09-13
+
+============================
+Thursday, September 13, 2018
+============================
+
+Sphinx 1.8 and feedformatter
+============================
+
+I installed and tried the new Sphinx 1.8.  There was a problem when
+generating my blog::
+
+    Traceback (most recent call last):
+      File "/site-packages/sphinx/cmd/build.py", line 304, in build_main
+        app.build(args.force_all, filenames)
+      File "/site-packages/sphinx/application.py", line 369, in build
+        self.emit('build-finished', None)
+      File "/site-packages/sphinx/application.py", line 510, in emit
+        return self.events.emit(event, self, *args)
+      File "/site-packages/sphinx/events.py", line 80, in emit
+        results.append(callback(*args))
+      File "/sphinxfeed/sphinxfeed.py", line 95, in emit_feed
+        feed.format_rss2_file(path)
+      File "/site-packages/feedformatter.py", line 399, in format_rss2_file
+        string = self.format_rss2_string(validate, pretty)
+      File "/site-packages/feedformatter.py", line 393, in format_rss2_string
+        return _stringify(RSS2root, pretty=pretty)
+      File "/site-packages/feedformatter.py", line 273, in _stringify
+        return ET.tostring(tree)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1126, in tostring
+        ElementTree(element).write(file, encoding, method=method)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 820, in write
+        serialize(write, self._root, encoding, qnames, namespaces)
+      File "/etgen/etgen/etree.py", line 29, in _serialize_xml
+        return _original_serialize_xml(write, elem, *args, **kwargs)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 939, in _serialize_xml
+        _serialize_xml(write, e, encoding, qnames, None)
+      File "/etgen/etgen/etree.py", line 29, in _serialize_xml
+        return _original_serialize_xml(write, elem, *args, **kwargs)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 939, in _serialize_xml
+        _serialize_xml(write, e, encoding, qnames, None)
+      File "/etgen/etgen/etree.py", line 29, in _serialize_xml
+        return _original_serialize_xml(write, elem, *args, **kwargs)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 939, in _serialize_xml
+        _serialize_xml(write, e, encoding, qnames, None)
+      File "/etgen/etgen/etree.py", line 29, in _serialize_xml
+        return _original_serialize_xml(write, elem, *args, **kwargs)
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 937, in _serialize_xml
+        write(_escape_cdata(text, encoding))
+      File "/usr/lib/python2.7/xml/etree/ElementTree.py", line 1073, in _escape_cdata
+        return text.encode(encoding, "xmlcharrefreplace")
+    UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 7: ordinal not in range(128)
+
+I opened :ticket:`2534` and explored the problem:
+
+- Seems that this is caused by either
+  :mod:`sphinxfeed` or :mod:`feedformatter` or :mod:`etgen.etree`.
+
+- etgen : I removed the patch in :mod:`etgen.etree` because it lookeds
+  suspicious.  But that didn't help. So :mod:`etgen.etree` is probably
+  innocent.  That patch for writing CDATA has maybe become useless,
+  but I am not sure, so I leave it there at the moment.
+
+- feedformatter : I tried a `newer version
+  <https://github.com/Jonny007-MKD/feedformatter>`__.  Also that
+  didn't help.  Note that feedformatter seems to be unmaintained. The
+  PyPI version is 0.4 still points to code.google.com but there are
+  two forks.  I created a third fork but deleted it again when I found
+  thte explanation below.
+
+- sphinxfeed: I use `my own fork
+  <https://github.com/lsaffre/sphinxfeed>`__ of sphinxfeed (see
+  :doc:`0902`), so I cannot simply try other versions.
+
+Adding a try...except in my
+:file:`/usr/lib/python2.7/xml/etree/ElementTree.py` finally revealed
+the explanation which I am going to simulate here:
+
+sphinxfeed sets the `pubDate` field of feed items to a `time_struct`:
+
+>>> import time
+>>> fmt = '%Y-%m-%d %H:%M'
+>>> pubDate = time.strptime("2018-03-13 11:07", fmt)
+>>> pubDate
+time.struct_time(tm_year=2018, tm_mon=3, tm_mday=13, tm_hour=11, tm_min=7, tm_sec=0, tm_wday=1, tm_yday=72, tm_isdst=-1)
+
+When sphinxfeed then calls feedformatter, feedformatter writes all
+dates using the format demanded by the `RSS 2.0 specification
+<https://validator.w3.org/feed/docs/rss2.html>`__ which itself refers
+to the venerable `RFC 822 <https://www.ietf.org/rfc/rfc0822.txt>`__
+(search for ``- 25 -`` in that document to get to the "5.  DATE AND
+TIME SPECIFICATION" section).  Anyway, here is how a pubdate field in
+an rss.xml file should look like:
+
+>>> s = time.strftime("%a, %d %b %Y %H:%M:%S %Z", pubDate)
+>>> repr(s)
+"'Tue, 13 Mar 2018 11:07:00 '"
+
+Now Sphinx version 1.8 (at least on my machine) sets the locale to
+Estonian:
+
+>>> import locale
+>>> locale.setlocale(locale.LC_ALL, 'et_EE.utf8')
+'et_EE.utf8'
+
+And feedformatter now gets a localized string containting non-ascii
+characters which under Python 2 is not even a unicode string but a
+bytestring:
+
+>>> s = time.strftime("%a, %d %b %Y %H:%M:%S %Z", pubDate)
+>>> type(s)
+<type 'str'>
+>>> repr(s)
+"'T, 13 m\\xc3\\xa4rts 2018 11:07:00 '"
+
+And when trying to serialize that bytestring, we get our decoding
+error:
+
+>>> s.encode("ascii", 'xmlcharrefreplace')
+Traceback (most recent call last):
+  File "/usr/lib/python2.7/doctest.py", line 1315, in __run
+    compileflags, 1) in test.globs
+  File "<doctest 0913.rst[13]>", line 1, in <module>
+    s.encode("ascii", 'xmlcharrefreplace')
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 7: ordinal not in range(128)
+
+It is true that I live in Estonia and that my Ubuntu system probably
+has some setting seomwhere saying this.  But in my :xfile:`conf.py` I
+have::
+
+   language = 'en'
+
+So why does Sphinx version 1.8 set the locale to "Estonian" on my
+machine?  It is because of the environment variable :envvar:`LC_TIME`.
+I can work around the problem by setting this variable to
+``en_GB.UTF-8`` before building::
+
+    $ export LC_TIME=en_GB.UTF-8
+
+I added a unit test in `my sphinxfeed clone
+<https://github.com/lsaffre/sphinxfeed>`__ which reproduces the
+problem (when ``LC_TIME=et_EE.UTF-8``) : The test suite passes with
+"Sphinx<1.8" and fails with 1.8.
+
+But setting my :envvar:`LC_TIME` to ``en_GB.UTF-8`` is not really a
+satisfying solution.
+
+
+Miscellaneous
+=============
+
+There was a warning :message:`no files found matching '.idea'` during
+:cmd:`inv test` in :mod:`lino`.
+
+
+Lino and WeasyPrint
+===================
+
+The new accounting report shows us that `WeasyPrint
+<https://weasyprint.org/>`__ is a great tool for most Lino printing
+jobs.  That's why I invested some time into trying to find out who's
+behind this package.
+
+Oh, here is a post by its author (gayoub from kozea group) where he
+explains why he wrote WeasyPrint: `Comment générer automatiquement des
+jolis documents ?
+<https://kozeagroup.wordpress.com/2018/07/18/comment-generer-automatiquement-des-jolis-documents/>`__
+It's so nice to read about somebody who shares similar experiences and
+feelings about producing printable documents!
+
+Later I read another blog post by the Kozea group: `Philippe et sa
+montre
+<https://kozeagroup.wordpress.com/2018/06/04/interview-philippe-et-sa-montre/>`__,
+an interview with Philippe Donadieu, manager of the Kozea group.
+Their main product is a suite of software solutions for drugstores in
+France.  It seems to be proprietary software, though.
+
+But their main developer is **Guillaume Ayoub** who also gave `an
+interview
+<https://kozeagroup.wordpress.com/2017/09/14/interview-guillaume-et-sa-licorne-malefique/>`__.
+This corresponds to the `AUTHORS
+<https://github.com/Kozea/WeasyPrint/blob/master/AUTHORS>`__ file and
+the author of the first blog post.
+
+And who is **Simon Sapin**, the first author mentioned in that file?
+According to his site `exyr.org <https://exyr.org/>`__ he has
+previously worked on WeasyPrint at Kozea. In 2012 he presented
+`WeasyPrint at W3C Developer Meetup in Lyon
+<https://exyr.org/2012/w3c-developer-meetup-lyon/>`__.  On the slides
+I read that Kozea had 10 employees at that time, is located in the
+Lyon area and builds custom web applications for businesses
+("Industrialization, HTML5/CSS3 e-learning and Semi-automated
+reporting").  And that they recently became a W3C member.  Which seems
+to be no longer true (at least they aren't listed `here
+<https://www.w3.org/Consortium/Member/List#xK>`__).
+
+Their `community website <https://community.kozea.fr>`__ finally
+confirms that they invite us to collaborate or to just tell them about
+ourselves.
+
+It seems that Simon left the Kozea community when he left his job
+there, and that he has moved away from Python to Rust since then.
+
+WeasyPrint was written and is maintained by a "corporate-driven
+community".  But other than the Python extension for Visual Studio
+Code (see :doc:`0910`) this is what I would call a corporate working
+for a free culture because their product serves also people who are
+not customers of the corporate.  That's why Kozea is more sympathic
+than Microsoft for me.
+
+Hi Simon and Guillaume, I'd like to say thank you for the great work
+you have done and are doing on WeasyPrint!  I hope that its
+maintenance will continue to give you much joy and satisfaction.  At
+the moment we just *use* WeasyPrint (in the
+:mod:`lino.modlib.weasyprint` plugin), and WP simply works as
+expected.  This is great!  Don't expect active contributions because
+we have other things to do as well.  Let us know if you see how we can
+help.
+
+
+Lino Tera für Therapeuten weiter
+================================
+
+DONE:
+
+- Activated :mod:`lino.modlib.dashboard`.
+- Überfällige Termine : nicht schon die von heute, erst ab gestern.
+- users.UserDetail hat keine Reiter (Dashboard, event_type, ...)
+- Changed the symbol for a "Cancelled" calendar entry in
+  :mod:`lino_xl.lib.cal` from ☉ to ⚕. Because the symbol ☉ (a sun) is
+  used in :ref:`tera` for events where the guest missed the
+  appointment without a valid reason.  The sun reminds a day on the
+  beach while the ⚕ reminds a drugstore.
+  
+- Neuer Stand "Verpasst" ("Missed -- Guest missed the appointment")
+  für Termine.  
+
+Note the analogy: a guest (participant) can be "absent" or "excused",
+an appointment can be "missed" or "cancelled".  In :ref:`tera` we will
+need this analogy because they have a mixture of group appointments
+and individual appointments.

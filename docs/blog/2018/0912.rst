@@ -1,0 +1,34 @@
+:date: 2018-09-12
+
+=============================
+Wednesday, September 12, 2018
+=============================
+
+TypeError: this constructor takes no arguments
+==============================================
+
+I had the folowing traceback::
+   
+    WSGI script '/usr/local/django/testlino/wsgi.py'.
+    mod_wsgi (pid=13652): Target WSGI script '/usr/local/django/testlino/wsgi.py' cannot be loaded as Python module.
+    mod_wsgi (pid=13652): Exception occurred processing WSGI script '/usr/local/django/testlino/wsgi.py'.
+    Traceback (most recent call last):
+      File "/usr/local/django/testlino/wsgi.py", line 12, in <module>
+        application = django.core.handlers.wsgi.WSGIHandler()
+      File "/usr/local/django/testlino/env/lib/python2.7/site-packages/django/core/handlers/wsgi.py", line 151, in __init__
+        self.load_middleware()
+      File "/usr/local/django/testlino/env/lib/python2.7/site-packages/django/core/handlers/base.py", line 82, in load_middleware
+        mw_instance = middleware(handler)
+    TypeError: this constructor takes no arguments
+
+
+This was because :mod:`lino.modlib.ipdict.middleware` did not yet
+use :class:`django.deprecation.MiddlewareMixin`.
+
+TODO: Why did this problem occur only on testlino in weleup?
+
+
+Run eidreader without console window
+====================================
+
+I released version 1.0.2 of :ref:`eidreader`.
