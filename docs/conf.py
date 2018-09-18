@@ -342,5 +342,5 @@ feed_field_name = 'date'
 # slide_numbers = True
 
 import os
-os.environ['LC_TIME'] = 'en_UK.UTF-8'
+os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
