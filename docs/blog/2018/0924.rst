@@ -1,0 +1,32 @@
+:date: 2018-09-24
+
+==========================
+Monday, September 24, 2018
+==========================
+
+Lino Tera
+=========
+
+Uff, I finally pushed my work of the last days on :ticket:`2492`.
+
+I added a new checkbox :attr:`force_guest_states
+<lino_xl.lib.cal.EventType.force_guest_states>` for calendar entry
+types and a new attribute :attr:`guest_state
+<lino_xl.lib.cal.EntryState.guest_state>` for calendar entry states.
+This feature makes sense only if the application programmer has also
+set :attr:`lino_xl.lib.cal.EntryState.guest_state` for at least one
+entry state.  In :ref:`tera` they will use this for individual and
+family therapies where they don't want to manage presences of every
+participant.  When an appointment is set to "Took place", Lino sets
+all guests to "present".
+
+The next big missing piece (maybe the last) was invoicing.  The basic
+invoiceable things in :ref:`tera` are the calendar entries.  Every
+meeting with a therapist is basically invoiceable.  The challenge then
+is that for individual and family meetings the *appointments*
+(:class:`Event <lino_xl.lib.cal.Event>`) are invoiceable while for
+group therapies every individual *presence* (:class:`Guest
+<lino_xl.lib.cal.Guest>`) is invoiceable.  So we now have a new
+:mod:`lino_tera.lib.cal` plugin which extends these models.
+     
+

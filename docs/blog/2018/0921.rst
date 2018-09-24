@@ -1,0 +1,43 @@
+:date: 2018-09-21
+
+==========================
+Friday, September 21, 2018
+==========================
+
+Why EIDRreader fails from behind a tunnel
+=========================================
+
+I create a tunnel from port 8080 of my 127.0.0.1 to their server using::
+
+    ssh -L 8080:custlino.example.com:80 johndoe@example.com
+
+In my :file:`/etc/hosts` I have::
+
+  127.0.0.1   custlino
+
+Then I open a browser on http://custlino:8080 to access their server.
+
+I have installed :ref:`eidreader`.
+
+In my browser I then ask to read an id card. The beid protocol handler
+will be called with a URL that looks like this::
+
+    beid://http://custlino:8080/eid/1234-5678-abcd
+
+EIDRreader removes the "beid://" prefix and then uses the requests
+package which in turn uses the socket package which in the end will do
+something like this:
+
+>>> import socket
+>>> url = "custlino"
+>>> socket.getaddrinfo(url, 8080)
+[(2, 1, 6, '', ('127.0.0.1', 8080)), (2, 2, 17, '', ('127.0.0.1', 8080)), (2, 3, 0, '', ('127.0.0.1', 8080))]
+
+>>> import requests
+
+So EIDRreader finally will post to 127.0.0.1.
+
+Maybe I just need to add '127.0.0.1' to :setting:`ALLOWED_HOSTS` on
+their server?  No, this wasn't a solution.  To be continued.
+
+

@@ -1,0 +1,71 @@
+:date: 2018-09-18
+
+===========================
+Tuesday, September 18, 2018
+===========================
+
+Alterntive for TeamViewer?
+==========================
+
+TeamViewer has two problems: it doesn't always work correctly when I
+want to work on a customer's Windows PC from my Ubuntu PC, and it
+costs me more than 400€/year. And of course it is proprietary.
+
+On Beebom I read `Teamviewer Alternatives: 10 Best Remote Desktop
+Software <https://beebom.com/teamviewer-alternatives/>`__.
+
+There is `Chrome Desktop
+<https://chrome.google.com/webstore/detail/chrome-remote-desktop/gbchcmhmhahfdphkhkmpfmihenigjmpp?hl=en>`__
+which looks temptating because it is free and seems easy to install.
+Of course the "free" is as in "free beer", not as in "free speech".  I
+tried it with Johanna today. But didn't get it to work.  It said that
+I must open chrome://plugins and activate "Native client".  Maybe it
+requires Chrome, not Chromium?
+
+Tests with eidreader
+====================
+
+I had a hangout with Johanna for getting her eidreader to run on a
+Windows machine.
+
+We used the demo database at http://welfare-demo.lino-framework.org/
+as explained in the installation instructions.
+
+We verified that her machine sent the data to the server.  So maybe
+just the demo server needs an update?  We stopped our tests and I
+started an upgrade on :ref:`lf`.
+
+
+Working on Lino Tera
+====================
+
+I continued to work on :ticket:`2492`. Basically for this user
+request:
+
+- Anwesenheiten der Teilnehmer werden nur in therapeutischen Gruppen
+  erfasst, bei Einzeltherapien und Lebensgruppen gelten immer alle als
+  anwesend (werden ansonsten gelöscht).  Wenn so ein Termin auf
+  "Stattgefunden" gesetzt wird, werden alle Gäste ungefragt von
+  "Eingeladen" nach "Anwesend" gesetzt.  Wenn Termin auf Verpasst
+  gesetzt wird, werden alle auf Unentschuldigt gesetzt.  Also wir
+  brauchen ein Mapping EntryStates nach GuestStates.
+  
+
+We have a new attribute :attr:`lino_xl.lib.cal.EntryState.guest_state`
+and a new method :meth:`Event.force_guest_states
+<lino_xl.lib.cal.Event.force_guest_states>`.
+
+Also I renamed :attr:`CourseArea.manage_presences` to
+:attr:`CourseArea.force_guest_states
+<lino_xl.lib.courses.CourseArea.force_guest_states>` because that's a
+better name for what it means.
+
+The default :meth:`suggest_guests` of a calendar entry used to simply
+ask the :attr:`owner <lino_xl.lib.cal.Event.owner>`.  Now it also
+calls the :attr:`project <lino_xl.lib.cal.Event.project>`.  Because in
+:ref:`tera` they might have manual calendar entries on a therapy.  In
+this case only project and not owner points to the therapy.
+
+:ref:`tera` has now its own cal plugin :mod:`lino_tera.lib.cal`
+
+

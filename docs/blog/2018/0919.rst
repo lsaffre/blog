@@ -1,0 +1,75 @@
+:date: 2018-09-19
+
+=============================
+Wednesday, September 19, 2018
+=============================
+
+autodoc_default_flags is now deprecated
+=======================================
+
+We got an exception :message:`SphinxWarning: autodoc_default_flags is
+now deprecated. Please use autodoc_default_options instead.` on two
+different places at the same day:
+
+- https://travis-ci.org/lino-framework/book/jobs/430149478
+- https://github.com/lsaffre/dblog/issues/1
+  
+But on my machine no problem.  The problem seems to be that
+:mod:`atelier.sphinxconf` sets wrong default settings for autodoc.  At
+first I suspected something going wrong with the code that tests
+whether Sphinx is before 1.8 or not.
+
+>>> from distutils.version import LooseVersion
+>>> import sphinx
+>>> sphinx.__version__
+'1.8.0'
+>>> LooseVersion(sphinx.__version__)
+LooseVersion ('1.8.0')
+>>> LooseVersion("1.8.0") < LooseVersion('1.8')
+False
+
+But Aris confirmed that above code runs on his machine as well as on
+mine.
+
+Ha! The explanation is simple: the change that checks for the Sphinx
+version was not yet released!  Now I released atelier 1.1.9.  See
+:ref:`atelier.changes`.
+
+
+Sphinx 1.8 causes UnicodeDecodeError in feedformatter
+=====================================================
+
+I am still getting :message:`UnicodeDecodeError: 'ascii' codec can't
+decode byte 0xc3 in position 7: ordinal not in range(128)`
+(:ticket:`2534`).  I thought that ``os.environ['LC_TIME'] =
+'en_GB.UTF-8'`` in my :xfile:`conf.py` would fix it, but that was a
+mistake (the problem occurs only in my blog, and ATM I can avoid it
+only by saying ``export LC_TIME=en_GB.UTF-8`` before running :cmd:`inv
+bd`.
+
+I still don't understand why Sphinx (as it seems) changes the Python
+locale, but I understand that the Sphinx developers probably have more
+urgent problems than discussing this.  And actually it is mainly a
+problem in feedformatter.  Fixing it seems trivial, but how will I get
+this to PyPI?  So now I contacted the author Luke Maurits:
+
+    Hi Luke,
+
+    thanks for your work on `feedformatter
+    <https://pypi.org/project/feedformatter/>`__. I see in the `Google
+    code archive <https://code.google.com/archive/p/feedformatter/>`__
+    that your priority for maintaining this project is
+    low. Understandable. Now I have a subtle problem with
+    feedformatter, and I would submit a patch. But before doing so, I
+    wanted to ask you whether you still agree to maintain the
+    project. Because I also see that other people have `forked it on
+    GitHub
+    <https://github.com/tlevine/feedformatter/network/members>`__.
+
+
+
+Lino Tera
+=========
+
+I continued to work on :ticket:`2492` but without pushing anything.
+
