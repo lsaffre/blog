@@ -30,10 +30,73 @@ Roten Kreuz in den Demo-Daten eine Adresse verpasst.
 Formatierung Tabellen in Budgets Schuldnerberatung
 ==================================================
 
-The :xfile:`debts/Budget/Default.odt` templates uses the :func:`story`
-function to insert a stream of "story chunks". These are processed by
-:meth:`story2odt
+The :xfile:`debts/Budget/Default.odt` template uses the :func:`story`
+function to insert a stream of "story chunks" produced by methods on
+the :class:`Budget <lino_welfare.modlib.debts.Budget>` object. These
+chunks are processed by :meth:`story2odt
 <lino_xl.lib.appy_pod.appy_renderer.AppyRenderer.story2odt>` which
-basicallyh calls :meth:`insert_table
+calls :meth:`insert_table
 <lino_xl.lib.appy_pod.appy_renderer.AppyRenderer.insert_table>` for
-each table in the stream.
+each table in the stream.  :meth:`insert_table
+<lino_xl.lib.appy_pod.appy_renderer.AppyRenderer.insert_table>`
+dynamically creates odf tables and respects the widths it gets from
+the request's :meth:`get_field_info
+<lino.core.tablerequest.TableRequest.get_field_info>`, which returns
+`col.width or col.preferred_width` for each column.
+
+I played a bit with the appy renderer in order to remind me how it all
+works internally. (Yes, I wrote it myself, but this was years ago.)
+The following code snippets require a file :file:`empty.odt` (just
+some empty but valid LO document) and will create temporary
+directories...
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.eupen.settings.doctests')
+>>> from lino.api.doctest import *
+>>> from etgen.html import tostring
+>>> from lino_xl.lib.appypod.appy_renderer import AppyRenderer
+>>> from lxml import etree
+
+>>> ar = rt.login('robin')
+>>> ctx = {}
+>>> rnd = AppyRenderer(ar, "empty.odt", ctx, "out.odt")
+>>> obj = debts.Budget.objects.get(pk=1)
+>>> story = obj.data_story(ar)
+>>> odf = rnd.insert_story(story)
+>>> # print(odf)
+>>> odf = "<foo>" + odf + "</foo>"
+>>> # from io import BytesIO
+>>> # stream = BytesIO(odf.encode("utf-8"))
+>>> # tree = etree.parse(stream)
+>>> # root = tree.getroot()
+>>> root = etree.fromstring(odf)
+>>> children = list(root)
+>>> table = children[1]
+>>> table  #doctest: +ELLIPSIS
+<Element {urn:oasis:names:tc:opendocument:xmlns:table:1.0}table at ...>
+
+>>> columns, headers, rows = tuple(table)
+>>> for col in columns:
+...    etree.tostring(col)
+...    print(col.get("table:style-name"))
+
+>>> for child in root:
+...     print(child.tag)
+>>> print(odf)
+>>> tree = etree.fromstring(odf)
+>>> tree
+
+>>> soup = BeautifulSoup(odf, 'lxml')
+>>> tables = soup.find_all('table')
+>>> tables
+
+>> chunk = list(story)[0]
+>> h3 = chunk.next()
+>> body = chunk.next()
+>> body
+
+I finally simply added width specifiers to the column_names in the
+tables that are getting printed there.  Including a new constant
+`AMOUNT_WIDTH` in :mod:`lino_welfare.modlib.debts.choicelists`.
+Currently it is set to ":15" which seems to give good results.  I also
+decreased the right page margin from 20 to 10 mm.
