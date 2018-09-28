@@ -1,0 +1,45 @@
+:date: 2018-09-26
+
+=============================
+Wednesday, September 26, 2018
+=============================
+
+I got feedback for the 4 tickets of last Friday.  I first had a look
+into :ticket:`2549` which looked most dangerous.  Actually it was
+harmless: just a permission problem.  Social workers werde not able to
+see ISIP contracts.  This unwanted change was probably caused by a
+redesign in the the welfare user roles hierarchy which was still
+obsolete: it had too many levels.  Welfare started in the beginning of
+Lino where the permission system was still quite young.  Meanwhile I
+learned that user roles should be atomic, and their grouping should be
+done in the user_types module.  I had started to convert to the flat
+hierarchy when chatelet asked things but I didn't do a full review
+because it is so complex and so "dangerous": end-users tend to get
+angry when you remove permissions that had been granted earlier.
+
+Now I did a full review and removed all intermediate user roles from
+Lino Welfare.  I restructured the docs (:ref:`welfare.usertypes`)
+before asking the users to test again.
+
+At some point I had a TypeError :message:`Cannot create
+a consistent method resolution order (MRO)` and was stuck. I had to
+write a new utility function `lino.core.proles.checkmro` to find the
+duplicate parent.
+
+The test suite is still failing with at least one case where I don't
+yet understand why it now fails.  Nevertheless I will push my changes
+because we want to test using eidreader from behind a proxy.  There
+are chances that this restructuration introduced new regressions of
+type "I had this permission before" or the opposite "I can see this
+now though I shouldn't have permission".
+
+
+Using eidreader from behind a proxy
+===================================
+
+I changed the configuration for :mod:`lino_xl.lib.beid`: instead of
+setting :Attr:`lino.core.site.Site.beid_protocol` to ``'beid'`` you
+now set :attr:`lino_xl.lib.beid.Plugin.urlhandler_prefix`
+
+
+http://docs.python-requests.org/en/master/user/advanced/#proxies

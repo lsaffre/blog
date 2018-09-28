@@ -1,0 +1,124 @@
+:date: 2018-09-27
+
+============================
+Thursday, September 27, 2018
+============================
+
+After flattening the user roles hierarchy in :ref:`welfare` I still
+had quite some work to get everything behave as before.  It was a
+risky operation if we consider that the end-users are currently very
+sensitive about changes they didn't request.  OTOH I am convinced that
+this was a necessary step in the right direction.
+
+Just some example of the failures I had to sort out . The following
+was in docs/specs/mist.rst ::
+
+    -- countries.PlacesByPlace.duplicate : visible for 110 120 210 410 420 800 admin 910
+    +- countries.PlacesByPlace.duplicate : visible for 210 410 800 admin 910
+
+This means that user types 110 and 120 have lost permission to see
+the duplicate action on countries.PlacesByPlace.
+But why?
+
+To make this blog entry testable, we need to startup Lino on a given
+project. Above doctest uses the :mod:`lino_welfare.projects.chatelet`
+demo project:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.chatelet.settings.doctests')
+>>> from lino.api.doctest import *
+
+First let's see the required roles of this action:
+
+>>> countries.PlacesByPlace.duplicate.required_roles
+set([])
+
+Empty set means no additional requirements for the action.
+So now let's what the actor requires:
+
+>>> countries.PlacesByPlace.required_roles
+set([<class 'lino_xl.lib.contacts.roles.ContactsStaff'>])
+
+Aha, so I had forgotten to add :class:`ContactsStaff` in the base
+classes list when defining the :class:`IntegrationAgentManager` role
+in :mod:`lino_welfare.modlib.welfare.user_types`.
+
+
+Another one::
+
+    -- cbss.IdentifyPersonRequests.duplicate : visible for 100 110 120 200 210 300 400 410 420 admin 910
+    +- cbss.IdentifyPersonRequests.duplicate : visible for 100 110 120 200 210 220 300 400 410 420 admin 910
+
+Shows that 220 has been given permission to cbss.IdentifyPersonRequests 
+
+>>> cbss.IdentifyPersonRequests.duplicate.required_roles
+set([])
+>>> cbss.IdentifyPersonRequests.required_roles
+set([<class 'lino_welfare.modlib.cbss.roles.CBSSUser'>])
+
+>>> reception.Clients.find_by_beid.required_roles
+set([<class 'lino_xl.lib.beid.roles.BeIdUser'>])
+
+>>> reception.Clients.required_roles
+set([(<class 'lino.modlib.office.roles.OfficeUser'>, <class 'lino.modlib.office.roles.OfficeOperator'>)])
+
+>>> newcomers.AvailableCoachesByClient.assign_coach.required_roles
+set([<class 'lino_welfare.modlib.newcomers.roles.NewcomersOperator'>])
+
+>>> newcomers.AvailableCoachesByClient.required_roles
+set([<class 'lino_welfare.modlib.newcomers.roles.NewcomersOperator'>])
+
+>>> polls.AnswerRemarks.required_roles
+set([<class 'lino_xl.lib.polls.roles.PollsUser'>])
+
+
+Receptions clerks now see the CBSS panel of ClientDetail
+========================================================
+
+A last failure (actually a double one in
+:file:`docs/specs/clients_eupen.rst` and
+:file:`docs/tested/2015/0715.rst`) was tricky::
+
+    -- **ZDSS** (cbss) [visible for 100 110 120 200 300 400 410 420 admin 910]:
+    +- **ZDSS** (cbss) [visible for 100 110 120 200 210 300 400 410 420 admin 910]:
+
+Which means that user type 210 can now see the ZDSS panel ("ZDSS is
+German translation for BCSS").
+
+The :class:`ClientDetail` used in these cases is defined in
+:mod:`lino_welfare.projects.eupen.modlib.pcsw.models`  (it is
+different for Chatelet and Eupen, but this test is using Eupen). In
+Eupen they add a tab panel "cbss" at the end using this code::
+
+    if settings.SITE.is_installed('cbss'):
+        ClientDetail.main += ' cbss'
+        ClientDetail.cbss = dd.Panel("""
+    cbss_identify_person cbss_manage_access cbss_retrieve_ti_groups
+    cbss_summary
+        """, label=_("CBSS"), required_roles=dd.login_required(CBSSUser))
+
+IOW the only condition for getting this panel is to be a
+:class:`CBSSUser`.  The surprising thing is that user type 210 has
+always been a :class:`CBSSUser`.  But the panel was indeed hidden to
+them before.
+
+Since I didn't understand why that panel was hidden to 210 before, I
+adpated the test cases:
+
+- 2018-09-27 15:00 in *welfare*:
+  `1303aff <https://github.com/lino-framework/welfare/commit/1d953509fb120723f796c5e3a48e75cb71303aff>`__
+
+Only after pushing this, I found the explanation by looking at the code as it was before::
+
+   ... required_roles=dd.login_required(SocialUser))
+
+IOW that particular cbss panel requires :class:`SocialUser`, not
+:class:`CBSSUser`.  I undid my changes in 1303aff:
+  
+- 2018-09-27 15:16 in *welfare*:
+  `5c959a9 <https://github.com/lino-framework/welfare/commit/ac811c72daf8df4dd19726087e7838ed65c959a9>`__
+  (http://luc.lino-framework.org/blog/2018/0927.html)
+
+En passant I stumbled into a bug in atelier: :cmd:`inv ct` was broken,
+it said "AttributeError: 'Project' object has no attribute 'name'".  I
+fixed it.

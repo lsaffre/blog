@@ -130,18 +130,18 @@ When a user tried the :class:`AccountingReport
 <lino_xl.lib.ledger.AccountingReport>`, Lino raised a
 :message:`TypeError: bad argument type: __proxy__(u'Select at least a
 start period')` instead of simply saying that message in the report's
-body.  This regression was introduced months ago when we switched to
-the `lxml` element trees.  I now wrote a test case to reproduce this
-condition (in :ref:`xl.specs.ledger`).  While I was there I thought to
-also test what happens when the users specifies an invalid period
-range (end before start).  Oops: instead of issuing an error message,
-Lino produced some report.  That's not fool-proof enough for an
-accounting application, so I changed it: Lino now has a new method
-:meth:`check_params <lino.core.utils.Parametrizable.check_params>`
-which you can implement either on an action or on an actor.  Or you
-can use a :class:`ParameterPanel <lino.core.utils.ParameterPanel>` for
-your `parameters` and implement your own
-:meth:`ParameterPanel.check_values
+body.  This regression was introduced months ago (:doc:`0308`) when we
+switched to the `lxml` element trees.  I now wrote a test case to
+reproduce this condition (in :ref:`xl.specs.ledger`).  While I was
+there I thought to also test what happens when the users specifies an
+invalid period range (end before start).  Oops: instead of issuing an
+error message, Lino produced some report.  That's not fool-proof
+enough for an accounting application, so I changed it: Lino now has a
+new method :meth:`check_params
+<lino.core.utils.Parametrizable.check_params>` which you can implement
+either on an action or on an actor.  Or you can use a
+:class:`ParameterPanel <lino.core.utils.ParameterPanel>` for your
+`parameters` and implement your own :meth:`ParameterPanel.check_values
 <lino.core.utils.ParameterPanel.check_values>` method.  Which is what
 we now do for :class:`AccountingPeriodRange
 <lino_xl.lib.ledger.AccountingPeriodRange>`.
