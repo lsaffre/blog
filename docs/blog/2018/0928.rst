@@ -46,9 +46,7 @@ the request's :meth:`get_field_info
 
 I played a bit with the appy renderer in order to remind me how it all
 works internally. (Yes, I wrote it myself, but this was years ago.)
-The following code snippets require a file :file:`empty.odt` (just
-some empty but valid LO document) and will create temporary
-directories...
+
 
 >>> from lino import startup
 >>> startup('lino_welfare.projects.eupen.settings.doctests')
@@ -60,10 +58,20 @@ directories...
 >>> ar = rt.login('robin')
 >>> ctx = {}
 >>> rnd = AppyRenderer(ar, "empty.odt", ctx, "out.odt")
+
+Appy is not very testing friendly.  Above line requires a file
+:file:`empty.odt` just some empty but valid LO document, and every
+test run will create a temporary directory.
+
 >>> obj = debts.Budget.objects.get(pk=1)
 >>> story = obj.data_story(ar)
 >>> odf = rnd.insert_story(story)
 >>> # print(odf)
+
+The story contains a sequence of `<header>` and `<table>` elements,
+but no root element.  That's a problem for the parser.  So we wrap the
+story for them.
+
 >>> odf = "<foo>" + odf + "</foo>"
 >>> # from io import BytesIO
 >>> # stream = BytesIO(odf.encode("utf-8"))
@@ -86,17 +94,26 @@ directories...
 >>> tree = etree.fromstring(odf)
 >>> tree
 
->>> soup = BeautifulSoup(odf, 'lxml')
->>> tables = soup.find_all('table')
->>> tables
-
->> chunk = list(story)[0]
->> h3 = chunk.next()
->> body = chunk.next()
->> body
 
 I finally simply added width specifiers to the column_names in the
 tables that are getting printed there.  Including a new constant
-`AMOUNT_WIDTH` in :mod:`lino_welfare.modlib.debts.choicelists`.
-Currently it is set to ":15" which seems to give good results.  I also
-decreased the right page margin from 20 to 10 mm.
+``AMOUNT_WIDTH`` in :mod:`lino_welfare.modlib.debts.choicelists`.
+Currently it is set to ``":15"`` which seems to give good results.  I
+also decreased the right page margin in
+:xfile:`debts/Budget/Default.odt` from 20 to 10 mm.
+
+
+Django 2 support is advancing
+=============================
+
+Hamza and I had a session where we fixed `a failure on Travis
+<https://travis-ci.org/lino-framework/book/jobs/433714519#L3781>`__:
+
+- 2018-09-28 20:15 in *book*:
+  `be32b6b <https://github.com/lino-framework/book/commit/926bcd5f8344b02df6792f3caa32e414ebe32b6b>`__
+  (fixing failures py2to3 ajax.rst django.request logger level)
+
+Django 2 has become more eager about logging every request, including
+failed ones.  This is of course disturbing when we want a testable doc
+that works for both Django 1 and 2.  So in :ref:`book.specs.ajax` we
+simply disable logging.
