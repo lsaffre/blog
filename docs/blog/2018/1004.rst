@@ -61,17 +61,89 @@ How to do a gfklookup for remote fields::
     flt = {'event__'+k: v
            for k, v in gfk2lookup(Event.owner, self).items()}
 
-API change
-==========
+Changes in action API
+=====================
 
-When calling an :class:`InstanceAction
-<lino.core.actions.InstanceAction>` directly (using its :meth:`__call__`
-method), you must no longer specify an action request as first
-argument.  If you want to do that, you should call
-:meth:`run_from_code
-<lino.core.actions.InstanceAction.run_from_code>`.  The new action
-:meth:`lino_avanti.lib.courses.Course.update_missing_rates`.
+The new action
+:meth:`lino_avanti.lib.courses.Course.update_missing_rates` triggered
+me to start reviewing this part of the action API.  At some moment I
+had this code::
 
-Internal tidy-up: `dd.action` no longer is a function in
-:mod:`lino.core.actions` but a shortcut to the
-:method:`lino.core.actions.Action.decorator` class method.
+    class UpdateMissingRates(dd.Action):
+       ...
+       def run_from_ui(self, ar, ...):
+           for obj in ar.selected_rows:
+               obj.run_update_missing_rates(ar)
+
+    class Course(Course):
+        update_missing_rates = UpdateMissingRates()
+
+        def run_update_missing_rates(self, ar):
+            ... do the actual thing
+
+    @dd.schedule_daily()
+    def update_missing_rates():
+        for obj in ...:
+           obj.run_update_missing_rates()
+
+These were too many names for the same thing.  For simple actions
+without custom permission handling there is should be no need to
+create a class.  The action on the model should be callable more
+naturally from code.  Do we need all these methods run_from_code,
+run_from_ui and run_from_session?
+
+Here is what I changed: when calling an :class:`InstanceAction
+<lino.core.actions.InstanceAction>` directly (i.e. using its
+:meth:`__call__` method), you may no longer specify an action request
+as first argument (if you want to do that, you call :meth:`run_from_ui
+<lino.core.actions.InstanceAction.run_from_ui>` or
+:meth:`run_from_session
+<lino.core.actions.InstanceAction.run_from_session>`).
+
+These action methods run_from_code, run_from_ui and run_from_session
+are still there but they now have a docstring.  And because an
+instance action is callable, I can now write above code more
+concisely::
+
+    class Course(Course):
+        update_missing_rates = UpdateMissingRates()
+
+        @dd.action(...)
+        def update_missing_rates(self, ar):
+            ... do the actual thing
+
+    @dd.schedule_daily()
+    def update_missing_rates():
+        for obj in ...:
+           obj.update_missing_rates()
+
+
+En passant an internal optimization: `dd.action` no longer is a
+function in :mod:`lino.core.actions` but a shortcut to the
+:meth:`lino.core.actions.Action.decorator` class method.  This might
+be useful of somebody wants to have an action class and still use the
+decorated model method::
+
+        class MyAction(dd.Action):
+            ...
+
+        class MyModel(dd.Model):
+            ...
+            @MyAction.decorate()
+            def update_missing_rates(self, ar):
+                ... do the actual thing
+
+Help texts from Sphinx
+======================
+
+I had some fun because I wanted the help_text for our new action to
+show up.  This didn't work out of the box.
+
+I noticed that the :xfile:`help_texts.py` files had not been updated
+for some time.  I think I fixed it but don't understand all the
+details.  It seems that Sphinx now stores its pickles
+(:xfile:`.doctrees`) in the source directory, as a sibling of the
+output path (:xfile:`.build`).  And because of this :cmd:`inv clean`
+did not delete them.  So Sphinx did not process all documents after a
+clean.  And that's why :mod:`help_text_extractor` never generated any
+:xfile:`help_texts.py` files.
