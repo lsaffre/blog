@@ -1,0 +1,77 @@
+:date: 2018-10-04
+
+=========================
+Thursday, October 4, 2018
+=========================
+
+I started working for :ticket:`2495`.
+
+- In :class:`lino_xl.lib.cal.GuestStates`. They asked to change the
+  text for guest state "absent" from "Abwesend" (absent) to "Fehlt"
+  (missing).  I thought that this is a good vocabulary change and
+  renamed "absent" to "missing" for the :mod:`voga
+  <lino_xl.lib.cal.workflows.voga>` workflow in general.  Which means
+  also for :ref:`voga` and :ref:`tera`.  But not for :ref:`welfare`
+  who use the :mod:`feedback <lino_xl.lib.cal.workflows.feedback>`
+  workflow.  This is confirmed by what we have in :ref:`tera` where I
+  changed::
+
+    EntryStates.missed.guest_state = GuestStates.absent
+
+  to::
+    
+    EntryStates.missed.guest_state = GuestStates.missing
+
+
+I updated :ref:`avanti.specs.cal` while working.
+I wrote a new function :func:`lino.api.doctest.show_workflow`.
+
+
+Test failures in Welfare
+========================
+
+I saw some `failures in Welfare
+<https://travis-ci.org/lino-framework/welfare/jobs/436200159>`__ but
+don't see why they are there.  I opened a separate ticket
+:ticket:`2565` for this.  Looks as if there's one calendar more, and
+:class:`pcsw.Client` has a changed content type id.  I don't remember
+any code change that might have caused these.  Aha, I then saw that in
+`Python 3
+<https://travis-ci.org/lino-framework/welfare/jobs/436945974>`__ it is
+the opposite.  The number of calendars changes when migrating from
+Python 2 to 3 (or from Django 1 to 2).  Maybe the loading order of
+plugins is changed.
+
+Hamza had observed that the difference comes because Django 2 for some
+reason creates content types in a different order than Django 1.  So
+the ContentType.id of a given table varies depending on whether
+:cmd:`inv prep` has been run under Py3 or Py2.  Resolution --> use
+ellipsis in these doctests for the contenttype id.
+
+Importing invoices for :ref:`tera`
+==================================
+
+I started spzloader3.py and tl3.py.
+
+MyCoachedEnrolments for Avanti
+==============================
+
+How to do a gfklookup for remote fields::
+
+    flt = {'event__'+k: v
+           for k, v in gfk2lookup(Event.owner, self).items()}
+
+API change
+==========
+
+When calling an :class:`InstanceAction
+<lino.core.actions.InstanceAction>` directly (using its :meth:`__call__`
+method), you must no longer specify an action request as first
+argument.  If you want to do that, you should call
+:meth:`run_from_code
+<lino.core.actions.InstanceAction.run_from_code>`.  The new action
+:meth:`lino_avanti.lib.courses.Course.update_missing_rates`.
+
+Internal tidy-up: `dd.action` no longer is a function in
+:mod:`lino.core.actions` but a shortcut to the
+:method:`lino.core.actions.Action.decorator` class method.
