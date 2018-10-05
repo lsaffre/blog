@@ -4,10 +4,14 @@
 Friday, October 5, 2018
 =======================
 
+More about help texts
+=====================
+
+I tried to cover :ticket:`2571` by the test suite.
 
 In :ref:`book.specs.cal` I added a test to cover whether the help text
-of the :meth:`update_guests <lino_xl.lib.cal.Event.update_guests>` action has been
-installed and translated correctly:
+of the :meth:`update_guests <lino_xl.lib.cal.Event.update_guests>`
+action has been installed and translated correctly:
 
 >>> with translation.override('de'):
 ...     print(cal.Event.update_guests.help_text)
@@ -38,3 +42,64 @@ text::
 
 That's needed because :attr:`help_text` is lazy (it becomes a string
 only when you use it), and because doctest cannot guess this.
+
+User roles and their usage
+==========================
+
+I wrote a new virtual table :class:`lino.modlib.users.UserRoles` which
+should help users to understand how the permission system is
+structured.  The table is especially impressive in
+:ref:`welfare.usertypes`.  It needs more work, though: Write
+docstrings for the different roles.  And when printed as pdf there is
+a layout problem which is obviously caused because there are many
+columns.  To reproduce, run :manage:`runserver` in
+:mod:`lino_welfare.projects.eupen`, go to :menuselection:`Explorer -->
+System --> User roles` and click the print to pdf button.
+
+
+
+
+Importing invoices from TIM to :ref:`tera`
+==========================================
+
+Invoices with invoice_recipient
+
+Failed to load record OrderedDict([(u'IDJNL', u'VKE'), (u'IDDOC', u'180126'), (u'IDPAR', u'0000224'), (u'NB1', u'01.05.2018-30.06.2018'), (u'MONT', u'     15.00'), (u'ETAT', u'C'), (u'DATE', datetime.date(2018, 6, 30)), (u'DATECH', datetime.date(2018, 6, 30)), (u'NB2', u''), (u'AUTEUR', u'VW'), (u'MATCH', u''), (u'ATTRIB', u'DOP'), (u'IDMFC', u''), (u'IDPAR2', u'E930092'), (u'PERIODE', u'1806'), (u'MEMO', None), (u'DC', u'D'), (u'IDDEV', u'EUR'), (u'COURS', u'         1')]) from VEN : No Therapy with reference u'0000224'
+
+Migration tests
+===============
+
+Hamza and I fixed :ticket:`2522` and did some huge progress with
+:ref:`dev.migtest`.
+
+
+python manage.py test --noinput --failfast
+
+the test_restore.py in lydia was doing::
+
+    from django.core.management import call_command
+    call_command("run", "tests/dumps/18.8.0/restore.py", "--noinput")
+
+sys.argv is ['python' , 'manage.py', 'test', '--noinput', '--failfast']
+
+
+
+But :manage:`run` does this::
+  
+      sys.argv = sys.argv[2:]
+
+
+But :xfile:`restore.py`  also uses argparse
+
+
+::
+    $ time python manage.py run tests/dumps/18.8.0/restore.py --noinput
+    real	13m34,279s
+    user	1m0,018s
+    sys	0m4,863s
+
+
+    real	1m34,761s
+    user	1m29,079s
+    sys	0m3,051s
+   
