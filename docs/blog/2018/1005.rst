@@ -46,7 +46,8 @@ only when you use it), and because doctest cannot guess this.
 User roles and their usage
 ==========================
 
-I wrote a new virtual table :class:`lino.modlib.users.UserRoles` which
+I wrote a new virtual table :class:`lino.modlib.users.UserRoles`
+which
 should help users to understand how the permission system is
 structured.  The table is especially impressive in
 :ref:`welfare.usertypes`.  It needs more work, though: Write
@@ -62,44 +63,121 @@ System --> User roles` and click the print to pdf button.
 Importing invoices from TIM to :ref:`tera`
 ==========================================
 
-Invoices with invoice_recipient
+For invoices with a different invoice recipient we don't need to
+import the project.
 
-Failed to load record OrderedDict([(u'IDJNL', u'VKE'), (u'IDDOC', u'180126'), (u'IDPAR', u'0000224'), (u'NB1', u'01.05.2018-30.06.2018'), (u'MONT', u'     15.00'), (u'ETAT', u'C'), (u'DATE', datetime.date(2018, 6, 30)), (u'DATECH', datetime.date(2018, 6, 30)), (u'NB2', u''), (u'AUTEUR', u'VW'), (u'MATCH', u''), (u'ATTRIB', u'DOP'), (u'IDMFC', u''), (u'IDPAR2', u'E930092'), (u'PERIODE', u'1806'), (u'MEMO', None), (u'DC', u'D'), (u'IDDEV', u'EUR'), (u'COURS', u'         1')]) from VEN : No Therapy with reference u'0000224'
+Some messages I had today::
+
+    Failed to load record OrderedDict([(u'IDJNL', u'VKE'), (u'IDDOC', u'180126'), (u'IDPAR', u'0000224'), (u'NB1', u'01.05.2018-30.06.2018'), (u'MONT', u'     15.00'), (u'ETAT', u'C'), (u'DATE', datetime.date(2018, 6, 30)), (u'DATECH', datetime.date(2018, 6, 30)), (u'NB2', u''), (u'AUTEUR', u'VW'), (u'MATCH', u''), (u'ATTRIB', u'DOP'), (u'IDMFC', u''), (u'IDPAR2', u'E930092'), (u'PERIODE', u'1806'), (u'MEMO', None), (u'DC', u'D'), (u'IDDEV', u'EUR'), (u'COURS', u'         1')]) from VEN : No Therapy with reference u'0000224'
+
+Here is the final one::
+
+    Started manage.py run tl3.py (using prod_sites.abtz.settings) --> PID 10360
+    Loading readonly /mnt/tim/spz/VEN.FOX...
+    16934 rows have been loaded from /mnt/tim/spz/VEN.FOX.
+    Loading readonly /mnt/tim/spz/VNL.FOX...
+    75216 rows have been loaded from /mnt/tim/spz/VNL.FOX.
+    Deleting 0 obsolete partners
+    Register 491 vouchers
+    <class 'lino_tera.lib.sales.models.InvoiceItem'> : 4686 success, 0 failed.
+    <class 'lino_xl.lib.sales.models.VatProductInvoice'> : 492 success, 0 failed.
+    Done manage.py run tl3.py (PID 10360)
+
+
+Vera will love to hear this. Our initial plan was that she must enter
+the totals of these invoices by hand, since importing them was
+estimated to be more work.  I am sure she will prefer verifying with
+me whether the 491 documents were correctly imported.
+  
+
 
 Migration tests
 ===============
 
-Hamza and I fixed :ticket:`2522` and did some huge progress with
-:ref:`dev.migtest`.
+Hamza and I fixed :ticket:`2522` and did some huge progress with a new
+type of tests which we call "database migration tests".  We added
+**database migration** tests to two demo projects
+:mod:`lino_book.projects.lydia` and
+:mod:`lino_welfare.projects.eupen`.  These two applications are the
+first applications with "stable migration support".
+
+We have a new class :class:`RestoreTestCase
+<lino.utils.djangotest.RestoreTestCase>` to be used simply as follows::
+  
+    from lino.utils.djangotest import RestoreTestCase
+
+    class TestCase(RestoreTestCase):
+        tested_versions = ['18.8.0']
+
+By convention this code should be in a file named
+:xfile:`test_restore.py` in the :xfile:`tests` directory of the demo
+project.  And of course the version numbers will change with every
+release of that application.
+        
+We have a new admin command :manage:`makemigdump`.  This command does
+not yet work, Hamza will write this according to what we planned.
+
+We started documentation in a new page :ref:`dev.migtest` and
+reorganized related documents.
+     
 
 
-python manage.py test --noinput --failfast
+Why we modify :attr:`sys.argv`
+==============================
 
-the test_restore.py in lydia was doing::
+The implementation of the :class:`RestoreTestCase
+<lino.utils.djangotest.RestoreTestCase>` is rather short::
+
+    def test_restore(self):
+        for v in self.tested_versions:
+            run_args = ["tests/dumps/{}/restore.py".format(v),
+                        "--noinput"]
+            sys.argv = ["manage.py", "run"] + run_args
+            call_command("run", *run_args)
+
+As you see, it contains a hack: we modify :attr:`sys.argv`.  That's
+not common practive, so here is why we did this.
+    
+:ticket:`2522` was because the :file:`test_restore.py` in lydia did::
 
     from django.core.management import call_command
     call_command("run", "tests/dumps/18.8.0/restore.py", "--noinput")
 
-sys.argv is ['python' , 'manage.py', 'test', '--noinput', '--failfast']
+This Python process had been invoked as part of the test suite using::
 
-
-
-But :manage:`run` does this::
+    $ python manage.py test --noinput --failfast
+    
+so the value of :attr:`sys.argv` was::
   
-      sys.argv = sys.argv[2:]
+    ['manage.py', 'test', '--noinput', '--failfast']
 
+But Django admin commands are not supposed to look at
+:attr:`sys.argv`, they should rely on the `args` and `options` passed
+to their :meth:`handle` method.  That's intended by design.  Django's
+:func:`call_command` does not modify :attr:`sys.argv`.
 
-But :xfile:`restore.py`  also uses argparse
+But the :xfile:`restore.py` *does* use argparse.  It is not a Django
+admin command.  So sees these same command line options.  And then
+complains about the unknown option ``--failfast``.
 
+We tried to avoid manipulating :attr:`sys.argv` by running
+:xfile:`restore.py` in a subprocess. This even worked, but had the
+disadvantage of importing to the cached demo data, not to the
+temporary database created by the Django test runner.  The difference
+in speed was considerable: 13 minutes instead of 1 minute::
 
-::
     $ time python manage.py run tests/dumps/18.8.0/restore.py --noinput
     real	13m34,279s
     user	1m0,018s
     sys	0m4,863s
 
-
-    real	1m34,761s
-    user	1m29,079s
-    sys	0m3,051s
+    $ time python manage.py test tests.test_restore
+    real	0m34,735s
+    user	0m23,253s
+    sys	0m1,090s
    
+EDIT: Afterwards I realized that we might convert :xfile:`restore.py`
+as a Django admin command, e.g. :manage:`restore`.  This would make
+above hack useless.  But caution: don't forget to adapt
+:xfile:`restore2testing.py` and :xfile:`initdb_testing_from_prod.sh`
+then.
