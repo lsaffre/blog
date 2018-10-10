@@ -1,0 +1,59 @@
+:date: 2018-10-08
+
+=======================
+Monday, October 8, 2018
+=======================
+
+Row-level edit locking
+======================
+
+Wow, Lino has a cool ned feature: row-level locking.  This is to fix a
+problem they encountered in :ref:`avanti`: user 1 opens the detail of
+a client and starts editing the field :attr:`translator_notes
+<lino_avanti.lib.avanti.Client.translator_notes>`.  While she is still
+writing, user 2 opens the same client, changes some other field
+(e.g. :attr:`professional_state
+<lino_avanti.lib.avanti.Client.professional_state>`) and submits.  One
+minute later user 1 submits her translator notes.  And poof, the
+professional state is back to its old value.
+
+To fix this problem, we decided that Lino should show all clients
+read-only by default.  IOW all form fields are disabled. If somebody
+wants to modify something, they must first "lock" the record with a
+click, which enables the form fields.  As soon as they hit Save the
+lock is released.  The locking does not need to persist after a server
+restart (we are not launching a spaceship here).
+
+The coding itself took only 1,5 hours. Plus two hours of meditation
+and surf.
+
+New attribute :attr:`lino.core.userprefs.UserPrefs.locked_rows` : a
+set with a tuple `(model, pk)` for each row locked by this user.
+
+A model mixin :class:`lino.modlib.system.mixins.Lockable` which adds
+the two actions and the displayfield, and which extends the
+:meth:`after_ui_save <lino.core.model.Model.after_ui_save>` method to
+automatically unlock the row after save. And the
+:meth:`disabled_fields <lino.core.model.Model.disabled_fields>` method
+to return all fields unless the row is locked.  Also the userprefs
+registry is now thread-safe (it's possible that this fixes a rather
+unexplored problem that the dashboard didn't always refresh).
+
+
+Of course it's not perfect. More ideas to improve it:
+
+- welcome message if locked_rows is not empty
+- currently it's a displayfield showing either the "Lock" or the
+  "Unlock" action.  Disadvantage is that the field is only in one tab.
+  So a toggle button in the toolbar would probably be better.  But
+  Lino doesn't yet have support for toggle toolbar buttons.
+
+Optimizations in UserRoles table
+================================
+
+I worked a bit on :class:`lino.modlib.users.UserRoles`: added
+docstrings for the roles, and a more subtle change: it makes no sense
+to show :class:`UserRole` subclasses which have been defined in within
+the :attr:`user_types_module <lino.core.site.Site.user_types_module>`
+itself since these are not useful for understanding which permissions
+are given to which user type.
