@@ -1,0 +1,39 @@
+:date: 2018-10-11
+
+==========================
+Thursday, October 11, 2018
+==========================
+
+Editing a grid cell on a Lockable did not yet work as expected. Both
+buttons ("Edit" and "Release") were always visible in the tooolbar,
+and it was easy to leave the edit lock active by pressing F2 followed
+by ESC.
+
+The buttons are now hidden in the grid, and the grid_put action
+(SaveGridCell) now calls acquire_lock for every record.  If one user locks
+a client in detail, and if another user tries to edit a grid cell on
+that same client, that other user will get a warning.  TODO: that
+warning would be nicer if it came before allowing the grid cell to
+edit.
+
+I renamed :meth:`lock_this_row` to
+:meth:`lino.core.models.Model.acquire_lock` and
+:class:`lino.core.models.Model` now has a default implemntation which
+does nothing.
+
+
+Internal API change: instead of saying::
+
+    class MyAction(dd.Action):
+
+        def is_callable_from(self, caller):
+            return isinstance(caller, dd.ShowTable)
+
+we now say::
+
+    class MyAction(dd.Action):
+        callable_from = 't'
+
+Details see :attr:`lino.core.action.Action.callable_from` and
+:attr:`lino.core.action.Action.window_type`.
+
