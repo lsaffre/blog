@@ -1,0 +1,57 @@
+:date: 2018-10-16
+
+=========================
+Tuesday, October 16, 2018
+=========================
+
+Keeping legacy data
+===================
+
+In Tera they have the situation that Lydia had almost finished 2017 in
+Lino before she fell ill As a temporary fix they had 2017 closed by an
+external accountant.  Now with Vera we want to start in a virgin 2018
+without deleting the vouchers from 2017.  IOW we just want to
+"deactivate" their effect on the ledger.
+
+This is why we have :attr:`force_cleared_until
+<lino_xl.lib.ledger.Plugin.force_cleared_until>`.  Yesterday I fixed a
+bug where Lino ignored this setting when cleaning partner movments.
+Now I realize that we actually even want more: we simply don't want to
+have any movments at all.  Not only have them all cleared.
+
+So I changed the behaviour and renamed it to
+:attr:`suppress_movements_until
+<lino_xl.lib.ledger.Plugin.suppress_movements_until>`
+
+
+Making a virtual field sortable
+===============================
+
+Vera is advancing with entering accounting data into their Lino. One
+problem is that when a partner has many open movements in (i.e. whose
+:attr:`cleared <lino_xl.lib.ledger.Movement.cleared>` is False), it is
+difficult to find matching movements (which would clear each other if
+they had the same :attr:`match <lino_xl.lib.ledger.Movement.match>`
+string).  Manual matching is done :class:`MovementsByPartner
+<lino_xl.lib.ledger.MovementsByPartner>`.
+
+Currently it is not possible to change the :attr:`match
+<lino_xl.lib.ledger.Movement.match>` by simply editing it.  This would
+be a nice feature, but it is not enough to simply remove
+"Movements.editable = False".  Because these values would get lost as
+soon as the voucher is unregistered.  We would need to propagate any
+change to its "source".
+
+
+The following virtual fields
+of :class:`ledger.Movement <lino_xl.lib.ledger.Movement>` 
+now have a :attr:`sortable_by <lino.core.fields.FakeField.sortable_by>`:
+:attr:`match_link <lino_xl.lib.ledger.Movement.match_link>`
+:attr:`voucher_link <lino_xl.lib.ledger.Movement.voucher_link>`
+:attr:`debit <lino_xl.lib.ledger.Movement.debit>`
+:attr:`credit <lino_xl.lib.ledger.Movement.credit>`.
+
+This revealed an API bug in :mod:`lino.core.fields` : until now it was
+not yet possible to specify :attr:`sortable_by
+<lino.core.fields.FakeField.sortable_by>` as a keyword argument in the
+constructor.  Fixed.

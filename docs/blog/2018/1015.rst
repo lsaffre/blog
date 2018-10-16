@@ -1,0 +1,36 @@
+:date: 2018-10-15
+
+========================
+Monday, October 15, 2018
+========================
+
+Working on :ref:`tera`.  There were some ledger.Movement without valid
+voucher in their database.  These were created by incomplete `tl3.py`
+imports.
+
+Also I saw that the :attr:`lino_xl.lib.ledger.Journal.dc` of their
+journals still needed to be inverted.  (EDIT: later 20181016 this
+turned out as wrong.  The dc were good, but Lino had a bug: an income
+in a bank statement line debits the named account (and an expense
+credits it).
+
+Maybe I could simply write an admin command which rebuilds all
+movements?  Ha! It exists already: :manage:`reregister`.  But I had to
+add a feature: when no arguments are specified (which means
+re-register them all), then :manage:`reregister` now starts by
+deleting all :class:`lino_xl.lib.ledger.Movement` objects.  That's
+more time-efficient and --the key point here-- also removes moevements
+with an invalid
+
+Illiterate developers
+=====================
+
+When talking with deciders about Lino, I sometimes perceive a problem
+of language difference.  Tonight Thomas helped me to understand the
+(probable) reason: I don't use pictures.  When things become more
+complex, you simply don't get an overview without a diagram.  Yes,
+it's one of my handicaps: among project managers I am a kind of
+illiterate as long as I don't master the art of drawing diagrams.
+
+https://spin.atomicobject.com/2017/02/22/diagrams-as-documentation/
+
