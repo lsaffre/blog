@@ -1,0 +1,78 @@
+:date: 2018-10-17
+
+===========================
+Wednesday, October 17, 2018
+===========================
+
+Loading from a python dump
+==========================
+
+Hamza, why did you set :attr:`loading_from_dump
+<lino.core.site.Site.loading_from_dump>` to `True` in
+:func:`install_migrations <lino.utils.dpy.install_migrations>`?  Your
+code change caused failures in all demo projects with a
+:class:`RestoreTestCase <lino.utils.djangotest.RestoreTestCase>`.  I
+undid your change because I am afraid it might cause problems when
+restoring a dump of a production site.
+       
+It seems that we need to document why :attr:`loading_from_dump
+<lino.core.site.Site.loading_from_dump>` exists and what it does.
+
+When loading a python fixture, the dpy loader loads calls
+:meth:`full_clean` and :meth:`save` on every single row.  That's what
+we want.
+
+But then we have models whose full_clean or save method can decide to
+create other database objects.
+
+For example the :meth:`save` method of a user in welfare says::
+
+    def save(self, *args, **kwargs):
+        super(User, self). save(*args, **kwargs)
+        ...
+        if self.calendar and not settings.SITE.loading_from_dump:
+            rt.models.cal.check_subscription(self, self.calendar)
+
+In :ref:`welfare` we have one calendar for every user (at least for
+every user who has permission to use the calendar). When saving a
+user, Lino Welfare calls :func:`lino_xl.lib.cal.check_subscription` to
+make sure that the user subscribes to its own calendar.
+
+Of course such actions must not happen when we are loading this row
+from a dump.
+
+About demo bookings
+===================
+
+I started to write end user documentation about how to manually clear
+matching partner movements.
+
+A first problem for explaining is that the demo data is not really
+optimal.  About the ``demo_bookings`` fixtures.
+
+:mod:`lino_xl.lib.ledger`
+defines a list of "purchase stories" : each story represents a
+provider who sends monthly invoices.
+
+:mod:`lino_xl.lib.sales`
+     
+
+Ordering of menu items
+======================
+
+I am working now on :ticket:`2579` for :ref:`tera`.
+
+Daniel and Harry realized only yesterday that what they call "Akten"
+(German for "dossier") in TIM becomes a "therapy" in Lino, not a
+"patient".
+
+They suggested to (1) change the word "Therapy" to "Akte" and (2) the
+order of menu items to have the :mod:`lino_xl.lib.courses` menu in
+first place.
+
+An easy solution is to set the :attr:`needs_plugins` of
+:mod:`lino_tera.lib.courses` to ``[]``.  This attribute is meant to
+automatically install dependencies.  It makes sense in
+:mod:`lino_xl.lib.courses` (designed to be used by many different
+applications), but in :mod:`lino_tera.lib.courses` it is rather
+useless.
