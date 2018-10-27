@@ -1,0 +1,93 @@
+:date: 2018-10-23
+
+=========================
+Tuesday, October 23, 2018
+=========================
+
+Oops, :ticket:`2592` was still not fixed.  One side effect of my
+changes was that I had to remove the :xfile:`models.py` from autodoc
+trees because when I say::
+
+    $ export DJANGO_SETTINGS_MODULE=lino_book.projects.max.settings.doctests
+    $ python -c "import lino_care.lib.contacts.models"
+    Traceback (most recent call last):
+      File "<string>", line 1, in <module>
+      File "/care/lino_care/lib/contacts/models.py", line 9, in <module>
+        from lino.api import dd, _
+      File "/lino/lino/api/dd.py", line 30, in <module>
+        from lino.core.model import Model
+      File "/lino/lino/core/model.py", line 37, in <module>
+        class Model(models.Model):
+      File "/python2.7/site-packages/django/db/models/base.py", line 110, in __new__
+        app_config = apps.get_containing_app_config(module)
+      File "/python2.7/site-packages/django/apps/registry.py", line 247, in get_containing_app_config
+        self.check_apps_ready()
+      File "/python2.7/site-packages/django/apps/registry.py", line 125, in check_apps_ready
+        raise AppRegistryNotReady("Apps aren't loaded yet.")
+    django.core.exceptions.AppRegistryNotReady: Apps aren't loaded yet.
+
+IOW it is no longer possible to import a :xfile:`models.py` module
+of a plugin which is not installed.
+
+I guess that it is because I now collect the virtual fields a bit
+earlier and several times.
+
+And there was a problem with uploads.add_shortcut.  In
+:mod:`lino_welfare.modlib.welfare.workflows` we have::
+
+
+    from lino.modlib.uploads.choicelists import add_shortcut as add
+    add('pcsw.Client', 'id_document', _("Identifying document"),
+        target='uploads.UploadsByClient')
+
+IOW we define choices during the workflow_module, and these choices
+will add more virtual fields in
+:func:`lino.modlib.uploads.models.before_analyze` which is a
+:data:`lino.core.signals.pre_analyze` handler, i.e. it is fired much
+later.
+
+I fixed this by calling :func:`collect_virtual_fields` a third time
+for every model in :meth:`lino.core.kernel.Kernel.kernel_startup`.
+
+A cool example is in :mod:`lino_welfare.modlib.pcsw.models` where we
+have::
+  
+    dd.update_field(Client, 'overview', verbose_name=None)
+
+This is special because :class:`Client` is abstract at this place\
+[#f1]_.  Abstract models don't have a copy of each inherited virtual
+field.  the overview field is
+
+.. [#f1] Note that actually it is abstract only in eupen, not in
+         chatelet. But that's another cool thing.
+
+
+
+Never fix failures caused by others
+===================================
+
+Here is a illustration of why I should start working in a separate
+development branch when I am doing quick commits in order to get
+something done one a production site as I did last week.
+
+I wrote to Hamza: "note that master is currently failing because i am
+doing changes in tera" and he answered "Okay".
+
+But it wasn't all clear.  I meant "Don't worry if they are failing, I
+will fix them when I have more time".  He understood "Please fix
+them".  And he changed the doctests to make them pass...  without
+knowing whether a change was intended or not!  At least two failures
+(`here
+<https://github.com/lino-framework/book/commit/63bc00d38182c97297a87e62bd93261de1de1bc9>`__
+and `here
+<https://github.com/lino-framework/welfare/commit/e8bb84230a2e5ac8b17661ab164f4293f3eba72f>`__)
+were caused by :ticket:`2592`, i.e. fixing the failure meant actually
+hiding the bug away instead of fixing it.
+
+Actually we should have two branches "devel" and "master" in all
+projects.  I should always work in "devel" and merge it to "master"
+every time I have the test suites passing on my machine.  Production
+sites should either use devel or master depending on the client's
+needs.
+
+

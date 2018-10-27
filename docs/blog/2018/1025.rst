@@ -1,0 +1,119 @@
+:date: 2018-10-25
+
+==========================
+Thursday, October 25, 2018
+==========================
+
+"Active" versus "Exposed" course states
+=======================================
+
+.. currentmodule:: lino_xl.lib.courses
+
+I wrote some documentation about :ref:`specs.courses` and fixed a
+vocabulary problem which had been existing for a while but turned out
+to be particulaily disturbing for :ref:`tera`:
+
+We have the concept of "active" course states.  People can ask to to
+see only "active" courses.  This is a default filter parameter for
+quite some views.  Certain course states are considered "active" and
+therefore visible by default in these views.
+
+The problem with this concept is that it was called "active".  The
+word "active" is quite popular as a course *state* as well.  So I
+changed the name of the state *attribute* to "exposed".
+
+I renamed :attr:`CourseState.active` to
+:attr:`CourseState.is_exposed`, and accordingly
+:attr:`Courses.show_active` to :attr:`Courses.show_exposed`.
+
+
+Cannot show "editable" property of a workflow state
+===================================================
+
+There was another name clash regarding workflow states:
+:class:`lino.mixins.registrable.Registrable` requires its state field
+to have a property :attr:`is_editable
+<lino.mixins.registrable.RegistrableState.is_editable>` instead of
+:attr:`editable`.  An attribute :attr:`editable
+<lino.core.actor.Actor.editable>` exists also on actors, and
+choicelists are actors.
+                   
+      
+      
+Jane was slow
+=============
+
+Jane was slow because something was using up memory on :ref:`sr`::
+
+    $ free -h
+                     total       used       free     shared    buffers     cached
+        Mem:          1.9G       1.9G        60M        39M       500K        41M
+        -/+ buffers/cache:       1.8G       102M
+        Swap:         1.0G       1.0G         0B
+
+After a reboot it was better::
+
+    $ free -h
+                 total       used       free     shared    buffers     cached
+        Mem:          1.9G       1.0G       945M       5.7M        37M       211M
+        -/+ buffers/cache:       767M       1.2G
+        Swap:         1.0G         0B       1.0G
+
+We'll see whether the problem comes back.
+
+
+inv release should create a branch, not a tag
+=============================================
+
+I created :ticket:`2599` and asked Google about "git tag vs branch".
+And indeed, `stackoverflow.com
+<https://stackoverflow.com/questions/1457103/how-is-a-tag-different-from-a-branch-in-git-which-should-i-use-here>`__
+confirmed my feeling:
+
+    Q: How is a tag different from a branch in Git? Which should I
+    use, here?
+
+    A: A tag represents a version of a particular branch at a moment
+    in time. A branch represents a separate thread of development that
+    may run concurrently with other development efforts on the same
+    code base. Changes to a branch may eventually be merged back into
+    another branch to unify them. (...)
+
+
+I used :ref:`algus` as a guinea pig.  But the work is not finished.
+
+A historic release for :ref:`weleup`
+====================================
+
+Today, one month after the last release attempt, we finally managed to
+get them to the new version.  :ref:`weleup` is one of our biggest
+sites, and it was an exciting challenge to develop the "secure release
+procedure" (explained under :ref:`hosting.testing`).  Lino is reaching
+the next level.  Thanks to Gerd and Steve for their rigourous and
+competent help.
+
+
+Release :ref:`avanti`
+=====================
+
+As if the release in :ref:`weleup` wasn't enough, and as a contrast, I
+also did an upgrade of the :ref:`avanti` production site in a one-step
+procedure (explained under :ref:`admin.upgrade`).  Tonis watched me
+and had no problems to understand what was going on.
+
+Data migration:
+
+- User.timezone is now User.time_zone
+- create_comments_comment as described in blog/2018/0219.rst
+
+Miscellaneous changes during manual testing on production data.  For
+example the default value for `CourseStates.auto_generate_calendar` is
+now `False`.
+
+Release on :ref:`lf`
+====================
+
+Tomorrow I plan a Lino presentation to Thierry, probably using our
+public :ref:`demos`.  So I did a third deployment in one day: upgrade
+on :ref:`lf`.  This one is simple and runs unattended.  Just a global
+:cmd:`git pull` followed by a :manage:`prep`.

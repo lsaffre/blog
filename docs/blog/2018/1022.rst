@@ -1,0 +1,60 @@
+:date: 2018-10-22
+
+========================
+Monday, October 22, 2018
+========================
+
+Lino Tera in final sprint
+=========================
+
+More changes for :ref:`tera` (:ticket:`2579`):
+
+- New field Enrolment.guest_role
+
+- GuestRole is now Referrable.  Every PLP becomes an enrolment with a
+  guest_role.  This replaces humanlinks and household members.
+
+- removed plugins humanlinks and properties
+
+
+
+How to write end-user documentation
+===================================
+
+I converted the Lino Tera user manual in German
+from LibreOffice to Sphinx:
+Das `Lino Tera Benutzerhandbuch
+<http://tera-handbuch.lino-framework.org/>`__.
+
+Advantage:
+- online available and referrable
+- it's more efficient for me
+  
+Disadvantage: requires an author who knows how to code and compile.
+
+
+Updating inherited virtual fields caused side effects
+=====================================================
+
+I discovered :ticket:`2592`: calling :func:`dd.update_field
+<lino.core.inject.update_field>` for a virtual field defined on some
+abstract parent of the model was updating the field for all other
+models which inherit from the common parent.  This had especially wide
+influence when you did::
+
+    dd.update_field(Client, 'overview', verbose_name=None)
+
+because the :attr:`overview <lino.core.model.Model.overview>` field is
+defined on :class:`lino.code.model.Model`.
+
+To avoid this, Lino now creates a copy of each virtual field, similar
+to what Django does for fields inherited from abstract models.
+
+Furthermore Lino did not propagate your change to *all* models using
+this field: if the elements were already created, they retained the
+:attr:`verbose_name` from before the field was updated, causing
+"random" results.  To avoid this, I replaced the `label` attribute
+from :class:`jsgen.VisibleComponent` by a method :meth:`get_label`
+(which continues to return any explicit label if one was given).
+
+  

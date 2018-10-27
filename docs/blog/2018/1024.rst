@@ -1,0 +1,67 @@
+:date: 2018-10-24
+
+===========================
+Wednesday, October 24, 2018
+===========================
+
+Lino test suites again passing for Python 2
+===========================================
+
+Uff, :ticket:`2592` seems finally done.  I waited patiently until the
+test suite for book was passing, but still required a second checkin
+because `Travis signaled
+<https://travis-ci.org/lino-framework/book/jobs/445429044>`__ that
+:cmd:`inv bd` failed.  Yes of course: building the docs is an integral
+part of the test!
+
+I deployed to :ref:`jane` just to have it tested on the field.  This
+change will be in the production release for :ref:`avanti` on
+Thursday evening.
+
+On Thursday afternoon we plan the big production release for
+:ref:`weleup`.  After the failed attempt on :doc:`0921` this is now
+the first release using the new "Safe" mode: I will *not* pull any new
+version to the source code, just run :xfile:`initdb_from_testing` a
+last time and then switch the testing environment to production.
+
+A typical problem on Jane is that I must restart the Apache before
+running :manage:`dump2py` because otherwise my process gets killed::
+
+    $ python manage.py dump2py -o t
+    Writing /usr/local/python/lino_sites/jane/t/restore.py...
+    Killed#####################      ] 49/59 - 00:00:05
+
+Note that another possibility in such cases is to specify another
+`-m` `--max-row-count` (Maximum number of rows per file).
+
+More changes in Lino Tera
+=========================
+
+I continued to work on :ticket:`2579`. Updated :ref:`tera.coming`.
+
+The :attr:`team` field is now no longer per Partner and Journal but
+per Course.
+
+Some subtle changes also in :mod:`lino_xl.lib.courses`.
+
+auto_update_calendar
+
+
+My first deployment in a non-master branch
+==========================================
+
+This time I tried to not bother Hamza with my work. So I now work in a
+branch.  First I created the new branch::
+
+  $ git checkout -b devel
+
+Then I must publish my branch::
+
+    $ git push -u origin devel
+  
+Then, on the customer's site::
+
+    $ git checkout devel
+
+I did this in xl, book and tera.
+Later I noticed that my changes also cause welfare 
