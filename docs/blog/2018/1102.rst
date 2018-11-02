@@ -4,4 +4,60 @@
 Friday, November 2, 2018
 ========================
 
-I did some last optimizations in :mod:`lino_xl.lib.working`
+I did some last optimizations in :mod:`lino_xl.lib.working`.
+
+The problem occured when a site was being reported whose
+:attr:`description <lino_xl.lib.tickets.Site.description>` was not
+empty.  The description of some internal sites are not only not empty,
+their description also contain memo commands.
+
+
+Lino Tera continued
+===================
+
+To fix :ticket:`2610`, I added a new user role
+:class:`lino_xl.lib.topics.roles.TopicsUser`.
+
+I converted the docs for :mod:`lino_xl.lib.topics` to prosa.
+There was no demo data yet about topics in tera.
+I updated :mod:`lino_tera.lib.tera.fixtures.demo`.
+
+I added a section "The detail view of a therapy" in
+:ref:`tera.specs.courses` in order to verify that
+:ticket:`2610` is fixed.
+
+I had a look at several new tickets reported by Gregor:
+
+:ticket:`2627`: The incorrect **City** is caused by :ticket:`2628`, an
+old and well-known but not reproducible bug.
+
+The **Age** field of patients is indeed empty in lydia.  I checked
+:ref:`lino.specs.human`.  Everything seems okay there.  Some debuggin
+grevealed that the data is correctly passed, and :func:`my_loadRecord`
+in :xfile:`linoweb.js` correctly calls :func:`setValue` for the field.
+This is another reproducible bug that Hamza can fix in the extjs3 ui.
+
+How to reproduce: go lyldia, sign in as robin, select Contacts -->
+Patients, double click on some patient with a birth date, select the
+"Address" tab panel.  The field "Age" is empty.
+
+:ticket:`2629` is caused by a problem in spzloader2 : `PAR->Name2` was
+not imported.
+
+:ticket:`2631` (VirtualField has no attribute get_col)
+GuestsByPartner.when
+
+:ticket:`2633` Database change in `lino_xl.lib.cal`: both GuestRole
+and EventType are now Referrable.  The additional :attr:`ref` field
+won't disturb in :ref:`avanti` and :welfare` and :ref:`voga`.  Of
+course the usage should be optional.
+
+
+More ideas for Lino Noi
+=======================
+
+Tonis reported :ticket:`2624`, and he will work on it and then make
+the next release to Jane.  I updated the release notes in 
+:ref:`noi.coming`.
+
+
