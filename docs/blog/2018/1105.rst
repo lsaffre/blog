@@ -4,6 +4,11 @@
 Monday, November 5, 2018
 ========================
 
+Today Lino got three new repositories on GitHub.
+
+User manuals
+============
+
 I realized that the *user manuals* (the doctrees tera_de, welfare_de,
 welfare_fr and noi) should have a repository on their own instead of
 being part of the `book <https://github.com/lino-framework/book>`__.
@@ -30,6 +35,20 @@ end-user, for example:
 - :func:`show_menu_path <lino.api.doctest.show_menu_path>`
 - :func:`show_quick_search_fields <lino.api.doctest.show_quick_search_fields>`
 
+Oops, one difficulty I didn't see before splitting is that manuals
+currently use py2rst and lino2rst directives which require not only
+the :mod:`lino_book` code but also to run :cmd:`inv prep` in the book.
+How can we tell travis to run this before building the manuals?  And
+then coverage.  Because the manuals are no longer part of the book,
+they will not contribute to coverage.  That's a pity.  Hm...
+:ticket:`2641`.
+
+First step (with Hamza) was to change the syntax of
+:envvar:`demo_projects`: instead of specifying paths (relative to the
+project's :attr:`root_dir`) we now specify them as Python modules.
+And poor Travis must build all the demo projects twice: once for the
+book and a second time for the manuals.
+
 
 Fixed a Python 3 failure in book
 ================================
@@ -37,4 +56,20 @@ Fixed a Python 3 failure in book
 The problem was mostly that
 :meth:`lino.modlib.notify.Message.emit_notification`
 uses a set to remove potential duplicate recipients.
+
+Getting ready for the React user interfaces
+===========================================
+
+Tonis moved openui5 out of Lino into a separate repository.
+`openui5 <https://github.com/lino-framework/openui5>`__.
+
+And he started a repository `react
+<https://github.com/lino-framework/react>`__ which might become the
+playground for a new team member in India.
+
+
+Avanti moving on
+================
+
+I got another series of customer requests for :ref:`avanti`.
 
