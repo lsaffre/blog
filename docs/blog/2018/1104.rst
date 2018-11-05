@@ -1,0 +1,73 @@
+:date: 2018-11-04
+
+========================
+Sunday, November 4, 2018
+========================
+
+I finished working on :ticket:`2579` and wrote :ref:`tera.18.11.0`.
+
+I finished the new testing environment for weleup.
+:ticket:`2620`
+
+Upgrade instruction for :ref:`welfare` after
+:ticket:`2622` (Move welfare specs from welfare to book):
+In your local :xfile:`settings.py`, you must change::
+
+  from lino_welfare.projects.eupen.settings import *
+
+to::  
+
+  from lino_welfare.eupen.settings import *
+        
+
+Hot wo undo a git pull
+======================
+
+At some moment I accidentally did a :xfile:`pull.sh` in their
+production environment:: 
+
+    $ ./pull.sh 
+    /usr/local/django/testlino/env/repositories/lino /usr/local/django/testlino
+    remote: Enumerating objects: 406, done.
+    remote: Counting objects: 100% (406/406), done.
+    remote: Compressing objects: 100% (61/61), done.
+    remote: Total 759 (delta 359), reused 383 (delta 336), pack-reused 353
+    Receiving objects: 100% (759/759), 586.06 KiB | 0 bytes/s, done.
+    Resolving deltas: 100% (535/535), completed with 99 local objects.
+    From https://github.com/lsaffre/lino
+       a7c6b7b..303b892  master     -> origin/master
+    Updating a7c6b7b..303b892
+    Fast-forward
+     lino/api/doctest.py                                |   67 +-
+     lino/core/__init__.py                              |    1 +
+     lino/core/actions.py                               |  196 +-
+     lino/core/actors.py                                |   40 +-
+
+    ...
+
+    /usr/local/django/testlino/env/repositories/xl /usr/local/django/testlino
+    remote: Enumerating objects: 715, done.
+    remote: Counting objects: 100% (715/715), done.
+    remote: Compressing objects: 100% (205/205), done.
+    remote: Total 1150 (delta 549), reused 649 (delta 483), pack-reused 435
+    Receiving objects: 100% (1150/1150), 1.37 MiB | 0 bytes/s, done.
+    Resolving deltas: 100% (713/713), completed with 91 local objects.
+    From https://github.com/lino-framework/xl
+       ef025cc..a2bd056  master     -> origin/master
+     * [new branch]      devel      -> origin/devel
+    Updating ef025cc..a2bd056
+    Fast-forward
+    ^C
+
+To undo it, I used :cmd:`git reset --hard` as follows::
+
+    $ git reset --hard a7c6b7b
+
+But how did I know the commit hash there, a7c6b7b?  It was lucky
+because I had noticed my mistake before the terminal output had gone
+away from my screen buffer.  So I could see::
+
+    Updating a7c6b7b..303b892
+
+In order to be more fool-proof, :xfile:`pull.sh` should log the HEAD's
+commit hash for every repository. 

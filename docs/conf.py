@@ -58,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General substitutions.
-project = "The Lino blog"
+project = "Luc's developer blog"
 copyright = '2001-2018 Luc Saffre'
 
 
