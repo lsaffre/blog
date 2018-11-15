@@ -143,7 +143,7 @@ Free software is not about *money* and not about *comfortability*, it
 is about **power**.  The real issue with proprietary software is that
 its copyright holder tries to gain power over its users.  Non-free
 software makes the users surrender control over their computing to
-someone else.[#watercutter]_
+someone else.\ [#watercutter]_
 
 Vendors of proprietary software are skillful in finding ever and ever
 new tricks and whole technologies whose ultimate goal is to bind you

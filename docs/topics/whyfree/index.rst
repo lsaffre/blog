@@ -32,8 +32,9 @@ Content
 =======
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
+   lutsu
    car
    sandwich_bar
    whatisfs

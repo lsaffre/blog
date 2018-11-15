@@ -1,0 +1,90 @@
+:date: 2018-11-11
+
+=========================
+Sunday, November 11, 2018
+=========================
+
+I was having idease while triaging in Jane, in the perspective of
+having Thierry as a customer consultant, a separate person who
+discusses with customers about how to plan and pay for our work.
+
+
+When the site of a ticket changes
+=================================
+
+It seems clear that we will create more sites per customer in the
+future, at least for bigger customers who need more detailed
+reporting.  One "maintenance" site which is the default for new
+tickets.  And then one site for every release. Tickets that did not
+cause any changes in code or documentation will always remain in the
+maintenance site.
+
+Should sessions remain on the old site when the site of a ticket
+changes?  Changes to do if this turns out to be true:
+
+- New field :attr:`Session.site` which is automatically set to the
+  (current) site of the ticket.  Existing sessions will get the
+  current value of their ticket during migration.
+
+- Don't allow new sessions on a ticket without a site or whose site is
+  closed.
+
+For example a problem occurs for the first time and is reported by the
+customer. At first it goes into the customer's maintenance site.  We
+work on it and at some point decide that the ticket is ready and can
+go into the coming release. We continue to work on the ticket during
+the release process, testing whether it works.  During testing we
+realize that things are more complicated and move the ticket to the
+next release (another site).  In that case I can say yes.
+Tickets are in the maintenance site as long as they are just open
+problem reports and not assigned to a concrete release.
+
+But for the moment I sometimes I use the current situation in order to
+reassign tickets afterwards to another site.  In that case I
+potentially want all sessions to move with the ticket to the new site.
+But this use case should become an exceptional situation.
+
+Should we refuse editing the site of a ticket when the site is closed?
+Not right now. To be observed.
+
+About release notes
+===================
+
+I currently use Sphinx for editing release notes.  Which implies that
+customer consultant is not going to edit it.  Which means that a
+customer consultant needs some other kind of tool for planning a
+release with a customer.  I guess that Thierry will use SitesByCompany
+and the SiteDetail view quite often.
+
+Release notes should indeed express how the application maintainer
+describes the changes in a given version.  They should be able to
+refer to pages of the end-user documentation, and potentially to
+technical documentation or blog entries.  There are certain sections
+that occur often (TODO, TALK, DONE, ...), but basically their
+structure should be flexible because every release is different.
+
+Release notes are the first content of the user manual.  Currently we
+have only pilot customers, i.e. every production site has its own user
+manual.  Depending on the customers requirements that user manual can
+be more or less complete, but it will always have a "Changes" section
+which contains the release notes.
+
+One question is how to handle file names in the changes section of a
+user manual.  I currently use a :file:`coming.rst` file for the
+version under development.  When the release is done, I change the
+file name to the version number and start a new page
+:file:`coming.rst` page.  This seems convenient but it has a drawback:
+old references to the :file:`coming.rst` page become invalid because
+they now refer to the new development version. Which is usually not
+what we want.  OTOH we never know the version number of the coming
+release because we use date-based versioning.  So maybe date-based
+versioning was not such a good idea.  OTOH date-based versioning is
+more intuitive because it gives a realistic idea about how old it is.
+Maybe we should say that a version 18.11.0 means "the first release
+*originally planned* for november 2018" and *does not* mean that it
+actually went into production in that month.  There would be no
+problem it it goes to production only a year later.
+
+I tried this on :ref:`noi`: :ref:`noi.v18.11.1` means that we had
+already one release in november, and that there is some hope that
+there will be another one in november.
