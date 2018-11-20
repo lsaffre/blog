@@ -1,0 +1,77 @@
+:date: 2018-11-19
+
+=========================
+Monday, November 19, 2018
+=========================
+
+
+List of changes in this series of commits:
+
+
+Changes visible to end-users
+
+- Lots of changes in :mod:`lino_xl.lib.invoicing`.
+
+- The first column ("When") of
+  :class:`lino_xl.lib.cal.EntriesByController` now opens the detail of
+  that calendar entry (instead of a table with all entries of that day).
+
+- The Save button is now the last button of the toolbar
+  (sort_index changed from 10 to 100)
+
+- New field type :class:`lino.core.fields.TimeField` New site
+  attributes :attr:`calendar_start_hour
+  <lino.core.site.Site.calendar_start_hour>` and
+  :attr:`calendar_end_hour <lino.core.site.Site.calendar_end_hour>`.
+  The combobox of time fields is now limited to a reasonable and
+  configurable range (default from 7am to 9pm)
+
+- The menu structure for the sales, ledger, products and
+  invoicing plugins has changed.
+
+Changes visible to application developers:
+
+- New attribute :attr:`lino.core.actors.Actor.ignore_required_states`
+  is used to activate all transitions of a workflow.
+
+- New method :meth:`lino_xl.lib.cal.EventGenerator.has_auto_events`.
+  The :class:`lino_xl.lib.cal.UpdateEntries` button is now hidden when
+  this returns False.
+
+- Instantiator now support (editable) remote fields. 
+  The code for creating a :class:`lino.core.fields.RemoteField` is now
+  in :mod:`lino.core.fields` (no longer in :mod:`lino.core.store`).
+
+- Fixed a bug in :class:`lino.modlib.users.StartPlan` action which
+  didn't work when subclassed and used on another model than the
+  :class:`Plan`.
+
+- New user role :class:`lino.core.roles.Expert`.  And
+  :class:`SiteAdmin` inherits from it.
+
+  The :class:`lino.mixins.duplicable.Duplicate` action is now visible
+  only for experts.
+
+- The default value for :attr:`allow_merge_action
+  <lino.core.model.Model.allow_merge_action>` is now `False`. As a
+  result we have much less dialog actions and the merge button is no
+  longer available on many models.  That's whay
+  :func:`show_complexity_factors` shows much less views now (every
+  mergeable model had one automatically createdd dialog window for the
+  merge actions)
+  (I am not sure whether this won't change back in the future).
+  
+- Course.events_by_course is now a method, no longer a queryset
+
+
+There was a problem (:ticket:`2665`) for building the book after above
+changes.
+
+:mod:`lino_noi.lib.noi`
+:mod:`lino_noi.lib.noi.workflows`
+:mod:`lino_noi.lib.noi.user_types`
+     
+:mod:`lino_vilma.lib.vilma`
+:mod:`lino_vilma.lib.vilma.workflows`
+:mod:`lino_vilma.lib.vilma.user_types`
+  
