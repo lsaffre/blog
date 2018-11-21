@@ -4,6 +4,17 @@
 Wednesday, November 21, 2018
 ============================
 
+
 I continued to play after the upgrade on the :ref:`tera` production
-site on our way to :ref:`tera.18.11.1`.
+site on our way to :ref:`tera.18.11.1` : manual tests in their data,
+optimizations and minor bugs, write docs,...
+
+One bug was cool: Dangling vouchers without MTI leaf.  Vera reported
+this problem (:ticket:`2683`).  I then saw that it is caused by
+:mod:`lino_xl.lib.tim2lino.spzloader3` which uses Django's
+:meth:`_raw_delete` method to delete invoices and their content, but
+forgets to delete also the movements and the bare voucher entries.  I
+extended the ledger.VoucherChecker to detect and delete dangling
+vouchers and their movements.
+
 
