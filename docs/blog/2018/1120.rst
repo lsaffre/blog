@@ -18,5 +18,64 @@ work.  To be continued. Not urgent.
 While thinking with Thierry about whether he feels able to learn
 Sphinx in order to write end-user docs for Lino applications, I
 reviewed some documentation: :ref:`writedocs` :ref:`noi.guide`.
-:ref:`man` :ref:`dev.manuals`
+:ref:`man` :ref:`dev.manuals`.
+
      
+Upgrade on the :ref:`tera` production site
+==========================================
+
+I did a next upgrade on the :ref:`tera` production site on our way to
+:ref:`tera.18.11.1`.
+
+Errors encountered during the migration:
+
+- TypeError: 'min_asset' is an invalid keyword argument for this function
+
+- Okay this one was almost expected::
+
+    Abandoning with 5 unsaved instances:
+    - finan.BankStatementItem [u'Account {} needs a partner'] (3 object(s) with primary key 460, 775, 483)
+    - finan.BankStatementItem [u'Account {} cannot be used with a partner'] (2 object(s) with primary key 164, 234)
+
+  Moved the validation code into a data checker to deactivate it
+  temporarily and then run it after the migration so that we can
+  inspect the problems manually.  For convenience, data checkers now
+  have a new method :meth:`check_instance
+  <lino.modlib.checkdata.choicelists.Checker.check_instance>`
+
+- The amount field on Guest or Event must be disabled or not depending
+  on the Invoicing policy of the course.
+
+  New method
+  :meth:`lino_xl.lib.invoicing.InvoiceGenerator.get_last_invoicing` is
+  used to disable the amount field on events for which an invoice has
+  been issued.
+
+  This required a cool new rule: when generating invoices, the plan's
+  :attr:`max_date <lino_xl.lib.invoicing.Plan.max_date>` goes into the
+  :attr:`voucher_date <lino_xl.lib.ledger.Voucher.voucher_date>` and
+  the plan's :attr:`today <lino_xl.lib.invoicing.Plan.today>` goes
+  into the :attr:`entry_date <lino_xl.lib.ledger.Voucher.entry_date>`
+  of the invoice.
+
+  Because when they write invoices for september e.g. on the 8th of
+  october, therapists don't want to have all their calendar entries
+  locked
+
+  The default value of
+  :attr:`lino.modlib.system.SiteConfig.hide_events_before` in a demo
+  project was set (by :mod:`lino_xl.lib.cal.fixtures.std`) to April
+  1st (of the current year when demo_date was after April and of the
+  previous year when demo_date before April) I changed this to January
+  1st because in lydia it was disturbing that most calendar entries
+  were already hidden.
+
+
+- Cannot import session 109972 because there is no user NM
+  Cannot import session 109972 because there is no user FK
+
+  --> manually create users fk and nm to fix this for the next import.
+
+
+Note : the book testsuite now has some failures caused by my changes.
+I will fix them as soon as possible.
