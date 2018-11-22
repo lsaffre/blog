@@ -20,7 +20,17 @@ passed something else than a string as second argument to
         else:
             yield ar.obj2html(obj, six.text_type(obj.topic))
 
-I have to adapt the test suites after my changes.  Travis helps me
+I had to adapt the test suites after my changes.  Travis helped me
 https://travis-ci.org/lino-framework/book/jobs/458143717
 
+They had a series of data problems of style "Movement 731 1/2018.3 :
+account_id 193 != 235".  These were false alarms because the checker
+did::
 
+    for em in obj.movement_set.all():
+        
+instead of::
+
+    for em in obj.movement_set.order_by('seqno'):
+
+Changes in the `ledger.AccountDetail` layout of :ref:`tera`.
