@@ -1,0 +1,26 @@
+:date: 2018-11-22
+
+===========================
+Thursday, November 22, 2018
+===========================
+
+I continue to work at full speed for :ref:`tera`.
+
+Oops, when opening the detail of a client with topics, I had a
+:message:`ValueError: All strings must be XML compatible: Unicode or
+ASCII, no NULL bytes or control characters`.  This happened because I
+passed something else than a string as second argument to
+:meth:`obj2html <lino.core.requests.BaseRequest.obj2html>` (in
+:mod:`lino_xl.lib.topics`)::
+
+    @classmethod
+    def summary_row(cls, ar, obj, **kwargs):
+        if ar is None:
+            yield six.text_type(obj.topic)
+        else:
+            yield ar.obj2html(obj, six.text_type(obj.topic))
+
+I have to adapt the test suites after my changes.  Travis helps me
+https://travis-ci.org/lino-framework/book/jobs/458143717
+
+
