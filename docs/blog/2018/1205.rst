@@ -1,0 +1,129 @@
+:date: 2018-12-05
+
+===========================
+Wednesday, December 5, 2018
+===========================
+
+I am still working on `our new cooperation directives.
+<https://saffre-rumma.net/dl/Kooperationsrichtlinien.pdf>`__. Here is an
+example of the topics I need to consider.
+
+Last Friday I did the final sprint for :ref:`tera.18.11.1`. Of course these
+changes caused `a series of failures on travis
+<https://travis-ci.org/lino-framework/book/jobs/461750501>`__. No problem, but
+this sprint had been several very intensive days for me, and it was clear that
+the dirty and less urgent work of adapting the test suite had to wait.
+Only now I find time to care for these failures.
+At least one of them (`L4727
+<https://travis-ci.org/lino-framework/book/jobs/461750501#L4727>`__) indicates
+that my change potentially introduced a changed behaviour in :ref:`welfare`.
+Why does :class:`lino_xl.lib.notes.NotesStaff` cause a different result in
+:ref:`welfare.usertypes`?
+
+But stop!  Who is going to pay for this work?  Who *should* pay for it? The
+work of adapting the test suites is less fun and the customer sees no immediate
+benefit, but it is required for maintaining the quality of the framework.
+
+Because I made the work of repairing the test suite only *after* the release,
+the customer will have difficulties to pay me for this work. If I had done it
+before* the release, the release would have been done only now, the customer
+may grumble about my slowness but would (if they are of good will) accept that
+this work is needed.
+
+But let's work on this and later continue to think about our question.
+
+So the user types 110, 120 and 420 in :ref:`welfare` now have the additional
+permission :class:`lino_xl.lib.notes.NotesStaff`.  This has to do with the fact
+that the new role NotesStaff was required for :ref:`tera` because a secretary
+in Tera should not see notes even though they are staff for other plugins. So
+it is normal that users 110, 120 and 420 in welfare (who were OfficeStaff
+before) now also need the NotesStaff role.  Which confirms that I just need to
+adapt the test case.
+
+Note that this failure was in welfare, another test suite than tera.  IOW one
+customer asked for a change which caused an API change in the XL, and that API
+change caused work for another customer.
+
+Other failures on Travis were in the test suite for tera. So they were caused
+by changes for which the customer asked me (indirectly). One of these changes
+was an optimization of the grid layout for
+:class:`lino_tera.lib.products.Products`.  Also here the customer might grumble
+and say "I didn't ask for that concrete change".  Indeed it was my "intuitive"
+decision to remove the category from their product configuration.  I removed it
+because the category is indeed not used anymore in Tera and it would cause
+misunderstandings and increased need for support to leave it there.
+
+Another failure was because :class:`lino_xl.lib.cal.GuestRole` now has a new
+field :attr:`lino_tera.lib.cal.GuestRole.is_teacher`. They need this because
+presences of a teacher must not get invoiced. I had to find back `394ab28c
+<https://github.com/lino-framework/tera/commit/394ab28c25375280c2888096c27ef0536b83ae1b>`__
+in order to remember this explanation.
+
+
+.. inherits
+   from :class:`lino.mixins.ref.Referrable` and therefore has a new field
+   (:attr:`ref`).  Yet another intuitive decision of mine for Tera.  They did not
+   ask for it directly, but I believe that they will like and need it.  I could
+   have done it only for Tera (in :class:`lino_tera.lib.cal` instead of
+   :class:`lino_xl.lib.cal`).  This too was my own intuitive decision.  Maybe it
+   was stupid, because it is likely to break some test suite in other applications
+   as well.
+
+Another change I did on Friday (`ca51d871
+<https://github.com/lino-framework/tera/commit/ca51d871c5fd16f277f4d1291f2b016916391bd9#diff-ec9ea4d05b30af47fd8bd640eec3f345>`__):
+:class:`courses.Course` has two new fields: :attr:`modified` and
+:attr:`tariff`.  Both changes were needed for a change the customer can
+understand: dossiers are now sorted by date of last modification.
+
+And the  new field tariff is caused by their invoicing rules.  Note en passant
+that courses.Course already had a field named `tariff` which contained data
+imported from TIM.  I renamed that field to `partner_tariff`. Also
+:class:`lino_tera.lib.courses.Enrolment` has the new field :attr:`tariff`.
+
+They now have two tariffs in they demo database: "every event" and "max. 10
+events".  This is in order to explore and fix and cover a bug with
+:attr:`lino_xl.lib.invoicing.Tariff.max_asset` where I said min instead of max
+in the
+
+I renamed `prepayment_product` to `cash_daybook`.
+
+A side effect in :ref:`cosi`: the menu items for configuring *Products* and
+Product Categories* are no longer in the user menu but in the config menu.
+Since there are no production users of :ref:`cosi` I can decide that this is
+okay.  And :ref:`cosi` must now explicitly set menu_group for products to
+sales, not products.
+
+I changed the test dumps in lydia: removed 18.8.0 because it was now failing
+because of the new tariff field.  Getting the import from 18.8.0 to pass would
+require me to write a migrator.  But that would be overkill since I know that
+there is no production site of Tera 18.8.0 out there.
+
+The above shows that the work of a developer during a sprint is very complex,
+and documenting it as detailed as I did now takes more time than actually doing
+it.  Yes, documenting every change is important because only then can others
+participate in my decisions.  The question is: do they want this?  I am sure
+that neither Olivier nor Annabell want to dive into these questions as deeply.
+Gerd in the past sometimes did for fun and because he is curious.  And he
+happened to give valuable commentsfeedback on such thoughts. But does Annabell
+want him to waste his time on such technical things?  Rather not.
+
+A customer does not want to see the gory details.  They want to see how much
+time I needed per change request.  They ask for explanations only if one of
+their request takes more time than hey think acceptable.
+
+Another problem for which I cannot ask anybody to pay because it was caused by
+my decision to split the "Lino devclopers guide" from the "Lino manual": build
+docs for patrols, logos, algus were failing because of changed
+intersphinx_mapping.
+
+*En passant*, while fixing this problem I also fixed two more test failures
+which were a side effect of the changes made for Tera: Voga also must define
+its own :class:`ProductTypes` and set the :attr:`menu_group` for products to
+sales.
+
+Changements Welfare Chatelet
+============================
+
+I had a meeting with Mathieu about :ticket:`2687` and then started to work on
+it.  Release notes Welfare FR :ref:`welfare_fr.18.12.0`.
+
