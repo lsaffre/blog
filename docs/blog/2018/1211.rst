@@ -1,0 +1,64 @@
+:date: 2018-12-11
+
+==========================
+Tuesday, December 11, 2018
+==========================
+
+
+Lino versus Tryton
+==================
+
+:ticket:`2578`.
+
+When I look at our new collaboration directives and how much work I invested
+into these things during the last months, I cannot refrain from asking: why am
+i doing this work?  Am I re-inventing the wheel?  Why don't I simply give up
+Lino and join the Tryton community?
+
+I asked this question already several years ago nd at that moment my conclusion
+was:  in order to answer this question, somebody would need to write a Tryton
+application which has a chance to become a replacement for one of the existing
+production Lino applications. And I am probably not the right person to test
+whether Lino is useless.
+
+But I could ask Hamza or Tonis to do it: `Get started with Tryton
+<https://tryton-documentation.readthedocs.io>`__ and write a Lino Noi.  And
+then give us some serious reasons for Lino to exist next to Tryton.
+
+
+Build failing because of make_demo_picture
+==========================================
+
+:ticket:`2741`.
+
+https://travis-ci.org/lino-framework/book/jobs/466186410
+
+Yes, the :meth:`lino_xl.lib.beid.BeIdCardHolder.make_demo_picture` method is a
+strange thing.  We have it because the welfare test suite requires some
+examples in the demo database that simulate clients having their Belgian eID
+card read into Lino.  So these clients need a "real" picture.  To simulate a
+"real" picture read from an eid card we have these files :file:`luc.jpg` and
+:file:`ly.jpg`.  These need to be copied to the (local) directory for pictures
+uploaded from id cards. :meth:`get_image_path
+<lino_xl.lib.beid.BeIdCardHolder.get_image_path>`
+
+So the problem has to do with the :attr:`include_package_data` option. Maybe
+simply remove the ``zip_safe=False``.
+
+And ta-daa, only yesterday I thought that :mod:`lino` and :mod:`lino_xl` can
+have a common set of release notes, and already now we have a case that proves
+my assumption as wrong: we need a new PyPI version for XL but not for Lino.
+
+We can either
+
+- do an artificial release 18.12.0 (without any change) for Lino as well
+- start maintaining separate release notes for Lino and XL
+- decide that we don't yet want release notes for XL and restore the -e option
+  for lino_xl in the book requirements
+
+Since I don't yet know the answer to above questions, for now I did a PyPI
+release for XL 18.12.0 without mentioning it in the release notes. And then
+restarted the book build on Travis.  Let's see what it does before talking
+more.
+
+The problem remains, so removing the ``zip_safe=False`` was not enough.
