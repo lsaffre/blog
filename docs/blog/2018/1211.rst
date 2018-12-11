@@ -37,6 +37,26 @@ I read a 3 year old discussion `Tryton vs Odoo
 readonly tryton mailing list.  It explains why Odoo is not even a candidate
 because it is not free.
 
+I had a hangout with Hamza about this topic. Our summary is simple: We do Lino
+because **we don't believe that Tryton can replace Lino.** Tryton is just a big
+application with plugins while Lino is a framework. We know that we don't
+*know* it, we just believe it. It would take months of research work to
+demonstrate this. In case you don't believe us, then you can get potentially
+the whole Lino team join the Tryton project by configuring a Tryton site in a
+way that it has a chance to replace Lino Presto or any other production Lino
+application of your choice.
+
+
+Lino roadmap December 2018
+==========================
+
+We had a look at jetadmin. A fundamental difference : jetadmin lets the
+end-user do very much configuration: design the application menu, layouts of
+tables and detail views.  I believe that this approach is actually an
+anti-feature.  This work should be done by a professional application developer
+using Python code.  Providing it as a feature might be convenient in certain
+edge cases to provide quick customizations, but such customizations aren't
+reusable.  It causes a lot of analysis work to be done at the wrong place.
 
 
 Build failing because of make_demo_picture
@@ -75,3 +95,39 @@ restarted the book build on Travis.  Let's see what it does before talking
 more.
 
 The problem remains, so removing the ``zip_safe=False`` was not enough.
+
+
+
+Technical roadmap for Lino
+==========================
+
+Some research projects and missing features
+
+- get the cms demo project to run : After signing in, extjs interface is
+  broken. Some menu items cause a JS error Uncaught TypeError:
+  types[(config.xtype || defaultType)] is not a constructor.
+  Or http://127.0.0.1:8000/ext says Page not found (404).
+
+- work on the bs3 ui for team so that we can log in and use it from our mobile
+  devices to do certain actions like writing comments and assigning tickets to
+  somebody. Add inline editing to bugs.SR (inspired by django-front)
+
+- a management command which generates one Django permission for every user
+  role and one Django user group for every Lino user type.  And then demonstrate
+  how Lino plugins can be combined with plain Django applications.
+
+OTOH these projects must remain low priority as long as we have enough work on
+projects with immediate benefit:
+
+- (Tonis) Continue the react user interface
+
+- (Hamza) Migrate Jane to Python 3 and Django 2 (there is at least one dependency
+  problem for channels)
+
+- (all) Continue to optimize the existing extjs interface
+
+- (Luc & Thierry) Continue to optimize Lino Noi for our own usage
+
+- (all) Continue to optimize the release and deployment process and technical documentation
+
+
