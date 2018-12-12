@@ -39,24 +39,25 @@ because it is not free.
 
 I had a hangout with Hamza about this topic. Our summary is simple: We do Lino
 because **we don't believe that Tryton can replace Lino.** Tryton is just a big
-application with plugins while Lino is a framework. We know that we don't
-*know* it, we just believe it. It would take months of research work to
-demonstrate this. In case you don't believe us, then you can get potentially
-the whole Lino team join the Tryton project by configuring a Tryton site in a
-way that it has a chance to replace Lino Presto or any other production Lino
-application of your choice.
+application with plugins while Lino is a framework. We know that we don't know*
+it, we just believe it. It would take months of research work to demonstrate
+this. In case you don't believe us, then you can potentially get the whole Lino
+team join the Tryton project by configuring a Tryton site in a way that it has
+a chance to replace Lino Presto or any other production Lino application of
+your choice.
 
 
-Lino roadmap December 2018
-==========================
+Lino road map December 2018
+===========================
 
 We had a look at jetadmin. A fundamental difference : jetadmin lets the
 end-user do very much configuration: design the application menu, layouts of
-tables and detail views.  I believe that this approach is actually an
-anti-feature.  This work should be done by a professional application developer
-using Python code.  Providing it as a feature might be convenient in certain
+tables and detail views etc.  While this might look tempting for a customer, I
+believe that this approach is actually an anti-feature.  This work should be
+done by a professional application developer using Python code and with
+reusability in mind.  Providing it as a feature might be convenient in certain
 edge cases to provide quick customizations, but such customizations aren't
-reusable.  It causes a lot of analysis work to be done at the wrong place.
+reusable.  It causes analysis work to be done at the wrong place.
 
 
 Build failing because of make_demo_picture
@@ -131,3 +132,15 @@ projects with immediate benefit:
 - (all) Continue to optimize the release and deployment process and technical documentation
 
 
+Optimizations in Jane
+=====================
+
+- I removed the summary view from TicketBySite and MyTicketsToWork
+
+- I removed the summary fields per TicketState
+
+- Every ticket is now a summary and holds a sum of the worked time (per reporting type)
+
+- :mod:`lino.modlib.summaries` has a new kind of summary: a BaseSummary. This is
+  inherited by working.Workable and adds the lightning button top the ticket and
+  makes the summary fields get updated during :manahe:`computesummaries`.
