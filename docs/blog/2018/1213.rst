@@ -25,23 +25,24 @@ Actually even separate release notes won't be of practical use, here is an
 example:
 
 The API optimizations in :mod:`lino.modlib.summaries` also cause a change in
-the database structure for the :mod:`lino_welfare.modlib.esf` plugin: until now
-the esf.Summary model had a completely useless pointer to system.SiteConfig
-which goes away now. This plugin is used in both :ref:`welfare` applications
-(though I am not sure whether it is being used at all in weleup).
+the database structure for the :mod:`lino_xl.lib.userstats` plugin: until now
+the userstats.Summary model had a pointer to system.SiteConfig which was
+completely useless.  This field now goes away. This plugin is not used in any
+production site, so there is no need to write a release note about it.
 
-Where should such information be stored?  In the Lino Welfare release notes of
-course.  So I now need to update these as well! Until now I handle such
-knowledge in a very simple way: when they want a new version, I simply restore
-a snapshot of the production site into a new version and look at the error
-messages.  I do this some evening when they are not working.  While this
-approach is very economic on administrative costs, it has the disadvantage that
-Hamza or Tonis would have difficulties to do an upgrade on their site without
-me.
+Changes in the database structure should usually be mentioned in the release
+notes, at least if they are not handled automatically. Until now I handle such
+changes in a very simple way: when the production site wants a new version, I
+simply restore a snapshot of the production site into a new version and look at
+the error messages.  I often do this on the fly some evening when they are not
+working.  While this approach is very economic on administrative costs, it has
+the disadvantage that Hamza or Tonis would have difficulties to do it without
+me (the guy who wrote the changes).
 
 All this took me a whole day.  And I am sure that none of our customers would
 agree to pay for this work. OTOH if I were a customer, I would refuse to use a
-framework where such changes are *not* being done.
+framework where such changes are *not* being done.  And of course as a
+programmer I refuse to maintain applications on an unmaintained framework.
 
 I realized that :mod:`lino_welfare.modlib`  was missing in the API.  And the
 API was hidden in the Contributor's Guide, not it is at the top-level index of
