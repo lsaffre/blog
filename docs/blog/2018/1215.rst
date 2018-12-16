@@ -1,0 +1,71 @@
+:date: 2018-12-15
+
+===========================
+Saturday, December 15, 2018
+===========================
+
+Today I did the `Upgrade for welcht`_. Tests in :ref:`book` are still broken (I
+want to finish live tests before adapting the doctests).
+
+Upgrade for welcht
+==================
+
+I upgraded the production site for welcht (:ref:`welcht.18.12.0`).
+
+I decided to create a new environment instead of using :xfile:`pull.sh`::
+
+    git clone https://github.com/lino-framework/lino.git
+    git clone https://github.com/lino-framework/xl.git
+    git clone https://github.com/lino-framework/welfare.git
+    git clone https://github.com/lino-framework/cosi.git
+
+    pip install -e lino
+    pip install -e xl
+    pip install -e cosi
+    pip install -e welfare
+
+
+Oops, there was a problem::
+
+    ...
+    Collecting weasyprint<0.43 (from lino==18.12.2)
+      Downloading https://files.pythonhosted.org/packages/7e/4c/cf2ec7abf7f84a2d1325d01dcac1d4bcb77f41117101fe564eb76952c65f/WeasyPrint-0.42.3.tar.gz (399kB)
+        100% |████████████████████████████████| 409kB 9.5MB/s
+        Complete output from command python setup.py egg_info:
+        error in WeasyPrint setup command: Invalid environment marker: python_version < "3.0"
+
+        ----------------------------------------
+    Command "python setup.py egg_info" failed with error code 1 in /tmp/pip-install-_pF__a/weasyprint/
+
+    Python 2.7.3
+
+Solution was to say::
+
+  pip install -U setuptools
+
+
+I did the last TODO of the release notes  : They asked to add a field
+"priority" to `cal.Task`. This required some meditation: the :class:`cal.Event
+<lino_xl.lib.cal.Event>` model already had a field `priority` which was a
+foreign key to `cal.Priority`. That table was configurable via
+:menuselection:`Configure --> Calendar --> Priorities`.  But neither the table
+nor the field were used by anybody.  And this is very old code, today I would
+implement a "priority" field as a choicelist rather than a database table.
+
+There is already a :class:`Priorities` choicelist in :mod:`lino_xl.lib.tickets`.
+
+I decided to
+
+- move the :class:`lino_xl.lib.xl.Priorities` choicelist from :mod:`lino_xl.lib.tickets` to :mod:`lino_xl.lib.xl` so that it can be used by any plugin of the XL
+
+- remove both :class:`cal.Priority` model and its FK from :class:`cal.Event <lino_xl.lib.cal.Event>`
+
+- add a choicelist field :class:`lino_xl.lib.cal.Component.priority` pointing to :class:`Priorities <lino_xl.lib.xl.Priorities>`.
+
+
+New command-line option ``--quick`` for ``restore.py``
+======================================================
+
+I did :ticket:`2755` and tried it on the field. The idea was that calling
+:meth:`Model.full_clean` on every restored database row might make things very
+slow.  Actually it doesn't.
