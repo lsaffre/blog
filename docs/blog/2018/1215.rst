@@ -69,3 +69,18 @@ New command-line option ``--quick`` for ``restore.py``
 I did :ticket:`2755` and tried it on the field. The idea was that calling
 :meth:`Model.full_clean` on every restored database row might make things very
 slow.  Actually it doesn't.
+
+Help text and button_text
+=========================
+
+I worked on :ticket:`1666` (help_text is not diplayed as a button hint when
+button has text instead of icon).  The problem statement seems wrong.  It is
+not really related to whether the button has an icon or not.  Seems to be
+browser-specific and to depend on where the mouse cursor landed.
+
+The button_text for :meth:`lino.modlib.summaries.Summarized.compute_results` is
+a Sigma (). Until now it was a *mathematical* Sigma (∑). I changed it to a simple
+greek sigma (Σ)::
+
+    # button_text = u"∑"  # u"\u2211"  # N-ARY SUMMATION
+    button_text = u"Σ"  # u"\u03A3"  # GREEK CAPITAL LETTER SIGMA
