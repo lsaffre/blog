@@ -1,0 +1,54 @@
+:date: 2018-12-17
+
+=========================
+Monday, December 17, 2018
+=========================
+
+Changes in cooperation directives
+=================================
+
+My work on Saturday are a nice example for a change requested by a customer
+which leads to an optimization of the framework: Mathieu asks to add a field
+"priority" to cal.Task, and I decide to fix the problem in a way which I
+believe to be the best.  But which potentially takes more time than a simple
+"patch".  We cannot deny that such decisions depend on subjective values and
+long-term objective.
+
+It is for this kind of cases that we have rule (61) our cooperation directives:
+"Wenn eine Anfrage am effizientesten zu implementieren ist durch eine Änderung
+im Frame­work, gilt sie deshalb nicht als allgemeine Entwicklung und ist
+dennoch zahlbar". To make things more clear, I now added a sentence "Der
+Dienstleister entscheidet über die technische Implementierung einer angefragten
+Änderung."
+
+En passant I also saw two minor optimizations: I removed rule (37) "Rechnungen
+für Wartungsaufträge dürfen nach schriftlicher Absprache auch stückweise
+bezahlt werden..." because it has become useless. And in rule (106) after "Die
+Verpflichtungen des Dienstleisters beginnen mit dem Eingang der Zahlung einer
+Rechnung" I added "und enden automatisch bei negativem Stundenkontingent".
+
+Adapted test suites
+===================
+
+My work on :ticket:`2687` went to production but is not yet finished: I must
+adapt the test suites.  On Saturday I had a quick glance at the failures and
+saw that they are trivial.  Though they require some routine work because each
+of the 21 failures needs attention and a change in the doc file.
+
+I started the release notes for :ref:`lino.18.12.4`.
+
+An optimization in Amici
+========================
+
+I did :ticket:`2759` (Bank accounts also by Person) and released to their
+production site.
+
+The API docs for :ref:`amici` were still in the :ref:`book`, and the book had
+amici in the requirements.  But I think that with amici we should do as with
+presto: let it be an independent project out of the book.
+
+After releasing the changes to production I noticed and fixed a bug in
+:mod:`lino_xl.lib.blog`: :class:`lino_xl.lib.blog.LatestEntries` had the same
+problem as the one we fixed recently in :class:`lino.modlib.notify.MyMessages`
+: Lino no longer supports :meth:`get_table_summary` to return a string with
+HTML, it must be an etree element.

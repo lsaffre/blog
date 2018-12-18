@@ -1,0 +1,98 @@
+:date: 2018-12-18
+
+==========================
+Tuesday, December 18, 2018
+==========================
+
+Oops, today I got this one while working in Pycharm::
+
+    #
+    # A fatal error has been detected by the Java Runtime Environment:
+    #
+    #  SIGSEGV (0xb) at pc=0x00007fa4ea4c2093, pid=4390, tid=0x00007fa4d434a700
+    #
+    # JRE version: OpenJDK Runtime Environment (8.0_152-b16) (build 1.8.0_152-release-1343-b16)
+    # Java VM: OpenJDK 64-Bit Server VM (25.152-b16 mixed mode linux-amd64 compressed oops)
+    # Problematic frame:
+    # V  [libjvm.so+0x4c0093]  Par_MarkFromRootsClosure::scan_oops_in_oop(HeapWord*)+0x1d3
+    #
+    # Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+    #
+    # An error report file with more information is saved as:
+    # /home/luc/java_error_in_PYCHARM_4390.log
+    #
+    # If you would like to submit a bug report, please visit:
+    #   http://bugreport.java.com/bugreport/crash.jsp
+    #
+    Aborted (core dumped)
+
+The log file says among others::
+
+    Memory: 4k page, physical 8107960k(890004k free), swap 8324092k(8322300k free)
+
+
+Updated the developer's guide
+=============================
+
+I passed once more some hour or two with :ticket:`40` (Improve  technical
+documentation about Lino) and updated :ref:`specs`.
+
+A Lino course on PySpace?
+=========================
+
+Virgo invited me to create a Lino course on their Python learning platform
+https://pyspace.eu
+
+The platform works using "challenges" where the course participant must upload
+a source code file which is then tested automatically.  You get immediate
+feedback, and you can see the names of other participants who entered the hall
+of fame. Nice idea for motivating people to learn Python and (en passant)
+finding new employees!
+
+Now how to integrate a Lino course into this system? I mean which question to
+ask so that a participant can meaningfully answer using a script to be uploaded
+and to be tested. Not yet sure. I have no concrete idea about how a Lino course
+on PySpace would look like, but it's a good challenge and will certainly help
+Lino to grow.
+
+But anyway, before writing a course I should test whether the instructions in
+:ref:`user.install` work.  And oops of course they don't.
+
+Installing Lino using pip under Python 3
+========================================
+
+I opened started to fix the problems.
+
+I released :ref:`cosi` 18.12.0 because of course the August 2018 version would
+certainly not collaborate with the December version of Lino.
+
+Appy is not being installed automatically under Python 3.
+
+While trying to find a solution for this, I found `django-appypod
+<https://github.com/makinacorpus/django-appypod/>`__ and inspected their
+`setup.py
+<https://github.com/makinacorpus/django-appypod/blob/master/setup.py>`__. And
+--cool!-- they obviously found my blog post :doc:`0506` where I describe how to
+add appy under Python by adding it to a requirements file. And --even cooler!--
+they found how to integrate this into the :xfile:`setup.py` file using
+``dependency_links``. I tried this for Lino and released :ref:`lino.18.12.4`
+and a follow-up version 18.12.5.  But couldn't get it to work. Similar problem
+as the one reported `here
+<https://stackoverflow.com/questions/12518499/pip-ignores-dependency-links-in-setup-py>`__.
+
+I opened :ticket:`2765`  and will ask Hamza to work on it.
+
+Summary
+=======
+
+All above is what our customers call "general framework development", and they
+explicitly do *not* want to pay us for doing this work. IOW today I haven't
+done any productive  work. As Hannes formulated already 10 years ago: "You work
+on Lino just for fun and in the same way as others sing in a choir." There is a
+lot of work waiting for which I would get paid, and "general framework
+development" should be of lower priority.
+
+So why am I doing this?  Why does Rumma & Ko pay me and Hamza and Tonis for
+doing "general framework development"? Our only answer is that we "believe" in
+Lino...
+
