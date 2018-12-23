@@ -1,0 +1,21 @@
+:date: 2018-12-22
+
+===========================
+Saturday, December 22, 2018
+===========================
+
+I started working for :ticket:`2767`. Details in the release notes for
+:ref:`tera.18.12.0`.
+
+I ran :mod:`spzloader2` another time.
+This script still gives a few warnings
+Warning: Cannot delete Dossier XXX (ET S110079) because 2 Interests refer to it.
+The solution was to set in :class:`topics.Interest`` ::
+
+    allow_cascaded_delete = ["partner"]
+
+
+IOW the interests of a partner should not prevent a user from deleting the
+partner.  If the user decides to delete a partner and some existing
+:class:`lino_xl.lib.topics.Interest` refers to the partner, it should be
+deleted automatically.

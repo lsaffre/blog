@@ -1,0 +1,60 @@
+:date: 2018-12-21
+
+=========================
+Friday, December 21, 2018
+=========================
+
+Some problems in welcht after the last release.
+
+I restored the detail layouts for the contracts in isip and immersion (bacause
+at least the field eval_policy is actually also still used).
+
+I fixed a bug which caused a traceback "RelatedObjectDoesNotExist: Course has
+no line." and potentially a problem Cannot create course in "My courses"
+reported by aurelie.  Added a test case in :ref:`welfare.specs.courses2`.
+
+There was a mysterious problem when they tried to print a :class:`notes.Note`::
+
+    Traceback (most recent call last):
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/django/core/handlers/base.py", line 185, in _get_response
+        response = wrapped_callback(request, *callback_args, **callback_kwargs)
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/django/views/generic/base.py", line 68, in view
+        return self.dispatch(request, *args, **kwargs)
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/django/views/generic/base.py", line 88, in dispatch
+        return handler(request, *args, **kwargs)
+      File "/var/www/vhosts/prod/repositories/lino/lino/modlib/extjs/views.py", line 564, in post
+        return settings.SITE.kernel.run_action(ar)
+      File "/var/www/vhosts/prod/repositories/lino/lino/core/kernel.py", line 925, in run_action
+        a.run_from_ui(ar)
+      File "/var/www/vhosts/prod/repositories/lino/lino/modlib/printing/actions.py", line 161, in run_from_ui
+        obj.build_target(ar)
+      File "/var/www/vhosts/prod/repositories/lino/lino/modlib/printing/mixins.py", line 194, in build_target
+        t = bm.build(ar, elem.__class__.do_print, elem)
+      File "/var/www/vhosts/prod/repositories/lino/lino/modlib/printing/choicelists.py", line 205, in build
+        return self.simple_build(ar, elem, tplfile, target)
+      File "/var/www/vhosts/prod/repositories/xl/lino_xl/lib/appypod/choicelists.py", line 54, in simple_build
+        **settings.SITE.appy_params).run()
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/renderer.py", line 649, in run
+        self.finalize()
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/renderer.py", line 807, in finalize
+        output = self.callLibreOffice(resultName)
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/renderer.py", line 692, in callLibreOffice
+        self.pdfOptions, self.ppp, self.stream).run()
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/converter.py", line 694, in run
+        self.convertDocument()
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/converter.py", line 662, in convertDocument
+        options = self.setPdfOptions()
+      File "/var/www/vhosts/prod/env/local/lib/python2.7/site-packages/appy/pod/converter.py", line 642, in setPdfOptions
+        r = self.props(self.pdfOptions.items())
+    AttributeError: 'str' object has no attribute 'items'
+
+When trying to explore the problem, I noted that ``lino_xl`` was missing in
+their :attr:`lino.core.site.Site.auto_configure_logger_names` and added it, and
+afterwards the problem had vanished without any valid explanation.
+
+I stumbled into the pitfall that `beid.Plugin.url_handler_prefix` must include
+the "://" and added a new error message "Invalid urlhandler_prefix {} (must end
+with '://')"
+
+
+
