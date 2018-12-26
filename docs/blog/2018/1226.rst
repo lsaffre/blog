@@ -1,0 +1,23 @@
+:date: 2018-12-26
+
+============================
+Wednesday, December 26, 2018
+============================
+
+Hamza worked on :ticket:`2765`. I tested it and updated the docs in
+:ref:`lino.changes.2018` and :ref:`user.install`.
+
+Yes, it installs, but when I create a sales invoice and try to print it, I get
+a :message:`SyntaxError: invalid syntax (__init__.py, line 43)`. This is
+because of a package pisa. I guess that we can remove this dependency since
+pisa isn't used by any production site. Also https://pypi.org/project/pisa/
+tells us to switch to xhtml2pdf, which in turn recommends to switch to
+weasyprint.
+
+The :mod:`lino_xl.lib.pisa` plugin was already deprecated earlier.
+I deactivated the PisaBuildMethod in :mod:`lino.modlib.printing`.
+
+The :mod:`lino.modlib.wkhtmltopdf` might get deprecated as well some day, but
+the presence sheet in :mod:`lino_xl.lib.courses` still uses it.
+
+I moved the dependencies for 'pisa' and 'django-wkhtmltopdf' from lino to book.
