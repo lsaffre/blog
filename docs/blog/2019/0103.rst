@@ -1,0 +1,87 @@
+:date: 2019-01-03
+
+=========================
+Thursday, January 3, 2019
+=========================
+
+Today I finally published a rather complex of rather internal changes. The test
+suites aren't yet fully passing (I plan to repair them ASAP) and the docs are
+unfinished (I plan to finish them when I'll have some spare time).
+
+During the Christmas holidays I worked on :ticket:`2726` (Lino views as a
+replacement for extensible calendar). It was a bit more work than I had
+expected because it required a series of optimizations in the core.
+
+The new feature is visible in :class:`lino_xl.lib.working.WorkedHours` where we
+can now click on a day to show the sessions of that day, and then navigate to
+the previous and next days.
+
+This new implementation of :class:`lino_xl.lib.working.WorkedHours` is based on
+the new :class:`lino_xl.lib.cal.Days` table, the first example of a virtual
+table with a detail.  Every row of this tabl is a volatile instance of
+:class:`lino_xl.lib.cal.Day` which is *not*  a database model. In that case the
+application developer must provide the mapping between an atomic primary key
+and the corresponding day.  Primary keys are 0 for today, 1 for tomorrow, -1
+for yesterday etc.
+
+The extjs navigation buttons did not yet support navigating over tables having
+a primary key with value 0.
+
+I discovered and fixed a subtle bug: when a virtual field was defined on a base
+actor and then used on a subclass of that actor, the first argument ``cls`` was
+the base actor, not the real one. This bug caused an avalanche of internal
+changes about virtual fields and inheritance.
+
+The :attr:`model <lino.core.actors.Actor.model>` of an actor can now be
+something else than a Django model. Until now virtual tables required this to
+be `None`.  It is now being resolved in :meth:`class_init`.
+
+In :ref:`noi` we override the :class:`lino_xl.lib.cal.Day` class.
+
+:func:`resolve_model <lino.core.utils.resolve_model>` now accepts to return classes that are
+not Django models.  If you ask ``resolve_model('contacts.Persons')`` you will
+now get the table instead of an error.  Not sure whether this is a good idea.
+
+As a side effect of this I discovered that the
+:mod:`lino_welfare.modlib.cv.PersonProperty` model had an :attr:`app_label`
+``"properties"`` although it is defined in the :mod:`lino_welfare.modlib.cv`
+plugin. Now its :attr:`app_label` is ``"cv"`` because Lino no longer tolerates
+such differences. To be handled in the data migration for weleup.
+
+Little API change (probably harmless): :attr:`show_detail_navigator` is now
+True also for virtual tables.
+
+An actor model which is not a Django model cannot define virtual fields.
+
+I renamed the virtual *actor* field `detail_pointer` to `detail_link` because
+it does the same as the virtual *model* field
+(:attr:`lino.core.model.Model.detail_link`).
+
+:class:`lino.core.model.Model` now inherits also from
+:class:`lino.core.fields.TableRow`.
+
+I discovered another side effect of the future package: a Django model may not
+inherit from the future version of :class:`object`.
+
+The virtual fields caused me some headache.  Lino must resolve their
+return_type. If the return_type is a FK, don't forget to also resolve the
+remote_model of that FK. We sometimes want to update them using
+:func:`update_field<lino.core.inject.update_field>`. The
+:attr:`lino.core.actors.Actor.detail_link` is special because its verbose name
+is automatically set to the model's verbose name. Some examples I used during
+testing:
+
+The :class:`vat.IntracomInvoices` table has an abstract django model
+:class:`VatDocument` and uses a field :attr:`partner` and even a remote field
+:attr:`partner__vat_id` it its :attr:`column_names`.  This was possible
+because all concrete models based on :class:`VatDocument` also inherited from
+some other mixin which defined that partner field.
+
+aids.ConfirmationsByGranting is a virtual table and the base table for its
+three children (SimpleconfirmationsByGranting & Co.).  We customize the
+verbose_name of the detail_link virtual field to change it from "Description"
+to "Confirmation".  In this case we want the children to inherit the update.
+GrantingsByType inherits from Grantings, a normal table on the Granting model.
+So its detail_link must have "Granting" as verbose name.
+
+
