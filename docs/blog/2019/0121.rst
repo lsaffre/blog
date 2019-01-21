@@ -114,12 +114,113 @@ year. Congratulations.
 
 
 
-While restoring a snapshot to a prototype on :ref:`ml` I had a MemoryError. The
-memory situation is typical for a Lino production server::
+While restoring a snapshot to a prototype on :ref:`ml` I had a MemoryError.
+This time the :xfile:`restore.py` was not cruelly "Killed" but reported a
+MemoryError exception and a traceback.
+
+The memory situation on this machine is typical for a Lino production server::
 
     $ free -h
                   total        used        free      shared  buff/cache   available
     Mem:           1.9G        1.1G        724M         20M        133M        707M
     Swap:            0B          0B          0B
 
-So I tried :manage:`dump2py` with :option:`--max-row-count 20000`.
+I tried :manage:`dump2py` with ``--max-row-count 20000`` and now it works. Aha,
+so 50000 is just a bit too much. Indeed, this default value is just "clinically
+tested".
+
+
+More thoughts about documentation dependency
+============================================
+
+I am afraid that the current structure of our documentation is still not
+optimal.
+
+(1) Docs should be together with their code in a same directory.  Every
+repository should have a xfile:`docs` directory with an overview and at least a
+:file:`docs/changes` page, so that we can require that every commit with code
+changes should also commit the corresponding *change note*. A *change note** is
+a dated entry with at least one sentence of English text that explains the
+change.
+
+You might ask "What's so difficult with this?" and "Why are we trying such a
+complex construct as the `book` repository?" It's because we have a second
+requirement:
+
+(2) Change notes should be able to refer to the documentation.
+
+At the code level we have a clear dependency lineage "atelier --> lino -->
+lino_xl --> lino_xxx --> lino_book" (where xxx are the different apps
+maintained by the Lino team). There is a graphic of this in
+:ref:`dev.overview`.
+
+The :command:`pp` command loops though our projects in a given **order**. This
+order is important.  It is specified in the atelier config (see
+:ref:`atelier.config`).
+
+Commands like :command:`inv test` and :command:`inv ci` rely on this order.
+They must should run in down the dependency line. The tests in Lino should pass
+before we can expect the tests in XL to pass, Travis should not start testing
+XL before lino has been committed, etc.
+
+For commands like :command:`inv prep` there is currently no dependency.  And I
+don't think that one day we will have demo projects that depend on data in a
+demo project of another repository.
+
+But things are different for commands like :command:`inv bd` and :command:`inv
+pd`.
+
+A change note in the docs of XL should be able to refer to things like
+:mod:`lino.core.actors` (something in the Lino docs)
+:mod:`lino_cosi.lib.products` (something in the Così docs, e.g. some
+application that might be a use case).
+
+We have a kind of circular dependency.
+
+All these thoughts caused the following avalanche of changes:
+
+- I added a ``--reverse`` option to :command:`pp`.
+  We will use this option for commands like :command:`inv bd` and :command:`inv
+  pd`.  A typical run for testing and building everything will be::
+
+      $ pp inv prep test
+      $ pp -r inv clean -b bd pd
+
+- The lino and xl now have their own docs directories published at
+  http://core.lino-framework.org
+  and http://xl.lino-framework.org
+
+  The main reason for these doctrees are the change notes, which are now
+  finally separate for Lino and XL.
+
+- I moved the ``lino`` part of the ``manuals`` repo back to book/docs, IOW I
+  reconciled "non-technical" and "technical" docs about Lino. This separation
+  had become useless and BTW it was incomplete (there were still quite some
+  duplicate rst files in both repos).
+
+  Everything is now back below www.lino-framework.org and the docs subdomain
+  will be removed (currently it serves the same content as www).
+
+- The door seems open now to grow the :xfile:`docs` of every application code
+  repository and move more specs out of the Lino book.  Especially accounting
+  stuff should move to the Cosi docs.
+
+- Note that you still need to build the book in order to update the help_texts
+  in code source.  Which means that a change in some help text of a field or
+  action will become visible only after a full build.  And some tests cover the
+  translation of a help text::
+
+     $ inv clean -b bd mm
+
+- More and more doc pages now use :rst:dir:`literalinclude` to include the
+  :xfile:`/shared/include/defs.rst` file. Building these docs requires a clone of
+  the book repository with local name "book".
+
+
+There are some other rules for our documentation:
+
+- Docs for applications should be in the language of the product owner
+- docstrings in code should be relatively short and rather refer to some prosa docs
+
+The change notes for :ref:`xl` are now separated from those of :ref:`lino`:
+:ref:`lino.changes` :ref:`xl.changes`
