@@ -1,0 +1,125 @@
+:date: 2019-01-21
+
+========================
+Monday, January 21, 2019
+========================
+
+
+Importing data from TIM to Lino Così
+====================================
+
+I imported data from a Danny's TIM database to cosi, and of course there were
+some minor problems since this project has been sleeping for 3 years and the
+code is not covered by any test (it is to be run only once per TIM customer).
+
+I have a local copy of their TIM data on my machine (not on the server), and a
+local copy of their project directory with a modified :xfile:`settings.py` to
+add tim2lino::
+
+    $ python manage.py prep --traceback --noinput $*
+    $ dm dump2py 20190121
+    $ zip 20190121.zip 20190121/*
+
+
+
+
+Note that some of the following changes should not (but might unexpectedly)
+cause problems in :mod:`lino_xl.lib.tim2lino.spzloader2` which is also still
+being used.  We'll see.
+
+
+Changes
+
+Products in Noi now inherit from Referrable. Because at least previous TIM
+users want a `ref` field per product.  And I imagine that other users might do
+so as well.
+
+One failure was::
+
+    Failed to save InvoiceItem(seqno=1,vat_class=<VatClasses.normal:2>,qty='04.02.',voucher=10,title='Neues Dach angefertigt'):
+    Traceback (most recent call last):
+      ...
+      File "/work/lino/lino/utils/dpy.py", line 138, in save
+        self.try_save(*args, **kw)
+      File "/work/lino/lino/utils/dpy.py", line 158, in try_save
+        obj.full_clean()
+      File "/work/xl/lino_xl/lib/sales/mixins.py", line 128, in full_clean
+        super(ProductDocItem, self).full_clean()
+      File "/work/lino/lino/mixins/sequenced.py", line 257, in full_clean
+        super(Sequenced, self).full_clean(*args, **kw)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/django/db/models/base.py", line 1228, in full_clean
+        self.clean_fields(exclude=exclude)
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/django/db/models/base.py", line 1270, in clean_fields
+        setattr(self, f.attname, f.clean(raw_value, self))
+      File "/virtualenvs/py27/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py", line 605, in clean
+        value = self.to_python(value)
+      File "/work/lino/lino/core/fields.py", line 793, in to_python
+        return quantities.parse(value)
+      File "/work/lino/lino/utils/quantities.py", line 219, in parse
+        return parse_decimal(s)
+      File "/work/lino/lino/utils/quantities.py", line 226, in parse_decimal
+        return Decimal(s)
+      File "/usr/lib/python2.7/decimal.py", line 547, in __new__
+        "Invalid literal for Decimal: %r" % value)
+      File "/usr/lib/python2.7/decimal.py", line 3872, in _raise_error
+        raise error(explanation)
+    decimal.InvalidOperation: Problem installing fixture '/work/xl/lino_xl/lib/tim2lino/fixtures/tim2lino.py': Invalid literal for Decimal: u'04.02.'
+    (py27) luc@doll:~/mypy/lino_local/fijal$ dm prep
+
+
+So there is an invalid value '04.02.' in a qty field. The question was how to
+handle this.  In above case we just want a warning during the import and have
+the qty field for this row empty in Lino.
+
+Another problem was::
+
+    /xl/lino_xl/lib/tim2lino/timloader1.py:506: UnicodeWarning: Unicode equal comparison failed to convert both arguments to Unicode - interpreting them as being unequal
+      if row.etat == self.etat_registered:
+
+New plugin attribute :attr:`lino_xl.lib.tim2lino.Plugin.timloader_kwargs` to be
+used e.g. as follows::
+
+    def setup_plugins(self):
+        self.plugins.tim2lino.configure(
+            languages='de fr',
+            timloader_kwargs=dict(etat_registered="C"))
+        super(Site, self).setup_plugins()
+
+This new feature is not tested because the reason was just a missing "u"
+prefix.
+
+I also had::
+
+  Cannot assign "<CommonItems.expenses:6>": "Account.sheet_item" must be a "Item" instance.
+
+and ATM decided to simply not try to allocate sheet items.
+
+
+
+Another bug in TIM
+==================
+
+Marc reported and I fixed a bug in TIM which caused the dialog window of a
+printer job to not open when SetAsPdf() was .t. (e.g. from a previous print run
+or globally). This was probably because the functions
+GraPrint(), ArtPrint(), PrjPrint(), GenPrint() and TptPrint()
+hadn't been
+adapted when (more than 10 years ago) the argument 8# (lDlg) to OpenPrinter had
+been inserted to the signature. So these functions actually called OpenPrinter
+with lDlg having the value of SetAsPdf().
+
+I had observed this problem for SPZ earlier but did not have time (nor need) to
+investigate. This was the second long-living bug in TIM reported by Marc this
+year. Congratulations.
+
+
+
+While restoring a snapshot to a prototype on :ref:`ml` I had a MemoryError. The
+memory situation is typical for a Lino production server::
+
+    $ free -h
+                  total        used        free      shared  buff/cache   available
+    Mem:           1.9G        1.1G        724M         20M        133M        707M
+    Swap:            0B          0B          0B
+
+So I tried :manage:`dump2py` with :option:`--max-row-count 20000`.
