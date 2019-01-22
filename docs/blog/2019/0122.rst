@@ -4,8 +4,35 @@
 Tuesday, January 22, 2019
 =========================
 
+Fixed a bug in Così
+===================
 
-Hamza and I discovered and fixed a little bug in :mod:`lino_xl.lib.vat` : when
-you created an invoice in a journal with `edit_totals` and leave the total
+(1:20) Hamza and I discovered and fixed a little bug in :mod:`lino_xl.lib.vat`:
+when you created an invoice in a journal with `edit_totals` and leave the total
 field empty, Lino said "TypeError: unsupported operand type(s) for -:
-'NoneType' and 'Decimal'"
+'NoneType' and 'Decimal'".  Also updated the :ref:`xl.changes`.
+
+Yes, I like what I did yesterday! We can now write change notes that (1) are
+stored in the same repository as the code and (2) can refer to the
+documentation.  For example the above bugfix and its change note is here:
+
+https://github.com/lino-framework/xl/commit/18a88f2c01ce377d132e4c76ffb6e07b348d8e99
+
+
+Documentation review
+====================
+
+The order of projects in your :xfile:`~/.atelier/config.py` has become more
+important.  It must be (simplified summary)::
+
+    blog atelier lino xl cosi ... book
+
+Project a must come before project b if
+
+- code in a requires code in b to be installed
+- docs of a want intersphinx references to docs of b
+
+I can now run a full pp tour on my machine::
+
+    $ pp inv prep test
+    $ pp -rv inv clean -b bd pd
