@@ -19,11 +19,11 @@ documentation.  For example the above bugfix and its change note is here:
 https://github.com/lino-framework/xl/commit/18a88f2c01ce377d132e4c76ffb6e07b348d8e99
 
 
-Documentation review
-====================
+Reviewing intersphinx dependencies of the documentation trees
+=============================================================
 
-I finished my work on :ticket:`2806` (Documentation structure review (Jan
-2019)).
+I finished my work on :ticket:`2806` (intersphinx dependencies of the
+documentation trees).
 
 The order of projects in your :xfile:`~/.atelier/config.py` has become more
 important.  It must be (simplified summary)::
@@ -39,3 +39,55 @@ I can now run a full pp tour on my machine::
 
     $ pp -rv inv clean -b bd pd
     $ pp -v inv prep test
+
+Also the change notes for Così  are now adapted to "the way I currently think
+it should be": :ref:`cosi.changes`.
+
+
+
+Setting up a new Così production site
+=====================================
+
+While setting up a new Così production site I had the following problem::
+
+    mysql> grant all on rumma.* to django with grant option;
+    ERROR 1558 (HY000): Column count of mysql.user is wrong. Expected 43, found 42. Created with MySQL 50562, now running 50642. Please use mysql_upgrade to fix this error.
+
+After reading `this discussion on SO <https://stackoverflow.com/questions/43846950/column-count-of-mysql-user-is-wrong-expected-42-found-44-the-table-is-probabl>`__
+I tried::
+
+    $ mysql_upgrade -uroot -p
+
+    Looking for 'mysql' as: mysql
+    Looking for 'mysqlcheck' as: mysqlcheck
+    Running 'mysqlcheck with default connection arguments
+    Warning: Using a password on the command line interface can be insecure.
+    Running 'mysqlcheck with default connection arguments
+    Warning: Using a password on the command line interface can be insecure.
+    mysql.columns_priv                                 OK
+    mysql.db                                           OK
+    mysql.event                                        OK
+    mysql.func                                         OK
+    mysql.general_log                                  OK
+    mysql.help_category                                OK
+    mysql.help_keyword                                 OK
+    mysql.help_relation                                OK
+    mysql.help_topic                                   OK
+    mysql.host                                         OK
+    mysql.ndb_binlog_index                             OK
+    mysql.plugin                                       OK
+    mysql.proc                                         OK
+    mysql.procs_priv                                   OK
+    mysql.proxies_priv                                 OK
+    mysql.servers                                      OK
+    mysql.slow_log                                     OK
+    mysql.tables_priv                                  OK
+    mysql.time_zone                                    OK
+    mysql.time_zone_leap_second                        OK
+    mysql.time_zone_name                               OK
+    mysql.time_zone_transition                         OK
+    mysql.time_zone_transition_type                    OK
+    mysql.user                                         OK
+    ...
+    OK
+    Could not create the upgrade info file '/var/lib/mysql/mysql_upgrade_info' in the MySQL Servers datadir, errno: 13

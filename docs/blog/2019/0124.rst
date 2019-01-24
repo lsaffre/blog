@@ -1,0 +1,66 @@
+:date: 2019-01-24
+
+==========================
+Thursday, January 24, 2019
+==========================
+
+I started the German user guide for :ref:`cosi`.  The result of my work is
+published on http://de.cosi.lino-framework.org (I can also refer to it using
+intersphinx: :ref:`cosi.dedocs`).
+
+Working on caused some optimizations in layouts and field namings:
+
+The field :attr:`lino_xl.lib.contacts.Role.type` had a verbose name "Role"
+which was useless and irritating because "Function" is clear enough and the
+same word as in :menuselection:`Configure --> Contacts --> Functions`.
+
+In :mod:`lino_book.projects.apc` the :attr:`hide_region
+<lino_xl.lib.countries.Plugin.hide_region>` setting is now `True`.
+
+Lino Così now hides the fields :attr:`street_box` and :attr:`street_prefix` of
+a partner.
+
+I changed the verbose name for :class:`lino.modlib.printing.BuildMethods` from
+"Build method" to "Print method"
+
+
+memo command inserts a newline when rendering Django objects
+============================================================
+
+I tried to find the explanation for :ticket:`2813`.
+
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> from io import StringIO
+>>> from etgen.html import E
+>>> from lxml import etree
+>>> a = E.a("foo", href="bar")
+>>> print(etree.tostring(a))
+<a href="bar">foo</a>
+>>> html_parser = etree.HTMLParser()
+>>> ar = rt.login("robin")
+>>> s = ar.parse_memo("""See [company 100 Jack]""")
+>>> print(s)
+See <a href="Detail">Jack</a>
+>>> tree = etree.parse(StringIO(s), html_parser)
+>>> for e in tree.iter():
+...     print(etree.tostring(e))
+<html><body><p>See <a href="Detail">Jack</a></p></body></html>
+<body><p>See <a href="Detail">Jack</a></p></body>
+<p>See <a href="Detail">Jack</a></p>
+<a href="Detail">Jack</a>
+
+Aha, the bug was in :meth:`lino_xl.lib.blogs.LatestEntries.get_table_summary`.
+Seems that I didn't understand very well what ``lxml.etree.parse().iter()``
+does when I wrote this code::
+
+            elems.extend(tree.iter())
+
+I actually wanted::
+
+            elems.append(tree.getroot())
+
+
