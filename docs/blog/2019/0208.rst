@@ -1,0 +1,77 @@
+:date: 2019-02-08
+
+========================
+Friday, February 8, 2019
+========================
+
+
+I checked in my work for :ticket:`2826`. Summary of the changes (most of them
+in :mod:`lino.modlib.uploads`):
+
+.. currentmodule:: lino.modlib.uploads
+
+Until now an :class:`Upload` could represent:
+
+- an uploaded file (the original meaning)
+
+- just an entry representing some external document to be
+  monitored by its author, but without any uploaded file
+
+With :ticket:`2826` we add a third possibility:
+
+- a "library file" (i.e. a file that has been stored on some volume using some
+  other method than uploading).
+
+Concretely:
+
+- Added a new model :class:`Volume`
+
+- Added two fields :attr:`volume` and :attr:`library_file` to the
+  :class:`Upload` model.
+
+- Every voucher is now potentially an upload controller (:class:`ledger.Voucher
+  <lino_xl.lib.ledger.Voucher>` inherits from :class:`UploadController`)
+
+- The detail of a :class:`lino_xl.lib.vat.VatAccountInvoice` now shows
+  the :class:`UploadsByController` slave table.
+
+- The insert_layout of UploadsByControler does *not* include the
+  :attr:`volume`, but instead the controller (owner) decides which
+  volume is to be used.
+
+  IOW a new method :meth:`UploadController.get_uploads_volume`.  The field
+  should be hidden or at least readonly when the owner says that there is no
+  volume.  And :class:`lino_xl.lib.vat.VatAccountInvoice` should implement this
+  method by asking the journal.  New field
+  :attr:`ledger.Journal.uploads_volume`.
+
+- The detail of a :class:`lino_xl.lib.vat.VatAccountInvoice` now shows the
+  :class:`UploadsByController` slave table, but what if an application wants to
+  use :mod:`lino_xl.lib.vat` without :mod:`lino.modlib.uploads`?  e.g.
+  :ref:`tera`. Quick fix : add plugins also to these applications.
+
+TODO:
+
+- Limit the list of selectable files of a volume.  exclude patterns, glob
+  patterns etc.
+
+  For example for MM we would define a volume "invoices" which shows only
+  :file:`*.pdf` files being stored in a directory named "acct/{yyyy}/EKR" where
+  ``{yyyy}`` is the accounting year.
+
+- Add a field :attr:`broken` and a data checker that verifies whether the file
+  still exists.  This can be used both for library files and for uploaded files.
+
+- Maybe add a field :attr:`file_modified`.
+
+- should we define an upload area for invoices? or make it configurable per
+  journal?
+- define a volume or two in the demo fixtures
+- write test cases and update the docs
+- remove the files plugin.
+- update the change notes.
+
+For today I did the bare minimum because I want to have it working for Monday.
+The book test suite has about 18 trivial failures, but I will now commit and
+push the changes before everything is done in order to test it on the fly in
+our production site.

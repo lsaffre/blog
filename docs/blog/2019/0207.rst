@@ -1,0 +1,48 @@
+:date: 2019-02-07
+
+==========================
+Thursday, February 7, 2019
+==========================
+
+I started to implement the new :mod:`lino_xl.lib.files` plugin for
+:ticket:`2826` and --as usual-- my original plan changed. E.g. volumes are not
+stored in a choicelist but in a database table. And the funniest: we don't even
+need a files plugin, we just add a :class:`Volume` model to
+:mod:`lino.modlib.uploads` and two fields to the
+:class:`lino.modlib.uploads.Upload` model!  The filenames of the combobox are
+simply generated for every request using :func:`os.walk`. See tomorrow for a
+summary of the changes.
+
+.. I  realized that the :mod:`lino_xl.lib.files` plugin will actually "collaborate"
+   with the uploads plugin : when it is installed, an upload will have a third
+   possibility.
+
+Did you know that there are two variants of the upload plugin:
+
+- :ref:`avanti` and :ref:`welfare` use :mod:`lino_xl.lib.uploads`
+- :ref:`voga` uses :mod:`lino.modlib.uploads`
+
+:mod:`lino_xl.lib.uploads` extends the core variant by adding a valididty date
+and reminders.  We won't need this for :ref:`cosi`.
+
+
+I had to refresh my memory about :func:`os.walk`::
+
+    cd /home/luc
+    mkdir shared
+    mkdir shared/foo
+    mkdir shared/foo/bar
+    touch shared/index.txt
+    touch shared/foo/index.txt
+    touch shared/foo/bar/index.txt
+    touch shared/foo/bar/baz.txt
+
+
+>>> import os
+>>> for (root, dirs, files) in os.walk("/home/luc/shared"):
+...     print(root, dirs, files)
+('/home/luc/shared', ['foo'], ['index.txt'])
+('/home/luc/shared/foo', ['bar'], ['index.txt'])
+('/home/luc/shared/foo/bar', [], ['baz.txt', 'index.txt'])
+
+
