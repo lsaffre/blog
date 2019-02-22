@@ -1,0 +1,19 @@
+:date: 2019-02-09
+
+==========================
+Saturday, February 9, 2019
+==========================
+
+I started to fix the failures in the book test suite after my changes for
+:ticket:`2826`.
+
+>>> from lino import startup
+>>> startup('lino_book.projects.min1.settings.doctests')
+>>> from lino.api.doctest import *
+>>> import json
+>>> from lino.utils.jsgen import py2js
+>>> v = {"message": 'This is a "cool" thing. '}
+>>> print(json.dumps(v))
+{"message": "This is a \"cool\" thing. "}
+>>> print(py2js(v))
+{"message": "This is a \"cool\" thing. "}
