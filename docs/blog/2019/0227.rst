@@ -1,0 +1,56 @@
+:date: 2019-02-27
+
+============================
+Wednesday, February 27, 2019
+============================
+
+Hamza started to do application development for Mathieu.  This is a historic
+step for Lino as it is the first time that somebody other than me talks
+directly with a customer (and then implements the code changes).
+
+This raised some questions  about how to organize the documentation of our
+work? At least the release notes and French docs for welcht are to be
+maintained by Hamza They are currently in :file:`manuals/welfare_fr`, which is
+rather disturbing.  We started a new page of change notes for Welfare
+(:ref:`welfare.changes`).
+
+And --what a coincidence!-- at the same time a developer Marc Fargas from Spain
+(I don't know him yet) tried to install Lino Welfare and posted an `issue on
+GitHub <https://github.com/lino-framework/book/issues/40>`__. I fixed this
+issue and wrote installation instructions for Marc.
+
+We could move :file:`manuals/welfare_fr`  to the welfare repo into a folder
+:file:`frdocs`. And :file:`manuals/welfare_de` should go to :file:`dedocs`.
+
+This would be a solution at the moment, but imagine we get a third Lino Welfare
+customer.  They would probably want their own variant (i.e. another
+application). Let's say Sankt Vith. They will want release notes in German.
+And their release notes will be different from those for weleup.
+
+It might sound like overkill at the moment, but I currently believe that we do
+need two new repositories and Python packages :mod:`lino_welcht` and
+:mod:`lino-weleup`, and :mod:`lino_welfare` would contain only the shared code
+for all Welfare applications.  It would be a kind of "extended extension library"
+
+**About the difference between release notes and change notes.**
+
+Release notes are written for the customer, in the language of the customer,
+and there is one page for every new version.  A new version can mean months of
+work and many changes. Release notes are stored in a file
+:file:`docs/changes/X.Y.Z.rst`. We currently use date-based (not semantic)
+versioning because there is no roadmap.
+
+Change notes are written for the developers, in English, and there is one page
+per year. Every commit should have at least two changed files: the source code
+and a sentence in :file:`docs/changes/yyyy.rst`. Change notes are a bit
+redundant with commit messages.  But they have some advantages: You can modify
+them later, e.g. when it turns out that a formulation was misleading.  They can
+use Sphinx reference system to link to the user manual or the specs.  They can
+summarize a series of commits.
+
+Applications (weleup, welcht, cosi, tera...) have release notes, but libraries
+(atelier, lino, xl, welfare) have just change notes.  Because the latter is
+less work, and because there is currently nobody except ourselves who would
+want to discuss about individual library releases.
+
+

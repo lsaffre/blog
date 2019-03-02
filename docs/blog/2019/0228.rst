@@ -1,0 +1,55 @@
+:date: 2019-02-28
+
+===========================
+Thursday, February 28, 2019
+===========================
+
+I continued what I started yesterday : move the chatelet part our of the
+:mod:`lino_welfare` package into a new package :mod:`lino_welcht`. This also
+caused changes in welfare and book.
+
+Sorry, Hamza, you will have a bit of additional work because you some
+uncommitted local changes in welfare which must get moved over to
+:ref:`welcht`.
+
+Summary of the changes
+
+- lino_welfare.chatelet  -->  lino_welcht
+
+- :mod:`lino_welcht` itself is now used as plugin : it contains no models but the
+  :xfile:`locale` directory for the translations.
+
+- New repository https://github.com/lino-framework/welcht
+
+- removed lino_welfare/chatelet from welfare repo
+
+- removed welfare_fr from manuals repo
+
+- Central project page (the output of the :xfile:`docs` doctree of the welcht
+  repo) is published at http://welcht.lino-framework.org
+
+- French documentation (the output of the :xfile:`frdocs` doctree of the welcht
+  repo) is published at http://fr.welfare.lino-framework.org  (keep existing
+  URLs)
+
+
+We should do the same operation for weleup soon, so that welfare is really just
+a library (like xl).
+
+
+Released Lino Welfare 19.2.0 in order to test the install instructions for welcht.
+
+
+Building docs under Python 3
+=============================
+
+
+I had a file with a name containing a non-ascii char in one of my blogs.  This
+causes a problem when running :cmd:`inv clean -b` under Python 2 in that
+project.  I thought "Okay, let's switch to Python 3 for building all our Sphinx
+docs".
+
+But :cmd:`inv bd` fails under Python 3 for projects that use sphinxfeed.
+sphinxfeed needs feedformatter which didn't evolve sincs 2009. Yes
+https://feedgen.kiesow.be/ might be a replacement.  But for now I decided to
+rename the non-ascii file and leave this for a later date.
