@@ -25,9 +25,11 @@ I am currently still trying to get the following references to work:
 - :ref:`welcht.changes` (changes for welcht)
 - :ref:`welfare.changes` (changes for welfare)
 
-Note that we need to decide for every doctree who is the "maintainer" or
-"publisher".  The maintainer of a doctree is the person who runs :cmd:`inv pd`,
-which rsyncs his local copy to :file:`/home/xxx/public_html/yyy_zzz` on
+Some of above links don't yet work.  Read on for the explanaation.
+
+We need to decide for every doctree who is the "maintainer" or "publisher". The
+maintainer of a doctree is the person who runs :cmd:`inv pd`, which syncs his
+locally generated html output files to :file:`/home/xxx/public_html/yyy_zzz` on
 :ref:`lf` where xxx is the username, yyy is the project's nickname and zzz is
 the name of the doctree within the project.
 
@@ -42,11 +44,27 @@ am (currently)  still the maintainer of the technical welcht docs.  We will
 make Hamza the maintainer of these as well as soon as I explained all this to
 him.
 
+This morning *I* (not Hamza) updated the frdocs for welcht and added some new
+reference targets.
 
-When *I* (not Hamza) update the welcht frdocs and add a reference target, then
-I cannot refer to it from my blog until Hamza has build and published these
-docs.  This is because :mod:`atelier.sphinxcontrib.interproject` uses the
-:xfile:`objects.inv` files on :ref:`lf`.  I added a new
+Theoretically I cannot refer to these targets from my blog until Hamza has
+built and published these frdocs.  Which disturbed me at least for above
+references. This is because :mod:`atelier.sphinxcontrib.interproject` uses the
+"official" :xfile:`objects.inv` file on :ref:`lf` which is still the old
+version.  To get them work nevertheless, I added a new
 :envvar:`ATELIER_USE_LOCAL_BUILDS` to tell atelier that it should use my local
-copies.  But that doesn't seem to work as expected.  Still investigating...
+copies.  But that didn't work as at first. I had to re-read the docs about
+`intersphinx_mapping
+<https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_mapping>`__
+and discover that either it has changed or I didn't understand it when wrote
+the code in :mod:`atelier.sphinxcontrib.interproject`.  Fixed the bug.  Now I
+can build my blog, and it generates the correct references.  The only thing is
+that if you click on them you get a "Your file was not found" because (this is
+not my job)  Hamza must  now pull my changes and build and publish these docs
+before they get official.
 
+As a summary, I had some work with fixing intersphinx problems. And that's
+normal because we are using them now even more than before.
+
+Note also that we might avoid the question of "Who is the maintainer?" if we
+would use readthedocs for all our doctrees.
