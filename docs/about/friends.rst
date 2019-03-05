@@ -266,8 +266,7 @@ Contact: :ref:`gx`, :ref:`sw`.
 Using :ref:`welfare` since January 2011.
 
 
-
-.. _welcht:
+.. _cpaschatelet:
 .. _chat:
 
 CPAS de Châtelet
