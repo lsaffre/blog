@@ -86,7 +86,9 @@ language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['.build']
+exclude_patterns = ['.build'] \
+# exclude_patterns += ['blog/2018', 'blog/2017', 'blog/2016', 'blog/2015','blog/2014',
+#                  'blog/2013', 'blog/2012', 'blog/2011', 'blog/2010']
 
 # List of documents that shouldn't be included in the build.
 #unused_docs = []
@@ -346,5 +348,5 @@ os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
 # from pprint import pprint
 # pprint(intersphinx_mapping)
-
+#
 # raise foo

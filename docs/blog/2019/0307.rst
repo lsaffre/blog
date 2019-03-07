@@ -1,0 +1,120 @@
+:date: 2019-03-07
+
+=======================
+Thursday, March 7, 2019
+=======================
+
+Interdependence considerations
+==============================
+
+The Lino framework consists of many repositories, some of which having more
+than one doctree. So we must take care about the dependencies of these
+respective doctrees.
+
+Most application docs want to refer to the :ref:`book`.
+
+I removed the circular (docs) dependency that book docs require cosi and cosi
+docs require book. It turned out that actually it was just declared in the
+:xfile:`conf.py` but not needed to build the book.
+
+When I cleaned all docs and want to rebuild them without Internet access, I can
+do this now by building first those for atelier and etgen, then those for the
+book, and finally all remaining project in any order.
+
+
+About :meth:`Choice.as_callable`
+================================
+
+Tonis and Marc were asking about this.
+
+Preliminary remark: there are still quite some obsolete usages of this in the
+model definitions. A line like:
+
+  state = TaskStates.field(default=TaskStates.as_callable('todo'))
+
+can (and should) be simplified into:
+
+  state = TaskStates.field(default='todo')
+
+When all application code is migrated, the as_callable class method on
+ChoiceList can be removed, and its code moved to the ChoiceList.field() method.
+(To be verified...)
+
+The ChoiceListField's __init__  method (to which ChoiceList.field forwards the
+`default` keyword)
+
+The method is used to lazily define a default value for a choicelist field. We
+use the Django feature to accept callable default values for fields.
+
+This is needed because choicelists may get cleared and redefined during the
+custom_workflows module (one of the last things that gets imported when Lino
+starts up).
+
+As a usage example consider the cal.EntryStates and cal.GuestStates
+choicelists. The workflow for calendar entries and presences can vary
+significantly between applications. And the combination of possible states and
+transition actions can be quite complex. See also the reception plugin which
+injects more fields into cal.Guest and redefines the workflow again.
+
+The problem for Django migrations is that everything returned by the
+deconstruct method must be picklable. And a callable default value isn't
+picklable per se. I started to work on this in the deconstruct method for
+Choice (i.e. the individual value) which is currently commented out because it
+isn't finished.
+
+
+Warn about duplicate URIs in intersphinx_mapping
+======================================================
+
+Today I had a missing reference when building my blog.
+Sphinx kept saying "undefined label: welfare.changes".
+Everything else worked
+fine, only my blog didn't. :ticket:`2876`.
+
+My blog has a big intersphinx_mapping::
+
+    {
+    u'xldocs': ('http://xl.lino-framework.org', Path('/media/dell1tb/work/xl/docs/.build/objects.inv')),
+    u'eiddocs': ('http://eidreader.lino-framework.org', Path('/media/dell1tb/work/eid/docs/.build/objects.inv')),
+    u'bookdocs': ('http://docs.lino-framework.org', Path('/media/dell1tb/work/book/docs/.build/objects.inv')),
+    u'etgendocs': ('http://etgen.lino-framework.org', Path('/media/dell1tb/work/etgen/docs/.build/objects.inv')),
+    u'vilmadocs': ('http://vilma.lino-framework.org', Path('/media/dell1tb/work/vilma/docs/.build/objects.inv')),
+    u'atelierdocs': ('http://atelier.lino-framework.org', Path('/media/dell1tb/work/atelier/docs/.build/objects.inv')),
+    u'cosidocs': ('http://cosi.lino-framework.org', Path('/media/dell1tb/work/cosi/docs/.build/objects.inv')),
+    u'prontodocs': ('http://pronto.lino-framework.org', Path('/media/dell1tb/work/pronto/docs/.build/objects.inv')),
+    u'algusdocs': ('http://algus.lino-framework.org', Path('/media/dell1tb/work/algus/docs/.build/objects.inv')),
+    u'amicidocs': ('http://amici.lino-framework.org', Path('/media/dell1tb/work/amici/docs/.build/objects.inv')),
+    u'cosidedocs': ('http://de.cosi.lino-framework.org', Path('/media/dell1tb/work/cosi/dedocs/.build/objects.inv')),
+    u'welchtfrdocs': ('http://fr.welfare.lino-framework.org', Path('/media/dell1tb/work/welcht/frdocs/.build/objects.inv')),
+    u'manterade': (u'http://tera-handbuch.lino-framework.org', Path('/media/dell1tb/work/man/tera_de/.build/objects.inv')),
+    u'welfaredocs': ('http://welfare.lino-framework.org', Path('/media/dell1tb/work/welfare/docs/.build/objects.inv')),
+    u'noidocs': ('http://noi.lino-framework.org', Path('/media/dell1tb/work/noi/docs/.build/objects.inv')),
+    u'ttdocs': ('http://timtools.lino-framework.org', Path('/media/dell1tb/vbshared2/drives/T/hgwork/tt/docs/.build/objects.inv')),
+    u'welchtdocs': ('http://welfare.lino-framework.org', Path('/media/dell1tb/work/welcht/docs/.build/objects.inv')),
+    u'prestodedocs': ('http://de.presto.lino-framework.org', Path('/media/dell1tb/work/presto/dedocs/.build/objects.inv')),
+    u'patrolsdocs': ('http://patrols.lino-framework.org', Path('/media/dell1tb/work/patrols/docs/.build/objects.inv')),
+    u'vogadocs': ('http://voga.lino-framework.org', Path('/media/dell1tb/work/voga/docs/.build/objects.inv')),
+    u'prestodocs': ('http://presto.lino-framework.org', Path('/media/dell1tb/work/presto/docs/.build/objects.inv')),
+    u'caredocs': ('http://care.lino-framework.org', Path('/media/dell1tb/work/care/docs/.build/objects.inv')),
+    u'logosdocs': ('http://logos.lino-framework.org', Path('/media/dell1tb/work/logos/docs/.build/objects.inv')),
+    u'manwelfarede': (u'http://de.welfare.lino-framework.org', Path('/media/dell1tb/work/man/welfare_de/.build/objects.inv')),
+    u'avantidocs': ('http://avanti.lino-framework.org', Path('/media/dell1tb/work/avanti/docs/.build/objects.inv')),
+    u'linodocs': ('http://core.lino-framework.org', Path('/media/dell1tb/work/lino/docs/.build/objects.inv')),
+    u'teradocs': ('http://tera.lino-framework.org', Path('/media/dell1tb/work/tera/docs/.build/objects.inv'))}
+
+Do you see the bug? I'll give you a hint:
+Intersphinx internally caches the loaded inventories using their URI.
+Now look at the entries for welchtdocs and welfaredocs.
+Yes, they have the same URI.
+Which of course was a bug in my configuration.
+And it causes the inventory of welchtdocs to override the inventory of welfaredocs.
+Sphinx behaved as if the welfaredocs inventory was being ignored.
+I needed several hours to find out what was happening.
+
+So I suggest to test for this condition in load_mappings() and issue a warning
+when it happens::
+
+    if uri in inventories.cache and inventories.cache[uri][0] != name:
+        logger.warning("Duplicate URI for intersphinx mappings %s and for %s", inventories.cache[uri][0], name)
+
+
