@@ -1,0 +1,91 @@
+:date: 2019-03-08
+
+=====================
+Friday, March 8, 2019
+=====================
+
+Rebasing a pull request for Sphinx
+==================================
+
+Takeshi asked me to "could you rebase this into 1.8 branch?" in `my pull
+request to sphinx-doc <https://github.com/sphinx-doc/sphinx/pull/6139>`__.
+Sounds like trivial, but I feel too old for such kind of jobs. Let's try::
+
+
+    $ git rebase upstream/1.8
+    First, rewinding head to replay your work on top of it...
+    Generating patches: 100% (606/606), done.
+    Applying: add support for partial matches in js search
+    Using index info to reconstruct a base tree...
+    A	sphinx/themes/basic/static/searchtools.js_t
+    Falling back to patching base and 3-way merge...
+    Auto-merging sphinx/themes/basic/static/searchtools.js
+    Applying: #1618 make search results reader friendly
+    Using index info to reconstruct a base tree...
+    A	sphinx/themes/basic/static/searchtools.js_t
+    Falling back to patching base and 3-way merge...
+    Auto-merging sphinx/themes/basic/static/searchtools.js
+    CONFLICT (content): Merge conflict in sphinx/themes/basic/static/searchtools.js
+    error: Failed to merge in the changes.
+    Patch failed at 0002 #1618 make search results reader friendly
+    Use 'git am --show-current-patch' to see the failed patch
+
+    Resolve all conflicts manually, mark them as resolved with
+    "git add/rm <conflicted_files>", then run "git rebase --continue".
+    You can instead skip this commit: run "git rebase --skip".
+    To abort and get back to the state before "git rebase", run "git rebase --abort".
+
+Something is failing.  That was not the right thing to do. So I abort it::
+
+    $ git rebase --abort
+
+Similar result in interactive mode::
+
+    $ git rebase -i upstream/1.8
+    Already running
+    Performing inexact rename detection: 100% (17100/17100), done.
+    Auto-merging sphinx/themes/basic/static/searchtools.js
+    CONFLICT (content): Merge conflict in sphinx/themes/basic/static/searchtools.js
+    error: could not apply 14e39adb8... #1618 make search results reader friendly
+
+    Resolve all conflicts manually, mark them as resolved with
+    "git add/rm <conflicted_files>", then run "git rebase --continue".
+    You can instead skip this commit: run "git rebase --skip".
+    To abort and get back to the state before "git rebase", run "git rebase --abort".
+
+    Could not apply 14e39adb8... #1618 make search results reader friendly request results as HTML instead of source files retrieve preview snippet text from HTML
+    $ git rebase --abort
+
+At this point Tonis helped me to do a cherrypick using gitkraken.  Don't ask me
+how this would look at teh command line. Then again at the command line::
+
+    $ git push origin 1.8
+    Counting objects: 12, done.
+    Delta compression using up to 8 threads.
+    Compressing objects: 100% (12/12), done.
+    Writing objects: 100% (12/12), 1.69 KiB | 1.69 MiB/s, done.
+    Total 12 (delta 10), reused 0 (delta 0)
+    remote: Resolving deltas: 100% (10/10), completed with 7 local objects.
+    remote:
+    remote: Create a pull request for '1.8' on GitHub by visiting:
+    remote:      https://github.com/lsaffre/sphinx/pull/new/1.8
+    remote:
+    To github.com:lsaffre/sphinx.git
+     * [new branch]          1.8 -> 1.8
+
+
+Then in the github web interface I created a new pull request::
+
+    https://github.com/sphinx-doc/sphinx/pull/6148
+
+
+How to suggest changes in the README file
+=========================================
+
+Some days ago Marc wrote "One thing that disturbed me when discovering Lino
+earlier this week is the absence of a requirements / support specification
+(that is: python versions, windows support, etc)."
+
+This is the kind of things I believe that others have easier to formulate than
+I. So now I reviewed the :ref:`dev.setup_info` page for Marc.
+
