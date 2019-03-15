@@ -338,6 +338,7 @@ feed_base_url = 'http://luc.lino-framework.org'
 feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"
 feed_field_name = 'date'
+feed_description = "Luc's developer blog"
 
 # extensions += ['hieroglyph']  # Generate HTML presentations
 # autoslides = False
