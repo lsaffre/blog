@@ -4,44 +4,84 @@
 Friday, March 15, 2019
 ======================
 
+Today I changed my default Python environment from py27 to py36.
+
 Support Python 3 (by using feedgen instead of feedformatter)
 ============================================================
 
-My sphinxfeed fork now works under Python 3
-(continued from :doc:`0228`).
+My sphinxfeed fork now works under Python 3.
 
-To generate the RSS feeds for my blogs I use
-`sphinxfeed <https://github.com/lsaffre/sphinxfeed>`__.
-Which uses feedformatter, which is dead.  So I had replace it.
+To generate the RSS feeds for my blogs I use `sphinxfeed
+<https://github.com/lsaffre/sphinxfeed>`__. Which uses feedformatter, which is
+dead.  So I had replace it. See also :doc:`0228`.  But which replacement to
+choose? There is Santiago Valdarrama's `rfeed
+<https://github.com/svpino/rfeed>`__, but Lars Kiesow's `feedgen
+<https://feedgen.kiesow.be>`__ seems a better choice because `GitHub
+<https://github.com/lkiesow/python-feedgen>`__ shows 31 contributors and last
+commit was in December 2018.
 
-There is Santiago Valdarrama's
-`<GitHub <https://github.com/svpino/rfeed>`__, but
-Lars Kiesow's https://feedgen.kiesow.be
-`<GitHub <https://github.com/lkiesow/python-feedgen>`__
-shows 31 contributors and last commit was in December 2018.
+The change was not fully trivial because the APIs differ quite much.
+sphinxfeed now needs dateutil to find the local timezone which is now required
+for generating the RSS file.
 
-It was not fully trivial because the APIs differ quite much.  sphinxfeed now
-needs dateutil to find the local timezone which is now required for generating
-the RSS file.
+Related commits:
+
+- 2019-03-15 06:16 in *sphinxfeed*:
+  `1d25ae7 <https://github.com/lsaffre/sphinxfeed/commit/8def303de772d7e38671eee07540006441d25ae7>`__
+- 2019-03-15 06:25 in *blog*:
+  `787415d <https://github.com/lsaffre/blog/commit/8c2857bf5266eab06674ed5537ac66734787415d>`__
+- 2019-03-15 12:26 in *patrols*:
+  `3a3a7c1 <https://github.com/lsaffre/lino-patrols/commit/d8f4c0abf3fe2bf999e62055082273f493a3a7c1>`__
+- 2019-03-15 12:26 in *logos*:
+  `38333c4 <https://github.com/lsaffre/lino-logos/commit/3e7d6afd40fdd9c98d0e3a68e58d7fa7338333c4>`__
 
 Result: All my blogs are now being built under Python 3.
+
+On `this thread <https://github.com/sphinx-doc/sphinx/issues/2>`__ TormodLandet
+writes that `sphinxcontrib-newsfeed
+<https://pypi.org/project/sphinxcontrib-newsfeed/>`__ supports Python 3 since
+2015.  Why am I not using this?  I vaguely remember that I *did*  use it in the
+beginning but were not satisfied because it is more difficult to configure and
+requires more everyday typing.
 
 
 React front-end for Lino getting ready
 ======================================
 
-The React front-end is now far enough to start using it.  There are still some
-quirks, but for everyday work it is usable. We started using it on our
-:ref:`noi` instance at https://hobbit.saffre-rumma.net
+I did :ticket:`2889`: All references to tickets in this blog (made using
+:rst:role:`ticket`) now link to hobbit instead of bugs.  For me this was just a
+setting in my :xfile:`conf.py` file, but for Lino it is a historic step: it
+shows that the :ref:`react` front-end is now far enough to start using it.
+There are still some quirks, but for everyday work it is usable. We started
+using it on our :ref:`noi` instance at https://hobbit.saffre-rumma.net
 
-All references to tickets in this blog (made using :rst:role:`ticket`) now link
-to hobbit instead of bugs.  This was just a setting in my :xfile:`conf.py`
-file.
+Related commits:
 
-Before::
+- 2019-03-15 12:26 in *blog*:
+  `b8204c4 <https://github.com/lsaffre/blog/commit/9dabbbbe984ecec92116b90949970d373b8204c4>`__
 
-  extlinks.update(ticket=('http://bugs.saffre-rumma.net/tickets/Ticket/%s', '#'))
+Lino Presto continued
+=====================
 
-Now::
+Alle händisch erstellten Rechnungen (G, GH, R...) werden jetzt nicht mehr als
+Aufträge erfasst, sondern als Verkaufsrechnungen.  Pro Arbeitsbereich ein
+eigenes Journal.  Die Nummern der händischen Rechnungen werden bis auf weiteres
+(wenn überhaupt) im Feld Betreff eingegeben. (Oder muss hier eine Kontrolle
+stattfinden?  Und wenn ja, wie soll das vor sich gehen?)
 
-  extlinks.update(ticket=('https://hobbit.saffre-rumma.net/#/api/tickets/AllTickets/%s', '#'))
+DONE:
+
+- Removed bevats plugin as they don't use it
+
+- This required to define at least one VAT regime in :mod:`lino_xl.lib.vat`
+
+- :class:`lino_xl.lib.ledger.MatchRule` now has :attr:`allow_cascaded_delete`
+  set to "journal" (when you delete a journal, related match rules should delete
+  automatically)
+
+- Presto demo fixture removes Journals SLS and SLC.
+
+TODO:
+
+- New journals have no match rules
+- hide VAT related fields
