@@ -87,3 +87,22 @@ store our discussions in a database. That database should be able to export a
 static "archive view" of our discussions that needs just a browser to view.
 
 
+Estonian VAT declarations for Così
+==================================
+
+I added a plugin :mod:`lino_xl.lib.eevat`.  This is a quickly adapted copy of
+bevat, just removed the regimes that make no sense in Estonia.  The declaration
+itself will need more work.
+
+A :ref:`cosi` application no longer has a default VAT declaration plugin.  To
+get them, you must add the following to your local :xfile:`settings.py` file::
+
+    def get_installed_apps(self):
+        yield super(Site, self).get_installed_apps()
+        yield 'lino_xl.lib.eevat'
+
+The pierre demo project now has no VAT declarations at all.
+apc has standard Belgian and cosi_ee standard Estonian declarations.
+Simplified Belgian VAT declarations is in lydia demo project.
+
+
