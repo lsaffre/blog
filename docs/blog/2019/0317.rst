@@ -1,0 +1,89 @@
+:date: 2019-03-17
+
+======================
+Sunday, March 17, 2019
+======================
+
+A mysterious failure in the test suite
+======================================
+
+There is currently a failure when we run::
+
+    $ go team
+    $ python manage.py test tests.test_notify.TestCase
+
+The link to a ticket in a notification in this test has changed from
+"http://127.0.0.1:8000/api/tickets/Ticket/1" to
+"http://127.0.0.1:8000/api/tickets/Tickets/1" which causes the `failure
+<https://travis-ci.org/lino-framework/book/jobs/507172229>`__.
+
+I might simply change the expected text since the difference seems harmless
+(both links work), but I can't explain why this difference is there.  Tonis, is
+this caused by one of your changes?
+
+Zulip or Noi?
+=============
+
+We are currently riding on two horses for our team communication: should we
+have our discussions on Jane or on Zulip?
+
+Switching to Zulip is theoretically the wrong direction. Zulip is also just an
+application which *could* have been written in Lino.  The Zulip developers did
+a lot of manual work just for reinventing basic UI concepts that are not
+covered by Django (choicelists, actions, permissions, ...).  The fundamental
+idea behind Lino is to be a framework which makes writing applications like
+Zulip more efficient.
+
+Nonetheless we are considering this step. It has some advantages.  It would
+increase our collaboration with the Zulip community.  It would give us the
+know-how and application-level experience of a community who is more powerful
+than our little team.  It would bring us features like a mobile app that are
+currently out of reach for us to develop, simply because we are only three
+full-time developers.
+
+If we switch to Zulip, we should install and maintain our own Zulip instance.
+We are working on this.  It is currently waiting for me because it requires an
+upgrade to Debian 9 and I must order a backup service, but I have a problem
+with signing into their control panel. (I sent them a support request
+yesterday.)
+
+At the same time we work on :ref:`noi` and try to make it good enough for our
+team communication.
+
+What means "good enough"? What do we need to optimize in :ref:`noi` if we want
+it to become a valid concurrent for zulip?
+
+We must probably replace :mod:`lino.utils.memo` by markdown.  The editor must
+have a list of users (to expand ``@``) and a list of tickets (to expand ``#``).
+My :mod:`lino.utils.memo` parser is a nice DIY gadget, but it has no future
+because it requires too much typing.
+
+We actually **don't** need **instant notification** in Noi. For questions like
+"Are you there?" or messages like "I will make an upgrade on server X in 10
+minutes" we can use some standard IM service.  This kind of messages is not
+important for future generations of Lino developers.
+
+But questions like `A mysterious failure in the test suite`_ above are
+different. This question and the resulting discussion are potentially important
+for future Lino developers. Note that I say *potentially*.  Because it is
+probably a very silly problem (which makes it a very good example for my
+thoughts), but you don't know whether it is "a silly issue" or "a historic
+discovery" at the time of discussion. Such discussions usually don't happen
+"instantly" because we are so distributed.
+
+Such discussions are an important part of our work as developers, they are as
+valuable as the source code itself.
+
+As long as I was the only full-time Lino developer, my blog was good enough for
+keeping track of these "discussions" because they were mostly monologues.  They
+are "archived" on GitHub since 2009 where everybody can read them:
+https://github.com/lsaffre/blog/tree/master/docs/blog
+When I had occasional
+feedback from some other developer, it was easy to copy the relevant
+information to my blog
+
+In a team this approach is no longer realistic. It seems clear that we need to
+store our discussions in a database. That database should be able to export a
+static "archive view" of our discussions that needs just a browser to view.
+
+
