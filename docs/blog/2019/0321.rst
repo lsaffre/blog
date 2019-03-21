@@ -1,0 +1,57 @@
+:date: 2019-03-21
+
+========================
+Thursday, March 21, 2019
+========================
+
+When I saw Tonis' change note about his changes, I thought "Let's use this as a
+quick lesson about some conventions for documenting".  The change note was::
+
+  Add optional _ar param to @dd.chooser() methods, to be able to access current user and actor info.
+  Used by :meth:`lino_noi.lib.tickets.models.Ticket.site_choices`
+
+This change note was perfect for its content because it described correctly
+what Tonis did.  But I am nit-picky and try to have everything perfectly
+documented.  We are far away from that goal, but let's at least do some steps
+towards it...
+
+The `:meth:\`lino_noi.lib.tickets.models.Ticket.site_choices\``
+would have worked if we used **autodoc**.  But for docs about plugins
+we use **prosa style** (see :ref:`prosa_vs_api`).
+
+When there is a customized chooser for a field, we should refer to the *field*
+instead of the chooser method (i.e. :attr:`lino_noi.lib.tickets.Ticket.site`)
+and have the field's documentation explain what its chooser does.  The chooser
+method itself is considered an implementation detail because really *nobody*
+(except developers themselves who can as well read the code) will ever want to
+know what a chooser is.
+
+To refer to a model or anything in a plugin, you must "simplify" the reference
+by removing the last part (``models.``, ``choicelists.``, ``desktop.`` etc).
+E.g. for the Ticket model in Noi you must say
+
+- :class:`lino_noi.lib.tickets.Ticket`
+
+and not
+
+- :class:`lino_noi.lib.tickets.models.Ticket`.
+
+At this point I discovered that the conversion from the autodoc to prosa had
+been done quite quickly, and the difference between :mod:`lino_xl.lib.tickets`
+and :mod:`lino_noi.lib.tickets` wasn't even done at all.  I fixed this partly.
+
+While documenting this I realized that the chooser should probably got to the
+XL version of tickets, not to the Noi version.
+
+Here is how I currently suggest the "perfect" change note::
+
+  Added optional ``_ar`` keyword param to :func:`@dd.chooser
+  <lino.utils.choosers.chooser>` methods, to be able to access current user and
+  actor info. Used by the chooser for :attr:`lino_noi.lib.tickets.Ticket.site`
+
+Which renders as follows:
+
+  Added optional ``_ar`` keyword param to :func:`@dd.chooser
+  <lino.utils.choosers.chooser>` methods, to be able to access current user and
+  actor info. Used by the chooser for :attr:`lino_noi.lib.tickets.Ticket.site`
+

@@ -1,0 +1,47 @@
+:date: 2019-03-18
+
+======================
+Monday, March 18, 2019
+======================
+
+In my yesterday's changes I didn't like the way :ref:`cosi` was expecting a
+hoster to specify which VAT declaration plugin to install.  My quick solution
+yesterday asked something like this in your local :xfile:`settings.py` file::
+
+    def get_installed_apps(self):
+        yield super(Site, self).get_installed_apps()
+        yield 'lino_xl.lib.eevat'
+
+    def setup_plugins(self):
+        super(Site, self).setup_plugins()
+        self.plugins.countries.configure(hide_region=False)
+        self.plugins.ledger.configure(use_pcmn=True)
+        self.plugins.countries.configure(country_code='EE')
+
+Now it says::
+
+    def get_plugin_configs(self):
+        yield super(Site, self).get_plugin_configs()
+        yield ('vat', 'declaration_plugins', 'lino_xl.lib.eevat')
+        yield ('countries', 'hide_region', False)
+        yield ('countries', 'country_code', 'EE')
+        yield ('ledger', 'use_pcmn', True)
+
+
+
+Until now it wasn't easy to make it that easy because
+:meth:`lino.core.site.Site.setup_plugins` is being called long after
+:meth:`lino.core.site.Site.get_installed_apps`.  IOW it was not easy to say to
+one plugin (vat) that it should load (or not) some other plugin depending on
+the value of a configuration setting.
+
+I had to improve the Lino API by adding two new methods
+:meth:`lino.core.site.Site.get_plugin_configs` and
+:meth:`lino.core.plugin.Plugin.get_required_plugins`.
+
+
+
+TODO: Use configparser and allow for local config files to specify plugin
+settings.
+
+
