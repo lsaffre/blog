@@ -4,6 +4,30 @@
 Thursday, March 21, 2019
 ========================
 
+Posted a request for help on codementor
+=======================================
+
+I posted a request for code reviewers on codementor. I wrote: "The project
+consists of dozens of repositories published at
+https://github.com/lino-framework Lino has three full-time committers (see
+https://saffre-rumma.net/team/) and we would appreciate volunteer code
+reviewers. We hope to turn into a foundation and engage and pay more full-time
+developers in 2020".  I cannot link to it because codementor didn't seem to
+care about this possibility.
+
+I had an almost immediate offer from Deepak. A bit later two more
+incoming help offers from Adedeji Kadri and Kishan.
+
+I was careful to clearly say that "we cannot promise that our hopes fulfill".
+And I added "If you are interested in helping us, we
+suggest that you follow the developer's guide at
+http://www.lino-framework.org/dev at least until you get a feeling about
+whether you want to dive deeper into Lino." to my request description).
+
+
+Notes about writing change notes
+================================
+
 When I saw Tonis' change note about his changes, I thought "Let's use this as a
 quick lesson about some conventions for documenting".  The change note was::
 
@@ -11,21 +35,21 @@ quick lesson about some conventions for documenting".  The change note was::
   Used by :meth:`lino_noi.lib.tickets.models.Ticket.site_choices`
 
 This change note was perfect for its content because it described correctly
-what Tonis did.  But I am nit-picky and try to have everything perfectly
-documented.  We are far away from that goal, but let's at least do some steps
-towards it...
+what Tonis did.  Congratulations for this, Tonis.  One of Tonis' talents is to
+summarize things concisely and in a readable way.
+
+But I am nit-picky.  I want Lino to be documented perfectly, including changes.
+We are far away from that goal, but let's do some steps towards it.
+
+The problem with this change note is that it did not link to the general
+documentation. For change notes you cannot avoid talking in jargon, but a
+motivated newbie should have a chance to join the team.  So the jargon words
+must link to the "right place" of the book where a motivated reader can get
+explanations and learn background information about what is going on.
 
 The `:meth:\`lino_noi.lib.tickets.models.Ticket.site_choices\``
 would have worked if we used **autodoc**.  But for docs about plugins
 we use **prosa style** (see :ref:`prosa_vs_api`).
-
-When there is a customized chooser for a field, we should refer to the *field*
-instead of the chooser method (i.e. :attr:`lino_noi.lib.tickets.Ticket.site`)
-and have the field's documentation explain what its chooser does.  The chooser
-method itself is considered an implementation detail because really *nobody*
-(except developers themselves who can as well read the code) will ever want to
-know what a chooser is.
-
 To refer to a model or anything in a plugin, you must "simplify" the reference
 by removing the last part (``models.``, ``choicelists.``, ``desktop.`` etc).
 E.g. for the Ticket model in Noi you must say
@@ -36,12 +60,21 @@ and not
 
 - :class:`lino_noi.lib.tickets.models.Ticket`.
 
-At this point I discovered that the conversion from the autodoc to prosa had
-been done quite quickly, and the difference between :mod:`lino_xl.lib.tickets`
-and :mod:`lino_noi.lib.tickets` wasn't even done at all.  I fixed this partly.
+When there is a customized chooser for a field, we should refer to the *field*
+instead of the chooser method (i.e. :attr:`lino_noi.lib.tickets.Ticket.site`)
+and have the field's documentation explain what its chooser does.  The chooser
+method itself is considered an implementation detail because *nobody* (except
+developers themselves who can as well read the code) will ever want to know
+the difference between the site field of a ticket and its chooser method.
 
-While documenting this I realized that the chooser should probably got to the
-XL version of tickets, not to the Noi version.
+At this point I discovered that there was a big white area on the map of the
+documentation about the tickets plugin.  I had already converted it from the
+autodoc to prosa, but that had been done quite quickly, and the difference
+between :mod:`lino_xl.lib.tickets` and :mod:`lino_noi.lib.tickets` wasn't even
+there at all.  I fixed this partly.
+
+While documenting this I realized that the chooser should probably go to the XL
+version of tickets, not to the Noi version.
 
 Here is how I currently suggest the "perfect" change note::
 
