@@ -81,13 +81,13 @@ Who uses Lino
 - Development started in **2009**.
 
 - The first production site started in **January 2011**.  A
-  `Lino Welfare`_ for :ref:`weleup`.
+  `Lino Welfare`_ for :ref:`cpaseupen`.
 
 - The second real-world Lino application started in Czechia in
   July 2013.
 
 - **February 2015** : The third production site, a second
-  welfare_ for :ref:`welcht`.
+  welfare_ for :ref:`cpaschatelet`.
 
 - **April 2015** : :ref:`rk` started to use our own ticket management
   with :ref:`noi`.

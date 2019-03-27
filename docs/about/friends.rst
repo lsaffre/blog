@@ -49,7 +49,7 @@ Andres Toomsalu
 Gerd
 ----
 
-Gerd is system administrator at :ref:`weleup`.
+Gerd is system administrator at :ref:`cpaseupen`.
 
 .. _hamza:
 
@@ -255,7 +255,7 @@ Nex Data Systems
 provider in Pärnu, Estonia.
 
 
-.. _weleup:
+.. _cpaseupen:
 .. _dsbe:
 
 ÖSHZ Eupen
