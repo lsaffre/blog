@@ -1,0 +1,37 @@
+:date: 2019-03-28
+
+========================
+Thursday, March 28, 2019
+========================
+
+I found some time to continue with :ref:`presto` (:ticket:`2776`).
+
+DONE:
+
+- :attr:`lino_xl.lib.orders.Order.project` and
+  :attr:`lino_xl.lib.orders.Order.invoice_recipient` were missing in OrderDetail.
+
+- :attr:`lino_xl.lib.orders.Order.update_all_guests` caused a UNIQUE error
+  because the workers were being suggested twice.
+
+- Optimized the layout of :class:`lino_xl.lib.cal.EventDetail`
+
+- When a user manually creates an event on a controller, then Lino now
+  also calls :meth:`lino_xl.lib.cal.RecurrenceSet.before_auto_event_save` and :meth:`lino_xl.lib.cal.EventGenerator.auto_cal_event_type` (if the controller is an instance of these)
+
+- Demo data : set event_type per room. force_guest_state
+
+- GuestsByEvent in :ref:`presto` no longer shows the workflow buttons (i.e. all
+  calendar entry types should have force_guest_state True)
+
+- Invoicing now works. Wrote a new plugin :mod:`lino_presto.lib.invoicing`
+  (copied from :mod:`lino_tera.lib.invoicing`) because they will want to create
+  an invoice for a given order.
+
+TODO:
+
+- a button per order to directly create an invoice from an order (i.e. open the
+  plan, fill it, execute it and open a detail on the generated invoice). caveats:
+  what if an invoice already exists?  What if there is more than one invoice?...
+
+- if a calendar entry has no duration, use a configurable default duration
