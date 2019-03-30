@@ -86,16 +86,11 @@ language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['.build'] \
-# exclude_patterns += ['blog/2018', 'blog/2017', 'blog/2016', 'blog/2015','blog/2014',
-#                  'blog/2013', 'blog/2012', 'blog/2011', 'blog/2010']
+exclude_patterns = ['.build/*', 'shared/*']
 
 # List of documents that shouldn't be included in the build.
 #unused_docs = []
 
-# List of directories, relative to source directories, that shouldn't be searched
-# for source files.
-exclude_trees = ['old', 'include', '.build']
 
 
 # The reST default role (used for this markup: `text`) to use for all documents.
