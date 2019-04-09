@@ -1,0 +1,155 @@
+:date: 2019-04-09
+
+======================
+Tuesday, April 9, 2019
+======================
+
+I digested Mads Michael's feedback about :ticket:`2810` (Migrate Rumma & Ko
+accounting from TIM to :ref:`cosi`):
+
+I reviewed the specs page about :mod:`lino_xl.lib.vat`
+
+New property :attr:`lino_xl.lib.vat.VatRegime.needs_vat_id`. The chooser
+for :attr:`lino_xl.lib.contacts.Partner.vat_regime` now also depends on
+whether the partner has a VAT id or not. The choicelist of the vat_regime
+field of a voucher wasn't yet filtered. New function
+:func:`lino_xl.lib.vat.get_vat_regime_choices` used by both choosers.
+The :class:`lino_xl.lib.vat.VatRegimes` table now shows all these properties.
+
+Changes in :mod:`lino_xl.lib.eevat` : removed regime "Private person
+(reduced)".  The regime "Private person" can now be used for any area.
+Selling to private persons in other countries was not yet allowed.
+
+In :mod:`lino_xl.lib.vat` I changed :attr:`declaration_plugins
+<lino_xl.lib.vat.Plugin.declaration_plugins>` to :attr:`declaration_plugin
+<lino_xl.lib.vat.Plugin.declaration_plugin>` because I realized that you
+can have only one declaration plugin.
+
+New config setting :attr:`eu_country_codes
+<lino_xl.lib.vat.Plugin.eu_country_codes>`, and the list is now complete
+(at least at the moment of writing this).
+
+:class:`lino_xl.lib.sepa.Payable`  now gives a more comprehensible warning
+"No trade type for {}" when the trade type for the voucher is undefined.
+
+I reviewed the :fixture:`demo` fixture of :mod:`lino_xl.lib.contacts`. It has
+become more readable.  It no longer creates cities which don't exist (and
+instead omits partners in these cities). I removed München and Kelmis
+because these are difficult to lookup because their name varies with the
+languages used on the site.  Each contact now has at least a city.
+
+The :fixture:`demo` fixture for :mod:`lino_xl.lib.vat` now sets fictive VAT
+numbers for each company.
+
+A :manage:`runserver` session in  :mod:`lino_book.projects.cosi_ee` didn't
+work because the :setting:`DEBUG` setting wasn't set to True.
+
+The Explorer menu actions of the VAT plugin were being added to the Sales
+menu because the sales plugin needs vat and therefore triggers its
+automatic installation, and in that case the automatically installed plugin
+does not have its own menu group but inherits the menu group of the plugin
+that needs it.
+
+Note that the :fixture:`demo` fixture of :mod:`lino_xl.lib.sepa` adds about 10 real companies
+with their real bank account numbers (gathered from their websites), but
+only some of them also have a VAT id.  The others get a fictive VAT id in
+:fixture:`demo_bookings`.
+
+I started to convert the docs about demo fixtures from the API to prosa
+style in a new :ref:`demo_fixtures` page.
+I added a new directive and role :rst:dir:`fixture` for documenting fixtures.
+I defined the concept of
+"loading phases". Uff, this was quite some work! But I think it was needed.
+It helped me to better understand what's happening with the demo fixtures
+for VAT functionality.  It will make it easier to rename fixtures.
+
+For some applications (e.g. :ref:`tera`) I converted the way of providing
+application-specific default values for plugin settings from the old way
+(by overriding :meth:`setup_plugins <lino.core.site.Site.setup_plugins>`)
+to the new way which is to override :meth:`get_plugin_configs
+<lino.core.site.Site.get_plugin_configs>`.
+
+Old::
+
+    def setup_plugins(self):
+        super(Site, self).setup_plugins()
+        self.plugins.foo.configure(bar='baz')
+
+New::
+
+    def get_plugin_configs(self):
+        yield super(Site, self).get_plugin_configs()
+        yield ('foo', 'bar', 'baz')
+
+It is important to note that
+:meth:`setup_plugins <lino.core.site.Site.setup_plugins>`  is run *after*
+:meth:`get_plugin_configs
+<lino.core.site.Site.get_plugin_configs>`.
+This can cause unexpected behaviour when you mix both methods.
+
+I realized something about the **Difference between the "technical" plugin
+order and the order of the menu items**:
+
+End users want to see VAT *after* Sales in their menu because for them it
+is rather "implementation stuff". But Sales needs VAT and therefore the VAT
+menu items merges into the Sales menu.  One possibility is to remove vat
+from the needs_plugins of sales.  But that would cause other problems
+because the sales plugin actually does need vat, and the
+:fixture:`demo_bookings` fixture in VAT must come before those of sales.
+
+The fact that VAT adds no entries to the user menu indicates this.
+Solution: In :meth:`lino.core.site.Site.setup_menu` we now differentiate
+between the "technical" plugin order and the order "visible to the end
+user".  The end user wants to see menu entries of explicitly installed
+plugins before those of automatically installed plugins.
+
+This change had some side effects to the ordering of menu items. IFAICS
+they are all positive: the order of menu items should indeed show
+explicitly requested functionalities before those which are indirectly
+required by the primary functionalities.
+
+Lino now supports choicelist items without a value (i.e.
+:attr:`lino.core.choicelists.Choice.value` is `None`).  Such choices cannot
+be stored to the database, otherwise they are like normal choicelists.
+:class:`lino_xl.lib.vat.VatRules` is the first usage example.
+
+New property :attr:`lino_xl.lib.vat.VatColumn.common_account` and a new
+data checker to verify that every VAT column has an account configured if
+it requires one.
+
+Lino now supports unbound data checkers. If
+:attr:`lino.modlib.checkdata.Checker.model` is `None`, the checker is
+unbound, i.e. the problem messages will not be bound to a particular
+database object.
+
+:ref:`voga` no longer sets the VatClasses.exempt as
+:attr:`default_vat_class`.  The :mod:`lino_book.projects.roger` demo is
+just another case of :mod:`lino_xl.lib.bevats` (like
+:mod:`lino_book.projects.lydia`).
+
+Fixed a bug in :manage:`diag` : the plugins were listed in a random
+arbitrary order.
+
+Plugin.needed_by is now the immediate parent, not the top-level parent.
+The loop to the top is now done only in Plugin.get_menu_group.
+
+I removed `voga.specs.vat` because it was useless.
+
+Summary
+=======
+
+Yes, I knew that we will have some work with :ticket:`2810`.  The :ref:`cosi`
+project itself (write a simple accounting application) remains utopic and
+long-term, but it is important for most remaining TIM users, it might become
+our first stable hosting application, and last but not least Mads Michael is a
+perfect assistant for it: he is patient and competent.
+
+It took much time because I also reviewed the documentation.  This is a huge
+work, my long-term goal is to transfer 25 years of a developer's experience
+with accounting databases into free documentation.  It is normal that this will
+take some time.
+
+Actually I am not done.  Before I can release a new version I must do manual
+testing and some minor layout changes.  But the test suites pass and the docs
+build, so I can push my work (about 9 repositories).
+

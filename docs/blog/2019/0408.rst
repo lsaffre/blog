@@ -1,0 +1,50 @@
+:date: 2019-04-08
+
+=====================
+Monday, April 8, 2019
+=====================
+
+I had a problem when updating PyCharm to 2019.1.1. It complained about a
+missing write permission to some file :file:`jre64/bin`.  I ran
+:file:`pycharm.sh` as root (after reading `this
+<https://intellij-support.jetbrains.com/hc/en-us/community/posts/206601265-Fixed-PyCharm-automatic-update-fails-on-Linux-due-to-permissions>`__
+
+
+
+I realized that updatedb (and therefore locate) did not find files on my
+additional SDD.  This SDD was mounted in  my /etc/fstab as follows:
+
+    # LS 20150919
+    UUID=4bd37ec4-1371-4b13-b43e-9ec125fad143 /media/dell1tb ext4 defaults 0 2
+
+And yes, my :file:`/etc/updatedb.conf` says::
+
+  PRUNEPATHS="/tmp /var/spool /media /var/lib/os-prober /var/lib/ceph /home/.ecryptfs /var/lib/schroot"
+
+And I don't want to remove /media from PRUNEPATHS.
+
+I also had a symbolic link :file:`/home/luc/dell1tb` which points to
+:file:`/media/dell1tb`.
+
+I now removed that symbolic link and have fstab mount the SSD device directly
+to :file:`/home/luc/dell1tb`.
+
+Afterwards I had to repair a few things which had been relying on
+:file:`/media/dell1tb`:
+
+For example a series of symbolic links in my home directory (Documents,
+Downloads, Videos, work, vbshared2, etc.)
+
+Or my virtualenvs...  I recreated the default py3 env using my script
+:xfile:`install_dev_projects.sh` (which I updated en passant).
+
+I still have a series of warnings when I invoke PyCharm::
+
+    OpenJDK 64-Bit Server VM warning: Option UseConcMarkSweepGC was deprecated in version 9.0 and will likely be removed in a future release.
+    WARNING: An illegal reflective access operation has occurred
+    WARNING: Illegal reflective access by com.intellij.ide.ClassUtilCore to field sun.net.www.protocol.jar.JarFileFactory.fileCache
+    WARNING: Please consider reporting this to the maintainers of com.intellij.ide.ClassUtilCore
+    WARNING: Use --illegal-access=warn to enable warnings of further illegal reflective access operations
+    WARNING: All illegal access operations will be denied in a future release
+
+

@@ -29,7 +29,7 @@ extensions += ['atelier.sphinxconf.complex_tables']
 extensions += ['lino.sphinxcontrib.logo']
 extensions += ['lino.sphinxcontrib.base']  # for tcname
 # extensions += ['sphinxcontrib.taglist']
-extensions += ['sphinxcontrib.youtube']
+# extensions += ['sphinxcontrib.youtube']
 extensions += ['sphinx.ext.inheritance_diagram']
 
 extensions += ['atelier.sphinxconf.sigal_image']
