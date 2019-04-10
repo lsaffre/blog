@@ -9,28 +9,34 @@ I continued to work for :ref:`presto`.
 Where to configure the default duration to be used when an event doesn't
 contain an end_time?
 
-New attribute
-:attr:`lino_xl.lib.invoicing.EventGenerator.default_invoiceable_qty` whose
-default value is ``1`` (as it was until now, but now we can change the
-hard-coded default value per application).
+Invoice generators have a new attribute :attr:`default_invoiceable_qty
+<lino_xl.lib.invoicing.InvoiceGenerator.default_invoiceable_qty>` whose default
+value is ``1`` (as it was until now, but now we can change the hard-coded
+default value per application).
 
-New field :attr:`lino_xl.lib.cal.EventType.default_duration`.
-If a calendar entry has a type (:attr:`event_type`) and if that type has a
-default duration (:attr:`EventTypedefault_duration`), Lino will change the
-:attr:`end_time` of an entry when the :attr:`start_date`  is changed.
+New field :attr:`lino_xl.lib.cal.EventType.default_duration` per calendar entry
+type. If a calendar entry has a type (:attr:`event_type
+<lino_xl.lib.cal.Event.event_type>`) and if that type has a default duration,
+Lino will change the :attr:`end_time` of an entry when the :attr:`start_date`
+is changed (and the :attr:`start_time` when the :attr:`end_date`)
 
 The :mod:`lino_xl.lib.products` plugin adds one menu entry per product type.
 Until now it used the label of the
-:attr:`lino_xl.lib.products.ProductType.table_name`, not it uses the
-:attr:`lino_xl.lib.products.ProductType.text`.
+:attr:`lino_xl.lib.products.ProductType.table_name`, now it uses the
+:attr:`lino_xl.lib.products.ProductType.text`.  The difference appears if you
+have several product types which use a same table.
 
 Added demo data.
 
-The description of an order item is now a simple charfield (not a text field)
+.. currentmodule:: lino.core.fields
 
+The (:attr:`description <lino_xl.lib.orders.OrderItem.description>`) of an
+order item  is now a single-line :class:`CharField` (not a multi-line
+:class:`RichTextField`)
 
-I am having a problem because start_time is a TimeField while default_duration
-a DurationField.  Errors like:
+I am having a problem because :attr:`start_time
+<lino_xl.lib.cal.Event.start_time>` is a :class:`TimeField` while
+default_duration a :class:`DurationField`.  Errors like:
 
 - Conversion from datetime.time to Decimal is not supported
 - TypeError: conversion from NotImplementedType to Decimal is not supported
