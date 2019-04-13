@@ -1,0 +1,85 @@
+:date: 2019-04-10
+
+=========================
+Wednesday, April 10, 2019
+=========================
+
+https://travis-ci.org/lino-framework/book/jobs/518204474 has 2 failures in
+eevat and bevats specs, it says that output differs from expected, but i did
+not find any difference.
+
+Lino Presto advancing
+=====================
+
+I continued working for :ticket:`2776`.
+
+DONE:
+
+- I started a new document :ref:`presto.de.tour`.
+
+- The :attr:`lino_xl.lib.orders.Order.room` field is no longer nullable.
+
+- When adding the workers of an order as guests of a calendar entry, Lino no
+  longer sorts them by name.  This behaviour came from :mod:`lino_xl.lib.courses`
+  where it is useful, but the workers of an order should remain in their natural
+  order.
+
+- Where to define a default guest_role? per team? per cal.EventType?
+  Intuitive answer: per team. One team can provide several event types, but the
+  guest_role is rather constant.
+
+- Orders.insert_layout : add team, remove user.
+- Changed default_build_method in Prsto from appypdf to weasy2pdf
+
+
+TODO:
+
+- When inserting an order via insert in OrdersByProject, the user must select a
+  journal. Lino should suggest a default journal here. But how to configure this?
+  And will they use a single orders journal? Or one journal per team?  Or one
+  journal per secretary?
+
+- NB: the "rooms" plugin should be renamed to "bookings" because it does not
+  define a Room model.  The Room model is defined in cal, and Presto just labels
+  it "Team"
+
+- Print an order
+- Adapt the invoice template for Presto.
+
+Today's Lino bug
+================
+
+Invoice items generated from a calendar entry were printing their quantity with
+a big number decimal positions.  Here is a case to show the problem (it passed
+before the bugfix):
+
+>>> from lino.utils.quantities import Duration
+>>> qty = Duration("0:15")
+>>> print(qty)
+0:15
+>>> print(1 * qty)
+0.2500000000000000000000000000
+
+The problem is definitively in :mod:`lino.utils.quantities` and has to do with
+my recend work there.  With normal decimals it does not happen:
+
+>>> from decimal import Decimal
+>>> print(1 * Decimal("0.25"))
+0.25
+
+
+It was because in :mod:`lino.utils.quantities` we were saying::
+
+    def __rmul__(self, other, **kwargs):
+        other = convert_from(other, **kwargs)
+        return Decimal.__rmul__(self, other, **kwargs)
+
+It seems that this must be::
+
+    def __rmul__(self, other, **kwargs):
+        other = convert_from(other, **kwargs)
+        return self.__class__(Decimal.__rmul__(self, other, **kwargs))
+
+But don't ask me why... It has to do with the fact that for percentages it is a
+difference whether you say "rate * 5" or "5 * rate".  So for percentage we have
+:meth:`__rmul__` different from :meth:`__mul__`.
