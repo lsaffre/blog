@@ -1,0 +1,102 @@
+:date: 2019-04-15
+
+======================
+Monday, April 15, 2019
+======================
+
+A calendar view for Presto
+==========================
+
+I started the last big part of the prototype for :ref:`presto` : the calendar
+views.  The extensible plugin is not configurable enough and not future-proof.
+And anyway the Lino way of doing calendar views is mostly done.  Some subtle
+tricks were missing however.
+
+Excerpts from their requirements document:
+
+    Mindestens 3 visuelle Kalendertypen, wie Sie im Transport und Supply Sektor
+    zu Planung genutzt werden, sind für die dynamische Planung unabdingbar.
+
+    Alle Kalendertypen sollen recht frei filterbar und ausdruckbar sein.
+
+    Weekly view per worker
+
+    ================== ============ ============ ============ ============
+     Weekdays/Worker    Mon 12.01.   Tue 13.01.   Wed 14.01.   ...
+    ================== ============ ============ ============ ============
+     User A
+     User B
+     User C
+     ...
+    ================== ============ ============ ============ ============
+
+
+This weekend I got a new :class:`lino_xl.lib.cal.DailyView` table to work.  It shows a
+basic calendar navigator.  Looks promising, though there is more to do. For
+example we also need a WeeklyView and a MonthlyView. They will share the same
+navigator.
+This required a little change in Lino:
+
+.. currentmodule:: lino.core
+
+New method :meth:`requests.BaseRequest.goto_pk`.  This required a change in
+:xfile:`linoweb.js` where I add a global :func:`Lino.goto_record_id` function.
+
+I moved :attr:`handle_uploaded_files <actors.Actor.handle_uploaded_files>` from
+:mod:`dbtables` to :mod:`actors` because it is also possible on a virtual table
+like DailyView.
+
+Before doing the weekly and month views (and connecting them in the navigator)
+I'd like to think with Tonis and Hamza about better implementations.  How to do
+it in react. I noted that the :meth:`instance_handler` method on
+:class:`renderer.Renderer` has a sub-optimal API which will be inefficient when
+generating many links to individual day views. Also the API for defining
+
+Also the DailyView is currently limited to dates betwen -30 and +60. It should
+work for any date. But ATM I am afraid that :meth:`request_queryset` is being
+called for the detail view as well, generating a useless list of volatile Day
+objects for each request.
+
+
+I am still having :ticket:`2957` (and this keeps me from running the test
+suite). Exploring.  But I will nevertheless push my work to master.
+
+
+
+Standup meeting
+===============
+
+Changes in :ref:`cosi`.  Hamza finished some tickets for Mads Michael. We should
+do manual tests now.  I must not do this alone but with Hamza.  Because he wants
+to learn, and there is much to learn.
+
+Hamza, please review the specs page about humans:
+
+- move the tests about birth_date and age into a separate page
+- move tests about IncompleteDate to this page
+- remove useless tests (now that the bug is fixed)
+- move boring content to the end, and interesting features to the beginning.
+
+Tonis, please try to get the new cal.DailyView to run under React as well and
+optimize the API.
+
+Tonis is working on the specs about :mod:`lino.modlib.summaries`. One question
+is how to link to the ESF plugin in Welfare.  The specs for Welfare are now in
+their own doctree (part of the welfare repo).  The Welfare docs want to refer
+to book, so we cannot use intersphinx for linking from the book to the welfare
+docs. Intersphinx itself would allow it, but it would create a circular
+dependency when building the docs.
+
+This morning the link was
+http://welfare.lino-framework.org/specs/welcht/esf.html
+
+But later I reviewed this page and moved it to
+http://welfare.lino-framework.org/specs/esf.html
+
+Because when a plugin library defines a plugin named "xxx", it should have at
+least a page :file:`docs/specs/xxx` independently of which demo project is
+being used in that page.
+
+Note that from my blog I can refer to this page (here is the proof
+:ref:`welfare.specs.esf`) because my blog is one of the last doctrees in the
+dependency list.
