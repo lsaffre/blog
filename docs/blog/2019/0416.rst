@@ -4,7 +4,8 @@
 Tuesday, April 16, 2019
 =======================
 
-Yesterday I wanted to ask Hamza to do this:
+Yesterday I wanted to ask Hamza to do more changes on
+:file:`/docs/specs/human.rst`:
 
 - move the tests about birth_date and age into a separate page
 - move tests about IncompleteDate to this page
@@ -12,4 +13,38 @@ Yesterday I wanted to ask Hamza to do this:
 - move boring content to the end, and interesting features to the beginning.
 
 But we didn't have enough time. Also I realized that you cannot delegate
-everything, so I now did it myself.
+everything, so I now did it myself:
+:ref:`lino.specs.human` and :ref:`lino.specs.born` are now two separate pages.
+
+
+Chooser doesn't accept more than one argument
+=============================================
+
+I saw Hamza's `change
+<https://github.com/lino-framework/lino/commit/c319e42f20623d073a0ac37400526d0769da75a9>`__
+for :ticket:`2963` (chooser doesn't accept more than one argument) and am
+surprised that choosers with more than one context parameter didn't work.
+
+
+Maybe the problem is rather related to the fact that here they are keyword
+arguments?  Or because we inject it?  The following snippets indicate that
+everything is correct:
+
+>>> from lino import startup
+>>> startup('lino_book.projects.apc.settings.doctests')
+>>> from lino.api.doctest import *
+
+>>> rt.models.contacts.Partner.vat_regime_choices
+<bound method _chooser.<locals>.chooser_decorator.<locals>.wrapped of <class 'lino_xl.lib.contacts.models.Partner'>>
+
+>>> rt.models.contacts.Partner.city_choices
+<bound method _chooser.<locals>.chooser_decorator.<locals>.wrapped of <class 'lino_xl.lib.contacts.models.Partner'>>
+
+>>> rt.models.contacts.Partner.vat_regime_choices.context_params
+
+Hm, has the test "if ((this.contextParams[name] != value)" been introduced only
+recently?
+
+Did we really not have any chooser with two context parameters?
+
+Okay, I won't dig deeper into this since it works, and it fixes our problem.
