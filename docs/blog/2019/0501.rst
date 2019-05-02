@@ -1,0 +1,67 @@
+:date: 2019-05-01
+
+======================
+Wednesday, May 1, 2019
+======================
+
+I continued working on :ticket:`2776` (prototype for :ref:`presto`).
+
+Invoicing areas
+===============
+
+An **invoicing area** is is used to classify business activities into different
+parts for which end users can start separate invoicing plans.
+
+This is used in :ref:`presto` to differentiate between activities that are
+invoiced manually based on occasional work and those that are invoiced
+automatically based on regular work.  In :ref:`tera` will probably be used to
+separate the therapy centres in different towns.
+
+The application is responsible for selecting only invoiceables that belong to
+the area of the current plan. In :ref:`presto` we do this by defining a field
+`Room.invoicing_area`.
+
+
+.. currentmodule:: lino_xl.lib.invoicing
+
+Changes in :mod:`lino_xl.lib.invoicing`:
+
+Added a new model :class:`Area` to be configured by the site admin via
+:menuselection:`Configure --> Sales --> Areas`.
+
+New field :attr:`Plan.area`.
+
+:attr:`Plan.journal` replaced by :attr:`Area.journal`.
+
+Removed the :class:`StartInvoicingForJournal` action which anyway wasn't used
+by anybody.
+
+
+Demo orders
+===========
+
+I extended the :fixture:`demo` fixture for :mod:`lino_presto.lib.presto` so
+that it now creates orders.
+
+Orders arrive randomly, about daily. There are days without any offer and days
+with more than one offer. Teams have their typical number of calendar entries
+to generate.
+
+This took a few hours. It's a complex but important work.  Only this step makes
+the demo project useful because without any orders and calendar entries the
+demo wasn't obvious to understand.  It is complex because you need to design
+how to generate fictive examples which cover more or less what they want.
+
+Two new plugin config options for :mod:`lino_xl.lib.ledger`:
+:attr:`purchase_stories<lino_xl.lib.ledger.Plugin.purchase_stories>` and
+:attr:`sales_stories<lino_xl.lib.ledger.Plugin.sales_stories>`. These are set
+to `False` in :ref:`presto` because they plan to use Lino only for generating
+invoices, not for their real accounting.
+
+Commits
+=======
+
+The test suites are probably broken, but I committed my work
+because :mod:`lino_presto.projects.noereth` is now getting interesting for
+Hamza and Tonis who are working on :ticket:`2967` (for which :ref:`presto` will
+be the pilot user).

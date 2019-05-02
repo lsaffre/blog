@@ -1,0 +1,79 @@
+:date: 2019-04-30
+
+=======================
+Tuesday, April 30, 2019
+=======================
+
+"Orders" must come before "Invoicing" in Presto main menu
+=========================================================
+
+Wow, I had a subtle problem (:ticket:`2977`) : The ledger plugin was being
+installed automatically by vat (which in turn was installed automatically by
+invoicing).  So when building the main menu, Lino assumed that ledger came
+after invoicing.  But invoicing adds a command to the Sales menu (and therefore
+creates the top-level menu) while the Orders main menu is created only later by
+ledger.  It took me some time to find the explanation of this irritating
+behaviour. I fixed it by explicitly installing ledger.
+
+But how to avoid this pitfall for other application developers? Actually the
+ledger plugin does not need to get installed explicitly because it is
+automatically installed by invoicing and vat.
+
+The :mod:`lino_xl.lib.ledger` plugin has a complex :meth:`setup_main_menu
+<lino.core.plugin.Plugin.setup_main_menu>` method which should run before that
+of the invoicing plugin.
+
+Actually the :mod:`lino_xl.lib.invoicing` plugin behaves wrongly.  It assumes
+in a hard-coded way that we have a "Sales" journal group and menu item, and
+then adds its "Create invoices" action there.  This is an even more complex
+problem: :ticket:`2978` (How to integrate "Create invoices" action into the
+main menu). In :ref:`tera` they will probably want to have two actions for
+generating invoices in their main menu because they have two therapy centers in
+two different towns.  They have three sales journals: one for the first town,
+one for the other town, and a third one for manually created invoices.
+
+I checked in my recent changes for :ref:`presto`, with some application changes
+and the menu sorting now finally fixed.
+
+I undid my change "Choicelists are now always sorted by their value",
+originally just a quick note in :ref:`lino.changes.2019`, but as it turns out
+now the topic is more complex and deserves its own :ticket:`2975`.
+Choicelists a re in natural order by default. For example
+we
+definitively don't want to sort
+:class:`lino_xl.lib.cal.DurationUnits` or
+:class:`lino_xl.lib.cal.Recurrencies`.
+
+There are choicelists we want to sort. We must do this explicitly by calling
+the new :meth:`sort <lino.core.choicelists.Choicelist.sort>` method.
+The :meth:`post_site_startup <lino.core.plugin.Plugin.post_site_startup>` method is a good place for
+sorting your choicelist.
+For example :mod:`lino.modlib.checkdata` sorts its
+:class:`Checkers <lino.modlib.checkdata.Checkers>`,
+:mod:`lino.modlib.printing` sorts its
+:class:`BuildMethods <lino.modlib.printing.BuildMethods>`
+and
+:mod:`lino_xl.lib.ledger` sorts its :class:`CommonAccounts
+<lino_xl.lib.ledger.CommonAccounts>` like this.
+
+Note that :meth:`on_site_startup <lino.core.plugin.Plugin.on_site_startup>` is
+too early for sorting the choicelists, at least for :mod:`lino_xl.lib.ledger`
+because you can have lazy voucher type definitions which get added only
+afterwards.
+
+Note that :mod:`lino_xl.lib.orders` sorts
+:class:`lino_xl.lib.ledger.JournalGroups`, i.e. a choicelist defined in another
+plugin. That's also possible.
+
+Note the sorting order of :class:`lino_xl.lib.cal.EntryStates` in
+:ref:`welfare.specs.cal`: the :attr:`published` state has been added later (by
+the `feedback` module) and is not at the "logical" place. Until now nobody
+complained that it is a the end of the choice list.  But this is an example of
+a choicelist which should get sorted.  All workflows should be sorted by their
+value.  The ordering of the entry states influences how the resulting workflow
+actions are displayed in workflow_buttons field of a calendar event.
+
+I repaired some test cases in book and welfare.  One was caused by a change of
+a help text, some others helped me to better understand when we want to sort
+choicelists.
+

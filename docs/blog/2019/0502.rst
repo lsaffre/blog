@@ -1,0 +1,132 @@
+:date: 2019-05-02
+
+=====================
+Thursday, May 2, 2019
+=====================
+
+I reviewed end-user documentation (:ref:`presto.de.tour`) and translations for
+:ref:`presto`.
+
+Okay there are now 24 failures in the book test suite.  Quite a few of them are
+caused by my changes.  Hamza, I am glad if you can help me to do the dirty work
+of reviewing them, but be careful: don't change the expected output of a
+doctest just to get rid of the failure ;-) You should adapt a failing doctest
+to make it pass only when you are sure you understand why the output has
+changed.  Don't hesitate to ask.
+
+Lino (:class:`lino.mixins.ref.StructuredReferrable`) now handles topics with
+an empty reference more elegantly. Use case
+:class:`lino_xl.lib.topics.Topic` with empty
+:attr:`ref <lino_xl.lib.topics.Topic.ref>` field.
+
+
+Side effect when sorting lazy choicelists
+=========================================
+
+There is an insteresting failure in :file:`docs/specs/ledger.rst` of
+:ref:`welfare`::
+
+    File "docs/specs/ledger.rst", line 268, in ledger.rst
+    Failed example:
+        rt.show(Journals, column_names="ref name voucher_type journal_group")
+    Expected:
+        ========== ====================== ================================================ ====================
+         Referenz   Bezeichnung            Belegart                                         Journalgruppe
+        ---------- ---------------------- ------------------------------------------------ --------------------
+         REG        Rechnungseingänge      Project invoices                                 Rechnungseingänge
+         SREG       Sammelrechnungen       Rechnungen                                       Rechnungseingänge
+         AAW        Ausgabeanweisungen     Ausgabeanweisungen                               Ausgabeanweisungen
+         ZKBC       KBC Zahlungsaufträge   Zahlungsauftrag (finan.PaymentOrdersByJournal)   Zahlungsaufträge
+        ========== ====================== ================================================ ====================
+        <BLANKLINE>
+    Got:
+        ========== ====================== ==================== ====================
+         Referenz   Bezeichnung            Belegart             Journalgruppe
+        ---------- ---------------------- -------------------- --------------------
+         REG        Rechnungseingänge      Project invoices     Rechnungseingänge
+         SREG       Sammelrechnungen       Rechnungen           Rechnungseingänge
+         AAW        Ausgabeanweisungen     Ausgabeanweisungen   Ausgabeanweisungen
+         ZKBC       KBC Zahlungsaufträge   Ausgabeanweisungen   Zahlungsaufträge
+        ========== ====================== ==================== ====================
+        <BLANKLINE>
+
+Note: "Ausgabeanweisungen" is the German translation for "Disbursement orders".
+
+So the ZKBC journal has the wrong voucher type.
+Here is the code that creates this journal::
+
+    kw = dict()
+    kw.update(journal_group=JournalGroups.zau)
+    kw.update(dd.str2kw('name', _("KBC Payment Orders")))
+    kw.update(account=a5800, ref="ZKBC")
+    kw.update(dc=DEBIT)
+    jnl = PaymentOrder.create_journal(**kw)
+    yield jnl
+    yield MatchRule(journal=jnl, account=a4450)
+
+This code looks perfect, and I cannot imagine which part of it would have
+introduced our error.
+
+It took me some digging to find out that it has to do with my recent changes
+for sorting some choicelists in ledger::
+
+    def post_site_startup(self, site):
+        super(Plugin, self).post_site_startup(site)
+        site.models.ledger.CommonAccounts.sort()
+        site.models.ledger.VoucherTypes.sort()
+
+The problem disappears when I deactivate this method.
+It obviously also has to do with the fact that we use
+:meth:`add_item_lazy <lino.core.choicelists.ChoiceList.add_item_lazy>`
+
+I was tempted to say "Let's simply not sort them, if that causes
+problems".
+
+But --an example of where it is good to be obstinate-- then I discovered the
+real cause.  I mean the cause that caused sorting them to be a problem:
+
+The :meth:`add_item_lazy <lino.core.choicelists.ChoiceList.add_item_lazy>`
+method creates a "temporary" function which it connects to the pre_analyze
+signal. And then it was using a class attribute `_lazy_items` to store the
+local function object somewhere.  I had observed that "we must store the func
+somewhere because receiver only connects it to the signal, which is a weak
+reference."
+But this hack was causing side effects now.
+The correct solution was to avoid that hack by using `weak=False` for the receiver.
+And imagine: this subtlety is even explained in the docs for `Signal.connect
+<https://docs.djangoproject.com/en/2.2/topics/signals/#django.dispatch.Signal.connect>`__.
+I just didn't know it when I wrote
+:meth:`add_item_lazy <lino.core.choicelists.ChoiceList.add_item_lazy>`.
+
+Who must pay for such work? The problem was "activated" when introducing the
+new feature for sorting a choicelist. Which was needed for :ref:`presto` where
+the orders plugin adds a new journal group "Orders", which had to come first
+because otherwise their main menu wasn't correctly sorted.  Adding this new
+feature gave me the "good" idea to also use it for VoucherTypes and
+CommonAccounts in the ledger plugin.  If I would manage to explain all this to
+the customer (which is already utopic), it is utopic to believe that they would
+accept to pay for this work. An example of work nobody wants to pay for but
+everybody wants it to be done.  That's why we have :ticket:`881`.
+
+
+
+Another case for :ticket:`881` was a failure in
+:file:`docs/specs/voga/voga.rst`.
+This is probably caused by the changes in invoicing (new concept of invoicing areas).
+There were no more sales invoices being generated.
+Because there was no invoicing area.
+
+I do create a default set of invoice areas in the new :fixture:`demo` fixture
+for :mod:`lino_xl.lib.invoicing`, but :ref:`voga` and :ref:`tera` did not yet
+define a pseudo-fixture which imports it.  I reviewed the
+:ref:`plugin_inheritance` page which explains this mechanism.
+
+TIL : when you create a new fixture in a plugin, then those who inherit your
+plugin and who just want to inherit your fixtures as well will now
+automatically get notified that you added a new fixture (for which they must
+create a wrapper if they want it).
+
+I tried to avoid this pitfall by using an ``__all__`` in the parent's
+:xfile:`fixtures` main package.  Nope, this cannot work because Django
+discovers fixtures as files, not as Python modules.  Django isn't even aware
+that we use their fixtures for such a cool things as Python fixtures.
