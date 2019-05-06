@@ -1,0 +1,54 @@
+:date: 2019-05-06
+
+===================
+Monday, May 6, 2019
+===================
+
+Lino Presto final sprint
+=========================
+
+I wrote the customized template :xfile:`service_report.weasy.html` for presto,
+but it wasn't being selected OOTB.
+The :class:`lino_xl.lib.sales.SalesDocument` mixin has a
+:meth:`get_excerpt_templates` method, but Lino still always uses the default template.
+
+It took me some time to understand my own system of configuring print
+templates.  I believed that Lino didn't find the right template, but in the end
+it was just a pitfall of the Jinja templating.
+
+Sorting lazy choicelists wasn't the reason
+==========================================
+
+What I wrote (:doc:`0502`) about the failure in welfare docs/specs/ledger was
+partly wrong.
+
+Okay replacing the hack in
+:meth:`lino.core.choicelists.ChoiceList.add_item_lazy` was a good thing, but
+that hack wasn't guilty at all.  Guilty was another bug, this time in
+:meth:`VoucherTypes.get_for_model
+<lino_xl.lib.ledger.VoucherTypes.get_for_model>` which caused it to simply
+return the first possible candidate.  But in Welfare we have two voucher types
+which use the same model PaymentOrder. For the demo journal ZKBC the result had
+been okay so far, but when the voucher types were sorted, it returned the wrong
+candidate.  It is an error to call :meth:`VoucherTypes.get_for_model
+<lino_xl.lib.ledger.VoucherTypes.get_for_model>` (or
+:meth:`VoucherTypes.get_for_table
+<lino_xl.lib.ledger.VoucherTypes.get_for_table>`) with a model (or a table) for
+which we don't have a unique voucher type.
+
+And it seems that last week I was so sure about having found the bug that
+obviously I failed to test a last time...
+
+
+Preparing for the release of the prototype
+==========================================
+
+To deploy the Presto prototype I prefer to stay with the PyPI environment and
+force myself to release to PyPI before showing it to the client.
+
+And I am a bit reluctant to release to PyPI when most test suites are broken.
+
+So I started to adapt these.
+
+Not sure why the total number of calendar entries from 301 to 348 (in
+:ref:`welfare.specs.eupen`).
