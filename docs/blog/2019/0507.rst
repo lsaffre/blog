@@ -48,3 +48,30 @@ The methods can be defined either on the model or on a table.
 
 An example is lino_xl.lib.ClientBase
 
+
+Minor changes in Lino Avanti
+============================
+
+I fixed their :ticket:`2990`.
+
+Took me some time because things are complex and because
+I had to understand the required_roles for the calendar views.
+For example I tried to have OfficeStaff no longer inherit from OfficeOperator because
+this caused a TypeError "Cannot create a consistent method resolution" in
+avanti where SiteAdmin inherits from SocialWorker...
+
+The required_roles for the new calendar views were not yet set as it should (I
+guess that Tonis and Hamza simply didn't care because we never talked about
+it). In general you must be :class:`lino_xl.lib.cal.CalendarUser` or
+:class:`lino_xl.lib.cal.CalendarOperator` (or both). Note that avanti overrides
+the required_roles of :class:`lino_xl.lib.cal.CalendarView` because they have
+different rules: only users who may see client names may see the calendar.
+
+
+Changes en passant:
+
+- The new calendar views are now visible for all applications (no longer only presto).
+
+- Default calendar view is now monthly instead of weekly
+- Restore Event.__str__ previous version
+- Renamed some classes in :mod:`lino_xl.lib.cal`
