@@ -1,0 +1,69 @@
+:date: 2019-05-16
+
+======================
+Thursday, May 16, 2019
+======================
+
+Hamza and I did some more research about how to monitor a Lino production site.
+
+The concrete issue reported by Gerd was that for some unknown reason the
+libreoffice daemon was not running on their server.  The reason itself is not
+important here (probably something trivial, a simple restart fixed the
+problem), but disturbing was the fact that it took us some time to understand
+the problem.  First the end-user  had to realize and report that Lino wasn't
+working as usual.  Then the local system admin had to understand that it was
+because libreoffice daemon wasn't running.  And then somebody had to restart
+the service.
+
+Furthermore their libreoffice was still being started as an init.d script and
+not using supervisor (our recommended and :ref:`documented <admin.oood>` method).  With supervisor the problem would have been fixed
+automatically because supervisor tries to restart a service when it has exited
+unexpectedly. This was actually the main culprit.
+
+Another problem is that we should get an email when some service isn't running
+on some production server. And Supervisor doesn't send any warning mails.
+
+There is a plugin `superlance <https://superlance.readthedocs.io/en/latest/>`__
+which might do that, but anyway we need monit because potentially we want to
+also monitor processes which are not running in supervisor.  For example the
+web server.  Or the available memory and disk space.
+
+That's why we use `monit` in addition to `supervisor`.
+
+How to monitor whether all supervisor processes are okay?
+We want a generic solution for all our production servers.
+
+We can run ``sudo supervisorctl status`` which outputs something like::
+
+    daphne_jane                      RUNNING    pid 14224, uptime 0:20:40
+    libreoffice                      RUNNING    pid 14219, uptime 0:20:40
+    linod_jane                       RUNNING    pid 14228, uptime 0:20:40
+    runworker_jane                   EXITED     May 16 06:46 PM
+
+We want monit to warn us when at least one of these process is not running.
+
+Monit can run arbitrary commands and send a warning if their exit status is
+something else than expected.
+
+Unfortunately the ``supervisorctl status`` command itself does always return
+with exit status 0, also when some process is not running.
+
+So we use `awk <http://www.grymoire.com/Unix/Awk.html#uh-5>`__ to test whether
+some line of the output has something else than the word RUNNING as it second
+field::
+
+  sudo supervisorctl status | awk '{if ( $2 != "RUNNING" ) { print $1 " is not running"; exit 1}}'  ; echo $?
+
+We move this into a separate script because (1) we want to invoke it manually
+and (2) the monit config files had problems with a complex bash command line
+that contains itself quotes.
+
+The final result of this session is that we wrote a script
+:xfile:`healthcheck.sh` which tests this and possibly other "health checks",
+and a file :xfile:`healthcheck.conf` which tells monit to run this script and
+alert us when it reports a problem.
+
+Note that the addresses of the people to alert is in the local
+:xfile:`/etc/monit/monitrc` (not in :xfile:`healthcheck.conf`.
+
+I started a new page in the Hoster's Guide: :ref:`monit`.
