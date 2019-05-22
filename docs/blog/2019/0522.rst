@@ -1,0 +1,31 @@
+:date: 2019-05-22
+
+=======================
+Wednesday, May 22, 2019
+=======================
+
+Uff, I finally got some time to dive into :ticket:`3010`.
+The :class:`lino_xl.lib.courses.StatusReport` was not being
+rendered in the dashboard.
+And we didn't notice it until Johanna reported it after their last release.
+
+I fixed it for now, but my fix is not optimal.
+The two :meth:`show_story` methods in :mod:`lino.core.renderer` now have an additional ``elif`` for this case.
+The whole concept of a "story" is still a bit vague and should be more generalized.
+Also the differentiation between BaseRequest and its subclasses is maybe useless.
+
+I did not yet find out when the problem had been introduced.
+It seems that no test case covered it.
+Simply calling ``rt.show(courses.StatusReport)`` in a doctest worked okay.
+The :meth:`lino.core.requests.BaseRequest.show_dashboard`
+method would have shown it, but it is not used often.
+It is used in :ref:`specs.tera.cal`,
+but this user didn't see that report.
+In :ref:`welfare.specs.main` we also called it but that test was being skipped.git st
+
+I now added a test in :ref:`avanti.specs.general`.
+
+
+
+
+
