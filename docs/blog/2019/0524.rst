@@ -1,0 +1,63 @@
+:date: 2019-05-24
+
+====================
+Friday, May 24, 2019
+====================
+
+I continued to work on :ticket:`881`.
+
+Summary of today's team standup meeting:
+
+- Luc was frustrated because PC is so slow. H and T are satisfied with Visual
+  Studio . Maybe Luc should try it, too.
+
+- Luc will fix failures on travis caused by his changes (e.g.
+  :file:`book/docs/specs/invoicing.rst` (:ref:`xl.specs.invoicing`).
+
+- Hamza will work on
+
+  - Failures on Travis in Py 3.7 that are not in Py 3.6. Note: why do we test
+    both 3.6 and 3.7?  Not sure... but at least it is good to observe the
+    differences.
+
+  - Research work for using docker files to provide easy installation instructions for production sites
+
+- Tonis will continue on the React front end. Editable grid widget. Soon a
+  release to Hobbit so we can test it on the field. We decided to not buy
+  professional support from PrimeReact, which also means that we must maintain
+  our own fork.
+
+I think that we can remove the Python 2 environments from the :xfile:`travis.yml` in
+book. They are often failing for trivial differences in string representation.
+These have taken us much energy and time, but soon they will be history.  Maybe
+wait until the last production site has moved to Python 2.
+
+
+The demo lino_book/projects/20121124 contained backslashes in the docstring
+which caused an import failure during coverage.  This project isn't being
+tested, and probably we can safely delete it.
+
+
+An after-release for Avanti
+===========================
+
+Johanna reported a (minor) security issue: :ticket:`3021` (Lehrer können Namen
+aller eingeschriebenen Teilnehmer sehen).  Which shows that they have motivated
+users.  Great!
+
+Indeed, teachers must not see the list of all clients. Only the names of those
+who participate in their course. So they cannot be able to add new guests to a
+calendar entry or new enrolments to a course. And they should not be able to
+edit the Client field of existing guests or enrolments.
+
+I fixed the issue and added a test case to :ref:`avanti.specs.roles`.
+
+While looking at their :xfile:`lino.log` I noticed that the
+:attr:`lino_avanti.lib.courses.Course.update_missing_rates` action didn't work.
+Fixed.
+
+They asked to change the labels of the fields
+:attr:`lino_xl.lib.courses.Enrolment.pupil` and
+:attr:`lino_xl.lib.cal.Guest.partner` from "Client" to "Participant".  And I
+changed this in the XL because it seems to make sense for everybody.
+The test suite will probably have quite some failures because of this.
