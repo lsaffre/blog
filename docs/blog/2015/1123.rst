@@ -14,7 +14,7 @@ now there were *not enough* of them.  Trying with the
 `legal_sequence_number`. Voilà, this yields more realistic data.
 
 Here is a nice trick which I tried for the first time (because when I
-want to reset all tables of the :mod:`lino_cosi.lib.b2c` plugin,
+want to reset all tables of the :mod:`lino_xl.lib.b2c` plugin,
 reloading a full dump just seems like overkiill::
 
     $ python manage.py sqlclear b2c > b2c_clear.sql
@@ -27,7 +27,7 @@ Don't misuse width specifiers when defining layouts
 
 A style hint for Hamza: when you write layouts, then don't worry about
 the field widths.  For example, I saw that you wrote something like
-this (in :class:`lino_cosi.lib.b2c.ui.Movements`)::
+this (in :class:`lino_xl.lib.b2c.ui.Movements`)::
 
     detail_layout = """
     statement:30 seqno:10 booking_date:20 amount:20
@@ -73,7 +73,7 @@ of Lino is really complex and difficult to understand.
 About the BankTransactionCode (`<BkTxCd>`)
 ==========================================
 
-In :class:`lino_cosi.lib.b2c.models.Movement` I renamed
+In :class:`lino_xl.lib.b2c.models.Movement` I renamed
 `transfer_type` to `txcd`.
 
 The Lino Welfare end users want to see the textual meaning (not the
@@ -96,12 +96,12 @@ the issuer.
 
 For a Belgian PCSW the issuer will probably always by "BBA", so for
 the moment I just created a simple new module
-:mod:`lino_cosi.lib.b2c.bba` which contains the descriptions of all
+:mod:`lino_xl.lib.b2c.bba` which contains the descriptions of all
 their possible codes.  It was about two hours of work to copy these
 from the febelfin specs and to convert them to Python code.
 
 And then a new virtual field 
-:attr:`lino_cosi.lib.b2c.models.Movement.txcd_text`.
+:attr:`lino_xl.lib.b2c.models.Movement.txcd_text`.
 
 TODO: the users will want to see them in French and German, but not in
 English.

@@ -1,0 +1,53 @@
+:date: 2019-05-30
+
+======================
+Thursday, May 30, 2019
+======================
+
+I worked on :ticket:`3032` and :ticket:`2827` (learning vim) at the same time.1
+
+When I opened a py file, vim said::
+
+    "lino_book/projects/crl/fixtures/hs2lino.py" 377L, 11942C
+    Error detected while processing BufRead Auto commands for "*.py":
+    E518: Unknown option: set
+    E28: No such highlight group name: BadWhitespace
+
+This was caused by some errors in my :xfile:`~/.vimrc` file.
+Thanks to
+`this <https://stackoverflow.com/questions/40002791/vim-plugin-youcompleteme-error-message>`__
+and `this <https://stackoverflow.com/questions/36741450/vim-setting-error-under-bufread>`__.
+
+The problem was only in :file:`lino_book/projects/min9/myscript.py`
+
+
+The next :ref:`weleup` release
+==============================
+
+I continued working on the next release for :ref:`weleup` (:ticket:`3034`).
+
+
+The release notes are in :ref:`weleup.18.11.0`.
+
+Yes, the preparations for this release have started in November 2018
+(:ticket:`2620`), our date-based versioning system has at least one
+disadvantage: for customers with very long release cycles we actually don't
+know the version number when we start working on a release. That's why Debian
+give a name to every release. Naming our releases wouldn't be a solution for us
+because we have so many products.  Imagine we would have to imagine new series
+of release names for each application.
+
+First step is to update their preview site and run the migration scripts.
+
+I reviewed the documentation about preview sites. As a first step I changed the
+expression "testing site" into "preview site".  "testing" seems suboptimal as a
+designation for this idea.  :xfile:`restore2preview.py`
+
+I reviewed their :xfile:`pull.sh` script. We will switch their new version to
+use the PyPI version of Lino and XL (it is something they have been asking for
+repeatedly because it will reduce unexpected changes during the active end-user
+test phase). Tidy-up dependencies. I moved the :mod:`lino_xl.lib.b2c` plugin
+from cosi to xl.  This plugin was still hanging in cosi because I was worried
+about potential copyright issues. The plugin uses two files which were
+originally copied from odoo and which are GPL licensed.  But meanwhile I
+believe that a BSD project may include work which is GPL licensed. I moved it
