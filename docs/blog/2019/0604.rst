@@ -1,0 +1,49 @@
+:date: 2019-06-04
+
+=====================
+Tuesday, June 4, 2019
+=====================
+
+I started internal work on the "Lino Community Guide". Not yet published since
+translation doesn't yet work (this is the main new thing with this doctree).
+
+My nickname for the Community Guide repository is `cg`::
+
+    $ go cg
+
+
+The instructions found in the `Sphinx docs
+<http://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`__
+are written for a new :file:`Makefile`. But we don't use the Sphinx Makefile, we just run :cmd:`inv bd`.
+So I adapted the instructions as follows.
+
+
+Extract translatable messages into pot files::
+
+    $ sphinx-build -M gettext docs/ docs/.build/
+
+
+Create or update the German .pot files::
+
+    $ sphinx-intl update -p docs/.build/gettext -l de
+
+Use poedit to write or update the translations::
+
+    $ poedit locales/de/LC_MESSAGES/index.po
+    $ poedit locales/de/LC_MESSAGES/about/index.po
+
+
+Build a translated document::
+
+   $ sphinx-build -b html -D language=de docs/ docs/.build
+
+
+
+In the html build all "standard Sphinx" texts are translated to German
+("Schnellsuche", "Weiter", "Zurück"...), but non of my own text is translated.
+
+I don't plan to use Transifex since we don't yet have external translators.
+
+I noticed that when I set ``locale_dirs`` to ``['locale/']`` (not to
+``['locales/']``) it nevertheless get a locales subdir.  Seems that I must
+minimalize the :xfile:`conf.py` and then ask for help.

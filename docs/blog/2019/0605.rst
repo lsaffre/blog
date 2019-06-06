@@ -1,0 +1,43 @@
+:date: 2019-06-05
+
+=======================
+Wednesday, June 5, 2019
+=======================
+
+Preparing the next :ref:`weleup` release
+========================================
+
+I worked on :ticket:`3034`. This time only on their production server. I
+reviewed their :xfile:`initdb_from_prod.sh` and :xfile:`restore2preview.py`
+scripts and ran them.
+
+A strange thing I observed: some media files are not group readable.  I
+have no idea how they do this.  Here is an example::
+
+    $ go prod
+    $ cd media
+    $ find uploads ! -perm /g=w
+    uploads/2019/03/20190218_112921.jpg
+    uploads/2019/03/Wentgens_Wohnraum_2.jpg
+
+    $ ll uploads/2019/03/*.jpg
+    -rw-rw-r-- 1 www-data www-data 2230262 Mar 28 15:37 uploads/2019/03/20190218_112908.jpg
+    -rw------- 1 www-data www-data 3017734 Mar 28 15:38 uploads/2019/03/20190218_112921.jpg
+    -rw-rw-r-- 1 www-data www-data  596910 Mar  8 14:27 uploads/2019/03/Screenshot_20181024-123607_Samsung_Internet.jpg
+    -rw-rw-r-- 1 www-data www-data 2206413 Mar 22 11:53 uploads/2019/03/Wentgens.jpg
+    -rw------- 1 www-data www-data 2800880 Mar 22 11:55 uploads/2019/03/Wentgens_Wohnraum_2.jpg
+
+I can "fix" this by saying::
+
+    $ sudo find uploads ! -perm /g=w -exec chmod g+w '{}' +
+    $ sudo find uploads ! -perm /g=r -exec chmod g+r '{}' +
+
+But of course that does not eliminate the reason of the problem (there will be
+more such files in the future).
+
+I adapted their :xfile:`settings.py` to say ``lino_weleup.settings`` instead of
+``lino_welfare.eupen.settings``.
+
+TODO: Continue manual migrations in the :xfile:`restore2preview.py` script. I
+stopped because I prefer to not run these processes during their work day.
+
