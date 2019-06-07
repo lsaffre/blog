@@ -1,0 +1,80 @@
+:date: 2019-06-07
+
+====================
+Friday, June 7, 2019
+====================
+
+I tried Pelican as an alternative to Nikola. Seems indeed better.  I'll
+consider converting the :ref:`sr` website to it one day.  A pitfall took me at
+least 10 minutes:  Pelican's `inv serve` is not like Django's runserver.  It
+doesn't watch the files.  You need to run `inv build` yourself when you have
+modified something.
+
+But Pelican is not an alternative for Sphinx.  The Community Guide should be
+written in Sphinx *because it is rather a book than a website*.  Where "book"
+doesn't mean we are going to print it, it rather means that there is a
+"logical" reading sequence and table of contents.
+
+So I reviewed what I had started on :doc:`0604`.  Actually the only problem
+
+The instructions found in the `Sphinx docs
+<http://www.sphinx-doc.org/en/master/usage/advanced/intl.html>`__ are written
+for a :file:`Makefile`. I still prefer to just run :cmd:`inv bd` (i.e. to
+integrate the following into atelier), so I won't use the Sphinx Makefile and
+adapted the instructions. I don't plan to use Transifex since we don't yet have
+external translators.
+
+Go to the docs directory::
+
+    $ go cg
+    $ cd docs
+
+Extract translatable messages into pot files::
+
+    $ sphinx-build -M gettext ./ .build/
+
+
+Create or update the .pot files::
+
+    $ sphinx-intl update -p .build/gettext -l de -l fr
+
+Both steps above are to be done by :cmd:`inv mm`, together with the gettext on
+source code.
+
+Use poedit to write or update the translations::
+
+    $ poedit locales/de/LC_MESSAGES/index.po
+    $ poedit locales/de/LC_MESSAGES/about/index.po
+
+
+Build the website, once for each language::
+
+   $ sphinx-build -b html -D language=en . .build
+   $ sphinx-build -b html -D language=de . .build/de
+   $ sphinx-build -b html -D language=fr . .build/fr
+
+
+
+I made above commands "automatic" by adding support to atelier for multilingual
+sphinx sites: When the :xfile:`conf.py` file of a Sphinx doctree defines a
+variable :attr:`translated_languages` (which is expected to be a list of
+language codes), then :cmd:`inv mm` and :cmd:`inv bd` now act accordingly.
+This works only if you previously did ``pip install sphinx-intl``. You should
+add yourself interlanguage links.  The simplest way is to write a template
+:xfile:`languages.html` and add it to your :attr:`html_sidebars`.
+
+Published the current draft at http://community.lino-framework.org
+
+Note that the content is far from being finished.
+
+Note that e.g. http://community.lino-framework.org/de/about/index.html  is
+already fully translated.
+
+The http://community.lino-framework.org/de/concepts/index.html page is only
+partly translated.
+
+Note that you cannot currently switch languages and remain on the same page.
+Switching the language always goes to the root page.
+
+TODO: What will happen with the translations when I move some English text from
+one page to another page?
