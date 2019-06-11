@@ -1,0 +1,64 @@
+:date: 2019-06-11
+
+======================
+Tuesday, June 11, 2019
+======================
+
+One of our Lino customers (:ref:`weleup`) applied for the `Open Source Award
+2019 <https://openexpoeurope.com/oe2019/open-awards-2019/>`__ and has good
+chances to get international attention as a success story in Open IT
+innovation.  Voting will close today, so hurry up if you want to give your
+vote!  https://a.cstmapp.com/voteme/31130/633291567?lc=eng
+
+When publishing above, I noticed and then (probably) fixed a bug in atelier
+which caused it to mix up the doctrees of unrelated projects.  :ticket:`3066`.
+
+I continued working on :ticket:`3026`. The current interface for activating it
+is to explicitly inherit from :class:`lino.mixins.bleached.Bleached` and to
+define the :attr:`bleached_fields` class attribute.
+
+Which fields in Lino Welfare should be bleached?
+Which fields in Lino Welfare are rich text fields?
+Which fields in a given Lino application have a given type?
+To answer this question, I wrote a new utility function
+:func:`lino.api.doctest.show_fields_by_type`:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.gerd.settings.demo')
+>>> from lino.api.doctest import *
+>>> with translation.override('en'): show_fields_by_type(dd.RichTextField)
+- aids.IncomeConfirmation : Remark (remark)
+- aids.RefundConfirmation : Remark (remark)
+- aids.SimpleConfirmation : Remark (remark)
+- art61.Contract : responsibilities (responsibilities)
+- cal.Calendar : Description (description)
+- cal.Event : Description (description)
+- cal.EventType : Description (description)
+- cal.RecurrentEvent : Description (description)
+- cal.Room : Description (description)
+- cal.Task : Description (description)
+- changes.Change : Changes (diff)
+- debts.Actor : Remark (remark)
+- debts.Budget : Introduction (intro), Conclusion (conclusion)
+- gfks.HelpText : HelpText (help_text)
+- isip.Contract : stages (stages), goals (goals), duties ASD (duties_asd), duties DSBE (duties_dsbe), duties PCSW (duties_pcsw), duties person (duties_person)
+- isip.ContractPartner : duties company (duties_company)
+- jobs.Contract : responsibilities (responsibilities)
+- jobs.Offer : Remark (remark)
+- ledger.PaymentTerm : Printed text (printed_text), Printed text (fr) (printed_text_fr), Printed text (en) (printed_text_en)
+- notes.EventType : Body (body), Body (fr) (body_fr), Body (en) (body_en)
+- notes.Note : Body (body)
+- notify.Message : Body (body)
+- outbox.Mail : Body (body)
+- tinymce.TextFieldTemplate : Description (description), Template Text (text)
+- xcourses.CourseOffer : Description (description)
+<BLANKLINE>
+
+
+Conclusion: The current API (tell each model to inherit from Bleached) is not
+suited for reality. The feature must be activatable for all richt text fields
+(with a possiility to specify exceptions (e.g. changes.Change.diff).
+
+This deserves a ticket on its own: :ticket:`3065` (Make (optionally) all
+RichTextfields bleached).
+
