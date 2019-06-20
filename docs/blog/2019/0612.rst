@@ -1,0 +1,137 @@
+:date: 2019-06-12
+
+========================
+Wednesday, June 12, 2019
+========================
+
+The new version of RetrieveTIGroups
+===================================
+
+I started to dive into :ticket:`2779`.
+
+I have a document :file:`TSS_RetrieveTIGroups_V2.docx`
+titled "RetrieveTIGroups: Technical Service Specifications"
+by Soufiane Boulahya. The introduction looks good:
+
+    Ce document décrit les spécifications techniques du Web Service RetrieveTIGroups de la plateforme SOA de la BCSS.
+
+    Il décrit le contexte, les modalités d’utilisation, les fonctionnalités et
+    les opérations (requêtes et réponses) du service. Pour chaque type de
+    message, des exemples sont ajoutés. La fin du document contient une liste
+    de codes erreurs susceptibles d’être retournés.
+
+    Avec ce document le service informatique du client doit être capable
+    d’intégrer et d’utiliser correctement le Web Service de la BCSS.
+
+
+RetrieveTIGroups is a service offered by the CBSS in order to consult the NR
+(national register) about a `physical person
+<https://www.ibz.rrn.fgov.be/fileadmin/user_upload/fr/rn/fichier-rn/fichier-RN.pdf>`__.
+The CBSS is responsible for checking whether the requesting client has
+permission to see information about a given person.
+
+All this basically works in Lino. The only problem is that the BCSS reviewed
+the service some time ago and published a version 2 of it, and in March they
+stopped serving the version 1.  We "just" need to adapt Lino so that it uses
+the new version.
+
+Before running a first test on their testing site, I check their settings::
+
+  configure_plugin('cbss',cbss_environment='test', cbss_live_requests=True)
+
+The two parameters
+:attr:`cbss_environment <lino_welfare.modlib.cbss.Plugin.cbss_environment>`
+and :attr:`cbss_live_requests <lino_welfare.modlib.cbss.Plugin.cbss_live_requests>`
+are important.
+
+My test is simple:
+I locate their client 2000067 which I am going to use as guinea pig.
+I click the (+) below "Tx25-Anfragen:" in the CBSS tab of the client detail and see what it does.
+
+It *should* say that the given person is not "integrated". The word "intégration"
+has a special meaning for them: Ce contrôle d’intégration vérifiera que le
+partenaire (le CPAS) **connait** la personne et peut donc consulter les données
+demandées.
+
+But I get the following error message instead::
+
+    [2019-06-12 12:07:47.609756] Traceback (most recent call last):
+      File "/usr/local/django/cweleup/repositories/welfare/lino_welfare/modlib/cbss/mixins.py", line 252, in execute_request
+        retval = self.execute_request_(now, simulate_response)
+      File "/usr/local/django/cweleup/repositories/welfare/lino_welfare/modlib/cbss/mixins.py", line 564, in execute_request_
+        return self.execute_newstyle(client, info, simulate_response)
+      File "/usr/local/django/cweleup/repositories/welfare/lino_welfare/modlib/cbss/models.py", line 536, in execute_newstyle
+        raise Warning(msg)
+    Warning: CBSS error Internal Error:
+    <?xml version="1.0" encoding="UTF-8"?>
+    <env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+       <env:Body>
+          <env:Fault>
+             <faultcode>env:Client</faultcode>
+             <faultstring>Internal Error</faultstring>
+          </env:Fault>
+       </env:Body>
+    </env:Envelope>
+
+Lino uses a :xfile:`RetrieveTIGroups.wsdl` file for formulating its request.
+This file is the "main" file read by suds who then does most of the actual work
+based on the information in the wsdl file.
+
+This wsdl file has been generated from a template.
+These wsdl file templates included with Lino are a lightweight manual adaptions of example files
+provided by the CBSS. I just changed the ``schemaLocation`` path and replaced their hard-coded
+``test`` by ``%(cbss_environment)s``.
+The wsdl files for all supported services
+are parsed at server startup by the :func:`setup_site_cache` function in
+:mod:`lino_welfare.modlib.cbss.models` and the result is written to
+:file:`cache/cbss/`.  I didn't change the general algorithm, but I renamed the
+old version of the template for RetrieveTIGroups (no longer used except for historic research)
+from :file:`RetrieveTIGroups.wsdl` to
+`RetrieveTIGroups-v1.wsdl <https://github.com/lino-framework/welfare/blob/master/lino_welfare/modlib/cbss/WSDL/RetrieveTIGroups-v1.wsdl>`__,
+and the new version is named `RetrieveTIGroups-v2.wsdl <https://github.com/lino-framework/welfare/blob/master/lino_welfare/modlib/cbss/WSDL/RetrieveTIGroups-v2.wsdl>`__.
+
+I did a first test on their production server. Same error message ;-)
+
+But yes: not only the wsdl file itself is changed.  It imports a set of
+"library" xsd files published and maintained by the CBSS. We don't need to edit
+them, but they must be available at runtime. I stored an unmodified copy of
+them to the :xfile:`XSD/be` directory. This directory is now also copied by
+:func:`setup_site_cache` to the cache (without any parsing).
+
+I could even reproduce the error locally and `on travis
+<https://travis-ci.org/lino-framework/welfare/jobs/544676448?>`__::
+
+    doctest docs/specs/cbss.rst
+
+I fixed the locations of the library files, the next step is to test this on
+their preview site.
+
+There are still two `failures on travis
+<https://travis-ci.org/lino-framework/welfare/jobs/544718395>`_ because the
+demo requests in :mod:`lino_welfare.modlib.cbss.fixtures.cbss_demo` must get
+adapted. This fixture loads a suite of fictive CBSS requests using simulated
+responses, and of course these responses no longer work with the new wsdl file.
+
+I continued testing on their preview site in the evening.
+The error still happens, and the suds debug log seems to say that suds
+still imports some old xsd file, despite the fact that it loads
+the new wsdl file::
+
+    DEBUG:suds.wsdl:reading wsdl at: file:///path/to/preview/media/cache/wsdl/RetrieveTIGroups.wsdl ...
+    DEBUG:suds.xsd.sxbasic:Import:0x7efbf3a089d0, importing ns="http://kszbcss.fgov.be/types/RetrieveTIGroups/v1", location="RetrieveTIGroupsV5.xsd"
+    DEBUG:suds.xsd.sxbasic:Import:0x7efbf3ad9950, importing ns="http://www.ibz.rrn.fgov.be/XSD/xm25/rn25Schema", location="rn25_Release201411.xsd"
+
+Strange. I don't see where suds finds the address containing "v1". Going to
+sleep now...
+
+
+Failures on Travis
+==================
+
+https://travis-ci.org/lino-framework/xl/jobs/544523785
+
+This failure is because appy needs special installation under Python 3. We
+might move this test to the book where the requirements file handles appy py3.
+But I seem to prefer to have a look at how to generalize appy installation and
+to do it also in xl.  I don't like the current solution using a file
+:file:`install_requirements.sh`. Can't we simplify this?

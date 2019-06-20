@@ -23,6 +23,7 @@ configure(globals(), 'lino_book.projects.min1.settings.doctests')
 
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
+intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
 
 extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']
@@ -342,6 +343,8 @@ feed_description = "Luc's developer blog"
 
 import os
 os.environ['LC_TIME'] = 'en_GB.UTF-8'
+
+
 
 # from pprint import pprint
 # pprint(intersphinx_mapping)

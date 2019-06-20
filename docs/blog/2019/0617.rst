@@ -1,0 +1,56 @@
+:date: 2019-06-17
+
+=====================
+Monday, June 17, 2019
+=====================
+
+In the getlino script we would have a list of "available Lino applications"::
+
+    choices = [
+      ("noi", "lino_noi.lib.noi.settings", "https://github.com/lino-framework/noi"),
+      ("voga", "lino_voga.lib.voga.settings", "https://github.com/lino-framework/voga"),
+      ("cosi", "lino_cosi.lib.cosi.settings", "https://github.com/lino-framework/cosi"),
+      ("avanti", "lino_avanti.lib.avanti.settings", "https://github.com/lino-framework/avanti"),
+      ("weleup", "lino_weleup.lib.weleup.settings", "https://github.com/lino-framework/weleup"),
+      ("welcht", "lino_voga.lib.voga.settings", "https://github.com/lino-framework/welcht"),
+      ("min2", "lino_book.projects.min2.settings", "https://github.com/lino-framework/book"),
+    ]
+
+(min2 would not be useful in practice, but it is an example of an application with a different pattern)
+
+This list cannot be in the cookiecutter config because cc does not know complex
+choice lists. Actually we don't use the cc user interface, we allways call it in batch mode.
+
+In the cookiecutter.json file we have three variables instead of the current "appname"::
+
+  "app_git_repo": "https://github.com/lino-framework/noi",
+  "app_package": "lino_noi",
+  "app_settings": "lino_noi.lib.noi.settings",
+
+
+We don need "use_app_dev" anymore.
+
+And then in
+`post_gen_project.sh
+<https://github.com/lino-framework/cookiecutter-startsite/blob/master/hooks/post_gen_project.sh>`__ we replace the following::
+
+    {% if cookiecutter.use_app_dev %}
+    git clone https://github.com/lino-framework/{{ cookiecutter.appname }}.git
+    pip install -e {{ cookiecutter.appname }}
+    {% endif %}
+
+by::
+
+
+    {% if cookiecutter.app_git_repo %}
+    appname=`some bash command to get the last part of repo name`
+    git clone {{ cookiecutter.app_git_repo }}
+    pip install -e $appname
+    {% else %}
+    pip install {{ cookiecutter.app_package }}
+    {% endif %}
+
+
+
+
+

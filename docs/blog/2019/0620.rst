@@ -1,0 +1,53 @@
+:date: 2019-06-20
+
+=======================
+Thursday, June 20, 2019
+=======================
+
+I worked on :ticket:`3086` (together with Hamza at the beginning). Some
+optimizations for managing absences and holidays of workers.
+
+Changes needed for :ref:`presto`.
+
+  If a :attr:`presence_guest <lino_xl.lib.cal.Events.presence_guest>` is
+  specified this filter no longer applies to entries whose type has
+  :attr:`all_rooms <lino_xl.lib.cal.EventType.all_rooms>` enabled (which is the
+  case e.g. for holidays).
+
+  Multi-day events must be shown on every day of their date range.  Lino didn't
+  yet handle them correctly
+
+  I added a field :attr:`lino_xl.lib.cal.EventType.fill_presences` because not
+  all events should automatically fill their presences
+  (:class:`lino_xl.lib.cal.Guest`). When
+  :attr:`lino_xl.lib.cal.EntryStates.edit_guests` is True, Lino also removes
+  unwanted guests each time you hit the save button. But for example in
+  :ref:`presto` when registering a absence day  or a worker, the list of
+  suggested guests is usually empty (because the project is empty), and we
+  don't want Lino to remove any manually added guests.
+
+  The :fixture:`std` fixture for :mod:`lino_xl.lib.cal`  now adds a new entry
+  type "Absence" with this configuration. The :fixture:`demo2` fixture adds
+  some "absences for private reasons", some of them several days.
+
+En passant this caused an avalanche of optimizations.
+
+I reviewed the way how the filter parameters for calendar entries
+(:class:`lino_xl.lib.cal.Event`) are being inherited by the calendar views.
+Especially this was a bit too hackerish for me::
+
+    @classmethod
+    def setup_parameters(cls, fields):
+        cls.params_layout = rt.models.cal.Event.params_layout
+        cls.parameters = rt.models.cal.Event.parameters
+    super(Events, cls).setup_parameters(rt.models.cal.Event.parameters)
+
+
+There is a danger that this caused bugs which are not covered by the test
+suite.
+
+In the filter parameters of :class:`lino_xl.lib.cal.Events`, I renamed
+``partner`` to :attr:`presence_guest <lino_xl.lib.cal.Events.presence_guest>`
+and moved some help texts to the specs page.
+
+
