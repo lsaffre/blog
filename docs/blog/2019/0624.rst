@@ -1,0 +1,77 @@
+:date: 2019-06-24
+
+=====================
+Monday, June 24, 2019
+=====================
+
+I think that getlino needs a config file which contains default values for the
+projects_root etc. And the first argument must be a command. We need at least
+two commands "setup" and "startsite" .
+
+Note that one day, maybe, we should rename "lino" to "lino_core", and "getlino"
+to "lino".  But that's for later.
+
+The getlino script
+==================
+
+To install Lino, you just say::
+
+   $ pip install getlino
+
+and then invoke the getlino script::
+
+   $ getlino.py
+
+
+The getlino script asks you a series of questions and then creates a new site
+in your project root.
+
+The getlino script can be used to add more sites on the same machine. When
+invoked for the first time on a given machine, it will do a system-wide
+first-time setup.
+
+The **first-time setup** will do so some system-wide changes. For example:
+
+- create the file /etc/getlino/getlino.conf
+
+- run apt-get install to install system packages like python, nginx, supervisor and
+  many more.
+
+- create a file /etc/supervisor/conf.d/libreoffice-headless.conf
+
+The first-time setup decides whether this machine will be a "production server"
+or a "development environment". This choice should be done only for your first
+site.  For any next site on the same machine you should not change this option.
+
+How does the script "know" whether it is being invoked for the first-time?
+When the project_root does not exist or is empty.
+
+The script reads or creates a site-wide file :file:`getlino.conf` (using
+standard Python configparser like supervisor).
+
+The script uses cookiecutter to create a new site::
+
+  cookiecutter.main(
+     "git@github.com:lino-framework/cookiecutter-startsite.git",
+     no_input=True, extra_context=...)
+
+  see https://cookiecutter.readthedocs.io/en/latest/cookiecutter.html#module-cookiecutter.main
+
+Note that the getlino script asks all necessary questions and then does not let
+cookiecutter ask any more questions. We do not let cookiecutter ask questions
+because its ui is too primitive: it does not support question prompts in
+English, it does not support choicelists.
+
+The getlino script has **command-line options**. Some examples of how to invoke
+it)::
+
+   $ getlino.py --prod
+   $ getlino.py cosi mysite
+
+
+The first two arguments are appname (which of the available Lino apps) and then
+prjname (how it should be named on your machine)
+
+Without arguments it will run in interactive mode and ask for appname and
+prjname.
+
