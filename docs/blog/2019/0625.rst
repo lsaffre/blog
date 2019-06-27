@@ -1,0 +1,40 @@
+:date: 2019-06-25
+
+======================
+Tuesday, June 25, 2019
+======================
+
+Lino Presto
+===========
+
+Margarete reported a problem which shows that the
+:class:`lino_xl.lib.cal.GuestsByPartner` table is not exactly what they need in
+:ref:`presto`. Maybe neither in :ref:`avanti`. Clicking the (+) in the summary
+of that table will try to create a new Guest. Which is nonsense here because it
+asks you to select a calendar entry.
+
+I wrote a new table :class:`lino_xl.lib.cal.EntriesByGuest`.
+
+Both tables show "the calendar entries having the master instance as a guest".
+But EntriesByGuest will create a new calendar entry. It also makes sure that it
+has at least one guest, namely our master.  Because otherwise, if the user
+creates an entry and forgets to manually add our master as a guest, they would
+not see the new entry.
+
+This required two optimizations in the core:
+
+- New method :meth:`lino.core.dbtables.Table.after_create_instance`.
+
+- Lino now supports a slave table whose
+  :attr:`lino.core.actors.Actor.master_key` is a remote field.
+
+
+Lino Welfare
+============
+
+I wrote a new data checker :class:`lino.modlib.system.BleachChecker`.
+
+We will use this in :ref:`weleup` to make tests.  Since bleach was not yet
+active for them until now, there might be unexpected side effects when a user
+saves the database object.
+

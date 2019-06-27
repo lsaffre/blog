@@ -1,0 +1,54 @@
+:date: 2019-06-27
+
+=======================
+Thursday, June 27, 2019
+=======================
+
+Today I also pushed the changes described yesterday.  See :doc:`0626`.
+
+
+Bleaching feature unveiled a name clash
+=======================================
+
+The name "description" is used at different places, sometimes for real database
+fields, sometimes for virtual fields.  In :class:`lino_xl.lib.topics.Topic`
+this now caused a problem because the BleachChecker tries to get the value of
+the *database* field in order to bleach it, but gets the html.etree element
+returned by the virtual field.
+
+We have a name clash.  TIL that while it is okay to override a database field
+by a virtual field, the opposite is not true.
+
+It happened actually only in :class:`lino_xl.lib.topics.Topic`. To fix the
+problem, I renamed the database field :attr:`description
+<lino_xl.lib.topics.Topic.description>` to :attr:`description_text
+<lino_xl.lib.topics.Topic.description_text>`.  This change requires a database
+migration. I'd have preferred to rename the virtual field in order to avoid
+database migrations, but this turned out rather non-trivial because the virtual
+field "description" is heavily being used in other places.
+
+To avoid this pitfall in the future,
+Lino now checks for database fields hiding a virtual field defined on a parent and raises a
+ChangedAPI exception when this happens.
+
+Nobody had noticed this until now because Django doesn't know about Lino's
+virtual fields. There is almost no problem when you define a database field
+which hides a previously defined virtual field of same name.  The only problem
+is that when you try to get the value of the database field, Python will return
+the virtual field.
+
+I wrote a demo project and a documentation page which tests it:
+:ref:`dev.ovfields`.
+
+
+Other changes en passant:
+
+The internal _bleached_fields attribute of `lino.core.model.Model` no longer
+contains the names but the field descriptors.
+
+I changed the default value for textfield_bleached to True. Just to see what
+happens...
+
+I optimized the reporting for data checkers.  You can have 6 data checkers but
+18 "checks".  One "check" is when a given checker is being run on a given
+model.
