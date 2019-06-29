@@ -1,0 +1,36 @@
+:date: 2019-06-28
+
+=====================
+Friday, June 28, 2019
+=====================
+
+Vouchers are now again duplicable. (:class:`lino_xl.lib.ledger.Voucher`
+inherits from :class:`lino.mixins.duplicable.Duplicable`).  The duplicate
+button on an invoice disapeared quite some time ago when I removed it from the
+Model class because indeed we don't want all objects to be duplicable.
+
+Calendar view : Tonis and I fixed :ticket:`3093`, and we did a first attempt
+for :ticket:`3094` (the useluss toolbar is now gone, but currently there is no
+refresh button).
+
+Suggesters : the API still needs some changes.
+:meth:`lino.utils.memo.Suggester.get_suggestions` cannot be global. It needs to
+know the actor and the requesting user. Before continuing on this, I will let
+Tonis work a bit on the js side and wait for his feedback.
+
+For :ref:`weleup` they created a new virgin Debian server.  I added a first
+user for me, changed the hostname (`not trivial
+<https://wiki.debian.org/HowTo/ChangeHostname>`__ next time I should specify a
+hostname when ordering a new server) and created
+:file:`~/.ssh/authorized_keys`.  Now we should run `getlino` on this, but
+getlino is not ready.  Waiting for Hamza.
+
+Back to the calendar view: With Tonis I had had a feeling that I can get the
+toolbar navigation working, and wanted to know it. Yes, navigation now also
+works using the buttons in the toolbar. I also reviewed and changed some
+internals of the calendar views. Took me a few hours:
+
+- New method :meth:`lino.core.actors.Actor.get_navinfo`.
+
+- :class: `lino_xl.lib.cal.CalendarView` navigation now also works using the
+  buttons in the toolbar.
