@@ -1,0 +1,112 @@
+:date: 2019-07-01
+
+====================
+Monday, July 1, 2019
+====================
+
+I reviewed the "license" field of all projects to use "BSD-2-Clause" (an `SPDX
+identifier <https://spdx.org/licenses/>`__) as suggested by Cyril Roelandt.
+Thanks, Cyril.
+
+TODO: In some projects the file containing the full licence text is named
+LICENSE, in some others it is COPYING.
+
+
+Review the choices API
+======================
+
+I started a ticket :ticket:`3097` because we still don't have a clear vision
+about how the URL for the # and @ suggesters should look like.  When the editor
+sees a pattern which triggers an auto-complete action, it must request a list
+of suggestions.  And this list is not the same for every # or @, it also
+depends on the view (actor), the database object, the field, the query string
+(i.e. the search string already entered by the user), the permissions of the
+user, ...
+
+The problem is related to some other tickets:
+
+- :ticket:`56` (choosers don't know the requesting user)
+- :ticket:`86` (allow choosers to filter by master key)
+- :ticket:`2914` (pass the action request to choosers)
+
+Let's examine what happens when the user wants to select a value in the
+:attr:`lino_xl.lib.tickets.Ticket.assigned_to` field::
+
+  GET /choices/tickets/ActiveTickets/assigned_to?query=&start=0
+  GET /choices/tickets/Tickets/assigned_to?_dc=1561963175048&start=0&limit=20&query=
+
+Instead of saying "/choices/..." (i.e. creating a global resource) we should
+consider "/choices/" a method on a property:
+
+- GET /api/tickets/ActiveTickets/123/assigned_to/choices would return the list
+  of choices for that property.
+
+- GET /api/tickets/ActiveTickets/123/assigned_to  would return the property
+  value itself.  Something we don't currently use.  For example::
+
+     {'view': 'users/Users/',
+       "pk": "7",
+       "data": {"username": jean, "first_name": "Jean", ...}}
+
+Note that when we are creating a new ticket
+
+- GET /api/tickets/ActiveTickets/-99999/assigned_to/choices would return the list
+  of choices for that property.
+
+For suggesters we would say
+
+- GET /api/tickets/ActiveTickets/123/description/suggestions?trigger=#&query)
+- GET /api/tickets/ActiveTickets/123/description/suggestions?trigger=@&query=123)
+
+mp.add_suggester("#", tickets.Tickets.objects.all(), ...)
+
+
+This would mean that we add a fourth hierarchy level to our URL patterns::
+
+    plugin / actor / row / property
+
+
+.. rubric:: Background thoughts
+
+
+
+I considered using a list request with a `fmt` specifier instead::
+
+    GET /api/users/AllUsers?fmt=choices&limit=16&start=0
+
+But that seems impossible by design because each combo box has its individual
+"static" URL.  An application developer might theoretically define something like this::
+
+    def assigned_to_choices(self, ...):
+        if ...:
+            return contacts.Company.objects.all()
+         else:
+            return contacts.Person.objects.all()
+
+
+
+
+I have been thinking whether we must remove the possibility of having models
+with an alphanumeric primary key. Does a RESTful API support alphanumerical
+primary keys?
+
+https://stackoverflow.com/questions/24668262/natural-keys-and-restful-urls
+
+
+Accounting with Così
+====================
+
+I optimized the columns layout of :class:`lino_xl.lib.ledger.Accounts`.
+
+I added a journal group "Miscellaneous transactions" to the default
+configuration (:class:`lino_xl.lib.ledger.JournalGroups`).
+
+
+Server provider versus maintainer
+=================================
+
+I worked in the "actors" section of the community guide. OMG! Trying to
+formulate everything in water-proof language is such a huge task!  Can't we
+just find some existing software house who does these things well and who pays
+Tonis, Hamza and me and asks money from our customers? Of course in a way which
+satisfies all current customers.
