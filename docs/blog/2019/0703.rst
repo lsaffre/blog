@@ -1,0 +1,55 @@
+:date: 2019-07-03
+
+=======================
+Wednesday, July 3, 2019
+=======================
+
+
+Optimizations for :ref:`cosi`
+=============================
+
+I tried to find a solution for :ticket:`3101` (More intuitive data entry for
+voucher content). When you created a voucher (invoice, bank statement, ...) it
+is difficult to guess that you must now click the "show in own window" button
+on the content panel in order to continue.
+
+A simple solution seems to have that button immediately behind the panel's
+title instead of in the far right corner.   Similar to the button in the
+dashboard.  To implement this, we need to introduce a way to dynamically set
+the panel title.  This seems related to :ticket:`3082`.
+
+One side effect is that I moved some code from
+:meth:`lino.core.dashboard.DashboardItem.render_request` into a new method
+:meth:`open_in_own_window_button
+<lino.core.Renderer.open_in_own_window_button>`.
+
+I used the :attr:`sum_text_column <lino.core.actors.Actor.sum_text_column>` of
+bank statements because the total text of their content panel looked so silly
+that I made two screenshots before and after and wrote some developer docs
+about. See :ref:`dev.actors.sums`.
+
+Some optimizations in the :fixture:`minimal_ledger` fixture for
+:mod:`lino_xl.lib.ledger`.
+
+A list GET now sets a new response attribute `title_url` parameter (only in
+extjs... this code should get generalized).  Not yet used.  Not definitive.
+
+The challenge here is that there is (by design) no separate Ajax call for each
+HtmlBoxPanel, so when showing the slave table as html we would need another
+field (e.g. htmlbox name suffixed "_title") to set the panel's title
+dynamically)
+
+One visible result: the "list" part in the breadcrumbs for a detail window is
+now clickable. New method :meth:`lino.core.requests.Request.get_breadcrumbs`.
+At least one issue: it forgets manually changed filter params.
+
+
+I released Lino 19.7.1 and XL 19.7.1 to PyPI (for upgrading our own :ref:`cosi`
+production site).
+
+I optimized column layout of :class:`lino_xl.lib.finan.ItemsByJournalEntry`.
+
+I wrote a new page of end-user documentation in German:
+http://de.cosi.lino-framework.org/ledger/opening.html
+
+
