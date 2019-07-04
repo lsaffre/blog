@@ -1,0 +1,62 @@
+:date: 2019-07-04
+
+======================
+Thursday, July 4, 2019
+======================
+
+Optimizations for :ref:`cosi`
+=============================
+
+After a meeting with :ref:`mm` I did a set of optimizations for :ref:`cosi`.
+See below. En passant I fixed a failure caused by the new suggesters of the
+memo parser.
+
+.. currentmodule:: lino_xl.lib.ledger
+
+The duplicate action didn't work on registered vouchers (:class:`Voucher`). And the
+and the general behaviour after duplicating a voucher was irritating.
+
+Now the :attr:`number <Voucher.number>` is set to the next
+available number and :attr:`entry_date <Voucher.entry_date>`
+to today.
+
+General changes for all duplicate actions: The
+:class:`lino.mixins.duplicable.Duplicate` action now calls :meth:`full_clean`
+on the newly created copy. And it is now readonly (e.g. also callable on a
+registered voucher).
+
+.. currentmodule:: lino_xl.lib.vat
+
+In :class:`InvoicesByJournal` the grid layout was still using
+:attr:`voucher_date <lino_xl.lib.ledger.Voucher.voucher_date>` instead of
+:attr:`entry_date <lino_xl.lib.ledger.Voucher..entry_date>`.  The default behaviour in
+:ref:`cosi` is to use only entry_date because this is what counts for accounting.
+
+.. currentmodule:: lino_xl.lib.finan
+
+Added an :class:`UploadsByController <lino.modlib.uploads.UploadsByController>`
+panel to the detail layout of :class:`BankStatement`.
+
+The :fixture:`std` fixture of :mod:`lino_xl.lib.ledger` now creates an upload
+type "source document". Note that :data:`UPLOADTYPE_SOURCE_DOCUMENT
+<lino_xl.lib.ledger.UPLOADTYPE_SOURCE_DOCUMENT>` is 4 in order to avoid
+duplicate keys in :ref:`weleup`.
+
+
+Fine-tuning the memo suggester
+==============================
+
+I fixed a error occuring when there were no suggesters defined.
+
+The parser now makes a pattern clickable without adding the full text and with
+setting a title for the link so that the text is shown when the mouse hovers
+over the link.  I also wrote a new specs page :ref:`specs.noi.suggesters`.
+
+TODO:
+
+- the auto-completer might insert the full text into the editor after the
+  pattern. The user can then decide whether to leave it or not.
+
+- The memo commands might also be defined as suggesters with a trigger of type
+  "[ticket ". Note that in that case we need to add a new attribute "suffix"
+  which would be empty for # and @ but "]" for memo commands.
