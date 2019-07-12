@@ -1,0 +1,86 @@
+:date: 2019-07-10
+
+========================
+Wednesday, July 10, 2019
+========================
+
+The server_url setting
+======================
+
+:ticket:`3110` is only half done. If we would release my work to Jane and
+Hobbit now, :meth:`lino.modlib.memo.Previewable.before_ui_save`  would create
+previews for Jane on Jane, and for Hobbit on Hobbit. We need to tell Jane that
+we want her to write the previews using the react front end.  And we need a
+data checker to fix existing previews when something has changed in the code.
+
+(Turned out to be wrong:) The :attr:`lino.core.site.Site.server_url` attribute
+is currently on the Site class, but it should be on the Plugin class. Every
+front end must have its own server URL. (Wrong because there is only one
+default_ui per site, and because moving it to a plugin makes it more difficult
+to change its value in your :xfile:`settings.py` file.
+
+In :class:`lino.core.renderer.Renderer` I renamed the :attr:`plugin` attribute
+to :attr:`front_end`. (The plugin that owns the renderer is always a front end.
+We might define a class :class:`FrontEnd` which inherits from :class:`Plugin`
+to differentiate between normal plugins and those which represent a front end
+(currently extjs, bootstrap, react)).
+
+In the :xfile:`settings.py` file for Jane we will have to say::
+
+    def get_installed_apps(self):
+        yield super(Site, self).get_installed_apps()
+        yield 'lino_react.react'
+
+    def get_plugin_configs(self):
+        for i in super(Site, self).get_plugin_configs():
+            yield i
+        yield ('memo', 'front_end', 'react')
+
+I tried to test this in the the team demo, but there is some problem yet. To be
+observed.
+
+
+Notes:
+
+We might rename Site.default_ui to Site.front_end.
+
+The server_url attribute is used:
+
+- directly in the *welcome.body.html* template (which is not used in
+  production, but might so some day)
+
+- by *MailRenderer.get_detail_url()*. MailRenderer is used directly by
+  *notify.Message.send_summary_emails()* and subclassed by
+  *JinjaRenderer*. See the *summary.eml* template.
+
+- By Renderer.get_detail_url
+
+The :meth:`lino.core.renderer.Renderer.get_detail_url` method.
+
+- The default implementation, which just returns a string "Detail",
+  is used in doctests.
+
+- lino.api.doctest.screenshot() uses it, but that code is not working
+  anywhere.
+
+- lino.core.fields.FieldElement.value2html() uses it to make primary
+  keys clickable.
+
+- Request.goto_pk() uses it, but only for react or bootstrap, not for
+  extjs (which btw is done using an ugly hack).
+
+- used by the lino_welfare.modlib.pcsw.Client.get_reminders() method
+  which seems to be dead code.
+
+- overwritten by custom renderers defined in lino_noi.lib.public and
+  lino_noi.lib.public (which can go away)
+
+
+JinjaRenderer creates a context variable 'ar' with a BaseRequest on the
+kernel.default_renderer. This is used on pages that don't have a valid action
+request.  The only example I found is the :xfile:`403.html` template used for
+error handling.  This template inherits from :xfile:`bootstrap3/base.html`
+which is also used for regular pages.  This is not a good dependency
+(bootstrap3 should depend on core, not the opposite).
+
+

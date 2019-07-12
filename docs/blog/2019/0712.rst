@@ -1,0 +1,57 @@
+:date: 2019-07-12
+
+=====================
+Friday, July 12, 2019
+=====================
+
+About front ends and renderers
+==============================
+
+I checked in my work on :ticket:`3110`. The test suite passes again.  The data
+checker is still missing, but this is less urgent.
+
+The :attr:`lino.modlib.memo.Plugin.front_end` setting is now ready for beta
+testing on a site with two web front ends.
+
+We must sometimes produce absolute URIs (e.g. when parsing a notification
+message to an email), and sometimes relative URIs (e.g. when rendering it in
+the summary panel of the comments per ticket).
+
+Lino now uses the `BASE <https://www.w3schools.com/tags/tag_base.asp>`__ tag
+when sending notification emails.  This avoids us adding an option to the memo
+parser which would instruct it to generate absolute URIs. Not sure whether
+email clients support it, though. To be observed. The difference is visible
+e.g. in :mod:`lino_book.projects.team.tests.test_notify`. Before today the body
+of a notification email was::
+
+    <body> (22/12/2016 19:45) Robin a comment? <a href="http://127.0.0.1:8000/api/tickets/Tickets/1" ... </body>
+
+Now it is::
+
+    <html><head><base href="http://127.0.0.1:8000/" target="_blank"></head>
+    <body>(22/12/2016 19:45) Robin a comment? <a href="/api/tickets/Tickets/1" ... </body></html>
+
+
+Note that only comments are previewable. The body of a notification message has
+currently no preview.  That's because notification messages aren't shown often,
+so we can parse them on the fly when needed. You might say here that currently
+the *are* shown often, namely in the dashboard (:class:`notify.MyMessages`).
+But I have the feeling that this dashboard item will go away since nobody reads
+notifications in the dashboard.
+
+The difference between a "front end" (i.e. a plugin) and a "renderer" is not
+clear.  Maybe we should merge them.  Maybe we should change `ar.renderer` to
+`ar.front_end`. En attendant we can use `ar.renderer.front_end`.
+
+TODO: Note the difference between Site and Kernel : Site contains the
+"configuration", which is available after instantiation of the :setting:`SITE`.
+Kernel contains the "run-time environment" of a :setting:`SITE` and is
+available only after startup.  Maybe we should rename "kernel" to "rte" to make
+this more evident.
+
+I started a new page :ref:`dev.story`.
+
+The memo parser currently always produces relative URIs
+
+I removed the :class:`MailRenderer` class in :mod:`lino.core.renderer` because
+it was no longer needed.
