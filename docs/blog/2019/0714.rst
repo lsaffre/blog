@@ -1,0 +1,53 @@
+:date: 2019-07-14
+
+=====================
+Sunday, July 14, 2019
+=====================
+
+I reviewed Hamza's work on getlino and started to dive myself into it.
+
+
+The challenge is that we have a set of configuration options to be stored in a
+config file.  For each option there is a help text. We want getlino setup to
+interactively ask for each of these options and then to write the site-wide
+config file.  I keep the door open for a per-user config file though I don't
+currently see why this might be good. Maybe on some shared server.
+
+
+- Remove argh dependency and make use of click features
+
+  The click package has a `prompt` keyword for options, but (1) how to disable
+  prompting when --noinput is given? and (2) I would like to use the help texts
+  when prompting. I found `this documentation page
+  <https://click.palletsprojects.com/en/7.x/complex/>`__ but no real solution.
+
+- Rremoved the projects_prefix option (I don't see why it is useful)
+
+- config files :
+
+  (1) support having a system-wide and a per-user file
+
+  (2) read them all (if they exist), write only the system conf (only if there is no user conf and after asking user confirmation)
+
+- Instead of running `sudo` for every command, we must run the whole script as root: ``sudo pip3 install
+  getlino``.
+
+- I think that uwsgi is not needed for getlino (it is needed by the env of every site)
+
+- added more options
+
+- split it into three commands : config, setup and startsite.
+
+
+My last checkins today use a quite sophisticated approach, but it seems to work
+as I want. The sophisticated approach seems necessary because we want to have
+our hard-coded default config values, we want to read and write them from or to
+the config file, we want to overwrite them via command-line options, and we
+want to interactively ask for their value.  The tricky part was how to define
+everything in a central place and avoid redundant code.
+
+We cannot say "--noinput" as in Django because for boolean options click
+requires a word for both values.  I could declare the option using
+"--input/--noinput", but then the name of the variable would be "input". Okay I
+could specify an alternative variable name, e.g. "input_", but that would make
+it even more difficult to understand. "batch" seems clear to me.
