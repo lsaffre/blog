@@ -1,0 +1,139 @@
+:date: 2019-07-16
+
+======================
+Tuesday, July 16, 2019
+======================
+
+My first day at the ajapaik developer camp 2019 in Nõva. Kimmo, Märt, Joel,
+Vahur and Katrin started already yesterday.  The camp lasts until Thursday.
+
+I will work on :ticket:`3123` (Authentication issues in ajapaik).
+
+What is django-allauth?
+=======================
+
+First I had to learn the following.
+
+Ajapaik uses `django-allauth
+<https://readthedocs.org/projects/django-allauth/>`__ while in Lino we use
+`python-social-auth <https://github.com/python-social-auth>`__.
+
+I read `an interesting discussion on reddit
+<https://www.reddit.com/r/django/comments/8b1b3z/whats_the_current_state_of_the_art_when_it_comes/>`__
+about the difference.  The opening question is "In the last years the standard
+recommendation for Social Authentication in Django has been django-allauth.
+However now that python-social-auth and the corresponding Django implementation
+social-app-django are under active development again I would like to know if
+anyone has more experience with it."
+
+Some interesting answers:
+
+  None of them are perfect. Django-allauth is cool unless you need OpenID
+  Connect or something else non-trivial, then you'll have to dig it out and
+  implement it yourself or navigate the sprawling forest of forks..
+
+  It seems that Django-Allauth is lacking integration with
+  Django-REST-Framework, while Python Social Auth has a library which integrates
+  authentication for REST API later.
+
+
+Installing a development environment
+=====================================
+
+There are some problems related to authentication. Mostly irritating or wrong
+error messages when users try to sign in using some edge case situation.
+
+But how can I see the problem?
+
+A nice thing that the ajapaik project now uses Docker to provide a development
+environment.
+
+Kimmo's cheat sheet for installing Ajapaik docker locally. (my current steps +
+i will add also secrets; OS: Ubuntu 18.04)::
+
+    $ git clone https://github.com/Ajapaik/ajapaik-web.git
+    $ get checkout WIP-xxx
+    $ cd ajapaik-web
+    $ mkdir docker/solr/data
+    $ chmod a+w docker/solr/data
+    $ cp ajapaik/settings/local.py.example ajapaik/settings/local.py
+    $ cp ajapaik/ajapaik/client_secrets.json.example ajapaik/ajapaik/client_secrets.json
+    $ sudo docker-compose up --build
+
+At this point I had to first install Docker correctly: "sudo apt purge docker",
+then add the docker repository to apt sources and "sudo apt install docker-ce".
+Thanks to `this <https://docs.docker.com/install/linux/docker-ce/ubuntu/>`__.
+
+Then the docker container had a failure during installation of `dlib
+<https://www.pyimagesearch.com/2018/01/22/install-dlib-easy-complete-guide/>`__.
+It was a Segmentation Fault during cmake::
+
+  /tmp/pip-install-6ijdxix3/dlib/dlib/global_optimization/../matrix/matrix_la.h:1187:56:
+  internal compiler error: Segmentation fault
+
+There were warnings about an obsolete pip version, so I tried
+inserting "pip install -U pip".  The ajapaik project uses several Dockerfiles,
+the file docker/dlib/Dockerfile contains multiple FROM statement (a feature
+called `multi-stage builds
+<https://docs.docker.com/develop/develop-images/multistage-build/>`__).
+So it wasn't evident to understand which Dockerfile was being processed. I
+tried several times, including after clearing the docker cache::
+
+    $ sudo docker image prune -a
+    $ sudo docker container prune
+    $ sudo docker volume prune
+    $ sudo docker system prune  -a
+
+But the old pip version wasn't the culprit.
+
+I noticed that I get the same error when I simply try "pip install dlib" in a
+terminal on my machine.
+
+It worked once after installing all the system packages described `on this
+<https://www.pyimagesearch.com/2018/01/22/install-dlib-easy-complete-guide/>`__
+page by Adrian Rosebrock on January 22, 2018::
+
+    $ sudo apt-get install build-essential cmake
+    $ sudo apt-get install libopenblas-dev liblapack-dev 
+    $ sudo apt-get install libx11-dev libgtk-3-dev
+    $ sudo apt-get install python python-dev python-pip
+    $ sudo apt-get install python3 python3-dev python3-pip
+
+But then it turned out that it worked because I also had restarted my notebook
+after above step, and because I had not yet started PyCharm. PyCharm was the
+culprit.  It is very hungry for memory. I have only 8 MB of RAM after all. I
+did several more tests and I close this issue with the assumption that  "pip
+install dlib" fails when other memory-hungr software is running, e.g. PyCharm
+and Thunderbird.
+
+In the waiting times I read the docker documentation.  I learned that
+docker-compose runs the container described by the Dockerfile and connects it
+to the outside world as described in the docker-compose.yml file. The
+``--build`` options causes it to build the image when needed.
+
+The ajapaik project uses a `solr <https://en.wikipedia.org/wiki/Apache_Solr>`__
+service.
+
+
+https://www.pyimagesearch.com/2018/01/22/install-dlib-easy-complete-guide/
+
+Optimizing the face recognition feature
+=======================================
+
+After a brainstorming with Vahur and some surfing and digging (e.g. `here
+<https://github.com/Ajapaik/ajapaik-web/blob/master/ajapaik/ajapaik_face_recognition/models.py>`__),
+I suggest the following changes:
+
+  Add a new table "Persons" (name, gender, birth_date, death_date, wikicommons_id, ...)
+
+  Add a field FaceRecognitionRectangle.person (nullable FK to Person table).
+
+  Add a field Photo.author_id (nullable FK to Person table).
+
+  Write a script (admin command) which creates one Person for each Album for
+  which there is at least one FaceRecognitionRectangle.
+
+  Add a field User.person_id (nullable FK to Person table).  Users can link
+  their account to a known person in their preferences.
+
+What is the difference between subject_consensus and subject_ai_guess

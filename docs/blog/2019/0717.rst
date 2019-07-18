@@ -1,0 +1,82 @@
+:date: 2019-07-17
+
+========================
+Wednesday, July 17, 2019
+========================
+
+Second day in Nõva.
+
+Authentication issues
+======================
+
+The ``sudo docker-compose up --build`` now runs (after another minor issue: I
+had to change the database port in the docker-compose.yml file from '5434:5432'
+to '5434:5433' (probably because I have a pgsql running on my machine, so that
+port is already taken).
+
+Now it works, and ends by saying::
+
+  Starting development server at http://0.0.0.0:8000/
+
+I leave that terminal running, open another terminal and say::
+
+    $ cd path/to/ajapaik-web
+    $ sudo docker exec -it ajapaik bash
+
+Which opens a bash shell in the container. There I say::
+
+    # python manage.py createsuperuser
+
+And interactively give a password and email for the web superuser.
+
+And voilà, ajapaik is running in http://localhost:8000 with created superuser and without photos.
+
+When I sign in (using the username and password I specified in createsuperuser), I get::
+
+    ImproperlyConfigured at /accounts/login/
+    No Facebook app configured: please add a SocialApp using the Django admin
+
+Okay, of course I must set the :setting:`FACEBOOK_APP_KEY` and
+:setting:`FACEBOOK_APP_SECRET` settings. (These are not public of course).
+
+I could now play in the Django shell :manage:`shell`` and explore things:
+
+>>> from django.apps import apps
+>>> m = apps.get_model('auth.User')
+>>> [u.username for u in m.objects.all()]
+['_84ypqk56uz928yixmuwz4nkj7_DFJ', 'root', '_q0ntokocen0ojzqte7vptibvx_QCP', 'luc']
+
+Note: the temporary users with auto-generated names are a special feature in
+ajapaik: you can upload pictures and work anonymously because your activity is
+tracked in such a temporary user account.
+
+Translation issues
+==================
+
+Märt and I fixed some translation fixtures where I learned that the Django
+templating language has no way to strip whitespace from inside a
+`{{blocktranslate}} ... {{plural}} ... {{endblocktranslate}}` construct.
+
+
+Photo management à la Lino
+==========================
+
+I started imagining two new plugins :mod:`lino_xl.lib.photos` and
+:mod:`lino_xl.lib.faces`.
+
+Or maybe we need just some optimizations to :mod:`lino_xl.lib.uploads` : a view
+which shows a "preview" of each upload in a grid of tiles.  A "Tiles" view
+would be either a new actor subclass, or a new display_mode for tables.
+
+Example of a ticket with an upload :ticket:`3098`.
+
+
+Reviewed getlino
+================
+
+Hamza worked on getlino, I reviewed his work and did an avalanche of changes.
+
+I stopped with some open problems:
+
+- ERROR 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+- The `.pyc` files aren't group writable (i.e. the umask somehow didn't get passed)

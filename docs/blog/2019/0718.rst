@@ -1,0 +1,35 @@
+:date: 2019-07-18
+
+=======================
+Thursday, July 18, 2019
+=======================
+
+I had yet another series of ideas for :ticket:`3036` and started working on
+these: :meth:`lino.core.plugin.Plugin.get_requirements`, A new admin command
+:manage:`configure`, merge :cmd:`getlino configure` and :cmd:`getlino setup`
+(the differentiation is useless).
+
+I had to decide how to name the combined command "configure" and "setup". Both
+commands (the getlino command and the admin command) should have the same name
+because they do similar things. But at different levels (in getlino we "setup"
+or "configure" a production "server" which can run multiple "sites", with the
+admin command we "setup" or "configure" the Python environment of a given
+site).
+
+The name "setup" is suboptimal because it makes us have a file named `setup.py`
+in :mod:`lino.management.commands`, and that file name should be reserved for
+the top-level :xfile:`setup.py`. So I finally opted for "configure" rather than
+"setup". Another name candidate was "install" but I that would clash with
+"installing Python modules".  You first install the lino application into the
+environment of a site, then you "configure" that site (which will potentially
+install more Python modules into the environment).
+
+
+    $ go team
+    $ pm configure -l
+    bleach
+    channels
+    django-mailbox
+    schedule
+    social-auth-app-django
+    svn+https://svn.forge.pallavi.be/appy-dev/dev1#egg=appy
