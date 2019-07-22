@@ -24,3 +24,44 @@ did not actually register the voucher (i.e. create movements, compute totals,
 I released version 19.7.3 of Lino and XL to PyPI. Although the test suites are
 still failing.  I hope that th failures are trivial and only caused by the test
 suite and not by a bug.
+
+
+
+getlino
+=======
+
+Session with Tonis: When you maintain a Lino server, then you don't want to
+decide for each new site which dbengine to use. You decide this once for all
+during configure. In general, `apt-get install` is called only during
+configure, never during startsite. If you have a server with some mysql sites
+and exceptionally want to install a site with postgres, you simply call getlino
+configure before calling startsite.
+
+After session with Hamza:
+
+- Optimized confirmations and messages.
+
+- Added an Installer class to avoid passing `batch` all the time, and to have a
+  single call to apt-get.
+
+- Added ``--depth 1 -b master`` to git clong commands because history is usually
+  not needed.
+
+- Added logfile setup
+
+- Optimized nginx config file creation. Fixed a bug : the symlink was issued from
+  the src in roject dir but it must link to the copy in sites_available.
+
+- Reviewed the  :ref:`getlino` docs page.
+
+TODO:
+
+- I did not yet test pgsql setup after my changes.
+
+- The nginx configuration file causes warnings
+
+- mysql database setup also failed when the user or the database already
+  existed. Now runs three separate commands.  If the first or second fails, the
+  privileges are still done.  Disadvantage is that now it asks each time for the
+  root password... not sure how to fix that.
+
