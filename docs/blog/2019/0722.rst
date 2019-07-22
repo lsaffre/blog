@@ -54,7 +54,37 @@ After session with Hamza:
 
 - Reviewed the  :ref:`getlino` docs page.
 
+I tested using::
+
+    sudo -H getlino.py startsite cosi a --dev --linodev --shared-env /usr/local/lino/shared
+
+The ``--linodev`` option is currently required because of the appy issue we fixed with Hamza.
+
+The ``--dev`` option is currently required in most cases because we don't yet
+do pypi releases for applications
+
+The new ``--shared-env`` option can save time during testing. Usage::
+
+    --shared-env /usr/local/lino/shared
+
+This option has no default value, i.e. default is to not use any shared env.
+
+Note that when using a shared env, also static files are shared.
+
+The ``--env-dir`` and ``--repos-dir`` options should probably always remain at
+their default values ("env" and "repositories").
+
+
+
 TODO:
+
+- runserver doesn't yet serve the static files.
+  Maybe because it's just a symlink?
+
+- repos-dir and env-dir need to be reviewed in startsite template
+
+- when using shared env, the static subdir of each site must also be a symlink
+  to the shared
 
 - I did not yet test pgsql setup after my changes.
 
