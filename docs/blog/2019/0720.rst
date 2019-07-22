@@ -1,0 +1,31 @@
+:date: 2019-07-20
+
+=======================
+Saturday, July 20, 2019
+=======================
+
+I discovered and fixed yet another bug introduced by my recent work on
+:ticket:`3110`. Yes, the :meth:`lino.core.plugin.Plugin.get_detail_url` method
+must also receive the incoming action request (I changed its signature), and
+the renderer of the extjs plugin now returns a different URL depending on
+whether ar.request is set or not: when calling it from
+:meth:`send_summary_emails <lino_xl.lib.notify.Message.send_summary_emails>`
+(e.g. ar.request is None), we want a "permalink" or "https:" URI. Otherwise we
+want a "javascript:..." URI.
+
+I continued on :ticket:`3036` and wrote a new command :cmd:`inv configure`.
+This command is quite slow (it invokes :cmd:`pip install`
+multiple times on each demo project), but that's not our primary concern on
+travis.  The great thing is that we can soon remove all those tricky
+requirement files and the :file:`install_requirements.sh` file.  And in the
+developeräs guide we can replace those complicated installation instruction by
+an instruction to run :cmd:`inv configure`.
+
+Adapted :ref:`atelier.changes`.
+Released atelier to PyPI.
+Adapted the :xfile:`.travis.yml` of book to use this new command.
+
+There is a dependency hell around channels and redis in
+:mod:`lino.modlib.notify`. I somehow got it to pass the test suite, but I
+disabled :mod:`asgi_redis` completely.  Need to test it after release to jane
+and hobbit.
