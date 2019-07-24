@@ -9,14 +9,32 @@ Released version 19.7.4 of XL to PyPI. (needed for testing :ref:`getlino`).
 I am working on the interface between getlino and cookiecutter:
 the :xfile:`pull.sh` and :xfile:`make_snapshots.sh` scripts.
 
-Renamed shared-env to shared-dir (it does not only have a virtualenv but also a
-shared static directory)
+The cookiecutter.json file is actually useless and even disturbing for us:
+cookicutter seems to filter extra_context, accepting only names that are
+defined in the cookiecutter.json file. But okay, we can live with this.
 
-shared-env is now a server-side setting (i.e. asked during configure). But you
-can also override it in startsite.
+``shared-env`` is now a server-side setting (i.e. asked during configure). But
+you can also override it in startsite.  On a development machine you will
+specify your default working environment here.
 
 Added a ``--prod/no-prod``  option.  If you say ``--no-prod``, you will get a
-development environment.
+development server.  This mode is not yet functional. For example it doesn't
+automatically download all repositories.  Can wait. Note that on a development
+server you can run startsite without being root because no system files need to
+be modified.
 
-On a development server you can run startsite without being root.
+:cmd:`getlino configure` now creates a :mod:`lino_local` package, and the
+:xfile:`settings.py` file import ``*`` from there (in addition to the
+application settings).
+
+The :setting:`STATIC_ROOT` is set to 'env/static'. Sites with a shared env also
+have shared static files.
+
+TODO: a newly created site should run in nginx.
+Add optional support for
+webDAV and basic HTTP authentication.
+
+TODO (not urgent, we can live with this): avoid mysql asking 3x for the root
+password, we should probably use the python-mysql interface when creating the
+db and the user: https://hub.packtpub.com/granting-access-mysql-python/
 
