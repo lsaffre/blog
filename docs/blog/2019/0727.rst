@@ -185,3 +185,37 @@ defined or because the :meth:`deconstruct` method is wrong. See `here
 
 Next step for :ticket:`2322` would be to get this to pass and to generate an
 initial migration in :file:`lino_cosi/lib/cosi/migrations`.
+
+
+more getlino
+============
+
+I reviewed and continued my work on :ticket:`3036`.
+
+Hamza, you really don't need to prefix "sudo" to every command sent to
+:meth:`Installer.runcmd` because anyway the whole script must run as root.
+
+Yes it is important to set umask for the nginx server process as well (not just
+for each uwsgi process in supervisor where it is also required). nginx seems to
+also create e.g. `.pyc` or `.js` files. It is not normal that I need sudo to
+remove a project directory. The default system umask is 0022, that is, it
+removes the group write permission on new files.
+
+But how to do this? I found that :file:`/etc/init.d/nginx` sources another file
+:file:`/etc/default/nginx`. So I made getlino add a line "umask 0002" to that
+file. (I read `here
+<https://serverfault.com/questions/772259/nginx-doesnt-apply-variables-in-etc-default-nginx>`__
+that this should no longer be used because Debian now uses systemd. But in
+:file:`/etc/systemd/system` I cannot find anything related to nginx.) After
+doing this, I saw that actually my supervisor conf files were *not* setting the
+umask! *This* was the problem. The nginx main process does *not* create any
+files and therefore does not need an umask.
+
+My version of this morning didn't yet work with :option:`webdav` because the
+`client_body_temp_path` in nginx.conf pointed to a non-existing path. Now it
+points to :file:`/tmp`. Not sure whether this is what we want, but seems to
+work for me. I did yet actually test a webdav access (:ref:`avanti` would be
+good for testing, but currently startsite still fails with an avanti site).
+
+I removed creation of a reminder in :fixture`demo2` of avanti because it failed
+under mysql. Not yet tested whether this affects the test suite.
