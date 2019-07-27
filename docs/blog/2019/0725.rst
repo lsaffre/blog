@@ -1,0 +1,72 @@
+:date: 2019-07-25
+
+=======================
+Thursday, July 25, 2019
+=======================
+
+Note that yesterday was a historic day: I saw for the first time a production
+Lino running under nginx.  I believe that nginx is better for Lino than apache
+because it is more lightweight and in Python. Until now we always used apache
+as web server.  The :ref:`getlino` project gave us motivation to do the step.
+
+getlino
+=======
+
+I had a nightly session for :ticket:`3036` (:ref:`getlino`):
+
+- added configs for monit and logrotate
+- libreoffice was being started as www-data (must be root)
+- fixed at least one other bug
+- optimized the user experience by avoiding useless questions
+- new method Installer.override_batch()
+
+
+getlino 2
+=========
+
+Morning session: get http basic auth and webdav to work.
+
+Which variant of the ``nginx`` system package do we need? light, full, extras?
+
+- https://askubuntu.com/questions/553937/what-is-the-difference-between-the-core-full-extras-and-light-packages-for-ngi
+- http://nginx.org/en/docs/http/ngx_http_dav_module.html
+- https://starbeamrainbowlabs.com/blog/article.php?article=posts%2F237-WebDav-Nginx-Setup.html
+- https://wiki.debian.org/Nginx
+
+The last mentioned link says it cleary : 'light', 'full' and 'extras' contain
+different modules, nginx-light being the lighter and nginx-extras being the
+heavier. nginx-full is in the middle, being installed with the metapackage
+nginx (nginx-full is not installed if nginx-light is already installed).
+
+As it seems we just need nginx (the meta package which actually will install
+nginx-full), which has both
+`AuthBasic <http://nginx.org/en/docs/http/ngx_http_auth_basic_module.html>`__
+and
+`WebDav <http://nginx.org/en/docs/http/ngx_http_dav_module.html>`__.
+
+Actually in weleup they need (1) LDAP authentication and (2) webdav. The http
+basic authentication is actually rather disturbing for them because it means
+that they need to close their browser if they want to sign in using another
+account.
+
+I re-discovered :ref:`admin.auth` and reviewed it.
+
+
+nginx and certbot (``--https``)
+===============================
+
+Hamza and I had a look at `FreedomBox
+<https://wiki.debian.org/FreedomBox/Manual/DynamicDNS>`__, but it seems that
+this is not maintained. `dynu.com
+<https://www.dynu.com/DynamicDNS/IPUpdateClient/Linux>`__ seems more
+sustainable.
+
+getlino must *not* also provide a ``--dynamic-ip`` option (to
+automatically install some dns client), so the choice of how a domain name
+point to the server remains responsibility of the getlino user (the server
+operator).
+
+Hamza also discovered ngrok.io who provide both : dynamic IP and https. But
+that's unfortunately not useful to use since neither Hamza nor I want to really
+serve content, we just need a dynamic dns client to simulate the situation of a
+real Lino server with static IP.
