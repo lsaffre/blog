@@ -35,9 +35,21 @@ More advantages will come:
   Especially for the bash_aliases this will be handy because there we will need
   more than Python's basic string formatting.
 
+.. program:: getlino configure
 
-All those pips
-==============
+TODO:
+
+- test the :option:`--webdav`
+
+- Maybe we don't want LDAP in getlino : https://redfern.me/ldap-auth-with-django/
+
+  The `django-auth-ldap
+  <https://django-auth-ldap.readthedocs.io/en/latest/>`_ might even work
+  OOTB for Lino.  Otherwise we can get at least inspiration from it.
+
+
+All those pips!
+===============
 
 I had a problem on my machine: the following doesn't work::
 
@@ -54,3 +66,23 @@ pip3::
 
    $ sudo pip remove python-pip python3-pip
    $ sudo pip install python3-pip
+
+Note that I also have a pip installed in my default Python environment::
+
+    $ which pip
+    /home/luc/dell1tb/virtualenvs/py3/bin/pip
+
+I uninstalled it using  ``pip uninstall pip`` because I thought "maybe the
+system-wide pip alse works for the currently active environment".  But nope.
+Yes, the uninstall worked, but it left me with a virtualenv without pip.
+Saying "pip" now meant that I want to install the system-wide Python::
+
+    $ which pip
+    /usr/local/bin/pip
+    luc@doll:~/work/blog$ which pip3
+    /usr/bin/pip3
+
+I had to `read the docs <https://pip.pypa.io/en/stable/installing/>`__  and
+install pip again into my default environment.  virtualenv automatically
+installs pip into every new virgin environment.
+
