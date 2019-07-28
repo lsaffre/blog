@@ -4,6 +4,9 @@
 Sunday, July 28, 2019
 =====================
 
+Getlino now without `*.py`
+==========================
+
 I created :ticket:`3139` and worked on it. Note that when you installed getlino
 with ``-e``, you must reinstall it after pulling this version to your local
 copy.  See :ref:`getlino`.
@@ -51,18 +54,19 @@ TODO:
 All those pips!
 ===============
 
-I had a problem on my machine: the following doesn't work::
+I had a problem on my machine: the following didn't work though I have
+python3-pip installed (and though it had been working some time ago)::
 
     $ sudo pip3 install -e .
     sudo: pip3: command not found
 
-Although I have python3-pip installed. I must say that I previously ran::
+I must say that I previously ran::
 
    $ sudo pip install -U pip
 
-That is, I asked pip2 to upgrade itself.  Maybe this caused things to break.
-Anyway, I fixed the problem by uninstalling both pips and re-installing just
-pip3::
+That is, I asked the system-wide pip2 to upgrade itself.  Maybe this caused
+things to break. Anyway, I fixed the problem by uninstalling both system-wide
+pips and re-installing just pip3::
 
    $ sudo pip remove python-pip python3-pip
    $ sudo pip install python3-pip
@@ -86,3 +90,19 @@ I had to `read the docs <https://pip.pypa.io/en/stable/installing/>`__  and
 install pip again into my default environment.  virtualenv automatically
 installs pip into every new virgin environment.
 
+
+Getlino documentation
+=====================
+
+.. program:: getlino configure
+
+I reviewed the :ref:`getlino` page and renamed ``--prod`` to :option:`--asroot`
+because this seems to say more accurately what does. If you don't specify this
+option, getlino will not touch any system-wide settings, write only to your
+user config file, startsite will not install an nginx config file. Basically
+you can install a full development machine when you don't specify
+:option:`--asroot` (exception: some system packages are required if you want to
+build the docs or run the test suite, but getlino will issue a warning which
+lists them).
+
+I pushed my changes but did not test very thoroughly.
