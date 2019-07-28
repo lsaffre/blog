@@ -1,0 +1,56 @@
+:date: 2019-07-28
+
+=====================
+Sunday, July 28, 2019
+=====================
+
+I created :ticket:`3139` and worked on it. Note that when you installed getlino
+with ``-e``, you must reinstall it after pulling this version to your local
+copy.  See :ref:`getlino`.
+
+
+Until now, we had to type "getlino.py ..." which is less beautiful than
+"getlino ...".  This was because we used the `scripts` argument in
+:xfile:`setup.py`.  I changed it to use `entry_points`. See `here
+<https://python-packaging.readthedocs.io/en/latest/command-line-scripts.html>`__.
+
+Another advantage is that now we can write doctests about getlino. For example:
+
+>>> from getlino.utils import APPNAMES
+>>> print(APPNAMES)
+['noi', 'voga', 'cosi', 'avanti', 'amici', 'presto', 'weleup', 'welcht', 'min2']
+
+This advantage, however, is for later because currently we want the book test
+suite to pass also on Python 2.
+
+More advantages will come:
+
+- we can write unit tests in the getlino repo, and we can probably get travis
+  to setup complete production servers. We should take care to run those tests only
+  on a virtual machine on travis, not on the machine of a developer.
+
+  http://click.palletsprojects.com/en/5.x/testing/
+
+- we can now use jinja templates in separate files for generating files.
+  Especially for the bash_aliases this will be handy because there we will need
+  more than Python's basic string formatting.
+
+
+All those pips
+==============
+
+I had a problem on my machine: the following doesn't work::
+
+    $ sudo pip3 install -e .
+    sudo: pip3: command not found
+
+Although I have python3-pip installed. I must say that I previously ran::
+
+   $ sudo pip install -U pip
+
+That is, I asked pip2 to upgrade itself.  Maybe this caused things to break.
+Anyway, I fixed the problem by uninstalling both pips and re-installing just
+pip3::
+
+   $ sudo pip remove python-pip python3-pip
+   $ sudo pip install python3-pip
