@@ -72,3 +72,27 @@ I added test a suite and a :xfile:`.travis.yml` file.
 
 But I don't yet see how we can create virgin debian machines and then install
 Lino on them. Dockerfiles? Heroku apps?
+
+
+
+
+
+How to serialize choicelist
+===========================
+
+
+In a Django shell I can do:
+
+>>> value = rt.models.tickets.TicketStates.new
+
+::
+
+  from lino.core.choicelists import Choice
+  from django.db.migrations.serializer import BaseSerializer
+  from django.db.migrations.writer import MigrationWriter
+
+  class ChoiceSerializer(BaseSerializer):
+      def serialize(self):
+          return "rt.models.{}.{}.{}".format(value.choicelist.app_label, value.choicelist.__name__,value.name), {'from lino.api.shell import rt'}
+
+  MigrationWriter.register_serializer(Decimal, DecimalSerializer)
