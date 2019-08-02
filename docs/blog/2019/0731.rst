@@ -1,0 +1,41 @@
+:date: 2019-07-31
+
+========================
+Wednesday, July 31, 2019
+========================
+
+Ivo got active, and today he will come to Vigala so I can help him with getting
+started. It is a little Lino developers camp.
+
+I released XL 19.7.6 and Lino 19.7.5 to PyPI (:ref:`lino.changes.2019`).
+
+In the afternoon, with Ivo, we worked on the problem that getlino configure
+couldn't write to the config file for monit.
+
+Ivo did his first suggestion for fixing this: use mode "w+" instead of "w" when
+opening it. But that wasn't the problem.  Actually "w" is what we want (look at
+`this
+<https://stackoverflow.com/questions/1466000/python-open-built-in-function-difference-between-modes-a-a-w-w-and-r/30566011#30566011>`_
+diagram). We observed that monit had not been installed. But why?
+
+We found why getlino did not install monit : because I had added the
+``--asroot`` option, and we didn't specify this.  Now getlino calls
+:meth:`os.geteuid` to detect whether it is running as root.  No more
+``--asroot`` option needed.  Ivo knew it, and we saw it `here
+<https://stackoverflow.com/questions/2806897/what-is-the-best-way-for-checking-if-the-user-of-a-script-has-root-like-privileg>`__,
+but I had to verify::
+
+  $ sudo python -c "import os; print(os.geteuid())"
+
+Indeed: when you are user `luc` and run a command with `sudo`, then for the time
+of the command you "are" actually `root`.  The process does not even know that
+it has been invoked by a user `luc`.
+
+The next problem then was that getlino didn't actually install the
+`pip_packages`.  This was a bug caused by my changes some days ago.
+
+Note that getlino is now `fixed on travis
+<https://travis-ci.org/lino-framework/getlino/jobs/566006223>`__, but it doesn't
+yet test enough.  Okay, configure and startsite now work without error, but we
+should also test whether the server restarts and whether the site responds to
+requests.
