@@ -1,0 +1,49 @@
+:date: 2019-08-03
+
+========================
+Saturday, August 3, 2019
+========================
+
+I discovered a bug in my mind (a vocabulary bug): instead of saying
+"Application developer" and "Core developer", we should say "Developer" and
+"Contributor".
+
+I reviewed :ref:`book` and :ref:`getlino` to fix this bug.
+
+:cmd:`getlino configure` has a new option ``--contrib`` which will install all
+repositories to your ``--repos-base``.
+
+We should start using at least two dockerfiles: one to test installation on a production server,
+another to test installation into a virtual environment.
+
+I'll probably need to understand https://docs.docker.com/compose/
+
+https://stackoverflow.com/questions/27409761/multiple-dockerfiles-in-project
+
+
+We are having problems because :cmd:`apt-get install -y tzdata` seems to ignore
+`DEBIAN_FRONTEND=noninteractive`.  It keeps asking interactively for our time
+zone.  --> Seems that these problems didn't go away because I should have
+specified ``--no-cache`` for the ``docker build``.
+
+When I start the Dockerfile from ``debian:buster``, we have the problem that
+`monit` is not included with Debian Buster.   I read `this bug report
+<https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=930637>`__. Interesting
+story!  Rather sad for us since we definitively want monit.  `Here
+<https://github.com/openmediavault/openmediavault/issues/410>`__ they have the
+same problem and suggest as workaround to "download the package from unstable
+and install it with dpkg".  I then read `How can I run Debian stable but install
+some packages from testing?
+<https://serverfault.com/questions/22414/how-can-i-run-debian-stable-but-install-some-packages-from-testing>`__.
+Ouch, that looks quite complicated!  It requires some expertise to use packages
+from unstable. It is not the kind of skills our customers want to pay for...
+
+As a temporary workaround I set the default for the :cmd:`getlino configure
+--monit` option to `False`.  WE put it back to ``isroot`` when they have added
+back monit to stable buster.
+
+A last problem for today: now it was using an old Django version.  This was
+because (with ``--contrib``)  the repositories were being cloned and installing
+in an arbitrary order (using ``for nickname, repo in REPOS_DICT.items()``). So
+e.g. noi was being installed before lino, it was downloading an old lino version
+from PyPI, which still had "Django <2" requirement.

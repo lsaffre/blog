@@ -1,0 +1,27 @@
+:date: 2019-08-05
+
+======================
+Monday, August 5, 2019
+======================
+
+Error loading psycopg2 module: No module named 'psycopg2'. OMG I am stupid.
+Hamza fixed that bug but I undid it. Yes of course: okay we select the db-engine
+only once per server, but startsite still must install the corresponding pip
+packages in startsite for every site.
+
+Should we install psycopg2-binary or rather psycopg? -->  "The psycopg2-binary
+package is a practical choice for development and testing but in production it
+is advised to use the package built from sources."
+(https://pypi.org/project/psycopg2/)
+
+The :meth:`getlino.utils.Installer.runcmd` didn't fail when the subprocess failed. Fixed.
+
+The :cmd:`inv prep` command in getlino didn't execute the prep.sh script because
+getlino has no demo projects.  Instead of saying "inv prep test" we must say
+"./prep.sh ; inv test" in the  :xfile:`.travis.yml` file.  That's a bit
+surprising but logical.
+
+More changes in the :xfile:`.travis.yml` file after reading `Travis docs
+<https://docs.travis-ci.com/user/reference/overview/#virtualization-environments>`__.
+No need to specify a python version as each Ubuntu distro has its default
+version. Travis offers only Ubuntu images, no pure Debian.
