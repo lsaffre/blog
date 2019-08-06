@@ -5,23 +5,78 @@ Monday, August 5, 2019
 ======================
 
 Error loading psycopg2 module: No module named 'psycopg2'. OMG I am stupid.
-Hamza fixed that bug but I undid it. Yes of course: okay we select the db-engine
-only once per server, but startsite still must install the corresponding pip
-packages in startsite for every site.
+Hamza actually fixed that bug but I undid it because I didn't notice at that
+moment the difference between apt packages and pip packages... Yes of course:
+okay we select the db-engine only once per server, but startsite still must
+install the corresponding pip packages in startsite for every site.
 
 Should we install psycopg2-binary or rather psycopg? -->  "The psycopg2-binary
 package is a practical choice for development and testing but in production it
 is advised to use the package built from sources."
 (https://pypi.org/project/psycopg2/)
 
-The :meth:`getlino.utils.Installer.runcmd` didn't fail when the subprocess failed. Fixed.
+This caused an errror "You need to install postgresql-server-dev-NN for building
+a server-side extension or libpq-dev for building a client-side application."
+--> I added `libpq-dev <https://packages.debian.org/buster/libpq-dev>`__ to the
+apt_packages of postgresql dbengine.
 
-The :cmd:`inv prep` command in getlino didn't execute the prep.sh script because
-getlino has no demo projects.  Instead of saying "inv prep test" we must say
-"./prep.sh ; inv test" in the  :xfile:`.travis.yml` file.  That's a bit
-surprising but logical.
+The :meth:`getlino.utils.Installer.runcmd` didn't fail when the subprocess
+failed. Fixed.
 
 More changes in the :xfile:`.travis.yml` file after reading `Travis docs
 <https://docs.travis-ci.com/user/reference/overview/#virtualization-environments>`__.
 No need to specify a python version as each Ubuntu distro has its default
 version. Travis offers only Ubuntu images, no pure Debian.
+
+Fixed a problem with the postgresql database setup (it was adding an ";" at the
+wrong place).
+
+Running ``inv prep`` in a project without demo projects
+=======================================================
+
+The :cmd:`inv prep` command in getlino didn't execute the prep.sh script because
+getlino has no demo projects.  Instead of saying "inv prep test" we must say
+"./prep.sh ; inv test" in the  :xfile:`.travis.yml` file.  But that's
+suboptimal. :cmd:`inv prep` should "run preparation tasks that need to run
+before testing (but only once for all tests)". When I run "pp inv prep test" it
+should rebuild the images. I should not be forced to remember running prep.sh
+manually before "pp inv prep test". So we have now two config settings for
+:cmd:`inv prep`: :envvar:`prep_command` and :envvar:`demo_prep_command`.
+
+Released Atelier 1.1.14 (:ref:`atelier.changes`) for testing it on travis for
+getlino.
+
+
+Telling Docker where to store images
+====================================
+
+I am getting system warnings because Docker fills up my root filesystem.
+
+https://stackoverflow.com/questions/19234831/where-are-docker-images-stored-on-the-host-machine
+
+But how to configure the `docker daemon
+<https://docs.docker.com/engine/reference/commandline/dockerd/>`__ on Ubuntu?
+
+https://docs.docker.com/storage/storagedriver/
+https://docs.docker.com/storage/storagedriver/select-storage-driver/
+https://forums.docker.com/t/how-to-delete-cache/5753/2
+
+Finally I just said::
+
+  $ docker system prune
+
+Which answered::
+
+  WARNING! This will remove:
+    - all stopped containers
+    - all networks not used by at least one container
+    - all dangling images
+    - all dangling build cache
+
+  Are you sure you want to continue? [y/N] y
+  Deleted Containers:
+  cdd408dc0ee130d4498c82f0eed6609445b3ae290ef21c7739ef29ceca99fbd4
+  493ae1128f25bc144598661eaf854de527cdc7b4795ba1a34f9e46a0aa852012
+  48f9d5220778b8efd7db4bb041659b9b058f993e234e770e803e4cbeb18e4124
+  ...
+  Total reclaimed space: 27.53GB

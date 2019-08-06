@@ -1,0 +1,157 @@
+:date: 2019-08-06
+
+=======================
+Tuesday, August 6, 2019
+=======================
+
+Accounting
+==========
+
+
+I continued entering our accounting into :ref:`cosi`.  I am still fiddling on
+EKR 7/2018 which is our first case of internal clearing (:ticket:`3106`).
+
+How it looked in TIM::
+
+  Accnt  Z Bezeichnung                    Debit      Credit     *
+  ──────┬─┬──────────────────────────────┬──────────┬──────────┬─
+  440000│E│Eesti Energia AS              │          │     79.97│*
+  440000│E│Eesti Energia AS              │     79.97│          │*
+  440000│E│Saffre Luc                    │          │     79.97│*
+  614100│ │Elekter                       │     23.33│          │
+  472200│ │Deklareerimata käibemaks saada│      4.66│          │
+  440020│ │Hankijad (arveldatud töötajate│     51.98│          │*
+        │ │Saldo D=                      │    159.94│    159.94│
+
+
+I decided to introduce a few subtle changes compared to TIM. While TIM booked
+the third movement using the suppliers general account, Lino books it into a new
+account "Internal clearings".  And I map account 440020 to 600020 (i.e. we
+classify it as a costs account rather than a credits account). How it looks in
+Lino:
+
+================================================= ================== ============ ============ ================ =========
+ Account                                           Partner            Debit        Credit       Match            Cleared
+------------------------------------------------- ------------------ ------------ ------------ ---------------- ---------
+ 440000 Suppliers                                  Eesti Energia AS                79.97        **EKR 7/2018**   Yes
+ 440000 Suppliers                                  Eesti Energia AS   79.97                     **EKR 7/2018**   Yes
+ 462100 Internal clearings                         Saffre Luc                      79.97        **EKR 7/2018**   No
+ 472200 VAT deductible                                                13.32                                      Yes
+ 600020 Costs paid for workers (to be paid back)                      23.33                                      Yes
+ 614100 Electricity                                                   43.32                                      Yes
+                                                                      **159.94**   **159.94**
+================================================= ================== ============ ============ ================ =========
+
+
+
+More optimizations en passant:
+
+.. currentmodule:: lino_xl.lib.ledger
+
+I fixed a bug in :mod:`lino_xl.lib.ledger` : when the
+:attr:`Account.common_account` was updated via the web interface, Lino did not
+"realize" this until the server process was restarted. Fixed. To do this without
+any hack, I added a new method
+:meth:`lino.core.diff.ChangeWatcher.get_old_value`.
+
+
+
+
+
+inv prep test ended with error 245 in project book
+==================================================
+
+This morning, before going to bed, I told my computer  to
+:cmd:`pp -a welfare inv prep test`.
+It worked its way through the demo projects, running
+:cmd:`manage.py prep --noinput --traceback` in each of them.
+And then, out of
+nowhere, in :mod:`lino_book.projects.lydia`, (the 30th of the 46 demo projects),
+that command fails.  It says::
+
+  CommandError: inv prep test ended with error 245 in project book
+
+When I manually run the command which failed, it does not fail again.
+
+What does exit code 245 mean? Does it have a special meaning?  "When a command
+terminates on a fatal signal whose number is N, Bash uses the value 128+N as the
+exit status." (`gnu.org
+<https://www.gnu.org/software/bash/manual/html_node/Exit-Status.html>`__)
+See also `tldp.org
+<http://tldp.org/LDP/abs/html/exitcodes.html>`__
+
+
+245 - 128 = 117 and my question becomes "What means signal 117?".
+I scanned the `man page <http://man7.org/linux/man-pages/man7/signal.7.html>`__
+
+Other people had this exit code. For examples
+`here <https://stackoverflow.com/questions/10054073/failed-with-exit-code-245-xcode>`__`
+and `here <https://github.com/pytest-dev/pytest/issues/1838>`__.`
+
+But `256 - 11 = 245`. So the number might just mean that signal -11
+(Segmentation fault) was received. This can simply be caused by Low memory or
+Faulty Ram memory (`link
+<https://stackoverflow.com/questions/10035541/what-causes-a-python-segmentation-fault>`__)
+
+I cleaned up some places which caused warnings about unclosed resources.
+
+getlino doesn't start the database server
+=========================================
+
+I noticed that :cmd:`getlino configure` did not start the database server.
+Probably fixed. The ``DB_ENGINES`` list has a new new column :attr:`service`.
+There was maybe also a bug in :meth:`getlino.utils.Installer.setup_database`,
+the :meth:`runcmd <getlino.utils.Installer.runcmd>` was called with  :cmd:`sudo
+-u postgres -c bash "{cmd}"` but (imho) :cmd:`sudo -u postgres {cmd}` is enough.
+
+En passant I saw that on Ubuntu Bionic our getlino would fail::
+
+  Package libmysqlclient-dev is not available, but is referred to by another package.
+  This may mean that the package is missing, has been obsoleted, or
+  is only available from another source
+  However the following packages replace it:
+    libmariadb-dev-compat libmariadb-dev
+
+  E: Package 'libmysqlclient-dev' has no installation candidate
+  E: Package 'mysql-server' has no installation candidate
+
+
+Changing number of calendar entries in welfare demo project?
+============================================================
+
+I "fixed" the following failure in :ref:`welfare` by adapting the expected
+output.  Though I am quite sure that a few days ago I did exactly the opposite.
+I have no explanation yet.
+
+::
+
+  File "docs/specs/weleup/eupen.rst", line 1033, in eupen.rst
+  Failed example:
+      walk_menu_items('rolf', severe=False)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -12,5 +12,5 @@
+       - Büro --> Meine Datenkontrollliste : 0
+       - Kalender --> Meine Termine : 6
+      -- Kalender --> Überfällige Termine : 81
+      +- Kalender --> Überfällige Termine : 37
+       - Kalender --> Meine unbestätigten Termine : 3
+       - Kalender --> Meine Aufgaben : 1
+      @@ -70,5 +70,5 @@
+       - Konfigurierung --> Büro --> Ereignisarten : 11
+       - Konfigurierung --> Büro --> Meine Einfügetexte : 1
+      -- Konfigurierung --> Kalender --> Kalenderliste : ...
+      +- Konfigurierung --> Kalender --> Kalenderliste : 12
+       - Konfigurierung --> Kalender --> Räume : 1
+       - Konfigurierung --> Kalender --> Regelmäßige Ereignisse : 16
+      @@ -140,5 +140,5 @@
+       - Explorer --> Büro --> Ereignisse/Notizen : 112
+       - Explorer --> Büro --> Einfügetexte : 3
+      -- Explorer --> Kalender --> Kalendereinträge : 358
+      +- Explorer --> Kalender --> Kalendereinträge : 311
+       - Explorer --> Kalender --> Aufgaben : 37
+       - Explorer --> Kalender --> Anwesenheiten : 620
+  **********************************************************************
+  1 items had failures:
+     1 of  26 in eupen.rst
+  ***Test Failed*** 1 failures.
