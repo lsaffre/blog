@@ -7,7 +7,6 @@ Tuesday, August 6, 2019
 Accounting
 ==========
 
-
 I continued entering our accounting into :ref:`cosi`.  I am still fiddling on
 EKR 7/2018 which is our first case of internal clearing (:ticket:`3106`).
 
@@ -155,3 +154,32 @@ I have no explanation yet.
   1 items had failures:
      1 of  26 in eupen.rst
   ***Test Failed*** 1 failures.
+
+
+
+Accounting
+==========
+
+:class:`lino_xl.lib.vat.InvoicesByJournal` did not display the right sorting
+order. It was using ['-id'] instead of the order defined in
+:class:`lino_xl.lib.ledger.ByJournal`.
+
+
+'Duration' object has no attribute '_text'
+==========================================
+
+
+.. currentmodule:: lino.utils.quantities
+
+Tonis added a `deconstructible` decorator to the custom values in
+:mod:`lino.utils.quantities`, but this caused most tests to break with above
+error message.
+
+After reading the `Django docs
+<https://docs.djangoproject.com/en/2.2/topics/migrations/#adding-a-deconstruct-method>`__
+I guess that ``@deconstructible`` doesn't work as expected because these classes
+have a :meth:`__new__` method (no :meth:`__init__` method).  I guess that we
+must simply write our own deconstruct method.
+
+I reviewed the code and probably fixed the issue, added some cases to
+:ref:`book.dev.quantities`.
