@@ -8,27 +8,6 @@ I fixed some failures of the book test suite. Which revealed a bug:
 :attr:`use_linod <lino.core.site.Site.use_linod>` did not yet automatically
 cause :manage:`install` to install the `schedule` package.
 
-I continued to enter our accountig data and stumbled into the next problem: An
-electricity invoice of 94,88 € introduced by a worker.  The invoice was paid by
-the worker, but 35% of the total amount is paid back by the employer.  *And the
-VAT on these 35% are deductible*.
-
-.. currentmodule:: lino_xl.lib.vat
-
-- Manually enter 94.88 in :attr:`VatProductInvoice.total_incl`
-- Manually enter 33.22 (94.88 * 0.35) to :attr:`InvoiceItem.total_incl`.
-
-- Add a second invoice line and manually set :attr:`InvoiceItem.account` to
-  ``600020`` (Costs paid for workers to be paid back).
-
-  Lino automatically fills the remaining amount (94.88 - 33.22 = 61.66) into the
-  :attr:`InvoiceItem.total_incl` field and computes the other amounts of that
-  line.
-
-First question : How to instruct Lino that account ``600020`` is normally used
-without VAT?
-
-
 SSH key already expired
 =======================
 
@@ -67,6 +46,6 @@ Nautilus to Nemo::
   $ gsettings set org.gnome.desktop.background show-desktop-icons false
   $ gsettings set org.nemo.desktop show-desktop-icons true
 
-Note that I had Nemo already installed earlier. 
+Note that I had Nemo already installed earlier.
 
 It's strange that both Nemo and Nautilus are named "Files"...
