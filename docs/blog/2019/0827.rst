@@ -1,0 +1,38 @@
+:date: 2019-08-27
+
+========================
+Tuesday, August 27, 2019
+========================
+
+Hamza and I tried to use getlino for the first time on the new server for weleup.
+
+- Released getlino 19.8.1
+
+- sudo apt-get install python3-pip
+
+  --> E: Repository 'http://ftp.be.debian.org/debian buster InRelease' changed its 'Suite' value from 'testing' to 'stable'
+
+  --> apt-get update --allow-releaseinfo-change
+
+- sudo -H pip3 install getlino
+
+It says::
+
+  Collecting getlino
+    Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc92f8e8d0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
+    Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc92f8eda0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
+    Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc929da9b0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
+    Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc929dad68>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
+    Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc929dac18>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
+    Could not find a version that satisfies the requirement getlino (from versions: )
+  No matching distribution found for getlino
+
+  "ping pypi.org" works
+
+Maybe some problem with validating the server certificate  of pypi.org?
+I tried the following, but without success::
+
+  $ sudo -H pip3 --trusted-host pypi.org install getlino
+
+After reading `this thread <https://github.com/pypa/pip/issues/5362>`__ I
+decided to show this problem to Steve before trying further.

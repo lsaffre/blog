@@ -1,0 +1,29 @@
+:date: 2019-08-26
+
+=======================
+Monday, August 26, 2019
+=======================
+
+ValueError when parsing incoming XML file
+=========================================
+
+The following code helped us to explore :ticket:`3164` (a problem coming from
+outside of Lino: they somehow had a series of invalid XML files in their
+:attr:`import_statements_path <lino_xl.lib.b2c.Plugin.import_statements_path>`).
+
+>>> from lino_xl.lib.b2c.camt import CamtParser
+>>> from unipath import Path
+>>> import os
+>>> parser = CamtParser()
+>>> count = 0
+>>> for filename in Path("/home/luc/tmp/20190820").walk("*.XML"):
+...     data_file = open(filename, 'rb').read()
+...     count += 1
+...     try:
+...         x = list(parser.parse(data_file))
+...     except ValueError as e:
+...         print(filename, e)
+...     else:
+...         pass # print(filename)
+>>> print(count)
+0
