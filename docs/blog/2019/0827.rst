@@ -6,17 +6,20 @@ Tuesday, August 27, 2019
 
 Hamza and I tried to use getlino for the first time on the new server for weleup.
 
-- Released getlino 19.8.1
+We released getlino 19.8.1 (:ref:`getlino.changes`) and then tested the
+instructions in :ref:`getlino.install.admin`.
 
-- sudo apt-get install python3-pip
+:cmd:`sudo apt-get update` failed with message::
 
   --> E: Repository 'http://ftp.be.debian.org/debian buster InRelease' changed its 'Suite' value from 'testing' to 'stable'
 
-  --> apt-get update --allow-releaseinfo-change
+Solution was to say::
 
-- sudo -H pip3 install getlino
+  $ sudo apt-get update --allow-releaseinfo-change
 
-It says::
+I added :cmd:`sudo apt-get install python3-pip` to the installation instructions.
+
+And then :cmd:`sudo -H pip3 install getlino` said::
 
   Collecting getlino
     Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'NewConnectionError('<urllib3.connection.VerifiedHTTPSConnection object at 0x7fbc92f8e8d0>: Failed to establish a new connection: [Errno 101] Network is unreachable')': /simple/getlino/
@@ -27,7 +30,7 @@ It says::
     Could not find a version that satisfies the requirement getlino (from versions: )
   No matching distribution found for getlino
 
-  "ping pypi.org" works
+But for example :cmd:`ping pypi.org` works.
 
 Maybe some problem with validating the server certificate  of pypi.org?
 I tried the following, but without success::
@@ -35,4 +38,5 @@ I tried the following, but without success::
   $ sudo -H pip3 --trusted-host pypi.org install getlino
 
 After reading `this thread <https://github.com/pypa/pip/issues/5362>`__ I
-decided to show this problem to Steve before trying further.
+decided to show this problem to Steve before trying further. Indeed he just had
+to configure their firewall and open ports 443 und 80 for the new server.
