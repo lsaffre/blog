@@ -78,5 +78,78 @@ big because we don't rotate it. So I created a file
 getlino doesn't configure logrotate
 ====================================
 
-I opened and fixed :ticket:`3179`.
-It seems that monit creates its own logrotate config file.
+I opened and fixed :ticket:`3179`: the Installer now has a new method
+:meth:`getlino.utils.Installer.write_logrotate_conf` because the logrotate
+config for supervisor is the same as the one for the individual lino.log files.
+Currently the logrotate config options are mostly hard-coded because we use the
+same values on all our production servers.
+
+It seems that monit creates its own logrotate config file, so we don't touch
+that one.
+
+
+standup meeting
+===============
+
+Tonis:
+- :ticket:`3180` write a test case using atelier sheller for testing Django migrations.
+- :ticket:`3181` Hobbit doesn't accept time values like "230" or "2230"
+
+
+getlino's first usage in real world
+===================================
+
+Hamza and I continued to configure the new Debian Buster server for
+:ref:`weleup`.  It is a kind of historic moment. We imagine that we a re
+third-party hosting provider trying to setup a production server without knowing
+very much about Lino
+
+We updated the getlino documentation and did another release with minor changes.
+Some default values were not yet optimally.
+
+Note that a normal system admin would have problems to answer the first questions
+asked by getlino:
+
+- contrib (Whether to configure a contributor environment) [True]: n
+- sites_base (Base directory for Lino sites on this server) [/usr/local/lino]:
+
+Maybe contrib should be False by default.
+
+  $ sudo -H getlino configure --server-domain lino --admin-email luc@saffre-rumma.net --admin-name "Luc Saffre"
+
+
+
+TODO getlino:
+
+- 3140 (Write tests for getlino)
+- getlino should also run on other distros than debian 10
+- getlino does not set a mysql root password
+
+
+
+We manually added the go alias to their :file:`/etc/bash.bashrc`.
+
+
+Use a Consumer Price Index for computing inflation
+==================================================
+
+I evaluated thre Python packages: cpi, easymoney and economics.
+- cpi works only for the US.
+- `easymoney <https://github.com/TariqAHassan/EasyMoney>`_ is quite complex and "only for information purposes"
+- but economics is a very simple interface to the worldbank API.
+
+
+>>> from economics import Inflation
+>>> import datetime
+
+>>> i = Inflation(country='BEL', reference=datetime.date(2002,8,1))
+>>> i = Inflation(country='BEL', reference=2002)
+>>> i.inflate(100, target=datetime.date(2018,7,1))
+134.9855356585091
+
+>>> i = Inflation(country='BEL', reference=2002)
+>>> i.inflate(100, target=2018)
+134.9855356585091
+
+Okay one limitation is that they seem to have only yearly data about Belgium.
+But that works for me.  Thanks!
