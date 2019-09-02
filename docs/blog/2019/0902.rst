@@ -1,0 +1,82 @@
+:date: 2019-09-02
+
+=========================
+Monday, September 2, 2019
+=========================
+
+RuntimeError: populate() isn't reentrant
+=========================================
+
+Hobbit was not responding, the apache error log said::
+
+  mod_wsgi (pid=18156): Exception occurred processing WSGI script '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  Traceback (most recent call last):
+    File "/usr/local/python/lino_sites/hobbit/apache/wsgi.py", line 13, in <module>
+      from lino_local import setup_wsgi ; setup_wsgi(globals())
+    File "/usr/local/python/lino_local.py", line 21, in setup_wsgi
+      globals_dict.update(application = get_wsgi_application())
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/registry.py", line 83, in populate
+      raise RuntimeError("populate() isn't reentrant")
+  RuntimeError: populate() isn't reentrant
+
+The problem vanished after running :xfile:`reload_services.sh`. This sporadic
+:message:`populate() isn't reentrant` error is a bit mysterious. Might be
+related to Apache's mod_wsgi, so maybe it will vanish when we move to nginx.
+
+Supervisor failing on SR
+========================
+
+While Apache now restarted without problem, supervisor reports an error.  The
+supervisor log file says::
+
+  CRIT Supervisor running as root (no user in config file)
+
+After reading
+`here <https://github.com/Supervisor/supervisor/issues/308>`__
+and `here <https://stackoverflow.com/questions/13905861/supervisor-as-non-root-user>`_
+I'd say that we can ignore this warning.
+But the error message is still coming.
+
+I saw another warning in `sudo journalctl -xe`::
+
+    Sep 02 01:11:01 ovh2 cron[20502]: (*system*certbot) WRONG FILE OWNER (/etc/cron.d/certbot)
+
+And indeed the file was owned by tonis. So I said::
+
+  $ sudo chown root:root /etc/cron.d/certbot
+
+But the error message is still coming.
+I saw that `sudo systemctl status supervisor.service` said::
+
+  Sep 02 01:16:58 ovh2 systemd[1]: supervisor.service: Found left-over process 11154 (soffice.bin) in control group while starting unit. Ignoring.
+  Sep 02 01:16:58 ovh2 systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+  Sep 02 01:16:58 ovh2 systemd[1]: supervisor.service: Found left-over process 11160 (python) in control group while starting unit. Ignoring.
+  Sep 02 01:16:58 ovh2 systemd[1]: This usually indicates unclean termination of a previous run, or service implementation deficiencies.
+  Sep 02 01:16:58 ovh2 systemd[1]: Starting LSB: Start/stop supervisor...
+  Sep 02 01:16:59 ovh2 supervisor[18340]: Starting supervisor: Error: Another program is already listening on a port that one of our HTTP servers is configured to use.  Shut
+  Sep 02 01:16:59 ovh2 supervisor[18340]: For help, use /usr/bin/supervisord -h
+  Sep 02 01:16:59 ovh2 systemd[1]: supervisor.service: Control process exited, code=exited, status=2/INVALIDARGUMENT
+  Sep 02 01:16:59 ovh2 systemd[1]: supervisor.service: Failed with result 'exit-code'.
+  Sep 02 01:16:59 ovh2 systemd[1]: Failed to start LSB: Start/stop supervisor.
+
+I guess that a reboot might be a simple workaround for this time, so I did::
+
+  $ sudo reboot
+
+Indeed now :xfile:`reload_services.sh` reports no error.  Except for a warning
+which says "Forcefully stopping supervisor: supervisord." which I ignore for
+this time.
+
+I also saw that the :file:`/var/log/supervisor/supervisord.log` file was very
+big because we don't rotate it. So I created a file
+:file:`/etc/logrotate.d/supervisor`.
+
+getlino doesn't configure logrotate
+====================================
+
+I opened and fixed :ticket:`3179`.
+It seems that monit creates its own logrotate config file.
