@@ -1,0 +1,87 @@
+:date: 2019-09-03
+
+==========================
+Tuesday, September 3, 2019
+==========================
+
+I continued to work in the :ref:`cg` and in the :ref:`book` as a preparation for
+the year 2020.
+
+
+https://sonetel.com/en/how-to-get-a-free-phone-number/
+
++32 4 34 60 150
+
+
+I continued with Hamza on :ticket:`3095`. We can already conclude that
+:ref:`getlino` has finished its work and has done a good job.  Okay it doesn't
+yet create a bash_aliases file.  But anyway that's maybe just a personal
+preference for me.
+
+It took us some time to get my browser to open the new website through the SSH
+tunnel. TIL : When I changed something in the :xfile:`settings.py` file, I must
+now restart supervisor instead of restarting the web browser.
+
+We still have the following error message during :manage:`prep`::
+
+  Exception: Errors while processing <p class=“Default“>Herrn Albert ADAM</p>
+
+This is obviously a bug in the :xfile:`contacts/Person/TermsConditions.odt`
+template (in :mod:`lino_xl.lib.contacts`).  That file contains the following
+appy statement::
+
+  do text
+  from html(u'<p class=“Default“>'+this.owner.get_address('<br>')+u'</p>')
+
+The string passed to
+:meth:`lino_xl.lib.appy.AppyRenderer.insert_html`
+accidentally contains curly
+quotes instead of straight quotes.
+
+The actual work happens in :mod:`lino.utils.html2xtml` which says::
+
+    from tidylib import tidy_fragment
+
+    def html2xhtml(html, **options):
+        options.update(doctype='omit')
+        options.update(show_warnings=0)
+        options.update(indent=0)
+        # options.update(output_xml=1)
+        options.update(output_xhtml=1)
+        document, errors = tidy_fragment(html, options=options)
+
+I might open the document in libreoffice, replace the curly quotes by straight
+ones, make a release of xl and update their environment.
+
+But my problem is that we didn't have this problem before. The :fixture:`demo2`
+fixture of :mod:`lino_xl.lib.excerpts` successfully creates the file
+:file:`media/cache/appypdf/excerpts.Excerpt-2.pdf` which comes from above
+template.
+
+
+
+It seems that tiny successfully parses those curly quotes on my machine (and on
+travis, and on other machines) and that it doesn't like them any more on the new
+server.  Yes, this is our first usage of Debian 10. We checked whether tidy has
+some option to control this behaviour
+http://tidy.sourceforge.net/docs/quickref.html
+
+
+Configuring LDAP authentication
+===============================
+
+LDAP authentication is now done using nginx and django-auth-ldap instead of
+apache and mod_wsgi. So it is no longer done by the browser using plain http
+auth.  Plain http auth is obsolete and has the disadvantage that you cannot sign
+out without leaving the browser and cannot remain signed in when leaving the
+browser.
+
+But surprise: LDAP is more complex than Hamza and I thought. We tried to migrate
+the LDAP options from the Apache configuration to the :xfile:`settings.py` file,
+as demonstrated in the :mod:`lino_book.projects.team.settings.demo`. But we
+decided to give up and ask somebody who knows how to configure LDAP server.
+Nicolas, Steve or Gerd.
+
+Here are the docs for django-auth-ldap:
+- https://django-auth-ldap.readthedocs.io/en/latest/authentication.html
+- https://django-auth-ldap.readthedocs.io/en/latest/example.html

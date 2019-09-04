@@ -1,0 +1,81 @@
+:date: 2019-09-04
+
+============================
+Wednesday, September 4, 2019
+============================
+
+About doctree dependenceies
+===========================
+
+The doctree of the lino package now has an intersphinx link to the :ref:`cg`.
+The doctree of the book now has an intersphinx link to the doctree of the lino
+and xl doctrees.
+
+The API page about :mod:`lino` no longer includes the :envvar:`long_description`
+of the lino package because this non-technical text shouldn't be there.
+
+continues to be part of the book doctree because
+we want docstrings to be able to refer to pages of the book.
+
+So we have the following hierarchy:
+
+  cg <-- lino <-- book <-- blog
+
+
+I changed all links to the Django docs from
+https://docs.djangoproject.com/en/1.11 to https://docs.djangoproject.com/en/2.2
+
+Atom doesn't find in all files
+==============================
+
+I recently disabled the :guilabel:`Ignore VCS excluded paths` option in my Atom
+preferences.  That activated a bug in Atom, as it now turns out. I can confirm
+the following bug: https://github.com/atom/find-and-replace/issues/543
+
+Using linkcheck to detect broken links in docs
+==============================================
+
+With the following command I can get a list of broken links in the book::
+
+  $ go book
+  $ sphinx-build -b linkcheck docs docs/.build
+  $ wc -l docs/.build/output.txt
+  603 docs/.build/output.txt
+
+There are currently **603** broken links in the book.  More precisely they are
+not all broken. Some of them are just permanently redirected.
+
+I have a feeling that we should have linkcheck run automatically. But a broken
+link should *not* stop :cmd:`inv bd`. And it shouldn't be part of the test suite
+because a broken link in the docs doesn't mean that the :term:`software product`
+is broken.  Maybe have it run on RTD, and scan the
+:file:`docs/.build/output.txt` file automatically.
+
+This is related to another issue: All Lino doctrees are currently published on
+:ref:`lf`. But I need to build them manually on my machine. Documentation should
+be generated automatically after each change. Theoretically this is already
+being done (`RTD <https://readthedocs.org/projects/lino/>`__), but the
+documentation there is four months old. This is yet another difference between
+theory and reality. After verifying, I realized that the RTF project was still
+using Python 2. I changed it to Python 3.
+
+TODO: We should start using RTD more systematically for all doctrees and check
+whether it is up to date.  If possible we should also create a user account
+lino-framework on RTD and move projects from lsaffre to this account.
+
+
+logrotate error: apache2.save:1 duplicate log entry for /var/log/apache2/access.log
+===================================================================================
+
+This was caused by multiple logrotate configuration files for apache in
+:file:`/etc/logrotate.d`: :file:`apache2`, :file:`apache2.save` and
+:file:`apache2.dpkg-dist`. The :file:`apache2.save` was a copy of
+:file:`apache2` I obviously created accidentally on 20190721.
+
+The :file:`apache2.dpkg-dist` has been created as a backup copy by some Debian
+upgrade. Theoretically it should be ignored by logrotate, as seen `here
+<https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=206529>`__.
+
+Our version of the apache logrotate config differs slightly from what the Debian
+package maintainers would suggest.  We can ignore this since we are migrating
+from apache to nginx on our production servers.
