@@ -79,3 +79,81 @@ upgrade. Theoretically it should be ignored by logrotate, as seen `here
 Our version of the apache logrotate config differs slightly from what the Debian
 package maintainers would suggest.  We can ignore this since we are migrating
 from apache to nginx on our production servers.
+
+
+Tidy 5.2 cleaned up curly quotes but 5.6 doesn't
+================================================
+
+One thing I can do now that the issue is reported to the tidy team: Make a
+release of :ref:`xl` and try whether this was the only case. (I might switch
+their :term:`preview site` to use a development version of XL, but doing a PyPI
+release seems even easier at least if I am lucky and there is no other such
+problem).  and it seems that I *am* lucky. Though here is the next problem.
+
+
+'AttributesImpl' object has no attribute 'has_key'
+==================================================
+
+There is yet another 2to3 bug in appy::
+
+  AttributeError: Problem installing fixture '/usr/local/lino/lino_local/a/env/lib/python3.7/site-packages/lino_xl/lib/excerpts/fixtures/demo2.py': 'AttributesImpl' object has no attribute 'has_key'
+
+I manually patched line 155 of file :file:`site-packages/appy/pod/buffers.py`::
+
+      #elif (elem == 'text:list-item') and attrs.has_key('text:start-value'):
+      elif (elem == 'text:list-item') and 'text:start-value' in attrs:
+
+I notified Gaetan who quickly fixed it and checked it in to master.
+
+New Tidy saying "Info: <tbody> previously mentioned"
+====================================================
+
+Here we go for yet another error probably caused by the new tidy version: "Error
+while evaluating the expression "html(body)" defined in the "from" part of a
+statement."
+
+I tried to reproduce the error from the command line::
+
+  $ echo "<table><tbody>foo</tbody></table>" | tidy
+  line 1 column 1 - Warning: missing <!DOCTYPE> declaration
+  line 1 column 1 - Warning: inserting implicit <body>
+  line 1 column 15 - Warning: plain text isn't allowed in <tbody> elements
+  line 1 column 8 - Info: <tbody> previously mentioned
+  line 1 column 1 - Warning: inserting missing 'title' element
+  line 1 column 8 - Warning: trimming empty <tbody>
+  line 1 column 1 - Warning: trimming empty <table>
+  Info: Document content looks like HTML5
+  Tidy found 6 warnings and 0 errors!
+
+No difference between the old and the new tidy. So why then does appy believe
+now that there is an error? To be sure, I tried it with the full HTML fragment
+and the options used by Lino::
+
+  $ echo '\n<p class="OurRef">\n\nU. Zeichen: /213/68\n\n</p>\n\n\n<h1>Aktionsplan</h1>\n\n\n\n\n\n\n\n<p>\n\n<table><tbody>Keine Daten anzuzeigen</tbody></table>\n\n\n\n\n\n\nIhr Ansprechpartner:: \n<p>Mélanie Mélard</p>\n\n\n\n' | tidy --doctype omit --show-warnings 0 --indent 0 --output-xhtml 1
+
+Nope. Stopping here for this time...
+
+
+How big is Lino?
+================
+
+Gaetan asked how many code lines Lino has... The :mod:`lino.utils.code` doesn't
+really help since it looks only at imported modules.  But I used `pygount
+<https://pypi.org/project/pygount/>`_ to find the answer::
+
+  $ pip install pygount
+  $ cd ~/work
+  $ pygount lino xl book --suffix=py --format=cloc-xml > pygount-cloc.xml
+
+The resulting xml file says::
+
+  <total blank="25907" code="116647" comment="36299"/>
+
+Or when I add some of the more important Lino applications::
+
+  $ pygount lino xl book noi welfare avanti tera voga --suffix=py --format=cloc-xml > pygount-cloc.xml
+
+  <total blank="34754" code="152450" comment="47894"/>
+
+152K lines of code, is this big? For Django pygount says 76498 lines of code, so
+Lino is about twice as big as Django...
