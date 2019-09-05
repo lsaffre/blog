@@ -1,0 +1,69 @@
+:date: 2019-09-05
+
+===========================
+Thursday, September 5, 2019
+===========================
+
+I continued research for :ticket:`3188` (see also :doc:`0904` and  :doc:`0903`).
+It is actually not about curly quotes or not.  tidy has always warned about
+them. But pytidylib takes the warnings for errors when the newer Tidy version is
+used.
+
+I wrote a script to show the difference::
+
+  from tidylib import tidy_fragment
+  # html = '<table><tbody>foo</tbody></table>'
+  html = "<p class=“Default“>Herrn Albert ADAM</p>"
+  options = {}
+  # options.update(doctype='omit')
+  # options['show-warnings'] = 0
+  # options['show-errors'] = 0
+  # options.update(indent=0)
+  # options.update(errors=1)
+  # options.update(bare=1)
+  # options.update(output_xhtml=1)
+  # options['output-xhtml'] = 1
+  document, errors = tidy_fragment(html, options=options)
+  print("OK")
+  print(errors)
+
+Output with Tidy 5.2 was::
+
+  OK
+
+Output with Tidy 5.6 is::
+
+  OK
+  line 1 column 1 - Info: value for attribute "class" missing quote marks
+
+But tidy itself has always written warnings to stderr. The following command
+produces the same results in both 5.2 and 5.6::
+
+  $ echo '<table><tbody>foo</tbody></table>' | tidy > stdout 2> stderr
+
+The changed behaviour seems to be caused by `pytidylib
+<https://pythonhosted.org/pytidylib/>`__ (Jason Stitt's Python wrapper for
+tidylib).  I am using the latest version::
+
+  $ pip freeze | grep tidylib
+  pytidylib==0.3.2
+
+pytidylib indeed does some hacking to get the error messages from tidy.  It
+creates a "sink" object, a kind of stream, which is then passed to the library
+:func:`tidySetErrorSink` function.
+
+http://api.html-tidy.org/tidy/tidylib_api_next/group__IO.html
+
+The Tidy team started thinking about writing their own Python binding for Tidy:
+https://github.com/htacg/tidy-html5/issues/826
+But it seems that they didn't yet produce anything.
+
+As a temporary workaround I now disabled error checking in
+:mod:`lino.utils.html2xhtml` and wrote a mail to Jason, asking him whether he
+has ideas.
+
+Uff! :manage:`prep` now finally passes in a welcht site on Debian 10. This was a
+difficult birth! Next steps for :ticket:`3095`: 
+
+- write a migration script which will copy production data.
+- configure LDAP with Nicolas
