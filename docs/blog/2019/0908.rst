@@ -1,0 +1,47 @@
+:date: 2019-09-08
+
+=========================
+Sunday, September 8, 2019
+=========================
+
+How to install :ref:`getlino` on the new server for :ref:`lf`? We definitively
+don't want to install a new environment for every site, so it is not a
+real :term:`production server`.  It is a :term:`demo server`.
+
+A :term:`demo server` has a list of "demo projects" that it serves in a set of
+"versions".  For example::
+
+  projects = 'a', 'b', 'c'
+  versions = 'master', 'stable'
+
+There will be six sites on that server::
+
+  a.master.example.com
+  a.stable.example.com
+  b.master.example.com
+  ...
+
+.. program:: getlino configure
+
+I guess that this will need yet another little change in getlino: At the moment
+we have a single :option:`--local-prefix` and a single :option:`--shared-env`.
+But we need a mapping:
+
+    ========= ============ ============================
+    subdomain local_prefix shared virtual_env
+    ========= ============ ============================
+    master    master_sites /usr/local/lino/envs/master
+    stable    stable_sites /usr/local/lino/envs/stable
+    ========= ============ ============================
+
+
+
+
+add('', 'lino_local', "Prefix for for local server-wide importable packages")
+add('', default_shared_env, "Directory with shared virtualenv")
+
+
+Does it make sense to use a demo server also for serving documentation? Each
+"version" on the server might also features a build of some doctrees.  But let's
+rather try to delegate documentation to readthedocs.org, after all it is their
+job.
