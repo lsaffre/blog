@@ -34,14 +34,22 @@ But we need a mapping:
     stable    stable_sites /usr/local/lino/envs/stable
     ========= ============ ============================
 
-
-
-
-add('', 'lino_local', "Prefix for for local server-wide importable packages")
-add('', default_shared_env, "Directory with shared virtualenv")
-
+Maybe that local_prefix is not needed.
 
 Does it make sense to use a demo server also for serving documentation? Each
-"version" on the server might also features a build of some doctrees.  But let's
-rather try to delegate documentation to readthedocs.org, after all it is their
-job.
+"version" or "subdomain" on the server might also feature a build of a set of
+doctrees.  But let's rather try to delegate documentation to readthedocs.org,
+after all it is their speciality.
+
+
+Code changes:
+
+New option --shared-env for startsite.  When used with startsite, it overrides
+the value specified during configure.
+
+Renamed the --contrib option  to --clone because it is also used when
+configuring a demo server. It means "clone all known repositories to the
+--repos-base and install them to the shared env using :cmd:`pip -e`."
+
+The configure command now supports --clone without specifying a --repos-base.
+In that case it uses the `repositories` subdir of the shared-env.
