@@ -1,0 +1,34 @@
+:date: 2019-09-11
+
+=============================
+Wednesday, September 11, 2019
+=============================
+
+I fixed :ticket:`3192`.
+
+I first subtle problem was how to report a configuration error.  What to do when
+there is no :term:`database object` defined for a given :term:`common account`?
+The :meth:`lino_xl.lib.ledger.CommonAccounts.get_object` method now returns a
+:class:`MissingAccount` object when there is no ledger account for this common
+account.  TODO: write a test case to reproduce the situation.
+
+Another problem was that Lino  added :term:`returnable VAT` in the total fields
+of the invoice. (The generated movements were already correct before.)
+
+I changed the label of :attr:`lino_xl.lib.vat.VatTotal.total_incl` from "Total
+incl. VAT" to "Total to pay".  Because when :term:`returnable VAT` is being
+applied, "incl VAT" would be disturbing because there actually *is* VAT, but
+that VAT is not to be paid.
+
+En passant I fixed another bug in the VAT setup (both in
+:mod:`lino_xl.lib.bevat` and :mod:`lino_xl.lib.eevat`): :term:`returnable VAT`
+was also configured for sales, but that was wrong : in a sales invoice to an
+intracom partner you don't specify any VAT at all. In a sales invoice to an
+intracom partner, there is simply no VAT to be generated. IOW even for services
+and good for which national customers must pay VAT (because their VAT class is
+normal or reduced but not exempt), the VAT rule specifies a rate of 0.
+
+I added the your_ref field to the description of a :term:`ledger movement`.
+
+TODO: this virtual description field of a :term:`ledger movement` is not yet
+perfect. For example in MovementsByPartner it should not show the partner.
