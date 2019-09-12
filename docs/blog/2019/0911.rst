@@ -8,9 +8,12 @@ I fixed :ticket:`3192`.
 
 I first subtle problem was how to report a configuration error.  What to do when
 there is no :term:`database object` defined for a given :term:`common account`?
-The :meth:`lino_xl.lib.ledger.CommonAccounts.get_object` method now returns a
+Lino said "Exception: Not an account: None" when you tried to register an
+invoice and the account for :term:`returnable VAT` was not configured. Now it
+says "Exception: Not an account: No account pointing to VAT returnable". The
+:meth:`lino_xl.lib.ledger.CommonAccounts.get_object` method now returns a
 :class:`MissingAccount` object when there is no ledger account for this common
-account.  TODO: write a test case to reproduce the situation.
+account.   TODO: write a test case to reproduce the situation.
 
 Another problem was that Lino  added :term:`returnable VAT` in the total fields
 of the invoice. (The generated movements were already correct before.)
@@ -28,7 +31,7 @@ intracom partner, there is simply no VAT to be generated. IOW even for services
 and good for which national customers must pay VAT (because their VAT class is
 normal or reduced but not exempt), the VAT rule specifies a rate of 0.
 
-I added the your_ref field to the description of a :term:`ledger movement`.
-
+I also fixed :ticket:`2847` : added the :attr:`your_ref` field to the
+description of a :term:`ledger movement`.
 TODO: this virtual description field of a :term:`ledger movement` is not yet
 perfect. For example in MovementsByPartner it should not show the partner.

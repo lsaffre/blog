@@ -1,0 +1,116 @@
+:date: 2019-09-12
+
+============================
+Thursday, September 12, 2019
+============================
+
+They installed a new virgin Debian server, with my public ssh key in root's
+authorized_keys. I sign in as root via ssh and then it is routine::
+
+  # apt install sudo
+  # adduser luc
+  # adduser luc sudo
+  # adduser luc www-data
+  # cp -a .ssh /home/luc/
+  # chown -R luc:luc /home/luc/.ssh/
+  # sudo apt-get install -y python3-pip
+
+And then followed the instructions for :ref:`getlino.install.prod`.
+
+
+command 'x86_64-linux-gnu-gcc' failed with exit status 1
+========================================================
+
+Oops::
+
+  $ pip install regex
+  Collecting regex
+    Downloading https://files.pythonhosted.org/packages/6f/a6/99eeb5904ab763db87af4bd71d9b1dfdd9792681240657a4c0a599c10a81/regex-2019.08.19.tar.gz (654kB)
+       |████████████████████████████████| 655kB 2.6MB/s
+  Building wheels for collected packages: regex
+    Building wheel for regex (setup.py) ... error
+    ERROR: Command errored out with exit status 1:
+     command: /usr/local/lino/lino_local/mdga/env/bin/python3 -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-o_hz_4wl/regex/setup.py'"'"'; __file__='"'"'/tmp/pip-install-o_hz_4wl/regex/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-6_s6vd0z --python-tag cp37
+         cwd: /tmp/pip-install-o_hz_4wl/regex/
+    Complete output (22 lines):
+    BASE_DIR is /tmp/pip-install-o_hz_4wl/regex
+    /usr/local/lino/lino_local/mdga/env/lib/python3.7/site-packages/setuptools/dist.py:474: UserWarning: Normalizing '2019.08.19' to '2019.8.19'
+      normalized_version,
+    running bdist_wheel
+    running build
+    running build_py
+    creating build
+    creating build/lib.linux-x86_64-3.7
+    creating build/lib.linux-x86_64-3.7/regex
+    copying regex_3/regex/__init__.py -> build/lib.linux-x86_64-3.7/regex
+    copying regex_3/regex/regex.py -> build/lib.linux-x86_64-3.7/regex
+    copying regex_3/regex/_regex_core.py -> build/lib.linux-x86_64-3.7/regex
+    creating build/lib.linux-x86_64-3.7/regex/test
+    copying regex_3/regex/test/__init__.py -> build/lib.linux-x86_64-3.7/regex/test
+    copying regex_3/regex/test/test_regex.py -> build/lib.linux-x86_64-3.7/regex/test
+    running build_ext
+    building 'regex._regex' extension
+    creating build/temp.linux-x86_64-3.7
+    creating build/temp.linux-x86_64-3.7/regex_3
+    x86_64-linux-gnu-gcc -pthread -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.7m -I/usr/local/lino/lino_local/mdga/env/include/python3.7m -c regex_3/_regex.c -o build/temp.linux-x86_64-3.7/regex_3/_regex.o
+    unable to execute 'x86_64-linux-gnu-gcc': No such file or directory
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+    ----------------------------------------
+    ERROR: Failed building wheel for regex
+    Running setup.py clean for regex
+  Failed to build regex
+
+The problem disappeared after doing::
+
+  $ sudo apt install build-essential
+  $ sudo chown -R root:www-data .
+
+But maybe only the second command was enough.
+
+Note that build-essential was installed automatically on the new :ref:`lf`
+server::
+
+  $ sudo apt list build-essential
+  Listing... Done
+  build-essential/stable,now 12.6 amd64 [installed,automatic]
+
+I also opened (and did) :ticket:`3195` (getlino should install a bash_aliases).
+
+And then released getlino 19.9.6, immediately followed by a bug-fix release
+19.9.7
+
+Note : I saw the following when running :cmd:`sudo pip3 install -U getlino`::
+
+  Building wheels for collected packages: getlino
+    Running setup.py bdist_wheel for getlino ... error
+    Complete output from command /usr/bin/python3 -u -c "import setuptools, tokenize;__file__='/tmp/pip-install-60_bjbe5/getlino/setup.py';f=getattr(tokenize, 'open', open)(__file__);code=f.read().replace('\r\n', '\n');f.close();exec(compile(code, __file__, 'exec'))" bdist_wheel -d /tmp/pip-wheel-ccxtqxgt --python-tag cp37:
+    usage: -c [global_opts] cmd1 [cmd1_opts] [cmd2 [cmd2_opts] ...]
+       or: -c --help [cmd1 cmd2 ...]
+       or: -c --help-commands
+       or: -c cmd --help
+
+    error: invalid command 'bdist_wheel'
+
+    ----------------------------------------
+    Failed building wheel for getlino
+    Running setup.py clean for getlino
+  Failed to build getlino
+  Installing collected packages: getlino
+    Found existing installation: getlino 19.9.6
+      Uninstalling getlino-19.9.6:
+        Successfully uninstalled getlino-19.9.6
+    Running setup.py install for getlino ... done
+  Successfully installed getlino-19.9.7
+
+Maybe this is when I forget to specify :option:`sudo -H`.
+
+Releasing Lino Avanti
+=====================
+
+I prepared the PyPI release for :ref:`avanti`.  :ref:`avanti.changes.2019`
+
+I created :ticket:`3197` because I had the following error message when trying
+to :cmd:`inv sdist release`:
+
+  HTTPError: 403 Client Error: The credential associated with user 'luc.saffre'
+  isn't allowed to upload to project 'lino-avanti'.
