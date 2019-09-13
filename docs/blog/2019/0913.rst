@@ -1,0 +1,74 @@
+
+:date: 2019-09-13
+
+==========================
+Friday, September 13, 2019
+==========================
+
+Using getlino to install the next Avanti Lino
+=============================================
+
+I continued to install :ref:`avanti` on their new server.
+
+For this I had to release XL (Exception: lino_xl.lib.cv has no attribute
+with_language_history).
+
+Some problems in getlino
+========================
+
+I noticed that :cmd:`getlino startsite` failed to create the :xfile:`pull.sh` script.
+
+I opened :ticket:`3199` because I observed some issues with :cmd:`getlino
+startsite`:
+
+- :cmd:`getlino startsite` did not create the
+  :xfile:`pull.sh` and :xfile:`make_snapshot.sh` scripts.
+  Several commits to :ref:`ss`.
+
+- What to do when :cmd:`getlino startsite` successfully creates the database user
+  and then fails for some reason? I can simply overwrite the existing site by
+  running :cmd:`getlino startsite` again, but mysql or pgsql will fail to create
+  the new user of same name.
+
+  The easiest workaround is to manually delete both the user and the database
+  before running  :cmd:`getlino startsite` a second time.
+  I reviewed the :ref:`mysql.cheat_sheet`.
+
+
+Installing certbot
+==================
+
+Oops, when using :option:`getlino configure --https`, it installs certbot, but I
+get an error message::
+
+  Installation succeeded.
+  Saving debug log to /var/log/letsencrypt/letsencrypt.log
+  Missing command line flags. For non-interactive execution, you will need to specify a plugin on the command line.  Run with '--help plugins' to see a list of options, and see https://eff.org/letsencrypt-plugins for more detail on what the plugins do and how to use them.
+  Error: certbot-auto -n ended with return code 1
+
+Indeed, when I manually run ``certbot-auto -n`` I get the same error message.
+
+
+
+Miscellaneous
+=============
+
+The `timtools` project is not yet converted to Python 3. I don't plan do convert
+it now because that might cause some work, and until now there is no reason to
+do it. But the :xfile:`setup.py` in that project  caused problems when building
+my blog under Python 3.
+
+
+Cannot use VAT regime {} for partner without VAT id
+===================================================
+
+When entering the :attr:`vat_regime <lino_xl.lib.contacts.Partner.vat_regime>`
+of a provider or customer with empty :attr:`vat_id
+<lino_xl.lib.contacts.Partner.vat_id>`, Lino did not show regimes having
+:attr:`needs_vat_id <lino_xl.lib.vat.VatRegime.needs_vat_id>` set. This was
+irritating because users who didn't know about this subtle rule had no chance to
+understand why. Lino now shows these regimes also when there is no VAT id, but
+complains :message:`Cannot use VAT regime X for partner without VAT id`  when
+you try to save a document for that regime and that partner.  :ticket:`3183`.
+
+I pushed these changes without waiting the results of my local test run.
