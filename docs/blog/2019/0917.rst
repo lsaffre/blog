@@ -1,0 +1,73 @@
+:date: 2019-09-17
+
+===========================
+Tuesday, September 17, 2019
+===========================
+
+Replace nginx by apache
+=======================
+
+I started to think that actually we have much less work if I simply continue to
+use apache on the weleup server.  Let's try::
+
+  $ sudo apt purge nginx
+  $ sudo apt install apache2
+
+  $ cd /etc/apache2/sites-available/
+  $ sudo scp -p user@oldsrv:/etc/apache2/sites-available/002-lino prod.conf
+
+En passant I renamed site "a" to "weleup1".
+
+I also started to think that we shouldn't use git clones on our production
+servers any more.  So I must make a PyPI release of lino-weleup and
+lino-welfare.
+
+But here I got interrupted because my Thunderbird stopped to work.
+
+Bad sector on my hard disk
+==========================
+
+A mail folder content file (not the index file) was corrupted because of a bad
+sector.  Thunderbird froze each time it tried to rebuild the index file.
+
+Actually each time you try to read the corrupted file, you get
+an I/O error (after some timeout).  I was able to open the file using::
+
+  luc@tups:~$ less .thunderbird/luc/Mail/Local\ Folders/Archives.sbd/2019
+
+and the first page of the content gets was displayed.  But when I hit Ctrl+PgDn
+to go to the end of the file, less reports a "read error". Thunderbird seems
+less prepared to such read errors, it just froze. Closing the window was
+possible, but when you try to open it again, it says that Thunderbird is still
+"running but does not respond".
+
+My last backup of my system was several days old and 100 km away.
+
+As a funny coincidence my new notebook arrived this morning. A Tuxedo
+InfinityBook 14.
+
+I started copying my data from the old to the new notebook. A terabyte going
+through our WLAN.  That takes some time, but the main challenge was to get it
+working at all.  I had to run fsck in order to repair the corrupted file.  The
+following took about 2 or 3 hours::
+
+  luc@doll:~$ sudo e2fsck -cfpv /dev/sdb1
+  Dell1TB: Updating bad block inode.
+  Dell1TB: Duplicate or bad block in use!
+  Dell1TB: Multiply-claimed block(s) in inode 15335622: 165626319--165626320 165626545--165626546 165626999--165627000 165627225--165627226
+  Dell1TB: Multiply-claimed block(s) in inode 26084644: 161949204--161949205 161949449--161949450 161949968--161949970 161950213--161950215 161950459--161950460 161950705--161950707 161951196--161951198 161951441--161951443 161951687--161951689 161951933--161951934 161952453--161952454 161952699--161952700 161952944--161952945
+  Dell1TB: Multiply-claimed block(s) in inode 30150574: 232783726--232783727
+  Dell1TB: Multiply-claimed block(s) in inode 39191671: 233765678--233765679 233765915--233765916
+  Dell1TB: (There are 4 inodes containing multiply-claimed blocks.)
+  Dell1TB: File /luc/.thunderbird/luc/Mail/Local Folders/Archives.sbd/2019 (inode #15335622, mod time Tue Sep 17 08:13:02 2019)
+    has 8 multiply-claimed block(s), shared with 1 file(s):
+  Dell1TB: 	<The bad blocks inode> (inode #1, mod time Tue Sep 17 13:39:35 2019)
+  Dell1TB:
+  Dell1TB: UNEXPECTED INCONSISTENCY; RUN fsck MANUALLY.
+  	(i.e., without -a or -p options)
+
+I ran it again without -p and after 2 hours it started to ask me questions now
+and then. I answered each of them by hitting ENTER.
+
+Note that fsck requires the volume to be unmounted. So my whole data was
+inaccessible for half a day...

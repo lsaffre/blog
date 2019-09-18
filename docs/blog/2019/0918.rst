@@ -1,0 +1,71 @@
+:date: 2019-09-18
+
+=============================
+Wednesday, September 18, 2019
+=============================
+
+Moving from doll to tups
+========================
+
+In summary I can say that my yesterday's adventure seemed threatening in the
+beginning, but after all I haven't lost any data at all, and I am glad to be on
+my new laptop now. So actually it was blessing in disguise. TODO: Optimize my
+emergency plan.
+
+I used :ref:`getlino` for setting up my new machine and I opened :ticket:`3204`
+(Optimizations in getlino).
+
+I had a message :message:`favicon file 'favicon.ico' does not exist` during
+:cmd:`inv bd` in book.  I fixed it by removing the following line from
+:xfile:`conf.py` ::
+
+  #html_favicon = 'favicon.ico'
+
+But it's strange that I am the first one. :cmd:`inv bd` works on :ref:`travis`.
+
+Setting up new server for weleup
+================================
+
+Back to work (continued after :doc:`0916`).
+
+Released Welfare 19.9.0 and weleup 19.9.0.
+
+Manually did lots of little trivial steps::
+
+  $ sudo a2enmod authnz_ldap
+  $ sudo a2enmod dav_fs
+  $ sudo a2enmod dav
+  $ sudo apt install libapache2-mod-wsgi-py3
+
+I stopped here::
+
+  [Wed Sep 18 15:37:21.750588 2019] [wsgi:error] [pid 3357:tid 140319710512896]
+  Exception: Version mismatch: this is the 'cffi'
+  package version 1.12.3, located in
+  '/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cffi/api.py'.
+  When we import the top-level '_cffi_backend' extension module, we get version
+  1.12.2, located in
+  '/usr/lib/python3/dist-packages/_cffi_backend.cpython-37m-x86_64-linux-gnu.so'.
+  The two versions should be equal; check your installation.
+
+
+Lino Amici
+==========
+
+I did some daily work (or should I say manual tests on the field) for
+:ref:`amici` (:ticket:`1843`).  A pull on the production site in order to get
+the new calendar view.
+
+Fixed a bug in :mod:`lino_xl.lib.phones` which caused :manage:`checkdata` to
+fail when a same partner had multiple contact detail entries marked as primary
+(MultipleObjectsReturned). Now it creates a message "Multiple primary items for
+<type>".
+
+I also moved "odfpy" from lino_xl's install_requires to
+:meth:`lino_xl.lib.appypod.Plugin.get_requirements`.
+
+Miscellaneous issues after moving from doll to tups
+===================================================
+
+"Could not lex literal_block as "guess". Highlighting skipped" in :cmd:`inv bd`
+in my blog.

@@ -4,16 +4,16 @@
 Zeitmaschine
 ------------
 
-In Eupen läuft seit einer Woche eine Development-Version 
-von Lino und Lino-Welfare, und daran will ich auch mindestens 
-bis kommenden Dienstag nichts mehr ändern. 
+In Eupen läuft seit einer Woche eine Development-Version
+von Lino und Lino-Welfare, und daran will ich auch mindestens
+bis kommenden Dienstag nichts mehr ändern.
 Deshalb release ich jetzt diese Versionen im Nachhinein als 1.5.1 und 1.0.1.
 
-Weil ich so ein Release im Nachhinein heute erstmals mache 
+Weil ich so ein Release im Nachhinein heute erstmals mache
 (habe vorher zur Auffrischung http://mercurial.selenic.com/guide/ konsultiert),
 notiere ich mir die einzelnen Schritte.
 
-Auf dem Produktionsserver in Eupen schaue ich nach, welche Versionen es 
+Auf dem Produktionsserver in Eupen schaue ich nach, welche Versionen es
 genau sind, die da laufen:
 
 .. code-block:: bash
@@ -35,14 +35,12 @@ genau sind, die da laufen:
   summary:     http://code.google.com/p/lino/source/browse/docs/blog/2012/1109.rst
 
 
-Ich merke mir das Datum (9. November) die drei letzten Positionen 
+Ich merke mir das Datum (9. November) die drei letzten Positionen
 der changeset-Nummern (80f und 667).
 
 Jetzt auf meinem Windows-Rechner.
 
-Zuerst kommt Lino selber dran:
-
-.. code-block:: guess
+Zuerst kommt Lino selber dran::
 
   T:\hgwork\lino>hg log -d 2012-11-09
   changeset:   3111:5b670bf2a5c7
@@ -56,17 +54,12 @@ Zuerst kommt Lino selber dran:
   summary:     http://code.google.com/p/lino/source/browse/docs/blog/2012/1109.rst
 
 
-Aha, also die 3110 ist es, wohin ich will. Sprung zurück in der Zeit:
-
-.. code-block:: guess
-
+Aha, also die 3110 ist es, wohin ich will. Sprung zurück in der Zeit::
 
   T:\hgwork\lino>hg update 3110
   68 files updated, 0 files merged, 14 files removed, 0 files unresolved
 
-Jetzt das eigentliche Release:
-
-.. code-block:: guess
+Jetzt das eigentliche Release::
 
   T:\hgwork\lino>make sdist
   (...)
@@ -76,18 +69,14 @@ Jetzt das eigentliche Release:
   Server response (200): OK
   Submitting dist\lino-1.5.1.zip to http://pypi.python.org/pypi
   Server response (200): OK
-  
-Und Sprung zurück ins Heute:  
 
-.. code-block:: guess
+Und Sprung zurück ins Heute::
 
   T:\hgwork\lino>hg update tip
   81 files updated, 0 files merged, 1 files removed, 0 files unresolved
 
 
-Und das Gleiche in Grün für Lino-Welfare:
-
-.. code-block:: guess
+Und das Gleiche in Grün für Lino-Welfare::
 
   T:\hgwork\welfare>hg log -d 2012-11-09
   changeset:   170:70dbdb8f5833
@@ -121,8 +110,8 @@ Und das Gleiche in Grün für Lino-Welfare:
   25 files updated, 0 files merged, 2 files removed, 0 files unresolved
 
 
-Voilà. 
-Lino :lino:`/releases/1.5.1` und 
+Voilà.
+Lino :lino:`/releases/1.5.1` und
 `Lino-Welfare 1.0.1 <http://welfare.lino-framework.org/de/releases/1.0.1.html>`_
 erkläre ich hiermit als offiziell seit dem 9. November released.
 
@@ -131,28 +120,28 @@ erkläre ich hiermit als offiziell seit dem 9. November released.
 The :xfile:`settings.py` of :mod:`lino_welfare`
 ------------------------------------------------
 
-:mod:`lino_welfare.modlib.pcsw` 
+:mod:`lino_welfare.modlib.pcsw`
 is the "main" module of Lino-Welfare, but this fact isn't very visible.
 
-And the fragment ``modlib`` in directory trees should be 
+And the fragment ``modlib`` in directory trees should be
 reserved for :lino:`Lino's module library </topics/modlib>`.
 
-The :xfile:`settings.py` of :mod:`lino_welfare` 
+The :xfile:`settings.py` of :mod:`lino_welfare`
 is not :mod:`lino_welfare.settings`,
 but :mod:`lino_welfare.modlib.pcsw.settings`.
 
-The reason for this is that the `settings.py` file 
-contains translatable strings, and I didn't want 
+The reason for this is that the `settings.py` file
+contains translatable strings, and I didn't want
 to have an additional .po file just for this.
 
 I could move the content of
 :mod:`lino_welfare.modlib.pcsw`
 to the top-level.
-But that would rename things like `pcsw.Client` 
-to  `lino_welfare.Client`... 
-Hm, `lino_welfare` seems a bit long as an app_label... 
+But that would rename things like `pcsw.Client`
+to  `lino_welfare.Client`...
+Hm, `lino_welfare` seems a bit long as an app_label...
 
-Maybe rename `lino_welfare` to `lino_pcsw`? 
+Maybe rename `lino_welfare` to `lino_pcsw`?
 No, we just chose`"welfare" to replace "pscw".
 
 After these thoughts, the best solution seems::
@@ -164,6 +153,6 @@ After these thoughts, the best solution seems::
   lino_welfare/lib/...
   lino_welfare/lib/welfare
 
-But that's for later. It will be technically simple, 
-but causing a lot of code changes and needing a migration 
+But that's for later. It will be technically simple,
+but causing a lot of code changes and needing a migration
 to rename pcsw.* to welfare.*)

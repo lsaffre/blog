@@ -1,0 +1,36 @@
+:date: 2019-09-16
+
+==========================
+Monday, September 16, 2019
+==========================
+
+Today I continued working on the migration script for the new weleup server.
+Converted their :xfile:`settings.py` to new syntax using
+:meth:`get_plugin_options <lino.core.site.Site.get_plugin_options>`.
+
+Strange: they still have 6 data range warnings:
+
+- aids.IncomeConfirmation ['Datumsbereich 01.02.09...15.04.18 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.02.09...14.04.18.'] (1 object(s) with primary key 5428)
+- aids.IncomeConfirmation ['Datumsbereich 22.12.16...14.05.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 22.12.16...13.05.19.'] (1 object(s) with primary key 5534)
+- aids.RefundConfirmation ['Datumsbereich 15.03.19...15.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 5989)
+- aids.RefundConfirmation ['Datumsbereich 19.03.19...19.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 5990)
+- aids.RefundConfirmation ['Datumsbereich 18.03.19...18.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 14.03.19...17.03.19.'] (1 object(s) with primary key 5997)
+- aids.RefundConfirmation ['Datumsbereich 18.03.19...18.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 6002)
+
+Their :attr:`lino_welfare.modlib.aids.Plugin.no_date_range_veto_until` is 5343
+and the refused confirmations are higher than this.  So these confirmations have
+been created with the current version, which should have refused to save them.
+I'd like to interview the users in order to find out how they do this.  I guess
+that they changed the Grant's date range after having issued a confirmation.
+
+The next problem is now that nobody can sign in via the web interface because
+LDAP authentication is not yet configured.  Tomorrow I plan to work on this. I'd
+like to push them from the browser-based plain http authentication to Lino's
+session-based authentication because I think that it is better and that they
+will like it, but we also know that they are rather reluctant to every change.
+
+https://github.com/nginxinc/nginx-ldap-auth
+
+Should I simply move back from nginx to apache for their server, and then copy
+the old config files? No need to consult Nicolas.  The disadvantage is that
+their server would be non-standard...

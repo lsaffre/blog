@@ -1,0 +1,18 @@
+:date: 2019-09-15
+
+==========================
+Sunday, September 15, 2019
+==========================
+
+Testing :ref:`cosi` after :ticket:`3192`
+========================================
+
+I upgraded our :ref:`cosi` production server and tested :ticket:`3192`. Found
+another problem : reset_totals doesn't yet work when returnable VAT is used.
+Code changes:
+
+When using :term:`returnable VAT`, the :attr:`total_vat` field is now always
+empty and the :attr:`total_incl` field does not include the VAT.  This is valid
+per invoice item and per invoice. The :attr:`total_incl` field is labelled
+"Total to pay" also on items.  The amount of retturnable VAT is computed only
+when the invoice is registered.
