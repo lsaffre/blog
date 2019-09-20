@@ -76,3 +76,92 @@ Note that "appointment" means that other people (external partners or
 colleagues) are involved and should be informed about schedule changes.
 
 TODO: review the specs, use glossary terms, ...
+
+'DueMovement' object has no attribute 'get_detail_action'
+=========================================================
+
+Wow, a rather impressing bug has been living under the hood for quite some time:
+:ticket:`3211`. That was because :class:`lino_xl.lib.ledger.DueMovement` didn't
+inherit from :class:`lino.core.fields.TableRow`.  Some time ago when I
+introduced TableRow, I thought that it is a reasonable requirement to say that
+table rows cannot be "just any object" but must inherit from TableRow.
+DueMovement was already written at that time, and I forgot to converrt it.
+
+I fixed it and did an upgrade on the new demo server.
+
+Changing choicelist values requires data migration
+==================================================
+
+I also decided to pull the new version on :ref:`prod.rumma`. Oops, here I got
+an exception :message:`lino.core.exceptions.UnresolvedChoice: Unresolved value
+'200' (<class 'str'>) for products.ProductTypes (set
+Site.strict_choicelist_values to False to ignore this)` when running
+:xfile:`make_snapshot.sh`.
+
+I guess that Hamza did not migrate the database when he made an upgrade,
+otherwise I don't see how we got there. Fortunately
+:attr:`lino.core.site.Site.strict_choicelist_values` saved the situation: it
+accepted to make at least a snapshot. Of course, now when running
+:xfile:`restore.py`, I get the errors Hamza should have gotten::
+
+  Abandoning with 5 unsaved instances:
+  - products.Product {'product_type': ['Value <ProductTypes:200> is not a valid choice.']} (5 object(s) with primary key 5, 6, 7, 8, 9)
+
+To migrate the data correctly after having removed the
+:attr:`ProductTypes.services`, I have to deactivate the line saying
+`kw.update(product_type=product_type)` in the :xfile:`restore.py` file::
+
+    def create_products_productcat(id, name, product_type, description):
+        ...
+        # kw.update(product_type=product_type)
+        ...
+        return products_ProductCat(**kw)
+
+Actually in two places: once in :func:`create_products_product` and a second
+time in :func:`create_products_productcat`.
+
+A checker to update preview fields
+==================================
+
+I pulled the newest versions to :ref:`prod.freunde` and verified that
+:ticket:`3210` is fixed.
+
+I opened a new :ticket:`3213` (DataChecker to check/update body_preview). This
+problem started some days after the last upgrade. It is a side effect of
+:ticket:`3110`. Wondering why we didn't see it in :ref:`jane`.
+
+To fix it, I wrote a new :class:`PreviewableChecker
+<lino.modlib.memo.PreviewableChecker>`. En passant I moved the doctrings from
+:mod:`lino.modlib.memo` to :ref:`dev.memo`.
+
+
+Tests
+=====
+
+When I run :cmd:`inv prep test` in :ref:`book`, I sometimes get the following
+error::
+
+  ======================================================================
+  FAIL: test_01 (tests.test_misc.PackagesTests)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/book/tests/test_misc.py", line 25, in test_01
+      self.run_packages_test(SETUP_INFO['packages'])
+    File "/home/luc/work/atelier/atelier/test.py", line 108, in run_packages_test
+      self.assertEqual(found_packages, declared_packages)
+  AssertionError: Lists differ: ['lin[3653 chars]migs.migrations.about', 'lino_book.projects.mi[4677 chars]ies'] != ['lin[3653 chars]migs.settings', 'lino_book.projects.migs.setti[2879 chars]ies']
+
+  First differing element 107:
+  'lino_book.projects.migs.migrations.about'
+  'lino_book.projects.migs.settings'
+
+  First list contains 39 additional elements.
+  First extra element 188:
+  'lino_book.projects.nomti'
+
+  Diff is 9067 characters long. Set self.maxDiff to None to see it.
+
+It goes away when I run the :file:`clean.sh` in :ref:`book.specs.migrate`. Seems
+that the :file:`clean.sh` sometimes fails to do its work. Strange.  I added
+``set -e`` to make sure that it stops when some error occurs, and I added a line
+of output in order to make even more sure that it finished.

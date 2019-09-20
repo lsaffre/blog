@@ -2,7 +2,7 @@
 My jargon
 =========
 
-Content moved to other places. 
+Content moved to other places.
 
 .. _appy:
 
@@ -22,3 +22,24 @@ djangosite
 north
 -----
 
+
+.. _prod.demo:
+
+Demo server
+===========
+
+Hosts the demo sites described on :ref:`demos`.
+
+.. _prod.rumma:
+
+prod.rumma
+==========
+
+The :ref:`cosi` site operated by :ref:`rumma`. Eat your own dog food.
+
+.. _prod.freunde:
+
+prod.freunde
+============
+
+My private :ref:`amici` site. Eat your own dog food.
