@@ -1,0 +1,75 @@
+:date: 2019-09-22
+
+==========================
+Sunday, September 22, 2019
+==========================
+
+Changes for Avanti
+==================
+
+Last Monday I had a meeting with Johanna resulting in a list of customer
+requests for :ref:`avanti` (:ticket:`2274`). Yesterday and today I finally found
+time to work on it.
+
+DONE
+
+- Fehler bei Doppelklick auf einer Frage in einer Umfrage (AnswersByResponseRow,
+  sh. Server-Log)
+
+- Sozialbilanz (:xfile:`final_report.body.html`)
+
+- Klientenkontakte : Namen der Mitarbeiter im ADG und ÖSHZ drucken. Die anderen
+  Kontakte (z.B. Patenschaftsprojekt) nicht drucken.
+
+- Sprachkenntnisse : Tabelle raus. In Zusammenfassung auch Zertifikat anzeigen.
+
+- CEF-Kategorie : nur das Kürzel, nicht die ganze Beschreibung. Auch am Bildschirm.
+
+- Kompetenzen und Ausbildungen : lediglich die Tabelle.
+
+- Studien : 2 neue Felder  "in Belgien anerkannt" und "Akad. Grad in Belgien"
+
+- "Einschreibungen in Kursen" : raus aus dem Bericht
+
+- "Work area" übersetzen "Bereich". Texte drumherum raus.
+
+- Feld Berufliche Situation vor die Tabelle.
+
+- Arbeitserlaubnis benötigt : steht am Bildschirm, wird aber nicht gedruckt.
+
+- "Professionelles Ziel" und "Verfügbarkeit" : weg (die stehen im Abschlussgespräch)
+
+
+TODO:
+
+- Tabelle Berufserfahrungen : Funktion, Status, Beendigungsgrund raus
+
+- Abschlussgespräch : als Aufzählung, nicht als Tabelle. Fragen ohne Antwort gar nicht erst ausdrucken.
+
+
+
+manage.py prep fails in migs demo project (but leaves to migrations tree)
+=========================================================================
+
+I worked a few hours on :ticket:`3219`.
+
+The :attr:`migrations_package <lino.core.site.Site.migrations_package>` site
+attribute no longer needs to be set explicitly in a :xfile:`settings.py` file
+because Lino now sets it automatically when your project directory has a
+subdirectory named :xfile:`migrations`.  As a result we can now easily enable
+Django migrations for a site by creating an empty :xfile:`migrations` directory.
+Or we can disable them by removing this directory and its subdirectories. The
+only use case so far is the :ref:`book.specs.migrate` doctest where we show some
+operations with shell commands in the :mod:`lino_book.projects.migs` project.
+
+
+The :mod:`lino_book.projects.migs` demo project is not defined as a demo project
+in  :xfile:`tasks.py` because :manage:`prep` is being run even twice in the
+:ref:`book.specs.migrate` doctest. I also removed it from the
+:file:`test_demo.py` because it currently has no Django tests.  I also removed
+the tests subdir because it was empty.
+
+
+The :manage:`initdb` now always also runs :manage:`makemigrations`. On a
+classical Lino site without a migrations package this just issues a message
+:message`No changes detected`.
