@@ -1,0 +1,27 @@
+:date: 2019-09-25
+
+=============================
+Wednesday, September 25, 2019
+=============================
+
+Lino now gives a better error message when appy happens to not be installed at
+all.
+
+Tonis and I had a few hours of fun:
+
+- We fixed :ticket:`3225` (saving a locked row does not unlock it).  The code
+  was actually simply rotten. An :meth:`after_ui_save` method is not needed.
+
+- :ticket:`3225` : Action preprocessors (the optional function given by
+  :attr:`lino.core.actions.Action.preprocessor`) may now optionally add an
+  attribut ``timeout`` to the returned object. This means that Lino should wait
+  before sending the action's AJAX call.
+
+  This is used by :class:`lino_xl.lib.beid.BeIdReadCardAction` and
+  :class:`lino_xl.lib.beid.FindByBeIdAction` to make sure (or rather probable)
+  that eidreader has done its work before the action runs on the server. This is
+  needed when nginx is running with a single worker process. We should remove
+  that timeout when :ticket:`3228` is done.
+
+- We did some research for exploring :ticket:`3228` (callbacks under nginx with
+  multiple worker process). Seems that we are going to have some more fun...
