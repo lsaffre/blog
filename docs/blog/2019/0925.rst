@@ -4,13 +4,20 @@
 Wednesday, September 25, 2019
 =============================
 
+New server for weleup
+=====================
+
 Lino now gives a better error message when appy happens to not be installed at
 all.
 
-Tonis and I had a few hours of fun:
+Fixed two unexpected problems
+=============================
 
-- We fixed :ticket:`3225` (saving a locked row does not unlock it).  The code
-  was actually simply rotten. An :meth:`after_ui_save` method is not needed.
+Tonis and I had a few hours of fun.
+
+- We fixed :ticket:`3225` (saving a locked row
+  does not unlock it).  The code (:class:`lino.modlib.system.Lockable`) was simply
+  rotten. The :meth:`after_ui_save` method is not needed.
 
 - :ticket:`3225` : Action preprocessors (the optional function given by
   :attr:`lino.core.actions.Action.preprocessor`) may now optionally add an
@@ -22,6 +29,117 @@ Tonis and I had a few hours of fun:
   that eidreader has done its work before the action runs on the server. This is
   needed when nginx is running with a single worker process. We should remove
   that timeout when :ticket:`3228` is done.
+  Later I made this value configurable via a new plugin setting
+  :attr:`preprocessor_delay <lino_xl.lib.beid.Plugin.preprocessor_delay>`.
 
-- We did some research for exploring :ticket:`3228` (callbacks under nginx with
-  multiple worker process). Seems that we are going to have some more fun...
+Handling callbacks with multiple worker processes
+=================================================
+
+But the big problem is :ticket:`3228` (callbacks under nginx with multiple
+worker process).  We did some research for exploring this. Seems that we are
+going to have some more fun.
+
+I tried whether multiprocessing can help us:
+
+  .. literalinclude:: 0925.py
+
+I guess that if we manage to serialize callbacks, it should be rather easy to
+distribute our :attr:`pending_threads` dict over several processes using
+multiprocessing or Redis or Memcached.  Memcached looks good:
+https://pymemcache.readthedocs.io/en/latest/
+
+According to `this article by Emlyn O'Regan
+<https://medium.com/@emlynoregan/serialising-all-the-functions-in-python-cd880a63b591>`__
+we can maybe use `dill <https://github.com/uqfoundation/dill>`_ in order to
+serialize functions.  Dill is like Pickle, but it serializes functions by their
+internal descriptors (:attr:`__code__`, :attr:`__closure__` etc.).
+
+But we are not yet there. Let's first try whether dill is able to serialize all
+callback functions of the test suite.
+
+We can test this easily: instead of storing the function object itself, I store
+its serialized image. So in :meth:`lino.core.kernel.CallbackChoice.__init__` I
+say::
+
+        # self.func = func
+        self.func_s = dill.dumps(func)
+
+And in :meth:`lino.core.kernel.Kernel.run_callback` I say::
+
+        # c.func(ar)
+        func = dill.loads(c.func_s)
+        func(ar)
+
+Search for "dill" in :file:`kernel.py` and invert the commenting if you want to
+replay the following.
+
+Yes, that seems to work in some cases.  But not always. For example a test case
+in :mod:`lino_book.projects.watch` fails after above changes::
+
+  $ go watch
+  $ python manage.py test tests.test_basics
+
+The error message is::
+
+  _pickle.PicklingError: Can't pickle <class 'django.utils.functional.lazy.<locals>.__proxy__'>: it's not found as django.utils.functional.lazy.<locals>.__proxy__
+
+Here is relevant code of :class:`lino.core.actions.DeleteSelected` with the
+:func:`ok` function it is trying to serialize::
+
+    def run_from_ui(self, ar, **kw):
+        objects = []
+        for obj in ar.selected_rows:
+            objects.append(str(obj))
+            msg = ar.actor.disable_delete(obj, ar)
+            if msg is not None:
+                ar.error(None, msg, alert=True)
+                return
+
+        def ok(ar2):
+            super(DeleteSelected, self).run_from_ui(ar, **kw)
+            ar2.success(record_deleted=True)
+
+            # hack required for extjs:
+            if ar2.actor.detail_action:
+                ar2.set_response(
+                    detail_handler_name=ar2.actor.detail_action.full_name())
+
+        d = dict(num=len(objects), targets=', '.join(objects))
+        if len(objects) == 1:
+            d.update(type=ar.actor.model._meta.verbose_name)
+        else:
+            d.update(type=ar.actor.model._meta.verbose_name_plural)
+        msg = gettext("You are about to delete %(num)d %(type)s:\n%(targets)s") % d
+        ar.confirm(ok, u"{}\n{}".format(msg, gettext("Are you sure ?")))
+
+Note that the local function :func:`ok` defined in above code uses one
+variable that is defined locally by the defining scope (namely :attr:`ar`). This
+is probably what's causing troubles because when I change the line
+
+::
+
+  super(DeleteSelected, self).run_from_ui(ar, **kw)
+
+into
+
+::
+
+  super(DeleteSelected, self).run_from_ui(ar2, **kw)
+
+(IOW I remove the only use of the variable :attr:`ar`), then the serialization
+works.  But the result is not what we want (:attr:`ar` is the original request
+while :attr:`ar2` is its successor which gets instantiated when the answer
+arrives). Callback functions need to be able to access local variables defined
+previously by their original request.
+
+I pushed some cosmetic changes to lino (default for :setting:`TIME_ZONE` is now
+"UTC" instead of `None`, and I replaced some lazy text translations by immediate
+translations because the problem seems to come because there are still calls to
+:func:`django.utils.functional.lazy` hanging around).
+
+Note that the mentioned Medium article by Emlyn O'Regan has three follow-ups
+that seem to be quite close to what we need. And in the `fourth article
+<https://medium.com/@emlynoregan/automatically-serialising-recursive-inner-functions-in-python-using-the-y-combinator-fc5d37e50b29>`__
+he posts a code snippet that might work for us.  But this was more than three
+years ago.  Isn't this already  merged into dill?  I wouldn't want to  rely on
+this code if it is not tested and maintained by competent people...
