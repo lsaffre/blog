@@ -1,0 +1,453 @@
+:date: 2019-09-26
+
+============================
+Thursday, September 26, 2019
+============================
+
+Make :meth:`ar.confirm <lino.core.requests.BaseRequest.confirm>` blocking
+=========================================================================
+
+:ticket:`3228` is maybe urgent if the new :ref:`avanti` production server turns
+out to be too slow when 20 users are working on it.
+
+After a few hours of sleep I think we can do it.
+
+The key point is to accept that we cannot store a running function in another
+process.  But we can simply make :meth:`ar.confirm <lino.core.requests.BaseRequest.confirm>` blocking.  Which will lead
+to more readable application code because instead of writing action logic in a
+"twisted" way, we write it as it is meant.
+
+Writing it the twisted way::
+
+    def run_from_ui(self, ar, **kw):
+        ... prepare the confirmation
+        def ok(ar2):
+            ... do it
+        ar.confirm(ok, _("Are you sure ?"))
+
+Writing it as is is meant::
+
+    def run_from_ui(self, ar, **kw):
+        ... prepare the confirmation
+        if ar.confirm(_("Are you sure ?")):
+            ... do it
+
+We don't need to change the syntax. The API of :meth:`ar.confirm
+<lino.core.requests.BaseRequest.confirm>` should remain the same except that it
+will now return True or False, and that the `ok_func` argument would become
+optional.
+
+How to do this?  I started a new module :mod:`lino.core.callbacks`
+
+New server for weleup
+=====================
+
+Back to work on :ticket:`3095` (move weleup to new server). Here is the last
+traceback in Apache's error.log::
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/prod/wsgi.py", line 11, in <module>
+      application = get_wsgi_application()
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/django/apps/registry.py", line 114, in populate
+      app_config.import_models()
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/django/apps/config.py", line 211, in import_models
+      self.models_module = import_module(models_module_name)
+    File "/usr/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+    File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino/modlib/weasyprint/models.py", line 5, in <module>
+      from .choicelists import *
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino/modlib/weasyprint/choicelists.py", line 17, in <module>
+      from weasyprint import HTML
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/weasyprint/__init__.py", line 443, in <module>
+      from .document import Document, Page  # noqa isort:skip
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/weasyprint/document.py", line 23, in <module>
+      from .draw import draw_page, stacked
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/weasyprint/draw.py", line 19, in <module>
+      from .images import SVGImage
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/weasyprint/images.py", line 17, in <module>
+      import cairosvg.parser
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cairosvg/__init__.py", line 42, in <module>
+      from . import surface  # noqa isort:skip
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cairosvg/surface.py", line 28, in <module>
+      from .defs import (
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cairosvg/defs.py", line 24, in <module>
+      from .bounding_box import calculate_bounding_box, is_non_empty_bounding_box
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cairosvg/bounding_box.py", line 28, in <module>
+      from .parser import Tree
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/cairosvg/parser.py", line 28, in <module>
+      from defusedxml import ElementTree
+    File "/usr/lib/python3/dist-packages/uno.py", line 350, in _uno_import
+      return _builtin_import(name, *optargs, **kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/defusedxml/ElementTree.py", line 63, in <module>
+      _XMLParser, _iterparse, ParseError = _get_py3_cls()
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/defusedxml/ElementTree.py", line 48, in _get_py3_cls
+      pure_pymod = importlib.import_module(pymodname)
+    File "/usr/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "/usr/lib/python3.7/xml/etree/ElementTree.py", line 1660, in <module>
+      from _elementtree import *
+    File "/usr/lib/python3/dist-packages/uno.py", line 373, in _uno_import
+      d = mod.__dict__
+  AttributeError: 'NoneType' object has no attribute '__dict__'
+
+
+I guess that it is a side effect of having getlino installed system-wide.  So as
+a first step I remove it there::
+
+  $ sudo su
+  # pip3 freeze | xargs pip3 uninstall -y
+
+  Uninstalling alabaster-0.7.12:
+    Successfully uninstalled alabaster-0.7.12
+  Uninstalling argh-0.26.2:
+    Successfully uninstalled argh-0.26.2
+  Uninstalling arrow-0.14.6:
+    Successfully uninstalled arrow-0.14.6
+  Not uninstalling asn1crypto at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'asn1crypto'. No files were found to uninstall.
+  Uninstalling atelier-1.1.15:
+    Successfully uninstalled atelier-1.1.15
+  Uninstalling atomicwrites-1.3.0:
+    Successfully uninstalled atomicwrites-1.3.0
+  Uninstalling attrs-19.1.0:
+    Successfully uninstalled attrs-19.1.0
+  Uninstalling Babel-2.7.0:
+    Successfully uninstalled Babel-2.7.0
+  Uninstalling binaryornot-0.4.4:
+    Successfully uninstalled binaryornot-0.4.4
+  Not uninstalling certifi at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'certifi'. No files were found to uninstall.
+  Not uninstalling cffi at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'cffi'. No files were found to uninstall.
+  Not uninstalling chardet at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'chardet'. No files were found to uninstall.
+  Uninstalling Click-7.0:
+    Successfully uninstalled Click-7.0
+  Uninstalling cookiecutter-1.6.0:
+    Successfully uninstalled cookiecutter-1.6.0
+  Uninstalling coverage-4.5.4:
+    Successfully uninstalled coverage-4.5.4
+  Not uninstalling cryptography at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'cryptography'. No files were found to uninstall.
+  Uninstalling docutils-0.15.2:
+    Successfully uninstalled docutils-0.15.2
+  Not uninstalling entrypoints at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'entrypoints'. No files were found to uninstall.
+  Uninstalling future-0.17.1:
+    Successfully uninstalled future-0.17.1
+  Uninstalling getlino-19.9.0:
+    Successfully uninstalled getlino-19.9.0
+  Uninstalling gitdb2-2.0.5:
+    Successfully uninstalled gitdb2-2.0.5
+  Uninstalling GitPython-3.0.2:
+    Successfully uninstalled GitPython-3.0.2
+  Not uninstalling httplib2 at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'httplib2'. No files were found to uninstall.
+  Not uninstalling idna at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'idna'. No files were found to uninstall.
+  Uninstalling imagesize-1.1.0:
+    Successfully uninstalled imagesize-1.1.0
+  Uninstalling importlib-metadata-0.19:
+    Successfully uninstalled importlib-metadata-0.19
+  Uninstalling invoke-1.3.0:
+    Successfully uninstalled invoke-1.3.0
+  Uninstalling Jinja2-2.10.1:
+    Successfully uninstalled Jinja2-2.10.1
+  Uninstalling jinja2-time-0.2.0:
+    Successfully uninstalled jinja2-time-0.2.0
+  Not uninstalling keyring at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'keyring'. No files were found to uninstall.
+  Not uninstalling keyrings.alt at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'keyrings.alt'. No files were found to uninstall.
+  Uninstalling MarkupSafe-1.1.1:
+    Successfully uninstalled MarkupSafe-1.1.1
+  Uninstalling more-itertools-7.2.0:
+    Successfully uninstalled more-itertools-7.2.0
+  Uninstalling packaging-19.1:
+    Successfully uninstalled packaging-19.1
+  Uninstalling pluggy-0.12.0:
+    Successfully uninstalled pluggy-0.12.0
+  Not uninstalling ply at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'ply'. No files were found to uninstall.
+  Uninstalling poyo-0.5.0:
+    Successfully uninstalled poyo-0.5.0
+  Uninstalling py-1.8.0:
+    Successfully uninstalled py-1.8.0
+  Not uninstalling pycparser at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'pycparser'. No files were found to uninstall.
+  Not uninstalling pycrypto at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'pycrypto'. No files were found to uninstall.
+  Not uninstalling pycurl at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'pycurl'. No files were found to uninstall.
+  Uninstalling Pygments-2.4.2:
+    Successfully uninstalled Pygments-2.4.2
+  Not uninstalling pygobject at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'PyGObject'. No files were found to uninstall.
+  Uninstalling pyparsing-2.4.2:
+    Successfully uninstalled pyparsing-2.4.2
+  Not uninstalling pysimplesoap at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'PySimpleSOAP'. No files were found to uninstall.
+  Uninstalling pytest-5.1.1:
+    Successfully uninstalled pytest-5.1.1
+  Uninstalling pytest-cov-2.7.1:
+    Successfully uninstalled pytest-cov-2.7.1
+  Not uninstalling python-apt at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'python-apt'. No files were found to uninstall.
+  Uninstalling python-dateutil-2.8.0:
+    Successfully uninstalled python-dateutil-2.8.0
+  Not uninstalling python-debian at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'python-debian'. No files were found to uninstall.
+  Not uninstalling python-debianbts at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'python-debianbts'. No files were found to uninstall.
+  Uninstalling pytz-2019.2:
+    Successfully uninstalled pytz-2019.2
+  Not uninstalling pyxdg at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'pyxdg'. No files were found to uninstall.
+  Not uninstalling reportbug at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'reportbug'. No files were found to uninstall.
+  Not uninstalling requests at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'requests'. No files were found to uninstall.
+  Not uninstalling secretstorage at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'SecretStorage'. No files were found to uninstall.
+  Not uninstalling six at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'six'. No files were found to uninstall.
+  Uninstalling smmap2-2.0.5:
+    Successfully uninstalled smmap2-2.0.5
+  Uninstalling snowballstemmer-1.9.0:
+    Successfully uninstalled snowballstemmer-1.9.0
+  Uninstalling Sphinx-2.2.0:
+    Successfully uninstalled Sphinx-2.2.0
+  Uninstalling sphinxcontrib-applehelp-1.0.1:
+    Successfully uninstalled sphinxcontrib-applehelp-1.0.1
+  Uninstalling sphinxcontrib-devhelp-1.0.1:
+    Successfully uninstalled sphinxcontrib-devhelp-1.0.1
+  Uninstalling sphinxcontrib-htmlhelp-1.0.2:
+    Successfully uninstalled sphinxcontrib-htmlhelp-1.0.2
+  Uninstalling sphinxcontrib-jsmath-1.0.1:
+    Successfully uninstalled sphinxcontrib-jsmath-1.0.1
+  Uninstalling sphinxcontrib-qthelp-1.0.2:
+    Successfully uninstalled sphinxcontrib-qthelp-1.0.2
+  Uninstalling sphinxcontrib-serializinghtml-1.1.3:
+    Successfully uninstalled sphinxcontrib-serializinghtml-1.1.3
+  Uninstalling Unipath-1.1:
+    Successfully uninstalled Unipath-1.1
+  Not uninstalling urllib3 at /usr/lib/python3/dist-packages, outside environment /usr
+  Can't uninstall 'urllib3'. No files were found to uninstall.
+  Uninstalling virtualenv-16.7.4:
+    Successfully uninstalled virtualenv-16.7.4
+  Uninstalling wcwidth-0.1.7:
+    Successfully uninstalled wcwidth-0.1.7
+  Uninstalling whichcraft-0.6.0:
+    Successfully uninstalled whichcraft-0.6.0
+  Uninstalling zipp-0.6.0:
+    Successfully uninstalled zipp-0.6.0
+
+It seems that I was lucky because pip refused to uninstall packages that  are
+"outside environment /usr"::
+
+  # pip3 freeze
+  asn1crypto==0.24.0
+  certifi==2018.8.24
+  cffi==1.12.2
+  chardet==3.0.4
+  cryptography==2.6.1
+  entrypoints==0.3
+  httplib2==0.11.3
+  idna==2.6
+  keyring==17.1.1
+  keyrings.alt==3.1.1
+  ply==3.11
+  pycparser==2.19
+  pycrypto==2.6.1
+  pycurl==7.43.0.2
+  PyGObject==3.30.4
+  PySimpleSOAP==1.16.2
+  python-apt==1.8.4
+  python-debian==0.1.35
+  python-debianbts==2.8.2
+  pyxdg==0.25
+  reportbug==7.5.2
+  requests==2.21.0
+  SecretStorage==2.3.1
+  six==1.12.0
+  urllib3==1.24.1
+
+
+I did::
+
+  $ go prod
+  $ sudo apt install virtualenv
+  $ mv env env.old
+  $ virtualenv -p python3 env
+  $ a
+  $ pip install lino-weleup mysqlclient
+  $ python manage.py install
+  $ python manage.py collectstatic
+
+This will install some more packages::
+
+  pip install --upgrade --trusted-host svn.forge.pallavi.be -e svn+https://svn.forge.pallavi.be/appy-dev/dev1#egg=appy bleach odfpy schedule suds-py3
+
+But still no change.
+
+I tried this::
+
+  $ sudo aptitude reinstall libreoffice libreoffice-script-provider-python uno-libs3 python3-uno python3
+
+Still no change.
+
+Indeed I have no uno installed in that virtualenv (``python -c "import uno"``
+fails).  The uno package is available only in the system wide python3. So let's
+try again with virtualenv's ``--system-site-packages`` option::
+
+  $ rm -rf env
+  $ virtualenv -p python3 --system-site-packages env
+  $ a
+  $ pip install lino-weleup mysqlclient
+  $ python manage.py install
+
+Now ``python -c "import uno"`` works in the env, but otherwise still no change.
+
+I tried to reinstall the system-wide python::
+
+  $ sudo apt --reinstall install python3 python3-uno
+
+Still no change.
+
+BTW we don't need Apache to get the error. We can simply say::
+
+    $ python manage.py shell
+
+Hamza had the idea to try this::
+
+  $ sudo apt remove python3-uno
+
+Interesting! When python3-uno is not installed, the error disappears and the
+site is visible. But when we try to print something using the appypod method, we
+get::
+
+  PodError: An error occurred during the conversion. Traceback (most recent call last):
+   File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 845, in ConverterScript().run()
+   File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 833, in runoptions.pageStart, options.verbose)
+   File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 268, in __init__ self.docUrl, self.docPath = self.getFilePath(docPath)
+   File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 361, in getFilePath
+    import unohelper
+    ModuleNotFoundError: No module named 'unohelper'
+
+Summary so far: something seems broken which causes python3-uno to not work
+correctly when installed.  I tried to reinstall everything I can think of
+(copied from getlino configure).  No change.
+
+
+When pip is unbelievably slow
+=============================
+
+Today I had a situation on our new demo server that pip was unbelievably slow.
+A pip freeze was running endlessly until I hit the Ctrl-C key::
+
+  $ pip freeze
+  ^C^C^CERROR: Operation cancelled by user
+  ^C^C^CException ignored in: <module 'threading' from '/usr/lib/python3.7/threading.py'>
+  Traceback (most recent call last):
+    File "/usr/lib/python3.7/threading.py", line 1263, in _shutdown
+      def _shutdown():
+  KeyboardInterrupt
+  ^C^CError in atexit._run_exitfuncs:
+  Traceback (most recent call last):
+    File "/usr/lib/python3.7/logging/__init__.py", line 2047, in shutdown
+  ^C^C^C^C^C
+  ^C
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "/usr/lib/python3.7/logging/__init__.py", line 2047, in shutdown
+  ^C^CKeyboardInterrupt
+
+I don't know why this was, but it disappeared after a reboot.
+
+
+Updating the demo server
+========================
+
+I added a :cmd:`go` alias to the :file:`/etc/bash.bashrc` file.  So you can now
+say "go cosi_ee" or "go team".
+
+I now activate the master env in my :xfile:`.bash_aliases` file::
+
+  . /usr/local/lino/sharedenvs/master/bin/activate
+
+I wrote a custom :xfile:`pull.sh` script in the bin directory of the master
+environment.
+
+I saw with my own eyes the situation where the "Your browser is using a previous
+version of the site, press OK to reload the site" doesn't go away by itself
+(after clicking OK).  Maybe an issue with caching, caused e.g. by nginx
+configuration.
+
+
+Summary view for RecentComments
+===============================
+
+Oops, :ticket:`3212` (Summary view for RecentComments) wasn't a quick win. It
+caused a series of changes and optimizations:
+
+- :class:`lino.modlib.comments.RecentComments` now has a summary view that looks
+  much better in the dashboard.  And it no longer stops displaying comments
+  modified in the future. This is useful when you modify a comment in a demo
+  database.
+
+- Fixed a bug in :class:`lino.modlib.memo.Previewable` which caused it to not
+  use the :attr:`default_ui <lino.core.site.Site.default_ui>` when
+  :attr:`lino.modlib.memo.Plugin.front_end` is `None`.
+
+- When a :class:`BaseRequest <lino.core.requests.BaseRequest>` is spawned from a
+  parent, it now inherits the :attr:`request
+  <lino.core.requests.BaseRequest.request>` attribute (i.e. the incoming Django
+  HTTP request that caused the action request). This is needed so that
+  subrequests can decide whether to generate links using "javascript:" or not.
+  When displaying links in a comment on the exts dashboard, we prefer them to
+  remain under the same url.
+
+- The :fixture:`demo2` fixture for :mod:`lino.modlib.comments` generates a series
+  of lorem ipsum comments.  But until now they all had the real timestamp when the
+  :manage:`prep` command was run.  Now they have a fictive demo date and time.
+
+TODO:  The summary tables for CommentsByRFC and those for RecentComments are
+similar but different. It seems that when rendering a table summary in the
+dashboard, Lino requires that summary to be returned as an etree element.  When
+rendering it in a slave table panel of a detail, this was possible.  And for
+comments we used it to avoid rendering them again and again.  Also we can
+probably use lxml to truncate the first paragraph, no need for BeautifulSoup.
+The idea of Previewable was to have the comments already rendered as HTML and to
+not parse them again and again. Currently we are not using this for
+RecentComments.  To be observed.

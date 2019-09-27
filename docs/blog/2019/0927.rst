@@ -1,0 +1,53 @@
+:date: 2019-09-27
+
+==========================
+Friday, September 27, 2019
+==========================
+
+Cannot print accounting report in cosi-ee demo
+==============================================
+
+
+:meth:`lino.modlib.users.UserPlan.run_start_plan` didn't like it when it found
+more than one instances of a plan for a given user.   In
+:mod:`lino_book.projects.cosi_ee` it said :message:`MultipleObjectsReturned:
+get() returned more than one Report -- it returned 2!` Now it simply deletes
+them all in that case.  This should fix :ticket:`3232`.
+
+But it doesn't yet. Because the reports cannot be deleted.  It says::
+
+  AjaxExceptionResponse ProtectedError: ("Cannot delete some instances of model
+  'Report' because they are referenced through a protected foreign key:
+  'AccountEntry.report'", <QuerySet [AccountEntry #1 ('AccountEntry object
+  (1)'), AccountEntry #2 ('AccountEntry object (2)'), AccountEntry #3
+  ('AccountEntry object (3)'), AccountEntry #4 ('AccountEntry object (4)'),
+  AccountEntry #5 ('AccountEntry object (5)'), AccountEntry #6 ('AccountEntry
+  object (6)'), AccountEntry #7 ('AccountEntry object (7)'), AccountEntry #8
+  ('AccountEntry object (8)'), AccountEntry #9 ('AccountEntry object (9)'),
+  AccountEntry #10 ('AccountEntry object (10)'), AccountEntry #11 ('AccountEntry
+  object (11)'), AccountEntry #12 ('AccountEntry object (12)'), AccountEntry #13
+  ('AccountEntry object (13)'), AccountEntry #14 ('AccountEntry object (14)'),
+  AccountEntry #15 ('AccountEntry object (15)'), AccountEntry #16 ('AccountEntry
+  object (16)'), AccountEntry #17 ('AccountEntry object (17)'), AccountEntry #18
+  ('AccountEntry object (18)'), AccountEntry #19 ('AccountEntry object (19)'),
+  AccountEntry #20 ('AccountEntry object (20)'), '...(remaining elements
+  truncated)...']>)
+
+.. currentmodule:: lino_xl.lib.sheets
+
+Indeed the :attr:`allow_cascaded_delete
+<lino.core.model.Model.allow_cascaded_delete>` of the report items weren't set
+correctly! For :class:`PartnerEntry` it was ``['partner']``,  for
+:class:`ItemEntry` it was ``['item']`` and for :class:`AccountEntry` it was
+``['account']``.  This was plain bullshit.  When you inadvertently try to delete
+a partner who is mentioned in an accounting report, you want Lino to refuse your
+action (not to remove the entry from the report).
+
+TODO: So from now on it might happen that deleting a partner or an account is
+being refused because some old accounting report exists. This might disturb
+because Lino doesn't currently tidy up these reports after some time.  A
+:term:`site administrator` can however go to :menuselection:`Explorer --> Accounting
+--> Accounting reports` and delete them manually.
+
+There is maybe yet another bug in :mod:`lino_xl.lib.sheets` : :ticket:`3233`.
+Less urgent.
