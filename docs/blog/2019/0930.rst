@@ -1,0 +1,83 @@
+:date: 2019-09-30
+
+==========================
+Monday, September 30, 2019
+==========================
+
+https://softwarehut.com/blog/it-outsourcing/remote-teams-best-practices/
+
+'NoneType' object has no attribute '__dict__'
+=============================================
+
+Hamza and I did more research for advancing with :ticket:`3095`.
+
+We had this traceback::
+
+  Traceback (most recent call last):
+  File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 845, in <module>
+  ConverterScript().run()
+  File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 833, in runoptions.pageStart, options.verbose)
+  File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 268, in __init__
+  self.docUrl, self.docPath = self.getFilePath(docPath)
+  File "/usr/local/lino/lino_local/prod/env/src/appy/appy/pod/converter.py", line 361, in getFilePath
+  import unohelper
+  File "/usr/lib/python3/dist-packages/unohelper.py", line 19, in <module>
+  import uno
+  File "/usr/local/lib/python3.7/dist-packages/uno/__init__.py", line 4, in <module>
+  from base import Element, Css, Payload, UnoBaseFeature, UnoBaseField
+  ModuleNotFoundError: No module named 'base'
+
+This was caused because we had installed uno via "sudo pip3 install uno". But
+after saying  "sudo pip3 uninstall uno" we are back at our initial problem::
+
+  AttributeError: 'NoneType' object has no attribute '__dict__'
+
+
+We added a line ``import sys ; print(sys.path)`` to the :xfile:`settings.py` and
+watched the difference::
+
+  manage.py : ['/usr/local/lino',
+  '/usr/local/lino/lino_local/weleup1',
+  '/usr/local/lino/lino_local/weleup1/env/lib/python37.zip',
+  '/usr/local/lino/lino_local/weleup1/env/lib/python3.7',
+  '/usr/local/lino/lino_local/weleup1/env/lib/python3.7/lib-dynload',
+  '/usr/lib/python3.7',
+  '/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages',
+  '/usr/local/lino/lino_local/weleup1/env/src/appy']
+
+  Apache : ['/usr/local/lino',
+  '/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages',
+  '/usr/local/lino/lino_local/weleup1/env/src/appy',
+  '/usr/lib/python37.zip',
+  '/usr/lib/python3.7',
+  '/usr/lib/python3.7/lib-dynload',
+  '/usr/local/lib/python3.7/dist-packages',
+  '/usr/lib/python3/dist-packages']
+
+IOW Apache takes some parts of the python path from :file:`/usr/lib/` where
+manage.py takes it from the virtualenv.
+
+I asked google for `apache python3 virtualenv`, and  on the following link I
+found the explanation:
+
+https://modwsgi.readthedocs.io/en/develop/user-guides/virtual-environments.html
+
+Not `python-path` but `python-home` is the parameter for specifying which
+virtualenv mod_wsgi should use!
+
+
+
+Some optimizations in Avanti
+============================
+
+The three tables based on :class:`lino_xl.lib.cv.HistoryByPerson` now have a new
+kind of summary view which displays them as a bullet list where each item
+includes the field names.  This is used in
+:xfile:`avanti/Client/final_report.body.html`.
+
+:meth:`lino.core.requests.BaseRequest.show` has a new optional keyword argument
+`display_mode` which can be used to ask a summary for a table that does not show
+as summary by default. This new option might make `nosummary` useless : instead
+of saying `nosummary=True` you can say `display_mode="grid"` or
+`display_mode="html"`.  The display modes "grid" and "html" have the same result
+in a printed document or in a tested spec.
