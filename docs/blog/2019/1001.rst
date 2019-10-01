@@ -1,0 +1,20 @@
+:date: 2019-10-01
+
+========================
+Tuesday, October 1, 2019
+========================
+
+I worked a bit on our community guide (:ref:`cg`).
+
+I saw that Hamza had tried to fix :ticket:`3239` and realized that the docs
+about :envvar:`LINO_CACHE_ROOT` were insufficient.  He had no chance to find the
+easy solution.  Indeed we have two demo projects
+:mod:`lino_book.projects.polls` and :mod:`lino_book.projects.polls2` which cause
+a name clash when :envvar:`LINO_CACHE_ROOT` is used. The simple solution was to
+manually set a :attr:`lino.core.site.Site.project_name` for the second `mysite`
+site.
+
+But why did this problem occur only now? The :mod:`polls2
+<lino_book.projects.polls2>` demo project is quite old, isn't it? And
+:envvar:`LINO_CACHE_ROOT` is used on :ref:`travis` already a long time, isn't
+it?
