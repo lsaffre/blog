@@ -18,3 +18,101 @@ But why did this problem occur only now? The :mod:`polls2
 <lino_book.projects.polls2>` demo project is quite old, isn't it? And
 :envvar:`LINO_CACHE_ROOT` is used on :ref:`travis` already a long time, isn't
 it?
+
+Manual tests on new server
+==========================
+
+The new weleup server is basically functional. Now for the more detailed tests :
+does bleaching affect some existing data? Does Tx25 now work again?
+
+::
+
+  $ python manage.py checkdata -f system.BleachChecker
+  Started manage.py checkdata -f system.BleachChecker (using lino_local.weleup1.settings) --> PID 9408
+  Found 0 and fixed 202 data problems in Income confirmations.
+  Found 0 and fixed 8 data problems in Simple confirmations.
+  Found 0 and fixed 2 data problems in Tasks.
+  Found 0 and fixed 230 data problems in Budgets.
+  Found 0 and fixed 437 data problems in ISIPs.
+  Found 0 and fixed 96 data problems in Contract partners.
+  Found 0 and fixed 9685 data problems in Events/Notes.
+  Traceback (most recent call last):
+    File "manage.py", line 11, in <module>
+      execute_from_command_line(sys.argv)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+      utility.execute()
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/core/management/__init__.py", line 375, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/core/management/base.py", line 323, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/core/management/base.py", line 364, in execute
+      output = self.handle(*args, **options)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/modlib/checkdata/management/commands/checkdata.py", line 63, in handle
+      check_data(args=args, fix=options['fix'])
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/modlib/checkdata/models.py", line 349, in check_data
+      todo, done = chk.update_problems(obj, False, fix)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/modlib/checkdata/choicelists.py", line 139, in update_problems
+      for fixable, msg in self.get_checkdata_problems(obj, fix):
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/modlib/system/models.py", line 228, in get_checkdata_problems
+      obj.full_clean()
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/db/models/base.py", line 1181, in full_clean
+      self.clean_fields(exclude=exclude)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/django/db/models/base.py", line 1219, in clean_fields
+      raw_value = getattr(self, f.attname)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/core/fields.py", line 602, in __get__
+      return self.value_from_object(instance, None)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino/core/fields.py", line 593, in value_from_object
+      return m(obj, ar)
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino_xl/lib/outbox/models.py", line 253, in get_recipients
+      Recipient.objects.filter(mail=self, type=RecipientTypes.to)]
+    File "/usr/local/lino/lino_local/weleup1/env/lib/python3.7/site-packages/lino_xl/lib/outbox/models.py", line 252, in <listcomp>
+      recs = [unicode(r) for r in
+  NameError: name 'unicode' is not defined
+  Done manage.py checkdata -f system.BleachChecker (PID 9408)
+
+This was a trivial py2to3 bug in a place that is not covered by any test.  I
+fixed the actual problem, but did not write a test case to cover it. AFAIK
+they don't use the outbox plugin, maybe we should rather deprecate it.
+
+Now let's test whether Tx25 works! That's the the moment I have been waiting
+for... As a first test I will just request a Tx25 for client 2000067.  And oops,
+here is an error message:
+
+  'NoneType' object has no attribute 'promotePrefixes'
+
+I asked Google and found
+https://github.com/cackharot/suds-py3/pull/40/commits
+
+and I applied the same changes as in `this commit
+<https://github.com/cackharot/suds-py3/pull/40/commits/ed38f29d97adbe08bb41d5c64d08a16d7e8589b0>`__
+which is not yet released to the suds master. Great! This seems to fix the
+issue!
+
+Afterwards I get another error. Probably caused because their firewall prevents
+the new server from connecting to the CBSS::
+
+  [2019-10-01 15:25:40.401201] Traceback (most recent call last):
+    File "/usr/lib/python3.7/urllib/request.py", line 1317, in do_open
+      encode_chunked=req.has_header('Transfer-encoding'))
+    File "/usr/lib/python3.7/http/client.py", line 1229, in request
+      self._send_request(method, url, body, headers, encode_chunked)
+    File "/usr/lib/python3.7/http/client.py", line 1275, in _send_request
+      self.endheaders(body, encode_chunked=encode_chunked)
+    File "/usr/lib/python3.7/http/client.py", line 1224, in endheaders
+      self._send_output(message_body, encode_chunked=encode_chunked)
+    File "/usr/lib/python3.7/http/client.py", line 1016, in _send_output
+      self.send(msg)
+    File "/usr/lib/python3.7/http/client.py", line 956, in send
+      self.connect()
+    File "/usr/lib/python3.7/http/client.py", line 1384, in connect
+      super().connect()
+    File "/usr/lib/python3.7/http/client.py", line 928, in connect
+      (self.host,self.port), self.timeout, self.source_address)
+    File "/usr/lib/python3.7/socket.py", line 707, in create_connection
+      for res in getaddrinfo(host, port, 0, SOCK_STREAM):
+    File "/usr/lib/python3.7/socket.py", line 748, in getaddrinfo
+      for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
+  socket.gaierror: [Errno -2] Name or service not known
+
+That error message is a bit useless. It should simply say "Connection to
+https://example.com failed with [Errno -2] Name or service not known".
