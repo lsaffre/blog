@@ -114,5 +114,55 @@ the new server from connecting to the CBSS::
       for res in _socket.getaddrinfo(host, port, family, type, proto, flags):
   socket.gaierror: [Errno -2] Name or service not known
 
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino_welfare/modlib/cbss/mixins.py", line 239, in execute_request
+      retval = self.execute_request_(now, simulate_response)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino_welfare/modlib/cbss/mixins.py", line 554, in execute_request_
+      return self.execute_newstyle(client, info, simulate_response)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino_welfare/modlib/cbss/models.py", line 484, in execute_newstyle
+      reply = client.service.retrieveTI(infoCustomer, None, legalContext, si)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/client.py", line 559, in __call__
+      return client.invoke(args, kwargs)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/client.py", line 618, in invoke
+      result = self.send(soapenv)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/client.py", line 652, in send
+      reply = transport.send(request)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/transport/http.py", line 178, in send
+      return HttpTransport.send(self, request)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/transport/http.py", line 78, in send
+      fp = self.u2open(u2request)
+    File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/suds/transport/http.py", line 119, in u2open
+      return url.open(u2request, timeout=tm)
+    File "/usr/lib/python3.7/urllib/request.py", line 525, in open
+      response = self._open(req, data)
+    File "/usr/lib/python3.7/urllib/request.py", line 543, in _open
+      '_open', req)
+    File "/usr/lib/python3.7/urllib/request.py", line 503, in _call_chain
+      result = func(*args)
+    File "/usr/lib/python3.7/urllib/request.py", line 1360, in https_open
+      context=self._context, check_hostname=self._check_hostname)
+    File "/usr/lib/python3.7/urllib/request.py", line 1319, in do_open
+      raise URLError(err)
+  urllib.error.URLError: <urlopen error [Errno -2] Name or service not known>
+
+
+
 That error message is a bit useless. It should simply say "Connection to
 https://example.com failed with [Errno -2] Name or service not known".
+
+Another surprise::
+
+  from lxml import etree
+  ImportError: Interpreter change detected - this module can only be loaded into one interpreter per process.
+
+After reading `this
+<https://stackoverflow.com/questions/54092324/importerror-interpreter-change-detected-while-importing-xmlsec>`__
+I added the following line to the :file:`nginx/a_uwsgi.ini` file ::
+
+  single-interpreter = True
+
+
+
+https://stackoverflow.com/questions/12626503/does-mod-wsgi-runs-in-a-single-python-interpreter
