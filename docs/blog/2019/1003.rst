@@ -1,0 +1,65 @@
+:date: 2019-10-03
+
+=========================
+Thursday, October 3, 2019
+=========================
+
+PyPI release for :ref:`avanti` and upgraded their :term:`preview site`.
+
+
+'PaymentOrder' object has no attribute 'your_ref'
+=================================================
+
+.. currentmodule:: lino_xl.lib.ledger
+
+I worked on :ticket:`3236` ('PaymentOrder' object has no attribute 'your_ref')
+
+Reproducible in :mod:`lino_book.projects.cosi_ee`. Select organization "Garage
+Mergelsberg", go to the Accounting tab and click on "19 open movements (758.68 €)".
+
+I added a method :meth:`Voucher.get_movement_description` which
+is extended by :class:`lino_xl.lib.sepa.Payable` to also show the
+:attr:`lino_xl.lib.sepa.Payable.your_ref` field (unless it is empty).
+
+I saw a problem in the demo data which led to the discovery of a bug:
+
+Payment Orders were also suggesting negative payments (e.g. open sales
+invoices). The filter condition was not enough.  I added a new filter parameter
+:attr:`ExpectedMovements.same_dc` and have it used by
+:class:`lino_xl.lib.finan.SuggestionsByPaymentOrder`. I had to change the
+signature of the :func:`get_due_movements` function because the new condition
+caused a :message:`TypeError: get_due_movements() got multiple values for
+argument 'dc'`. I opened a ticket for this: :ticket:`3251`.
+
+Also at least one more thing to show in a demo: the quick search field in
+booking suggestions (e.g. :class:`SuggestionsByPaymentOrder
+<lino_xl.lib.finan.SuggestionsByPaymentOrder>`) now works. This was
+:ticket:`3215`.
+
+
+Payment orders weren't cleared by bank statement in the :fixture:`demo_bookings`
+fixture. Code change: Whether a payment order generates individual counter
+entries (one per partner) no longer depends on Account.needs_partner but on
+whether the journal has a partner or not.
+
+
+TODO: remove Account.needs_partner and replace all usages to use
+Account.clearable instead. The two fields are now synonyms. Their difference has
+indeed always been mysterious...
+
+More issues and observations to meditate:
+
+- Consider a creditor for which a payment order has been registered, but that
+  payment order is still pending (not yet cleared by a bank statement).
+  Lino currently shows these creditors as debtors.
+  Lino should know that being negative in certain accounts shouldn't count for
+  the Debtors and Creditors report.
+
+- Some organizations are strictly speaking "creditors", but we are not used to
+  show them in the list of creditors: e.g. banks and tax offices.
+
+- :ticket:`3236` is fixed, but the :attr:`Movements.description` field and
+  :meth:`Voucher.get_movement_description` is probably not finished, maybe they
+  don't always show enough information, or too much.
+
+I didn't yet commit my changes because the test suites will require revision.

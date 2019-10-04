@@ -1,0 +1,88 @@
+:date: 2019-10-02
+
+==========================
+Wednesday, October 2, 2019
+==========================
+
+Move callbacks out of the kernel
+================================
+
+I moved callback management into a separate module :mod:`lino.core.callbacks`.
+One benefit is that the code is better organized. But the main goal (if my
+hopes are true) is that it now works also when running under nginx with multiple
+threads (:ticket:`3228`).  This might work because the kernel is being
+instantiated during a reentrant thread lock (`threading.RLock()
+<https://docs.python.org/3.7/library/threading.html#rlock-objects>`__), which
+means that callbacks were not shared accross threads.  My hope is rather vague
+because I don't yet really understand all differences between multiprocessing
+and multithreading, but it is worth a try.
+
+Before publishing this I wanted to test it also under nginx.  That is I install
+a getlino production server on my machine. I learned that the installation
+instructions for a production server didn't work.  The ``env PATH=$PATH`` is
+needed to work around the controversial Debian feature of overriding the
+:envvar:`PATH` for security reasons (`source
+<https://stackoverflow.com/questions/257616/why-does-sudo-change-the-path>`__).
+
+The main goal isn't reached: when I run a Lino site under nginx with multiple
+worker processes, I still get the original problem: cannot delete e.g. calendar
+events because Lino asks for confirmation, and if I answer OK, Lino says
+"unknown callback".
+
+Two quotes from `How to use python
+multiprocessing module in django view
+<https://stackoverflow.com/questions/35699707/how-to-use-python-multiprocessing-module-in-django-view>`__:
+
+"Though using Celery may seem an overkill, it is a well-known way of doing
+asynchronous tasks. Essentially Django serves WSGI request-response cycle which
+knows nothing of multiprocessing or background tasks." (Zaur Nasibov 2016-02-29)
+
+"It really depends on the response time you want. You could have your server
+respond immediately after spawning Celery tasks, or you can do multiprocessing
+and then it will still take some time. Don't bother with multiprocessing though,
+I suggest using the excellent joblib library." (Flavian Hautbois 2016-02-29)
+
+It seems that `joblib <https://joblib.readthedocs.io/en/latest/>`_ isn't what we
+need.
+
+I started reading about Celery:
+https://docs.celeryproject.org/en/latest/django/first-steps-with-django.html
+
+
+First success with RetrieveTIGroups-v2.wsdl
+===========================================
+
+I continued working on :ticket:`2779`.
+
+It seems that our WSDL file (:xfile:`/cbss/WSDL/RetrieveTIGroups-v2.wsdl`)
+was simply using an invalid ``soap:address`` location. See the
+`commit <https://github.com/lino-framework/welfare/commit/9e3619551d9c2edbd3076e0756c067554ff4db7e>`__
+
+Now the connection seems to work. And I get a new error message::
+
+  File ".../lino_welfare/modlib/cbss/tx25.py", line 1313, in get_data_rows
+    reply_has_result(reply)
+  File ".../lino_welfare/modlib/cbss/models.py", line 401, in reply_has_result
+    for i in reply.status.information:
+  AttributeError: 'StatusType' object has no attribute 'information'
+
+The `StatusType` is defined in
+:xfile:`be/fgov/kszbcss/types/common/CommonV3.xsd` as follows::
+
+	<xsd:complexType name="StatusType">
+		<xsd:sequence>
+    ...
+    <xsd:element name="information" type="tns:InformationType" minOccurs="0" maxOccurs="15"/>
+		</xsd:sequence>
+	</xsd:complexType>
+
+I guess that maybe suds has changed to no longer create an attribute for an
+empty list.  Or something in the XSD or the service has changed.  Anyway, by
+adding a test `if hasattr(reply.status, 'information')`, I finally get our first
+successful communication with the CBSS after more than half a year of waiting::
+
+  CBSS error MSG00012: value : NO_RESULT code : MSG00012 description : The SSIN is
+  not sufficiently integrated for your organization
+
+The error itself is normal since I am trying to get data about a person who is
+not "integrated", i.e. being registered as a client of this PCSW.
