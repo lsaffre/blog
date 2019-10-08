@@ -1,0 +1,80 @@
+:date: 2019-10-08
+
+========================
+Tuesday, October 8, 2019
+========================
+
+Trying to reproduce Amber's problem.
+
+  $ cd ~/tmp
+  $ virtualenv -p python3 amber
+  $ . amber/bin/activate
+  $ getlino
+  getlino: command not found
+
+That's correct because I did not install it.
+
+Note that when you uninstall getlino, the config files are not being deleted.
+To reproduce Amber's problem, I remove my config files::
+
+  $ sudo mv /etc/getlino/getlino.conf /etc/getlino/getlino.conf.old
+  $ mv .getlino.conf .getlino.conf.old
+
+Note that I had both config files, that's perfectly possible if you run
+:cmd:`getlino configure` once as root and once not.
+
+.. program:: getlino configure
+
+Amber reported that he had only the system-wide
+:file:`/etc/getlino/getlino.conf`. Which means that he has been running
+:cmd:`getlino configure` as root.   Which indicates that he was confused by the
+installation page (:ref:`getlino.install`).  He should have chosen either
+:term:`developer environment` or :term:`contributor environment`. And then he
+didn't know that you must use ``env PATH=$PATH`` when running it as root. So he
+probably chose to configure a :term:`demo server` and installed getlino
+system-wide.  No wonder that he stumbled into problems!
+
+I reviewed the :ref:`getlino.install` page quite thoroughly.  Nopw there is some
+hope that future volunteer contributors won't get lost in the jungle again.
+
+Oh, and I saw only now that he was using getlino `19.9.7`, a quite old version.
+That might explain some of his problems! See :ref:`getlino.changes` for details.
+
+And when I tested the installation instructions I stumbled into the next
+problems:
+
+- Running :command:`getlino configure` without :option:`--db-port` caused an
+  error :message:`Invalid value for "--db-port": invalid choice: . (choose from
+  5432, 3306, 0)`. The :option:`--db-port` option is not a choice : it is not
+  limited to these values.
+
+- The :option:`--clone` option sometimes had `True` as default value.
+
+- getlino startsite said :message:`PermissionError: [Errno 1] Operation not
+  permitted: '/home/luc/.cookiecutters/cookiecutter-startsite/COPYING'
+
+- getlino forgot to run "pip install lino lino-xl"  when a shared-env was given.
+
+- I am still experimenting with what cookiecutter-startsite should do
+  :xfile:`settings.py` if no db-port is given.
+
+- Released :ref:`noi` to PyPI because this was still an old version
+  (and updated :ref:`noi.changes.2019`).
+
+I now tested the :term:`development environment` manually, and it seems to work
+at least for noi.  TODO: several other applications need a PyPI release.
+
+Actually Amber should install a:term:`development environment`. I tried what
+happens if he tries to continue::
+
+  ERROR: cd is not a valid editable requirement. It should either be a path to a local project or a VCS URL (beginning with svn+, git+, hg+, or bzr+).
+
+This was another bug in getlino. Released 19.10.2 to fix it.
+
+Finally: now the installation should work for Amber!
+
+All this is great, but I am frustrated that *I* had to do all the above.  Why
+didn't Hamza have these ideas?  Actually we should now extend the getlino test
+suites.  Actually I must also review the Developer and the Contributor Guides!
+OMG there is some much to do!  Should I ask Amber to stop trying because we
+simply lack manpower?!
