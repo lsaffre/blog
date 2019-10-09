@@ -4,7 +4,7 @@
 Tuesday, October 8, 2019
 ========================
 
-Trying to reproduce Amber's problem.
+Trying to reproduce Amber's problem.  Her is how I started::
 
   $ cd ~/tmp
   $ virtualenv -p python3 amber
@@ -12,10 +12,10 @@ Trying to reproduce Amber's problem.
   $ getlino
   getlino: command not found
 
-That's correct because I did not install it.
+That's correct because I did not install getlino.
 
-Note that when you uninstall getlino, the config files are not being deleted.
-To reproduce Amber's problem, I remove my config files::
+Note that when you uninstall getlino, the config files are not being deleted. So
+in order to reproduce Amber's problem, I remove my own config files::
 
   $ sudo mv /etc/getlino/getlino.conf /etc/getlino/getlino.conf.old
   $ mv .getlino.conf .getlino.conf.old
@@ -32,13 +32,12 @@ installation page (:ref:`getlino.install`).  He should have chosen either
 :term:`developer environment` or :term:`contributor environment`. And then he
 didn't know that you must use ``env PATH=$PATH`` when running it as root. So he
 probably chose to configure a :term:`demo server` and installed getlino
-system-wide.  No wonder that he stumbled into problems!
-
-I reviewed the :ref:`getlino.install` page quite thoroughly.  Nopw there is some
-hope that future volunteer contributors won't get lost in the jungle again.
+system-wide.  No wonder that he stumbled into problems! I reviewed the
+:ref:`getlino.install` page quite thoroughly.  Now there is some hope that
+future volunteer contributors won't get lost in the jungle again.
 
 Oh, and I saw only now that he was using getlino `19.9.7`, a quite old version.
-That might explain some of his problems! See :ref:`getlino.changes` for details.
+That might explain many of his problems! See :ref:`getlino.changes` for details.
 
 And when I tested the installation instructions I stumbled into the next
 problems:
@@ -48,34 +47,69 @@ problems:
   5432, 3306, 0)`. The :option:`--db-port` option is not a choice : it is not
   limited to these values.
 
-- The :option:`--clone` option sometimes had `True` as default value.
+- The :option:`--clone` option sometimes had `True` as default value.  That's
+  not good, this option shouldn't have magic behaviour.
 
-- getlino startsite said :message:`PermissionError: [Errno 1] Operation not
-  permitted: '/home/luc/.cookiecutters/cookiecutter-startsite/COPYING'`.
+- :cmd:`getlino startsite` said :message:`PermissionError: [Errno 1] Operation
+  not permitted: '/home/luc/.cookiecutters/cookiecutter-startsite/COPYING'`. But
+  that was just a local problem on my machine because I had been running it also
+  as root.
 
-- getlino forgot to run "pip install lino lino-xl"  when a shared-env was given.
+- Found a bug: getlino forgot to run "pip install lino lino-xl"  when a
+  shared-env was being used.  That was probably the main issue for Amber.
+  Fixed.
 
-- I am still experimenting with what cookiecutter-startsite should do
-  :xfile:`settings.py` if no db-port is given.
+- I am still experimenting with what cookiecutter-startsite should write
+  into :xfile:`settings.py` if no db-port is given.
 
 - Released :ref:`noi` to PyPI because this was still an old version
   (and updated :ref:`noi.changes.2019`).
 
-I now tested the :term:`developer environment` manually, and it seems to work at
-least for noi.  TODO: several other applications need a PyPI release.
+I tested the :term:`developer environment` manually, and it seems to work at
+least for noi.  TODO: several other applications probably need a PyPI release.
 
-Actually Amber should install a:term:`contributor environment`. I tried what
-happens if he tries to continue::
+Actually Amber should install a :term:`contributor environment`. So I tried
+that, too.  And found another bug::
 
   ERROR: cd is not a valid editable requirement. It should either be a path to a local project or a VCS URL (beginning with svn+, git+, hg+, or bzr+).
 
-This was another bug in getlino. Released 19.10.2 to fix it.
+Fixed the bug and released 19.10.2 to fix it.
 
-Finally: now the installation should work for Amber!
+Now finally the installation should work for Amber!  At least they passed my
+manual tests.
 
-All this is great, but I am frustrated that *I* had to do all the above.  Why
-didn't Hamza have these ideas?
-And OMG there is some much to do!
-Actually we should now extend the getlino test suites.
-Actually we should review the Developer and the Contributor Guides!
-Should I ask Amber to stop trying because we simply lack manpower?!
+All this is great and fun, but why did *I* have to do it?  Why didn't Hamza have
+these ideas? OMG there is some much more to do! Actually we should now extend
+the getlino test suites.  Actually we should review the Developer and the
+Contributor Guides!  Should I ask Amber to stop trying because we simply lack
+manpower?!
+
+
+Recurring event every 3rd Wednesday or every last Friday of month
+=================================================================
+
+I opened :ticket:`3255`.  No customer has asked this so far but I have the
+feeling that this is a missing feature in our calendar plugin.
+
+Inspired by `dateutil <https://dateutil.readthedocs.io/en/stable/rrule.html>`__
+we should add a field :attr:`lino_xl.lib.cal.RecurrenceSet.bysetpos` : "If
+given, it must be either an integer, or a sequence of integers, positive or
+negative. Each given integer will specify an occurrence number, corresponding to
+the nth occurrence of the rule inside the frequency period. For example, a
+bysetpos of -1 if combined with a MONTHLY frequency, and a byweekday of (MO, TU,
+WE, TH, FR), will result in the last work day of every month." It should be a
+CharField and the integers would be stored as space-separated strings. Our
+standup meetings would have bysetpos = "1 3 5" and every_unit=weekly (and
+every=1 because they are every week, not e.g. every second week).
+
+
+>>> from dateutil.rrule import rrule, MONTHLY, FR
+>>> from datetime import datetime
+>>> start_date = datetime(2019, 10, 25)
+>>> list(rrule(freq=MONTHLY, count=5, dtstart=start_date, bysetpos=-1, byweekday=FR))
+... #doctest: +NORMALIZE_WHITESPACE
+[datetime.datetime(2019, 10, 25, 0, 0),
+datetime.datetime(2019, 11, 29, 0, 0),
+datetime.datetime(2019, 12, 27, 0, 0),
+datetime.datetime(2020, 1, 31, 0, 0),
+datetime.datetime(2020, 2, 28, 0, 0)]
