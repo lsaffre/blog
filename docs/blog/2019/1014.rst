@@ -1,0 +1,54 @@
+:date: 2019-10-14
+
+========================
+Monday, October 14, 2019
+========================
+
+This weekend I have been working on the Developer Guide, trying to answer
+Amber's questions.  It is getting better but there is still much to do.
+I pushed my changes to master after the meeting.
+
+Standup meeting
+===============
+
+Ivo, Tonis and I.
+
+We had a brainstorming session about how Ivo and Amber should contribute. Should
+we give them write access and let them push directly to master?
+I updated the :ref:`team.howto.submit` page.
+This weekend I read a joke on Reddit about pushing to master which I now mention on this page.
+
+I would like Tonis to test his changes for callback under a multi-process nginx
+as well. So we had a test session for getlino : use it to simulate a production
+server on a contributor environment (another use case yet to be documented).
+Together we experienced the aha effect of getting it running almost out of the
+box.
+
+This week Tonis will try to take over the following tasks :
+
+- Review the Developer and the Contributor Guides so that it becomes useful for
+  newbies like Amber and Ivo.  For example people are still falling into a "void
+  space" when they finally managed to install their Lino environment.  Not sure
+  whether it makes sense to start with the Django tutorial.
+
+- Some more things to change in getlino (a quick list out of my head):
+
+  - as suggested by Amber: make backup of files before overwriting them
+
+  - as suggested by Amber: in a developer environment the value for host_name of a new site must be "localhost" and not "first.localhost".
+
+  - sqlite database name should be "first.db" not just "first".
+
+  - sqlite db file was not writable after installing a simulated production server.
+
+  - Switch nginx back from single-process to multi, this is in the cookiecutter-startsite project
+    :file:`{{cookiecutter.prjname}}/nginx/{{cookiecutter.prjname}}_uwsgi.ini`.
+
+  - The nginx config files created by :cmd:`getlino startsite` are named
+    PRJNAME/nginx/PRJNAME-something. No need to repeat the PRJNAME.
+
+  - Should we stop having getlino use cookiecutter? Can't we just use Jinja
+    directly? Cookiecutter seems overkill and introduces useless complexity.
+    E.g. each new parameter needs to be declared in the
+    :file:`cookiecutter.json` file although we don't need Cookiecutter in
+    interactive mode at all.

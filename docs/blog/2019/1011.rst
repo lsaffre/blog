@@ -18,3 +18,60 @@ I applied this change as a local patch on their :term:`production site`.
 
 Reviewed the Developer and Contributor Guides
 =============================================
+
+I made more changes in the book about installing Lino. :ticket:`40`.
+
+Miscellaneous bugs
+==================
+
+Fixed a side effect of :ticket:`3212`.   When working on this ticket  I wasn't
+aware that Avanti also uses :mod:`lino.modlib.comments`. This side effect  had
+slipped through the test suite simply because the
+:mod:`lino_book.projects.avanti1` demo site had no comments. Now it has, and the
+side effect wouldn't have gone unnoticed, so our coverage has increased :-)
+It seems that there was yet another hidden bug
+:class:`lino.modlib.memo.PreviewableChecker` which became visible.
+
+To fix the actual problem (a :class:`Client` indeed has no field
+:attr:`lino_xl.lib.tickets.Ticket.site`), I added a new method
+:meth:`lino.modlib.comments.Commentable.get_comment_group`.   And
+:class:`lino_xl.lib.tickets.Ticket` overrides this to return ``self.site``, but
+the default implementation returns `None`.
+
+'The :class:`lino_xl.lib.cal.DailyPlanner` has become empty in the dashboard of
+two demo databases. I guess that this is caused by Tonis' recent work on the
+calendar view.  He didn't know that this table is also being used as a dashboard
+item and via the menu.  Tonis, please have a look at this failure::
+
+  doctest docs/specs/tera/cal.rst
+
+
+Last changes for :ref:`avanti`
+==============================
+
+Meeting with Johanna.  We scheduled next Friday as the big date for their server
+move.  We also identified two more things to optimize:
+
+- Wir haben noch einen kleinen Denkfehler entdeckt : es muss nur eine
+  Standard-Klientenkontaktart "ÖSHZ" geben, und im Bericht muss Lino die
+  Funktion des Sozis drucken.
+
+- Logo im Bericht und Nummer raus aus dem Titel.
+
+Lino and mailing lists
+======================
+
+Hamza and I had a hangout where we continued to work on :ticket:`3196` (Find an
+alternative solution for mailman and migrate to the new server)
+
+- We forget about Sympa because we discovered Mailman 3. MM3 has even a REST API
+  while `Sympa uses SOAP
+  <https://sympa-community.github.io/manual/customize/soap-api.html>`_ which is
+  more heavy.
+
+- Luc sends a warning mail to the active mailman lists
+
+- Hamza migrates Mailman as it is from the old to the new
+- Later we upgrade mm2 to mm3 and extend Lino's list plugin to use the mm3 rest api.
+- static Apache documentation sites : Configure book doctree on the new LF for nginx
+- Manually re-create all websites as for the book

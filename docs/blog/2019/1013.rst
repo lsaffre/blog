@@ -1,0 +1,65 @@
+:date: 2019-10-13
+
+========================
+Sunday, October 13, 2019
+========================
+
+In :file:`/etc/nginx/sites-available/lino-framework-org.conf` I changed::
+
+       server_name lino-framework.org docs.lino-framework.org;
+
+to::
+
+       server_name lino-framework.org www.lino-framework.org;
+
+The :ref:`book` is now again visible at
+http://www.lino-framework.org/
+(this was needed as some links point there).
+
+The same file also confirms what Hamza and I decided to do::
+
+       root /var/www/public_html/book_docs;
+
+That is the static files are no longer under my user account but under
+:file:`/var/www`.
+
+So I must update my :xfile:`./.invoke.py` file I must change
+:envvar:`docs_rsync_dest` from::
+
+  docs_rsync_dest = 'luc@lino-framework.org:~/public_html/{prj}_{docs}'
+
+to::
+
+  docs_rsync_dest = 'luc@lino-framework.org:/var/www/public_html/{prj}_{docs}'
+
+so that I can update the book by running :cmd:`inv bd pd`.
+
+I added nginx config for http://community.lino-framework.org/ (by copying
+:file:`luc-lino-framework-org.conf` to :file:`community-lino-framework-org.conf`
+and creating the link to `sites-enabled`).
+
+
+Mailing lists on the new server
+===============================
+
+I tried to get the mailing lists running on the new server.  Hamza copied the
+mailman configs correctly, but it doesn't yet work because Postfix is not yet
+installed. And Postfix uses Dovecot (POP and IMAP), and indeed we want this as
+well on the new server.
+
+I did ``sudo apt install postfix`` and then copied the :file:`/etc/postfix`
+directory from the old server. Similar procedure for Dovecot (``sudo apt install
+dovecot-common``). Note that I didn't do a simple recursive scp of the whole
+directories but rather manually selected which files to copy.
+
+I saw that both Postfix and Dovecot require certbot certificates.
+
+I installed `certbot <https://certbot.eff.org/lets-encrypt/debianbuster-nginx>`
+(`sudo apt-get install certbot python-certbot-nginx`).
+
+Only then I remembered that certbot was already installed for kopano and the
+`new.lino-framework.org`.  Seems that the new install didn't hurt.
+
+Can I simply copy the certbot config files from the old server? What will
+certbot say if we ask it to certify the known lino-frameworg.org hostnames with
+a new IP address? Tonis suggested to try a plain copy.
