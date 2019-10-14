@@ -54,5 +54,22 @@ This week Tonis will try to take over the following tasks :
     interactive mode at all.
 
 
-I finished my changes to the :ref:`Developer Guide <lino.dev>` and pushed them
-to master after the meeting.
+Before handing above worries over to Tonis I finished my changes to the
+:ref:`Developer Guide <lino.dev>` and pushed them to master after the meeting.
+
+:cmd:`inv bd` failed in vilma and tera because their :xfile:`conf.py` declared
+to require lino and lino_xl doctrees which are not yet configured on the new
+server. But actually these doctrees aren't needed, so I removed the dependency.
+
+Summary of dashboard tables in doctest
+======================================
+
+The :meth:`show_dashboard <lino.core.requests.BaseRequest.show_dashboard>`
+method (used in doctests) didn't show the summary of dashboard items if they
+were a master table. This applies e.g. for
+:class:`lino.modlib.comments.RecentComments` and
+:class:`lino.modlib.notify.MyMessages`.
+
+It took me some time to debug this. Also had to release a new version of
+:ref:`etgen` because in some cases :func:`lxml.html.fragments_fromstring`
+returns elements like STRONG or HTML or BODY.
