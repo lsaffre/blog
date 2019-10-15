@@ -40,8 +40,6 @@ Before working on :ticket:`3266`  I did some research work and optimizations
 about how  headers and footers should be configured in
 :mod:`lino.modlib.weasyprint` templates (:ticket:`3267`).
 
-About rendering headers and footers in weazyprint
-
 Here is how the :xfile:`excerpts/base.weasy.html` file did it until now::
 
   @page {
@@ -63,35 +61,21 @@ are used to apply styles for *paged media* (i.e. not continuous media).
 List of all page-margin properties:
 https://www.quackit.com/css/at-rules/css_page-margin_properties_list.cfm
 
-Readings:
+More readings:
 
 - https://www.quackit.com/css/properties/css_content.cfm
 - https://weasyprint.readthedocs.io/en/latest/tips-tricks.html#include-header-and-footer-of-arbitrary-complexity-in-a-pdf
 - https://stackoverflow.com/questions/39941967/generate-pdf-with-weasyprint-having-common-header-footer-and-pagination
 - https://github.com/Kozea/WeasyPrint/blob/gh-pages/samples/invoice/invoice.css
-- https://github.com/Kozea/WeasyPrint/issues/872
 
-Nice: The `Kozea community <https://community.kozea.fr/>`__ (maintainers of
-weasyprint) describes itself with the following words:
+- TIL: Setting the height attribute in HTML is called a "presentational hint"
+  and it's now recommended not to use them and use CSS instead.
+  Presentational hints are ignored by WeasyPrint by default,
+  but you can handle them using the --presentational-hints CLI parameter.
+  https://github.com/Kozea/WeasyPrint/issues/872
 
-  We build open source software that you will love
-
-  After years and years of extremely intense research (and endless nights
-  drinking in pubs with friends), we've found the three most important rules of
-  free software development:
-
-    1. have good ideas
-    2. forget limits
-    3. build step by step
-
-  Having good ideas is hard, that's why we chose to rely on your ideas (they're
-  much better than ours, aren't they?). Our job is to blindly follow the two other
-  rules, and we think that we're doing that quite well according to what we got so
-  far:
-
-
-No, we currently don't need arbitrary HTML in headers and footers. The standard
-system using at-rules seems okay.
+After reading all these, I say: No, we currently don't need arbitrary HTML in
+headers and footers. The standard system using at-rules seems okay.
 
 Changes in Lino and XL:
 
@@ -101,12 +85,12 @@ Changes in Lino and XL:
   The new ``bottomleft`` and ``bottomright`` blocks are expected to contain the
   `content` property for their respective element.
 
-Requested changes in the final report for :ref:`avanti`
-=======================================================
+Changes in the final report for :ref:`avanti`
+=============================================
 
 Here we go for :ticket:`3266`.
-This is basically a few more changes in the template.
-Also I switched build method for the final report from appypod to weasy2pdf.
+This is basically a few more changes in the template for the final report.
+Also I switched build method from appypod to weasy2pdf.
 And some minor changes in :ref:`xl`:
 
 :meth:`lino.core.requests.BaseRequest.get_printable_context` adds a new function
@@ -129,3 +113,27 @@ them all, not just one) is now used instead of
 Summary layout of :class:`lino_xl.lib.cv.HistoryByPerson` was not very readable:
 added a colon behind each field label, and the field value is now  bold.
 A bug in that same summary always inserted an empty bullet at the beginning of the list.
+
+
+Who's behind weasyprint?
+========================
+
+Nice: The `Kozea community <https://community.kozea.fr/>`__ (maintainers of
+weasyprint) describes itself with the following words:
+
+  We build open source software that you will love
+
+  After years and years of extremely intense research (and endless nights
+  drinking in pubs with friends), we've found the three most important rules of
+  free software development:
+
+    1. have good ideas
+    2. forget limits
+    3. build step by step
+
+  Having good ideas is hard, that's why we chose to rely on your ideas (they're
+  much better than ours, aren't they?). Our job is to blindly follow the two other
+  rules, and we think that we're doing that quite well according to what we got so
+  far:
+
+Deep in my heart I feel that I agree with them...
