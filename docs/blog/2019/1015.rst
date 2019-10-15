@@ -1,0 +1,131 @@
+:date: 2019-10-15
+
+=========================
+Tuesday, October 15, 2019
+=========================
+
+
+::
+
+  AjaxExceptionResponse TypeError: __str__ returned non-string (type __proxy__)
+  in request GET /api/excerpts/MyExcerpts/6?_dc=1571102296305&lv=1571101922.83524&pv=&pv=&pv=&pv=1&pv=&an=detail&rp=ext-comp-2534&fmt=json
+  TRACEBACK:
+    File "/home/luc/virtualenvs/py3/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+      response = wrapped_callback(request, *callback_args, **callback_kwargs)
+    File "/home/luc/virtualenvs/py3/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+      return self.dispatch(request, *args, **kwargs)
+    File "/home/luc/virtualenvs/py3/lib/python3.6/site-packages/django/views/generic/base.py", line 97, in dispatch
+      return handler(request, *args, **kwargs)
+    File "/home/luc/virtualenvs/py3/lib/python3.6/site-packages/django/utils/decorators.py", line 45, in _wrapper
+      return bound_method(*args, **kwargs)
+    File "/home/luc/virtualenvs/py3/lib/python3.6/site-packages/django/utils/decorators.py", line 142, in _wrapped_view
+      response = view_func(request, *args, **kwargs)
+    File "/home/luc/work/lino/lino/modlib/extjs/views.py", line 548, in get
+      datarec = ar.elem2rec_detailed(elem)
+    File "/home/luc/work/lino/lino/core/requests.py", line 1036, in elem2rec_detailed
+      rec.update(title=ar.get_breadcrumbs(elem))
+    File "/home/luc/work/lino/lino/core/requests.py", line 1060, in get_breadcrumbs
+      return list_title + u" » " + self.get_detail_title(elem)
+    File "/home/luc/work/lino/lino/core/requests.py", line 986, in get_detail_title
+      return self.actor.get_detail_title(self, elem)
+    File "/home/luc/work/lino/lino/core/actors.py", line 1186, in get_detail_title
+      return str(obj)
+  Bad Request: /api/excerpts/MyExcerpts/6
+
+
+About rendering headers and footers in weasyprint
+=================================================
+
+Before working on :ticket:`3266`  I did some research work and optimizations
+about how  headers and footers should be configured in
+:mod:`lino.modlib.weasyprint` templates (:ticket:`3267`).
+
+About rendering headers and footers in weazyprint
+
+Here is how the :xfile:`excerpts/base.weasy.html` file did it until now::
+
+  @page {
+      margin: 10mm; margin-top: 15mm; margin-bottom: 15mm;
+      size:{%- block pagesize %}landscape{%- endblock %};
+      @bottom-right {
+          vertical-align: top;
+          content: counter(page) ' / ' counter(pages);
+      }
+      font-family: "Liberation sans", "arial";
+      font-size: 10pt;
+  }
+
+The  `@page <https://www.quackit.com/css/at-rules/css_page_at-rule.cfm>`__ and
+`@bottom-right
+<https://www.quackit.com/css/at-rules/css_bottom-right_at-rule.cfm>`__ at-rule
+are used to apply styles for *paged media* (i.e. not continuous media).
+
+List of all page-margin properties:
+https://www.quackit.com/css/at-rules/css_page-margin_properties_list.cfm
+
+Readings:
+
+- https://www.quackit.com/css/properties/css_content.cfm
+- https://weasyprint.readthedocs.io/en/latest/tips-tricks.html#include-header-and-footer-of-arbitrary-complexity-in-a-pdf
+- https://stackoverflow.com/questions/39941967/generate-pdf-with-weasyprint-having-common-header-footer-and-pagination
+- https://github.com/Kozea/WeasyPrint/blob/gh-pages/samples/invoice/invoice.css
+- https://github.com/Kozea/WeasyPrint/issues/872
+
+Nice: The `Kozea community <https://community.kozea.fr/>`__ (maintainers of
+weasyprint) describes itself with the following words:
+
+  We build open source software that you will love
+
+  After years and years of extremely intense research (and endless nights
+  drinking in pubs with friends), we've found the three most important rules of
+  free software development:
+
+    1. have good ideas
+    2. forget limits
+    3. build step by step
+
+  Having good ideas is hard, that's why we chose to rely on your ideas (they're
+  much better than ours, aren't they?). Our job is to blindly follow the two other
+  rules, and we think that we're doing that quite well according to what we got so
+  far:
+
+
+No, we currently don't need arbitrary HTML in headers and footers. The standard
+system using at-rules seems okay.
+
+Changes in Lino and XL:
+
+- The :xfile:`excerpts/base.weasy.html` file
+  I extended this a bit and moved duplicated css definitions from
+  :xfile:`excerpts/base.weasy.html` to :xfile:`weasyprint/base.weasy.html`.
+  The new ``bottomleft`` and ``bottomright`` blocks are expected to contain the
+  `content` property for their respective element.
+
+Requested changes in the final report for :ref:`avanti`
+=======================================================
+
+Here we go for :ticket:`3266`.
+This is basically a few more changes in the template.
+Also I switched build method for the final report from appypod to weasy2pdf.
+And some minor changes in :ref:`xl`:
+
+:meth:`lino.core.requests.BaseRequest.get_printable_context` adds a new function
+:func:`activate_language` to set the language for the remaining part of the
+template. This is because they want final reports printed in German even if the
+clients contact language is different.
+
+Until now :ref:`avanti` defined two
+:class:`lino_xl.lib.clients.KnownContactTypes`
+``general_assistant`` and
+``integ_assistant``.
+These have been replaced by a single entry ``social_center``.
+"Social assistant" and "Integration agent" are now two functions (:class:`lino_xl.lib.contacts.RoleType`)
+added by the :fixture:`std` fixture of :mod:`lino_avanti.lib.avanti`.
+
+New method :class:`lino_xl.lib.clients.KnownContactType.get_contacts` (i.e. get
+them all, not just one) is now used instead of
+:class:`lino_xl.lib.clients.KnownContactType.get_contact`.
+
+Summary layout of :class:`lino_xl.lib.cv.HistoryByPerson` was not very readable:
+added a colon behind each field label, and the field value is now  bold.
+A bug in that same summary always inserted an empty bullet at the beginning of the list.

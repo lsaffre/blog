@@ -64,12 +64,21 @@ server. But actually these doctrees aren't needed, so I removed the dependency.
 Summary of dashboard tables in doctest
 ======================================
 
-The :meth:`show_dashboard <lino.core.requests.BaseRequest.show_dashboard>`
-method (used in doctests) didn't show the summary of dashboard items if they
-were a master table. This applies e.g. for
+A docs/specs/avanti/generalrst was failing because RecentComments is no longer
+empty.  But it seems that  the :meth:`show_dashboard
+<lino.core.requests.BaseRequest.show_dashboard>` method (used in doctests)
+ignores the display_mode because here it shows the tabular view while it should
+show the summary.  The web interface correctly shows the summary.
+
+Indeed that method didn't show the summary of dashboard items if they
+were a master table. Now it does. This applies e.g. for
 :class:`lino.modlib.comments.RecentComments` and
 :class:`lino.modlib.notify.MyMessages`.
 
 It took me some time to debug this. Also had to release a new version of
 :ref:`etgen` because in some cases :func:`lxml.html.fragments_fromstring`
 returns elements like STRONG or HTML or BODY.
+
+doctest seems to have a problem when +NORMALIZE_WHITESPACE is set, *and* when
+the only differences are caused by spaces, *and* when +ELLIPSIS is being used
+*and* when the output contains Non-ASCII text.
