@@ -1,0 +1,46 @@
+:date: 2019-10-16
+
+===========================
+Wednesday, October 16, 2019
+===========================
+
+Congratulations to Tonis who implemented the new callbacks handling system that
+fixes :ticket:`3228`, a quite fundamental change in the heart of Lino.
+
+The only problem on the production server was :ticket:`3269`.
+But how to reproduce it without having a Belgian ID card?
+
+I added a new setting :attr:`simulate_eidreader_path
+<lino_xl.lib.beid.Plugin.simulate_eidreader_path>` for :mod:`lino_xl.lib.beid`.
+Used in :mod:`lino_book.projects.avanti1`.
+
+So, Tonis, you say :manage:`runserver` in :mod:`lino_book.projects.avanti1`,
+sign in as robin, click on the `[Read ID card]` quick link and poof.  Happy
+debugging!
+
+NB: The book isn't yet up to date because :cmd:`inv bd` fails after my changes.
+We can reproduce it by saying::
+
+  $ export DJANGO_SETTINGS_MODULE=lino_book.projects.avanti1.settings.demo
+  $ python -m lino_avanti.lib.avanti.models
+
+Maybe this is related to the failures in :ref:`welfare` caused by
+:ticket:`3228`.
+
+I fixed this by removing two :xfile:`models.py` modules from the autosummary
+entry in their parent (:mod:`lino_voga.lib.contacts` and
+:mod:`lino_avanti.lib.avanti`).  That's correct: we don't want have
+:xfile:`models.py` modules autodocumented.  But I don't understand why this
+error didn't occur earlier...
+
+
+Reverse DNS
+===========
+
+The Reverse DNS field for 167.114.229.225 was empty at OVH. I now set it to
+`lino-framework.org` using the OVH web interface.
+This fixed our last issue with postfix.
+I started a :ref:`admin.postfix`.
+Same operation for
+``saffre-rumma.net`` (which was ``ip122.ip-167-114-252.eu.`` before) and
+``mylino.net`` (which was empty).

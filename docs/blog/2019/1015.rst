@@ -5,7 +5,8 @@ Tuesday, October 15, 2019
 =========================
 
 
-::
+I fixed a little bug which caused the following traceback when trying to show
+the detail of an excerpt::
 
   AjaxExceptionResponse TypeError: __str__ returned non-string (type __proxy__)
   in request GET /api/excerpts/MyExcerpts/6?_dc=1571102296305&lv=1571101922.83524&pv=&pv=&pv=&pv=1&pv=&an=detail&rp=ext-comp-2534&fmt=json
@@ -67,6 +68,7 @@ More readings:
 - https://weasyprint.readthedocs.io/en/latest/tips-tricks.html#include-header-and-footer-of-arbitrary-complexity-in-a-pdf
 - https://stackoverflow.com/questions/39941967/generate-pdf-with-weasyprint-having-common-header-footer-and-pagination
 - https://github.com/Kozea/WeasyPrint/blob/gh-pages/samples/invoice/invoice.css
+- https://gist.github.com/pikhovkin/5642563 complex headers
 
 - TIL: Setting the height attribute in HTML is called a "presentational hint"
   and it's now recommended not to use them and use CSS instead.
@@ -74,8 +76,9 @@ More readings:
   but you can handle them using the --presentational-hints CLI parameter.
   https://github.com/Kozea/WeasyPrint/issues/872
 
-After reading all these, I say: No, we currently don't need arbitrary HTML in
-headers and footers. The standard system using at-rules seems okay.
+After reading all these I say: No, we currently don't need arbitrary "complex"
+HTML in headers and footers. The standard system with at-rules works well for
+us.
 
 Changes in Lino and XL:
 
@@ -84,6 +87,10 @@ Changes in Lino and XL:
   :xfile:`excerpts/base.weasy.html` to :xfile:`weasyprint/base.weasy.html`.
   The new ``bottomleft`` and ``bottomright`` blocks are expected to contain the
   `content` property for their respective element.
+
+You can now automagically add a logo to all your weasyprint documents by adding
+local a :xfile:`config` directory with a subdirectory :file:`weasyprint`
+containing a file named :file:`logo.jpg`.
 
 Changes in the final report for :ref:`avanti`
 =============================================
@@ -137,3 +144,15 @@ weasyprint) describes itself with the following words:
   far:
 
 Deep in my heart I feel that I agree with them...
+
+
+Testing it on the preview site
+==============================
+
+- MultiValueDictKeyError: 'uuid' after reading a beid card.
+
+- After merging two persons, Lino says "Kann Klient XYZ (2248) nicht löschen
+  weil 52 Anwesenheiten darauf verweisen.". That's normal. You should not merge
+  Persons as long as one of them is also a client because Lino won't merge the
+  client-specific slave tables.  But when deleting the person, it will also want
+  to delete the client, and that won't work because related data exists.

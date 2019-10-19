@@ -1,0 +1,41 @@
+:date: 2019-10-19
+
+==========================
+Saturday, October 19, 2019
+==========================
+
+Congratulations to Tonis who fixed :ticket:`3277` in a better way (using a FK
+field) than I had suggested (using a new table). I did some merely cosmetic
+changes when reviewing the code.
+
+The test suites in book and welfare still had failures caused by Tonis' and my
+recent changes. I adapted them and thought that one day we will do it as the
+Django project where a change doesn't even get committed if it causes some test
+to fail. Meanwhile we are a family-sized team: I am glad that Tonis worked on
+this on a Saturday, and I do the dirty administrative work because I want to
+release it and then update the avanti production server before Monday.
+
+The :file:`test_beid.py` in avanti1 failed because the new
+:attr:`lino_xl.lib.beid.Plugin.simulate_eidreader_path` caused the wrong data to
+get loaded.  That was my mistake.
+
+Some doctests in book failed because of a dangling `SPACE` in JS code generated
+by :mod:`lino.core.renderer`.
+
+One failure caused me to start a small refactoring of how applications can
+configure where pictures are to be stored. They can now simply override some
+methods in their BeIdCardHolder model.  The current default implementation has
+the disadvantage that they are all stored in a single directory.  In weleup
+there are thousands of these image files.
+
+I tidied up the code in :mod:`lino.core.callbacks`. A :class:`CallbackManager`
+instance is no longer used.
+
+The failure in welfare :file:`docs/specs/welcht/misc.rst` is still failing.
+It is yet another side effect of the new callback handling.
+I guess that :meth:`lino.core.requests.BaseRequest.set_confirm_answer` no longer works.
+Or maybe because this action (EditTemplate) has two confirmations.
+This won't stop me from doing the release since this action is not used by anybody ATM.
+
+
+Released Lino 19.10.3, XL 19.10.3 and Avanti 19.10.2 to PyPI
