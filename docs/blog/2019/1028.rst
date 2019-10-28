@@ -1,0 +1,88 @@
+:date: 2019-10-28
+
+========================
+Monday, October 28, 2019
+========================
+
+Standup meeting
+===============
+
+We forgot about the switch from summer to winter time. Hamza was waiting for us
+at 8am (as usual for him), but Tonis and I arrived only at 10am (as usual for
+us)...
+
+Hamza got mentions (:mod:`lino.modlib.comments`) working and released on Jane
+Congratulations. Now he was stuck with the problem of sending a notification
+when a user is mentioned in a comment. I asked him to stop working on this
+because it is rather a problem of the notifications framework
+(:mod:`lino.modlib.notify`). More important is to show, in the detail of a
+ticket, the list of comments that mention this ticket. I started working in the
+comments code with Hamza watching.
+:class:`lino.modlib.comments.CommentsByMentioned`.
+
+Tonis suggested (and basically convinced me) to move away from generating HTML
+on the server and to use a "client-side views" approach instead.  But that needs
+more investigation.
+
+Hamza "disappeared" at some moment, probably a connection issue on his side.
+
+I started using the new "Teams" table in Hobbit.
+
+What name do we prefer for our Noi site? : "Hobbit" or "Jane"? The two sites
+should become either "jane" and "e-jane" or "hobbit" and "e-hobbit". I seem to
+prefer Jane because the choice makes some sense and is easier to explain to
+others.
+
+Priorities by developer until Wednesday:
+
+- Tonis : Modular dashboard components
+
+- Hamza : work on the getlino test suite (use travis matrix to setup the
+  different setup variants (developer / contributor / production / demo)
+
+- Luc : finish my review of comments, write offers Presto and Avanti, work on a
+  TIM customer request.
+
+
+Before pushing my work on  :class:`lino.modlib.comments.CommentsByMentioned` to
+master I should get the test suite passing.
+
+One failure (in :ref:`xl.specs.tickets`) shows me that :ticket:`3284` interferes
+with a series of changes I plan for Noi regarding our business model for next
+year: The customers want us to sell "maintenance contracts" for a
+:term:`production site`.  A maintenance contract is always for a given date
+range and has a number of hours to be worked on. This "hour credit" or
+"contingent" of an order becomes void at the end of the date range.  It is
+commercially equivalent to what I have been calling "yearly fee" until now, but
+easier to sell because it includes a number of free hours. And because this is a
+common concept. As a first step I plan to change the verbose_name for
+:class:`tickets.Site` from "Site" to "Order". And en passant I would add some
+new fields: :attr:`start_date`, :attr:`end_date` and :attr:`hours_paid`. A
+"Site" or "Order" is a designated and formulated goal for which somebody is
+ready to pay. We have a lot of "internal" orders: we want ourselves to work on
+something. These sites will simply have empty :attr:`end_date` and
+:attr:`hours_paid` Seen like this, the sites in Noi might become a new type of
+vouchers and are stored in a journal. We might even print them out and use them
+as the maintenance contract for the customer. Lino should not allow anybody to
+work on a ticket if its order has no credit left. We can always create a new
+order and move the ticket there.
+
+I opened :ticket:`3301` for these ideas.
+
+The :attr:`contact_person` of a site is now more important because this points
+to the :term:`site expert`.
+
+This change would make it possible that Lino computes itself the remaining hours
+in a service report. Until now I had to compute these myself.
+
+Note that :ticket:`3028` probably becomes useless then.
+
+Yes, :ref:`noi` is becoming an full project management system :-)
+
+There is more to do:
+
+- Every :class:`working.Session` should store both the ticket and the site (the order).
+- Continue to remove :class:`tickets.Subscription`
+- Move :class:`lino_xl.lib.tickets.Site` to :mod:`lino_xl.lib.working` (:ticket:`3303`)
+- Disable StartSession on tickets whose Site is not active.
+- Automatically generate service reports

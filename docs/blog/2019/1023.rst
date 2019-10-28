@@ -32,3 +32,18 @@ for every user because otherwise Lino complains when users.Users inherits from
 In :mod:`lino_xl.lib.groups` the :attr:`Membership.user` field is now
 labeled "User" instead of "Author", and the model now has a detail layout and an
 insert layout (e.g. :class:`MembersByGroup` now has a insert button)
+
+
+502 Bad Gateway responding to GET with long URL
+===============================================
+
+I opened :ticket:`3293` which occurs only on an nginx server.
+
+>>> s = "http://127.0.0.1:8000/api/avanti/Clients?_dc=1571855426112&cw=164&cw=60&cw=83&cw=83&cw=243&cw=83&cw=170&cw=83&cw=46&cw=83&cw=170&cw=170&cw=164&cw=164&cw=92&cw=164&cw=170&cw=170&cw=170&cw=92&cw=92&cw=170&cw=170&cw=170&cw=479&cw=164&cw=170&cw=170&cw=170&cw=170&cw=60&cw=100&cw=322&cw=164&cw=164&cw=164&cw=164&cw=170&cw=170&cw=108&cw=108&cw=60&cw=170&cw=170&cw=83&cw=100&cw=100&cw=60&cw=60&cw=164&cw=60&cw=164&cw=60&cw=479&cw=108&cw=108&cw=83&cw=108&cw=83&cw=83&cw=83&cw=108&cw=170&cw=479&cw=479&cw=479&cw=479&cw=479&cw=479&cw=164&cw=164&cw=479&cw=170&cw=164&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&cw=243&ch=&ch=&ch=&ch=&ch=&ch=&ch=&ch=&ch=&ch=&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ch=true&ci=name_column&ci=client_state&ci=national_id&ci=gsm&ci=address_column&ci=age&ci=email&ci=phone&ci=id&ci=language&ci=url&ci=fax&ci=country&ci=city&ci=zip_code&ci=region&ci=addr1&ci=street_prefix&ci=street&ci=street_no&ci=street_box&ci=addr2&ci=prefix&ci=name&ci=remarks&ci=client_contact_type&ci=title&ci=first_name&ci=middle_name&ci=last_name&ci=gender&ci=birth_date&ci=ref&ci=locked_by&ci=user&ci=nationality&ci=birth_country&ci=birth_place&ci=card_number&ci=card_valid_from&ci=card_valid_until&ci=card_type&ci=card_issuer&ci=noble_condition&ci=private&ci=in_belgium_since&ci=in_region_since&ci=starting_reason&ci=old_ending_reason&ci=ending_reason&ci=professional_state&ci=category&ci=translator_type&ci=translator_notes&ci=unemployed_since&ci=seeking_since&ci=needs_work_permit&ci=work_permit_suspended_until&ci=has_contact_pcsw&ci=has_contact_work_office&ci=declared_name&ci=unavailable_until&ci=unavailable_why&ci=family_notes&ci=residence_notes&ci=health_notes&ci=financial_notes&ci=integration_notes&ci=availability&ci=needed_course&ci=event_policy&ci=language_notes&ci=reason_of_stay&ci=nationality2&ci=municipality&ci=mobile_item&ci=overview&ci=workflow_buttons&ci=mti_navigator&ci=eid_info&ci=image&ci=language_knowledge&ci=mother_tongues&ci=cef_level_de&ci=cef_level_fr&ci=cef_level_en&name=0&pv=&pv=&pv=&pv=&pv=20&pv=&pv=&pv=&pv=&pv=&pv=&lv=1571808324.084085&an=export_excel&sr=114"
+>>> print(len(s))
+2682
+
+I read `this
+<https://stackoverflow.com/questions/40426157/nginx-url-limit-502-gateway>`__
+and similar threads, tried to change some parameters in
+:file:`/etc/nginx/sites-available/site1.conf` but no success so far.
