@@ -1,0 +1,70 @@
+:date: 2019-10-31
+
+==========================
+Thursday, October 31, 2019
+==========================
+
+Lino kernel as a multiprocessing manager?
+=========================================
+
+Just a series of thoughts...
+
+After watching a `tutorial <https://www.youtube.com/watch?v=fKl2JW_qrso>`__
+about multiprocessing and after looking into the Django source code for the
+:manage:`runserver` command, I started thinking that :class:`Kernel
+<lino.core.kernel.Kernel>` should become a subclass of
+:class:`multiprocessing.Manager` (see `Managers
+<https://docs.python.org/3/library/multiprocessing.html#multiprocessing-managers>`__)
+
+This would clarify the fundamental difference between the :class:`Site
+<lino.core.site.Site>` and the :class:`Kernel <lino.core.kernel.Kernel>`: in a
+multiprocessing context there can be several instances of a same Site class, but
+only one kernel instance.
+
+Hmm... maybe not a Manager but a Listener.
+See `here <https://docs.python.org/3/library/multiprocessing.html#module-multiprocessing.connection>`__
+
+Instantiating a :class:`Site`
+instance would check whether the "Lino daemon"
+is already running. Probably using a socket. If the daemon is not yet
+running, the Site should spawn a daemon in a subprocess, otherwise it would
+connect to the running daemon.
+This would also make :manage:`linod` useless because the daemon would run
+``schedule.run_pending()``.
+
+The listener daemon would be responsible for building the cache and
+storing global runtime settings like user preferences.
+
+Oops, I forget that both arguments and return values of that daemon must be
+pickleable.  So e.g. discovering actors and actions must remain in every Site
+instance.
+
+Hm... still not really clear.
+
+The Lino daemon would actually just accept listeners
+
+
+Lino Avanti optimization request
+================================
+
+I opened :ticket:`3311`: Johanna asked to have in their table of clients two new
+columns which show the date of the first meeting and the date of the evaluation
+test.  These dates are stored in the database as trend events
+(Entwicklungsschritte).
+
+.. currentmodule:: lino_xl.lib.trends
+
+New feature in :mod:`lino_xl.lib.trends`: When the new checkbox
+:attr:`TrendStage.subject_column` is checked, Lino will add a virtual field to
+:class:`lino_avanti.lib.avanti.Client` (which they use as their
+:attr:`Plugin.subject_model`) which shows the date of the first event
+(occurrence) of this stage for this client.  The columns are not visible by
+default but the end user can activate them.
+
+.. currentmodule:: lino.core.fields
+
+This change required a new minor feature in :mod:`lino.core.fields`:
+:attr:`VirtualField.wildcard_data_elem`.
+Virtual fields aren't normally used as wildcard data elements. This new
+attribute makes it possible to define virtual fields that are wildcard data
+elements.
