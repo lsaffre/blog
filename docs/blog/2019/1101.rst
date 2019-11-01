@@ -1,0 +1,77 @@
+:date: 2019-11-01
+
+========================
+Friday, November 1, 2019
+========================
+
+I fixed some more test failures caused by miscellaneous recent changes (:ticket:`881`):
+
+.. currentmodule:: lino.core.requests
+
+One was in book, caused by my yesterday change in
+:meth:`BaseRequest.confirm` when
+:meth:`BaseRequest.set_confirm_answer` was used.
+
+The other (:message:`ImportError: cannot import name 'get_image_path'` in
+:ref:`welfare`) was caused by a change I did some days ago.
+
+Two failures were because I removed the
+:attr:`server_status` field from :class:`lino.modlib.about.About`.
+
+And in :file:`docs/specs/welcht/misc.rst` there was a problem caused by the new
+callback handling.  The test creates a file
+:file:`config/immersion/Contract/Default.odt` in
+:mod:`lino_welfare.projects.mathieu` because that doctest uses
+:meth:`BaseRequest.run` which spawns a child request, and the setting given
+previously by :meth:`BaseRequest.set_confirm_answer`  was not being inherited to
+that child request.
+
+
+Miscellaneous
+=============
+
+Tonis made that the dashboard in :ref:`react` now issues separated Ajax requests
+for each dashboard item. New attribute
+:attr:`lino.core.renderer.Renderer.hide_dashboard_items`.
+
+The book docs still didn't build on readthedocs. I added a missing eidreader
+dependency in :file:`requirements.stable.txt`
+
+I fixed a failure in the book test suite on travis which hadn't occurred on my
+machine because I always had a :xfile:`default.db` file from a previous
+:manage:`prep` run.
+
+I started a new page :ref:`dev.screencasts` in the Developers Guide. I also
+tried to add the mp4 files of my screencasts to the book repository, but oops,
+that doesn't work::
+
+  [master 5ae7057] http://luc.lino-framework.org/blog/2019/1101.html
+   7 files changed, 32 insertions(+)
+   create mode 100644 docs/data/videos/vokoscreen-2019-10-21_11-05-56.mp4
+   create mode 100644 docs/data/videos/vokoscreen-2019-10-23_05-56-03.mp4
+   create mode 100644 docs/data/videos/vokoscreen-2019-10-23_07-33-49.mp4
+   create mode 100644 docs/data/videos/vokoscreen-2019-10-23_08-33-38.mp4
+   create mode 100644 docs/dev/screencasts.rst
+  Counting objects: 13, done.
+  Delta compression using up to 4 threads.
+  Compressing objects: 100% (13/13), done.
+  Writing objects: 100% (13/13), 385.46 MiB | 2.90 MiB/s, done.
+  Total 13 (delta 5), reused 0 (delta 0)
+  remote: Resolving deltas: 100% (5/5), completed with 5 local objects.
+  remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.
+  remote: error: Trace: 8e965936f1f793356f93ccb06127aed3
+  remote: error: See http://git.io/iEPt8g for more information.
+  remote: error: File docs/data/videos/vokoscreen-2019-10-23_05-56-03.mp4 is 216.53 MB; this exceeds GitHub's file size limit of 100.00 MB
+  remote: error: File docs/data/videos/vokoscreen-2019-10-23_07-33-49.mp4 is 128.79 MB; this exceeds GitHub's file size limit of 100.00 MB
+  To github.com:lino-framework/book.git
+   ! [remote rejected] master -> master (pre-receive hook declined)
+  error: failed to push some refs to 'git@github.com:lino-framework/book.git'
+
+
+Optimizations in Amici
+======================
+
+Default :term:`front end` is now :ref:`react`.
+
+Added some fields to the insert_layout of
+:class:`lino_amici.lib.contacts.Persons`.
