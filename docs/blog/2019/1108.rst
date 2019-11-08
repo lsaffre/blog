@@ -9,22 +9,21 @@ Friday, November 8, 2019
 
 I fixed :ticket:`3327`.
 This was an unpaedagogic move because the ticket was introduced by newbie Amber who should have had the honour of working on it till the end.
-But the idea is so good, and I couldn't wait having this in Lino... :-/
+But the idea is so good, and I couldn't wait having this in Lino...
 And we *would* have to wait because there are a few more issues that I would have to explain to Amber:
 
 - Don't break virtual tables where :attr:`lino.core.actors.Actor.model` is None.
   This is just a theoretic possibility, I didn't yet find an example for it.
+
+- Don't forget to translate this to German and French because the change is
+  quite visible and customers would complain otherwise. I have a feeling that
+  the translation should use :func:`format_lazy`.
 
 - The book test suite did *not* fail after this change. Which means that the
   code was not covered. The welfare suite however did fail. It's nothing new
   that the welfare test suite covers quite some functionalities which are not
   covered by the book.  I added two of these tests to the book so that the
   change is now covered (in :ref:`lino.specs.households` and :ref:`avanti.specs.avanti`).
-
-- Don't forget to translate this to German and French because the change is
-  quite visible and customers would complain otherwise.
-
-- I am not sure but have a feeling that translation should use :func:`format_lazy`.
 
 Here is a list of the changes that were needed for this ticket:
 
@@ -36,3 +35,62 @@ Here is a list of the changes that were needed for this ticket:
   `8df8c87 <https://github.com/lino-framework/welfare/commit/02216ebbfcc38453d35abad2e2a16647d8df8c87>`__
 - 2019-11-08 02:30 in *book*:
   `cc7248f <https://github.com/lino-framework/book/commit/453a5df31e12ef6df4844428c245a7930cc7248f>`__
+
+
+User types in Lino Noi
+======================
+
+Tonis will start working on :ticket:`3313` and :ticket:`3284`.
+
+We should start by reviewing the available user_types in Noi. They should be
+named e.g. "Customer", "Contributor", "Trusted Worker", "Site manager". A
+customer sees their own contact data but no other customers. A contributor
+should not see any customer data and should not have permission to delete any
+valuable data. A trusted worker can see all customers, triage tickets, see
+overviews, write service reports, ... and a site manager can additionally create
+system users.
+
+I added some coverage in a new specs document :ref:`noi.specs.user` (also moved
+some sections from :ref:`noi.specs.general` to this new page).  These pages will
+change of course after Tonis' work.
+
+
+A new volunteer contributor
+===========================
+
+It is possible that we will get yet another volunteer contributor for Lino:
+Khaled from Tunisia.
+
+I asked him to work through :ref:`book` and reviewed it at this occasion, adding
+a general paragraph:
+
+  This website is meant to be read like a book, in sequence. Use the "next" and
+  "previous" links for navigation.  Feel free to jump to linked pages, but don't
+  get lost into details. The Lino Book should be interesting and understandable
+  for any motivated Python developer with at least basic knowledge.  But it is
+  only **work in progress** and we count on you as a reader to help us. Please
+  let us know whenever you stumble over a section that does not satisfy the goal
+  of this book.
+
+
+Amber trying the Chatter project
+================================
+
+Aha, the :mod:`lino_book.projects.chatter` requires a redis-server to be
+running.  I updated the instructions in :ref:`dev.install`.
+
+I then tried to install redis-server as instructed and oops::
+
+  $ getlino configure --clone --devtools --redis
+  ...
+  File "/home/luc/work/getlino/getlino/configure.py", line 276, in configure
+  NameError: name 'context' is not defined
+
+When redis-server is installed and you sign in, you get::
+
+  unsupported operand type(s) for -: 'NoneType' and 'datetime.datetime'
+
+This was an unknown bug in :mod:`lino.modlib.comments`. Fixed.
+
+TODO: The chatter project is really underdocumented. Maybe a screen cast would
+be nice.
