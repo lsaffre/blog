@@ -1,0 +1,84 @@
+:date: 2019-11-02
+
+==========================
+Saturday, November 2, 2019
+==========================
+
+Travis and readthedocs
+======================
+
+I finally wrote a letter to Natalia and did a few optimizations in :ref:`book`
+and :ref:`cg`.
+
+I fixed a doctest failure in :ref:`specs.dashboard` caused by the new
+:meth:`__repr__` method of dashboard item. Also optimized that method.
+
+I am trying to get :ref:`book` to build on readthedocs automatically  after each
+commit. But it tells me things I don't really understand:
+
+- Version locked, retrying in 5 minutes.
+- Webhook activation failed. Make sure you have the necessary permissions.
+
+According to their `Webhooks
+<https://docs.readthedocs.io/en/latest/webhooks.html>`_ it should work
+automatically, but it doesn't...
+
+
+weleup
+======
+
+I did a series of manual tests on the new server for weleup to prepare their
+next release. Mostly for :ticket:`3026`.  Also reviewed the release notes
+(:ref:`weleup.19.11.0`).
+
+After the data migration there is only one checkdata message. I had to manually
+invoke :manage:`checkdata`::
+
+  $ python manage.py checkdata
+  Started manage.py checkdata (using lino_local.xxxxxx.settings) --> PID 19155
+  Found 606 and fixed 0 data problems in Partners.
+  Found 1 and fixed 0 data problems in Income confirmations.
+  Found 5667 and fixed 0 data problems in Clients.
+  Found 196 and fixed 0 data problems in Calendar entries.
+  Found 64 and fixed 0 data problems in Places.
+  Found 225 and fixed 0 data problems in Excerpts.
+  Found 44 and fixed 0 data problems in Events/Notes.
+  Done 35 checks, found 6803 and fixed 0 problems.
+  Done manage.py checkdata (PID 19155)
+
+Afterwards they had many messages, but only one from
+:class:`lino.modlib.system.BleachChecker`.
+I analyzed that case (a :class:`lino_xl.lib.notes.Note`) and verified that the difference was trivial.
+I added some test cases in :ref:`bleaching`.
+
+Conclusion: it is safe for them to activate bleaching when migrating their data to the new server.
+
+The fact that I had to run it manually means that their :manage:`linod` wasn't running.
+
+I noted that there isn't yet any daily cron job configured on their new
+server.
+
+I also manually added a :xfile:`healthcheck.sh` script. TODO: have getlino do
+this.
+
+I ran `sudo apt upgrade` and verified that monit has not been added to the
+Debian 10. I still some hope that it might come back "automatically" because I
+read that three weeks ago it has been  `accepted into unstable
+<https://tracker.debian.org/pkg/monit>`__.
+
+
+First PyPI release of lino_react
+================================
+
+I had some minor issues before getting it published. For example
+:message:`HTTPError: 400 Client Error: Invalid value for classifiers. Error:
+'License :: OSI Approved :: BSD LIcense' is not a valid choice for this field`
+
+for url: https://upload.pypi.org/legacy/
+
+And then the first version 19.11.0
+doesn't yet include the static and other non-python files.
+I added a :xfile:`MANIFEST.in` file and discovered the ``graft`` command
+https://docs.python.org/3.7/distutils/commandref.html#sdist-cmd
+https://docs.python.org/3.7/distutils/sourcedist.html
+https://docs.python.org/2/distutils/sourcedist.html#manifest-template

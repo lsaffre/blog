@@ -1,0 +1,47 @@
+:date: 2019-11-07
+
+==========================
+Thursday, November 7, 2019
+==========================
+
+I probably fixed :ticket:`1234`
+(:meth:`lino_xl.lib.addresses.Addressable.get_primary_address` fails when
+MultipleObjectsReturned) but didn't yet manage to reproduce it in a test case.
+
+
+Yesterday I was several hours offline and tried to build the book. But oops,
+that failed because the intersphinx links to the Community Guide (:ref:`cg`)
+work only via internet.  Indeed when building the book on travis or readthedocs
+it is the normal approach to load intersphinx links from the
+:xfile:`objects.inv` of the currently published version. For intersphinx links
+to Python modules we can get the :envvar:`intersphinx_urls`, but `cg` has no
+Python module.
+
+- Added a new function :func:`atelier.projects.get_project_from_nickname`
+- :func:`atelier.sphinxconf.interproject.configure` now supports intersphinx links
+  to pure documentation projects.
+
+
+I saw that the :cmd:`getlino configure --https` option was appending directly to
+the main :file:`/etc/crontab` file. I fixed this quickly.
+I also saw that getlino doesn't install certbot as explained `on their
+<https://certbot.eff.org/lets-encrypt/debianbuster-nginx>`_.
+
+Yesterday before going offline I had a hangout with Hamza about how to organize
+the test suite for :ref:`getlino`.  We had to interrupt our session and now I am
+still thinking about the topic.
+
+- How To Achieve Practical End-to-End Testing With Docker Compose
+  https://runnable.com/blog/how-to-achieve-practical-end-to-end-testing
+
+- Docker Hub can automatically test changes to your source code repositories using containers.
+  https://docs.docker.com/docker-hub/builds/automated-testing/
+
+- Coverage will be another fun topic:
+  https://docs.codecov.io/docs/testing-with-docker
+
+- `Clatter <https://clatter.readthedocs.io/en/latest/readme.html>`__ does the
+  same as :mod:`atelier.sheller`.  Advantage of Clatter is that it detects bash
+  code blocks, which means that the result is more beautiful.  Disadvantage is
+  that we would need another loop over all the doc files, and another
+  dependency.  I see no need to switch to it.
