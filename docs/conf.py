@@ -237,8 +237,8 @@ extlinks.update({
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
     'djangoticket': (
         'http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
-    'welfare': ('http://welfare.lino-framework.org%s.html', ''),
-    'lino': ('http://www.lino-framework.org%s.html', ''),
+    'welfare': ('https://welfare.lino-framework.org%s.html', ''),
+    'lino': ('https://www.lino-framework.org%s.html', ''),
     # 'welfareticket': (
     #     'http://welfare.lino-framework.org/tickets/%s.html', ''),
     # 'welfareusermande': (
@@ -281,7 +281,7 @@ if False:
     fontawesome_link_cdn = True
     today_fmt = '%d.%m.%Y'
     disqus_shortname = 'lucsaffre'
-    blog_baseurl = "http://luc.saffre-rumma.net"
+    blog_baseurl = "https://luc.saffre-rumma.net"
 
     blog_authors = {
         'de': ('Luc (in Deutsch)', ''),
@@ -318,7 +318,7 @@ html_sidebars = {
 # html_theme = "bizstyle"
 # html_theme_options = dict(collapsiblesidebar=True, externalrefs=True)
 
-blogref_format = "http://luc.lino-framework.org/blog/%Y/%m%d.html"
+blogref_format = "https://luc.lino-framework.org/blog/%Y/%m%d.html"
 
 
 inheritance_graph_attrs = dict(rankdir="TB")
@@ -331,7 +331,7 @@ inheritance_graph_attrs.update(fontsize=14, ratio='compress')
 # extensions += ['sphinxcontrib.feed']
 extensions += ['sphinxfeed']
 # NB : not the public sphinxfeed but my extended version
-feed_base_url = 'http://luc.lino-framework.org'
+feed_base_url = 'https://luc.lino-framework.org'
 feed_author = 'Luc Saffre'
 feed_title = "Luc's developer blog"
 feed_field_name = 'date'
