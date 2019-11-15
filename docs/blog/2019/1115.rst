@@ -1,0 +1,98 @@
+:date: 2019-11-15
+
+=========================
+Friday, November 15, 2019
+=========================
+
+Working with Hamza on :ticket:`3340` (Atelier : testing should use tox instead
+of setup.py test).  we started with the atelier package.
+
+::
+
+  $ go atelier
+  $ pip install tox
+  $ tox-quickstart
+  ...
+  What Python versions do you want to test against?
+              [1] py37
+              [2] py27, py37
+              [3] (All versions) py27, py35, py36, py37, pypy, jython
+              [4] Choose each one-by-one
+  > Enter the number of your choice [3]: 1
+  > Type the command to run your tests [pytest]:
+  What extra dependencies do your tests have?
+  default dependencies are: ['pytest']
+  > Comma-separated list of dependencies:
+  Finished: ./tox.ini has been created. For information on this file, see https://tox.readthedocs.io/en/latest/config.html
+  Execute `tox` to test your project.
+
+So tox-quickstart suggests pytest as the default testing command. Okay, why not.
+
+To avoid :message:`WARNING: Discarding $PYTHONPATH from environment, to override
+specify PYTHONPATH in 'passenv' in your configuration.` I added the following to
+the ``[testenv]`` section::
+
+  setenv =
+    PYTHONPATH={toxinidir}
+
+What should we say for envlist? py36? py37? or both? One should be enough.
+The tox default is 3.7 but that didn't work for me because I had Python 3.6 on Ubuntu 18.04.3 LTS (Bionic Beaver).
+Which Python version is on Debian Buster? --> 3.7
+So this is the Python we use on a normal production site, this should be our default version.
+
+So I must just manually run::
+
+  sudo apt install python3.7
+
+I also added a ``testpaths`` because I know that we have all tests in that
+subdirectory::
+
+  [pytest]
+  testpaths = tests
+
+The default pytest behaviour is to discover files named :file:`test*.py`. So
+I had to rename :file:`__init__.py` to :file:`test_everything.py`.  The tests
+directory no longer needs to be a package.
+
+Now it works when I run::
+
+  $ tox
+
+Except that it gives a warning::
+
+  DeprecationWarning: the imp module is deprecated in favour of importlib; see the module's documentation for alternative uses
+
+That's for example in :mod:`atelier.sphinxconf.base` and :mod:`lino.utils.dpy`.
+I replaced them by importlib, let's see whether that works.  But other
+dependencies (jinja2, ..) are using it, so the warning won't go away. To
+suppress them, I added the following to my ``[pytest]`` section::
+
+  [pytest]
+  filterwarnings =
+      ignore::DeprecationWarning
+
+I changed the :cmd:`inv test` command of :mod:`atelier.invlib.tasks` to simply
+run :cmd:`tox`.
+
+Now what about coverage? Oho, `pytest-cov
+<https://pypi.org/project/pytest-cov/>`_ promises "Subprocess support: you can
+fork or run stuff in a subprocess and will get covered without any fuss."
+
+::
+  $ pip install pytest-cov
+  $ pytest --cov=atelier
+
+
+So I just need to specify this as the ``commands`` in my ``[testenv]``::
+
+  commands =
+      pytest --cov=atelier
+
+And we can probably remove the :cmd:`inv cov` command because :cmd:`inv test`
+will always also run coverage.
+
+Now of course we should review all our projects:
+
+- add a :file:`tox.ini` file
+- rename :file:`__init__.py` to :file:`test_everything.py`
+- Add :file:`.tox` to the :xfile:`.gitignore` file.
