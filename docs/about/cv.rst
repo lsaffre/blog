@@ -23,7 +23,7 @@ Other projects:
   `Lino Patrols <http://patrols.lino-framework.org>`__,
   `Lino Voga <http://voga.lino-framework.org>`__ and
   `Lino Così <http://cosi.lino-framework.org>`__
-  are Lino *applications*, released as free software. 
+  are Lino *applications*, released as free software.
 
 - TIMtools_ -- A suite of win32 command-line tools for TIM_.
 
@@ -32,7 +32,7 @@ Work experience
 ---------------
 
 =================== =============================== ====================================
-From-until          Employer                        Responsibilities             
+From-until          Employer                        Responsibilities
 =================== =============================== ====================================
 09/1990 - 01/1992   Siemens Software Center Liège   Programmer / Source code maintenance.
                                                     BS/2000 & UNIX
@@ -40,7 +40,7 @@ From-until          Employer                        Responsibilities
                                                     Customer Projects, User Training, Research
 since 11/2001       Rumma & Ko OÜ, Tallinn / Vigala Independant Software Developer and Project Manager.
                                                     Software maintenance. Research, Analysis,
-                                                    Programming, Customer support.	
+                                                    Programming, Customer support.
 =================== =============================== ====================================
 
 
@@ -81,13 +81,13 @@ Computer skills
 Personal preferences
 --------------------
 
-- I prefer using :doc:`Free Software </topics/whyfree/index>` whenever
+- I prefer using Free Software whenever
   possible and encourage people around me to do the same.
 
-- I prefer getting complete understanding of problems over 
+- I prefer getting complete understanding of problems over
   finding quick solutions.
 
-- I prefer using my creativity over copying solutions of other 
+- I prefer using my creativity over copying solutions of other
   people.
 
 - I am more fascinated by humans than by computers: how they learn,
@@ -111,7 +111,7 @@ Hobbies
   there, sometimes in `German
   <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ because
   that's my mother language.
-  
+
 - I was a motivated Scout leader between September 1986 and July 1994.
   After these 8 years I continued during several years to organize
   trainings for young scout leaders. The `FSC
@@ -126,7 +126,7 @@ Personal views
   Vigala engaged in the local lutheran church community.  My faith has
   been influenced by the spirituality of the `Taizé
   <http://taize.fr/>`_ community.
-  I am a convinced reasonable :doc:`Christian <christian>`.
+  I classify myself as a convinced reasonable Christian.
 
 - I am not actively engaged in any political party. The
   politicalcompass.org website classified me as `Economically rather
@@ -147,4 +147,3 @@ Personal views
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _atelier: http://atelier.lino-framework.org
 .. _davlink: https://github.com/lsaffre/davlink
-

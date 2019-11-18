@@ -5,7 +5,7 @@
 .. |br| raw:: html
 
    <br />
-  
+
 ========
 About me
 ========
@@ -54,7 +54,7 @@ Ring_              ring:fa8a41081c6794f9e93e036b38ad9cac058a907a
    cv
    historic
 
-   
+
 .. toctree::
    :maxdepth: 1
    :hidden:
@@ -64,4 +64,3 @@ Ring_              ring:fa8a41081c6794f9e93e036b38ad9cac058a907a
    sites
    jargon
    /topics/index
-   christian
