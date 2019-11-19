@@ -32,3 +32,46 @@ But note that you won't see your change immediately in a runserver because you
 need to build the book for that. I assume that you now want to learn more about
 help texts. So I started to review the :ref:`help_texts` page because as usual,
 documentation grows upon request. Thanks for requesting!
+
+Lino Ciao
+=========
+
+I published a new Lino application: :ref:`ciao`.
+
+I changed :ticket:`3343` for this from "Lino Canti" to "Lino Ciao". I changed
+the project's basic target from "groups of singers" (which would be a quite
+narrow audience) to simply "A free alternative to meetup.com" (which
+definitively has a more widely used functionality).
+
+My plan is to have Amber work on this. Because he seems good in exploring and
+evaluating a Lino application from the outside.  The big job for amber is to
+help us with turning :ref:`ciao` into an application that works intuitively and
+out of the box even for low-motivated occasional users.
+
+
+
+Cannot install PyPI version of :ref:`react`
+===========================================
+
+I had this problem when trying to test :ref:`ciao` using tox::
+
+  $ pip install lino-react
+  Collecting lino-react
+    Using cached https://files.pythonhosted.org/packages/6f/bb/e5b2e69be391a060532a5e53481d234add5871a62de0d0e7e1ceac930ee5/lino_react-19.11.1.tar.gz
+      ERROR: Command errored out with exit status 1:
+       command: /home/luc/tmp/t/bin/python3 -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-112e6_9b/lino-react/setup.py'"'"'; __file__='"'"'/tmp/pip-install-112e6_9b/lino-react/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' egg_info --egg-base /tmp/pip-install-112e6_9b/lino-react/pip-egg-info
+           cwd: /tmp/pip-install-112e6_9b/lino-react/
+      Complete output (8 lines):
+      running egg_info
+      creating /tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info
+      writing /tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info/PKG-INFO
+      writing dependency_links to /tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info/dependency_links.txt
+      writing requirements to /tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info/requires.txt
+      writing top-level names to /tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info/top_level.txt
+      writing manifest file '/tmp/pip-install-112e6_9b/lino-react/pip-egg-info/lino_react.egg-info/SOURCES.txt'
+      error: package directory 'lino_react/projects' does not exist
+      ----------------------------------------
+  ERROR: Command errored out with exit status 1: python setup.py egg_info Check the logs for full command output.
+
+Fixed it by reviewing the :xfile:`MANIFEST.in` of :ref:`react` and doing a new
+PyPI release.
