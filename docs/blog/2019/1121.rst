@@ -1,0 +1,67 @@
+:date: 2019-11-21
+
+===========================
+Thursday, November 21, 2019
+===========================
+
+Nightly inspiration
+===================
+
+Yesterday I was almost decided to say that we "fix" :ticket:`3348` by undoing
+Tonis' change and leaving the security issue for later.  But when waking up  I
+had an idea how to make it.  The ls_url of an ActionFormPanel must not be a
+class variable, it must be set by every instantiation.  Simply::
+
+  Lino.users.MySettings.change_password = new Lino.WindowAction(
+    { "autoHeight": true, "draggable": true, "maximizable": true,
+      "maximized": false, "modal": true, "width": Lino.chars2width(50) },
+    function() {
+      var p = { "hide_top_toolbar": true, "is_main_window": true, "ls_url": "/users/UsersOverview" };
+      return new Lino.users.AllUsers.change_password_ActionFormPanel(p);
+  });
+
+It uses `/users/UsersOverview` (and not `/users/MySettings`) because
+UsersOverview is also visible to alice and happens to be the first actor that is
+visible to alice.
+
+The name of the ActionFormPanel subclass uses `AllUsers` because that name is
+given by the first actor independently of its visibility.
+
+I am talking about :xfile:`linoweb.js`, i.e. in extjs. The problem maybe doesn't
+even exist in :ref:`react`.
+
+I also fixed an unknown bug: the JS code created a variable `p` when
+instantiating an ActionFormPanel, but then didn't use it.
+
+And :class:`lino.modlib.users.Users` now has :attr:`abstract
+<lino.core.actors.Actor.abstract>` = `True` so that Lino won't show anything
+when a curious guy manually enters an AJAX request to it. Which means that
+:func:`complexity_factors` shows one view less.
+
+While I was there I also fixed the old problem that you get signed out when you
+change your password (:ticket:`2001`).  And the SignOut action now has
+`show_in_bbar = False` because it is probably irritating to have it in the
+toolbar of the "My preferences" window. It is available via the user menu only.
+
+tox.ini causing problems
+========================
+
+There were problems with the new :xfile:`tox.ini` file of book.
+
+I had again the problem I had on :doc:`1119`: tox failed to run the tests,
+saying a long list of error messages (I reproduce those that seem relevant)::
+
+    Running setup.py install for persistent: finished with status 'error'
+    ...
+    creating build/temp.linux-x86_64-3.7/regex_3
+    x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -flto -fuse-linker-plugin -ffat-lto-objects -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.7m -I/home/luc/work/book/.tox/py37/include/python3.7m -c regex_3/_regex.c -o build/temp.linux-x86_64-3.7/regex_3/_regex.o
+    regex_3/_regex.c:48:10: fatal error: Python.h: No such file or directory
+     #include "Python.h"
+              ^~~~~~~~~~
+    compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+
+So the :cmd:`sudo apt install python-dev` did not help...
+
+I tried to delete the :file:`.tox` directory and to run ``tox -r``. No success
+yet. Let's see what it says on travis.

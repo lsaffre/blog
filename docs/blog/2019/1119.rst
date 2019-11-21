@@ -40,13 +40,26 @@ I published a new Lino application: :ref:`ciao`.
 
 I changed :ticket:`3343` for this from "Lino Canti" to "Lino Ciao". I changed
 the project's basic target from "groups of singers" (which would be a quite
-narrow audience) to simply "A free alternative to meetup.com" (which
-definitively has a more widely used functionality).
+narrow audience) to simply "A free alternative to meetup.com" (which probably
+has a more widely used functionality).
 
 My plan is to have Amber work on this. Because he seems good in exploring and
 evaluating a Lino application from the outside.  The big job for amber is to
 help us with turning :ref:`ciao` into an application that works intuitively and
 out of the box even for low-motivated occasional users.
+
+I had some fun with getting the test suite run. Because it is the first project
+after atelier that I am converting to have a :xfile:`tox.ini` file.
+
+Note that :ref:`getlino` doesn't yet know about it. Here is how to get the new
+repo::
+
+  $ cd path/to/repositories
+  $ get clone git@github.com:lino-framework/ciao.git
+  $ pip install -e ciao
+
+And then  add it to your :xfile:`~/.atelier/config.py` file (immediately after
+``amici``).
 
 
 
@@ -75,3 +88,298 @@ I had this problem when trying to test :ref:`ciao` using tox::
 
 Fixed it by reviewing the :xfile:`MANIFEST.in` of :ref:`react` and doing a new
 PyPI release.
+
+
+:cmd:`tox` fails in ciao
+========================
+
+::
+
+  Building wheels for collected packages: lino-ciao, persistent, regex
+    Building wheel for lino-ciao (setup.py): started
+    Building wheel for lino-ciao (setup.py): finished with status 'done'
+    Created wheel for lino-ciao: filename=lino_ciao-19.11.0-cp37-none-any.whl size=1536129 sha256=c1a50f78c2d2aa94b3dea3c73de69c578d15bf5c5a81091db21bf4937a313039
+    Stored in directory: /home/luc/.cache/pip/wheels/9d/67/9f/ed6a2fab75dc4e6e55454b3f9b6b125d7ea6a0ebf03ce9b848
+    Building wheel for persistent (setup.py): started
+    Building wheel for persistent (setup.py): finished with status 'error'
+    ERROR: Command errored out with exit status 1:
+     command: /home/luc/work/ciao/.tox/py37/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"'; __file__='"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-nj_mxmxl --python-tag cp37
+         cwd: /tmp/pip-install-xgyu9lk6/persistent/
+    Complete output (67 lines):
+    running bdist_wheel
+    running build
+    running build_py
+    creating build
+    creating build/lib.linux-x86_64-3.7
+    creating build/lib.linux-x86_64-3.7/persistent
+    copying persistent/persistence.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/interfaces.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/_ring_build.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/mapping.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/_compat.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/list.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/__init__.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/ring.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/timestamp.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/picklecache.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/wref.py -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/dict.py -> build/lib.linux-x86_64-3.7/persistent
+    running egg_info
+    writing persistent.egg-info/PKG-INFO
+    writing dependency_links to persistent.egg-info/dependency_links.txt
+    writing requirements to persistent.egg-info/requires.txt
+    writing top-level names to persistent.egg-info/top_level.txt
+    reading manifest file 'persistent.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    no previously-included directories found matching 'terryfy'
+    warning: no previously-included files matching '*.dll' found anywhere in distribution
+    warning: no previously-included files matching '*.pyc' found anywhere in distribution
+    warning: no previously-included files matching '*.pyo' found anywhere in distribution
+    warning: no previously-included files matching '*.so' found anywhere in distribution
+    warning: no previously-included files matching 'coverage.xml' found anywhere in distribution
+    no previously-included directories found matching 'docs/_build'
+    no previously-included directories found matching 'persistent/__pycache__'
+    writing manifest file 'persistent.egg-info/SOURCES.txt'
+    copying persistent/_compat.h -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/_timestamp.c -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/cPersistence.c -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/cPersistence.h -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/cPickleCache.c -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/ring.c -> build/lib.linux-x86_64-3.7/persistent
+    copying persistent/ring.h -> build/lib.linux-x86_64-3.7/persistent
+    creating build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/__init__.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/attrhooks.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/cucumbers.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_docs.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_list.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_mapping.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_persistence.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_picklecache.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_ring.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_timestamp.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/test_wref.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    copying persistent/tests/utils.py -> build/lib.linux-x86_64-3.7/persistent/tests
+    running build_ext
+    generating cffi module 'build/temp.linux-x86_64-3.7/persistent._ring.c'
+    creating build/temp.linux-x86_64-3.7
+    building 'persistent.cPersistence' extension
+    creating build/temp.linux-x86_64-3.7/persistent
+    x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -flto -fuse-linker-plugin -ffat-lto-objects -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.7m -I/home/luc/work/ciao/.tox/py37/include/python3.7m -c persistent/cPersistence.c -o build/temp.linux-x86_64-3.7/persistent/cPersistence.o
+    In file included from persistent/cPersistence.h:18:0,
+                     from persistent/cPersistence.c:20:
+    persistent/_compat.h:18:10: fatal error: Python.h: No such file or directory
+     #include "Python.h"
+              ^~~~~~~~~~
+    compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+    ----------------------------------------
+    ERROR: Failed building wheel for persistent
+    Running setup.py clean for persistent
+    Building wheel for regex (setup.py): started
+    Building wheel for regex (setup.py): finished with status 'error'
+    ERROR: Command errored out with exit status 1:
+     command: /home/luc/work/ciao/.tox/py37/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-xgyu9lk6/regex/setup.py'"'"'; __file__='"'"'/tmp/pip-install-xgyu9lk6/regex/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' bdist_wheel -d /tmp/pip-wheel-10ho7cbn --python-tag cp37
+         cwd: /tmp/pip-install-xgyu9lk6/regex/
+    Complete output (20 lines):
+    running bdist_wheel
+    running build
+    running build_py
+    creating build
+    creating build/lib.linux-x86_64-3.7
+    creating build/lib.linux-x86_64-3.7/regex
+    copying regex_3/__init__.py -> build/lib.linux-x86_64-3.7/regex
+    copying regex_3/regex.py -> build/lib.linux-x86_64-3.7/regex
+    copying regex_3/_regex_core.py -> build/lib.linux-x86_64-3.7/regex
+    copying regex_3/test_regex.py -> build/lib.linux-x86_64-3.7/regex
+    running build_ext
+    building 'regex._regex' extension
+    creating build/temp.linux-x86_64-3.7
+    creating build/temp.linux-x86_64-3.7/regex_3
+    x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -flto -fuse-linker-plugin -ffat-lto-objects -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.7m -I/home/luc/work/ciao/.tox/py37/include/python3.7m -c regex_3/_regex.c -o build/temp.linux-x86_64-3.7/regex_3/_regex.o
+    regex_3/_regex.c:48:10: fatal error: Python.h: No such file or directory
+     #include "Python.h"
+              ^~~~~~~~~~
+    compilation terminated.
+    error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+    ----------------------------------------
+    ERROR: Failed building wheel for regex
+    Running setup.py clean for regex
+  Successfully built lino-ciao
+  Failed to build persistent regex
+  Installing collected packages: html2text, MarkupSafe, jinja2, webencodings, tinycss2, html5lib, defusedxml, pillow, cssselect2, pycparser, cffi, cairocffi, CairoSVG, Pyphen, weasyprint, python-dateutil, invoke, future, pytz, Babel, sphinxcontrib-devhelp, imagesize, sphinxcontrib-qthelp, alabaster, Pygments, sphinxcontrib-serializinghtml, snowballstemmer, docutils, sphinxcontrib-applehelp, sphinxcontrib-htmlhelp, sphinxcontrib-jsmath, chardet, urllib3, certifi, idna, requests, Sphinx, unipath, argh, atelier, args, clint, pytidylib, zope.interface, persistent, zodbpickle, zc.lockfile, transaction, ZConfig, BTrees, zodb, schedule, sqlparse, Django, python-stdnum, django-localflavor, DateTime, lxml, PyYAML, jdcal, et-xmlfile, openpyxl, tzlocal, regex, dateparser, odfpy, soupsieve, beautifulsoup4, reportlab, etgen, lino, lino-xl, lino-react, lino-ciao
+    Running setup.py install for persistent: started
+      Running setup.py install for persistent: finished with status 'error'
+      ERROR: Command errored out with exit status 1:
+       command: /home/luc/work/ciao/.tox/py37/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"'; __file__='"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /tmp/pip-record-u0t4uxvn/install-record.txt --single-version-externally-managed --compile --install-headers /home/luc/work/ciao/.tox/py37/include/site/python3.7/persistent
+           cwd: /tmp/pip-install-xgyu9lk6/persistent/
+      Complete output (67 lines):
+      running install
+      running build
+      running build_py
+      creating build
+      creating build/lib.linux-x86_64-3.7
+      creating build/lib.linux-x86_64-3.7/persistent
+      copying persistent/persistence.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/interfaces.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/_ring_build.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/mapping.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/_compat.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/list.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/__init__.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/ring.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/timestamp.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/picklecache.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/wref.py -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/dict.py -> build/lib.linux-x86_64-3.7/persistent
+      running egg_info
+      writing persistent.egg-info/PKG-INFO
+      writing dependency_links to persistent.egg-info/dependency_links.txt
+      writing requirements to persistent.egg-info/requires.txt
+      writing top-level names to persistent.egg-info/top_level.txt
+      reading manifest file 'persistent.egg-info/SOURCES.txt'
+      reading manifest template 'MANIFEST.in'
+      no previously-included directories found matching 'terryfy'
+      warning: no previously-included files matching '*.dll' found anywhere in distribution
+      warning: no previously-included files matching '*.pyc' found anywhere in distribution
+      warning: no previously-included files matching '*.pyo' found anywhere in distribution
+      warning: no previously-included files matching '*.so' found anywhere in distribution
+      warning: no previously-included files matching 'coverage.xml' found anywhere in distribution
+      no previously-included directories found matching 'docs/_build'
+      no previously-included directories found matching 'persistent/__pycache__'
+      writing manifest file 'persistent.egg-info/SOURCES.txt'
+      copying persistent/_compat.h -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/_timestamp.c -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/cPersistence.c -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/cPersistence.h -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/cPickleCache.c -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/ring.c -> build/lib.linux-x86_64-3.7/persistent
+      copying persistent/ring.h -> build/lib.linux-x86_64-3.7/persistent
+      creating build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/__init__.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/attrhooks.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/cucumbers.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_docs.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_list.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_mapping.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_persistence.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_picklecache.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_ring.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_timestamp.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/test_wref.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      copying persistent/tests/utils.py -> build/lib.linux-x86_64-3.7/persistent/tests
+      running build_ext
+      generating cffi module 'build/temp.linux-x86_64-3.7/persistent._ring.c'
+      creating build/temp.linux-x86_64-3.7
+      building 'persistent.cPersistence' extension
+      creating build/temp.linux-x86_64-3.7/persistent
+      x86_64-linux-gnu-gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O2 -Wall -g -fstack-protector-strong -Wformat -Werror=format-security -g -flto -fuse-linker-plugin -ffat-lto-objects -g -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=2 -fPIC -I/usr/include/python3.7m -I/home/luc/work/ciao/.tox/py37/include/python3.7m -c persistent/cPersistence.c -o build/temp.linux-x86_64-3.7/persistent/cPersistence.o
+      In file included from persistent/cPersistence.h:18:0,
+                       from persistent/cPersistence.c:20:
+      persistent/_compat.h:18:10: fatal error: Python.h: No such file or directory
+       #include "Python.h"
+                ^~~~~~~~~~
+      compilation terminated.
+      error: command 'x86_64-linux-gnu-gcc' failed with exit status 1
+      ----------------------------------------
+  ERROR: Command errored out with exit status 1: /home/luc/work/ciao/.tox/py37/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"'; __file__='"'"'/tmp/pip-install-xgyu9lk6/persistent/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /tmp/pip-record-u0t4uxvn/install-record.txt --single-version-externally-managed --compile --install-headers /home/luc/work/ciao/.tox/py37/include/site/python3.7/persistent Check the logs for full command output.
+  WARNING: You are using pip version 19.2.3, however version 19.3.1 is available.
+  You should consider upgrading via the 'pip install --upgrade pip' command.
+
+  ================================================================================== log end ===================================================================================
+  __________________________________________________________________________________ summary ___________________________________________________________________________________
+  ERROR:   py37: InvocationError for command /home/luc/work/ciao/.tox/py37/bin/python -m pip install --exists-action w .tox/.tmp/package/1/lino-ciao-19.11.0.zip (exited with code 1)
+
+I think I fixed this by saying::
+
+  $ sudo apt install python-dev
+
+
+ModuleNotFoundError: No module named 'vobject'
+==============================================
+
+I added a :meth:`get_requirements <lino.core.plugin.Plugin.get_requirements>`
+method to :mod:`lino_xl.lib.contacts` and added :cmd:`inv install` to the
+:xfile:`tox.ini` file.
+
+But I don't want to make a PyPI release of xl just for seeing whether the ciao
+tests now pass. How can I tell tox that it should use my local version of
+:mod:`lino_xl` when creating its test environment?
+
+Answer: specify it with ``-e`` in the :xfile:`tox.ini` file::
+
+  deps =
+    -e {toxinidir}/../xl
+
+Works on my machine, but unfortunately this will fail on :ref:`travis`.  So
+there we must the latest version on GitHub::
+
+  deps =
+    -e git+https://github.com/lino-framework/xl.git#egg=lino_xl
+
+
+.. dt docs/blog/2019/1119.rst
+
+Convert from unipath to pathlib
+===============================
+
+We should start converting all usages of unipath to using pathlib.
+
+unipath Path objects have a method :meth:`child`, but with pathlib you can
+simply use the divide operator:
+
+>>> from unipath import Path
+>>> p = Path("/").child("var").child("log")
+>>> print(p)
+/var/log
+
+
+>>> from pathlib import Path
+>>> p = Path("/") / "var" / "log"
+>>> print(p)
+/var/log
+
+
+
+OperationalError: no such table: django_content_type
+====================================================
+
+The amici test suite is currently `failing on Travis
+<https://travis-ci.org/lino-framework/amici/jobs/613977307>`__, saying
+"OperationalError: no such table: django_content_type". And I cannot reproduce
+this locally. Strange...
+
+
+Reviewing the getlino test suite
+================================
+
+It took some time to understand these:
+
+- when  `skipsdist` is true, tox
+  installs only the package being tested but not its
+  :envvar:`install_requires`.
+  But `usedevelop` is like `skipsdist` but with `python setup.py develop`.
+  (`source <https://tox.readthedocs.io/en/latest/example/general.html>`__)
+
+- The :envvar:`tests_require` and :envvar:`test_suite` arguments in :envvar:`SETUP_INFO` is ignored by tox.
+
+Note also:
+
+- getlino itself does not require atelier. atelier is required only for testing and for building the docs.
+
+- I removed 'setuptools' from the getlino :envvar:`install_requires` because I
+  don't see why it is needed. (not sure about that one)
+
+- The `tox doesn't install the package being tested #176
+  <https://github.com/tox-dev/tox/issues/176>`__ discussion did *not* help. Also
+  I tried adding an empty :file:`conftest.py` file as described `here
+  <https://stackoverflow.com/questions/49028611/pytest-cannot-find-module>`__,
+  but that wasn't the reason.
+
+After committing I saw that --of course-- we also need to adapt
+:xfile:`.travis.yml`. It was now failing on travis because :cmd:`inv cov`
+requires atelier. I committed some changes but didn't wait the result.  I leave
+that to for you, Hamza!
+
+The test suite itself then has failures... I saw "Permission denied". Didn't yet
+dive into these.

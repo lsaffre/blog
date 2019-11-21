@@ -1,0 +1,110 @@
+:date: 2019-11-20
+
+============================
+Wednesday, November 20, 2019
+============================
+
+I reviewed Tonis's change `27c3c40
+<https://github.com/lino-framework/lino/commit/27c3c404357df61abfc398ad77d5868a9950a3c5>`__.
+
+It makes that normal users cannot change their password any more.  For example
+in :ref:`welfare` (:file:`docs/specs/weleup/eupen.rst`) we now have this
+failure::
+
+    -- users.Users.change_password : visible for 100 110 120 200 210 220 300 400 410 420 500 510 800 admin 910
+    -- users.Users.detail : visible for 100 110 120 200 210 220 300 400 410 420 500 510 800 admin 910
+    -- users.Users.insert : visible for 100 110 120 200 210 220 300 400 410 420 500 510 800 admin 910
+    +- users.Users.change_password : visible for admin 910
+    +- users.Users.detail : visible for admin 910
+    +- users.Users.insert : visible for admin 910
+
+I tried this manually by signing in as alice in gerd demo project.  I was
+surprised to see that she *does* have the change_password button, and the window
+*does open* and asks her to set a new password.  Only when submitting the
+window, Lino tells her that she has no permission.
+
+A similar problem is for signing out. This is not a window action, so when alice
+selects it, she gets immediately a warning "You have no permission to run this
+action".  I fixed this one by changing one line in
+:mod:`lino.modlib.extjs.ext_renderer`::
+
+    # a = user.sign_out.bound_action
+    a = rt.models.users.MySettings.get_action_by_name('sign_out')
+
+This code looks better now, which confirms that Tonis' change is basically a
+good thing. But it seems we have a bug in Lino when it checks whether alicia has
+permission to run the change_password action.  The "My preferences" window is on
+MySettings as it should::
+
+  http://127.0.0.1:8000/api/users/MySettings/9
+
+But when alicia submits change_password, the AJAX call goes to the "wrong" actor
+(to Users instead of MySettings)::
+
+  http://127.0.0.1:8000/api/users/Users/9?&fv=1234&fv=123456&fv=123456&&an=change_password
+
+There is an important detail to consider: the ChangePassword dialog box is
+defined only once in the JS code.  And that's what we want.  And its *name* is
+given by the actor that defines it, which is Users (not MySettings who only
+inherits it). Here is the generated code::
+
+  Lino.users.Users.change_password_ActionFormPanel = Ext.extend(Lino.ActionFormPanel,{
+    hideCheckBoxLabels: true,
+    layout: "form",
+    autoHeight: true,
+    labelAlign: "top",
+    autoScroll: false,
+    labelWidth: 0,
+    frame: true,
+    bodyBorder: false,
+    border: false,
+    action_name: 'change_password',
+    ls_url: "/users/Users",
+    window_title: "Changer mot de passe",
+    before_row_edit : function(record) {
+    },
+    autoHeight: true,
+    initComponent : function() {
+      this.current1054 = new Ext.form.TextField({ "anchor": "-20", "autoHeight": true, "fieldLabel": "<span style=\"border-bottom: 1px dotted #000000;\">Mot de passe actuel</span>", "inputType": "password", "listeners": { "render": Lino.quicktip_renderer("Aktuelles Passwort","(Passwort \u00e4ndern.current) The current password. Leave empty if the user has no password\nyet. And SiteAdmin users don't need to specify this at all.") }, "maxLength": null, "name": "current", "selectOnFocus": true });
+      this.new11055 = new Ext.form.TextField({ "anchor": "-20", "autoHeight": true, "fieldLabel": "<span style=\"border-bottom: 1px dotted #000000;\">Nouveau mot de passe</span>", "inputType": "password", "listeners": { "render": Lino.quicktip_renderer("Neues Passwort","(Passwort \u00e4ndern.new1) The new password.") }, "maxLength": null, "name": "new1", "selectOnFocus": true });
+      this.new21056 = new Ext.form.TextField({ "anchor": "-20", "autoHeight": true, "fieldLabel": "<span style=\"border-bottom: 1px dotted #000000;\">Encore une fois</span>", "inputType": "password", "listeners": { "render": Lino.quicktip_renderer("Neues Passwort nochmal","(Passwort \u00e4ndern.new2) The new password a second time. Both passwords must match.") }, "maxLength": null, "name": "new2", "selectOnFocus": true });
+      this.items = [ { "anchor": "-20", "autoHeight": true, "items": this.current1054, "labelAlign": "top", "layout": "form", "xtype": "panel" }, { "anchor": "-20", "autoHeight": true, "items": this.new11055, "labelAlign": "top", "layout": "form", "xtype": "panel" }, { "anchor": "-20", "autoHeight": true, "items": this.new21056, "labelAlign": "top", "layout": "form", "xtype": "panel" } ];
+      this.fields = [ this.current1054, this.new11055, this.new21056 ];
+      this.http_method = "GET"
+      Lino.users.Users.change_password_ActionFormPanel.superclass.initComponent.call(this);
+    }
+  });
+
+  Lino.users.MySettings.change_password = new Lino.WindowAction(
+    { "autoHeight": true, "draggable": true, "maximizable": true, "maximized": false, "modal": true, "width": Lino.chars2width(50) },
+    function() {
+      var p = { "hide_top_toolbar": true, "is_main_window": true };
+      return new Lino.users.Users.change_password_ActionFormPanel({});
+  });
+
+
+My first guess is that `ls_url` is a design flaw.  An action definition must now
+know its actor since we want it to be usable on other actions.
+
+Why is it needed at all?  Can we change the code in :xfile:`linoweb.js` to not
+use it?  But be careful, here dragons!
+
+Maybe it's easier to leave things as they were? The Users actor is viewable by
+everybody but never used directly.
+
+I tried having Users.abstract = True but that doesn't work.
+
+Note that when it works, it still doesn't work elegantly: when a user changes
+their own password, they get signed out as a side effect. They must run sign_in
+again with their new password.  The ChangePassword action should update the
+stored password in the session.
+
+
+
+Changes in getlino
+==================
+
+When running as root, getlino configure now writes a file :file:`/etc/getlino/lino_bash_aliases`.
+We optimized the test workflow. Only two Docker images.
+I pushed my changes to master so that Hamza can continue.
+Not sure whether the effect of `a` will stay between calls to :meth:`run_docker_command`.
