@@ -4,6 +4,18 @@
 Friday, November 22, 2019
 =========================
 
+Which or That?
+==============
+
+Congratulations to  `this nice article
+<https://getitwriteonline.com/articles/which-vs-that/>`__ about the difference
+between "which" and "that".  It confirms my feeling that many people (including
+myself) tend to use "which" in places where we actually should say "that".
+
+
+Playing with Tox
+================
+
 Okay tox insists on creating its own separate environment for running tests.
 That's why the :xfile:`tox.ini` somehow resembles the :xfile:`.travis.yml`.
 
@@ -51,3 +63,49 @@ So I tried unittest2 instead, and this discovered the doctests out of the box.
 I checked in, but there are still many failures cause by some missing
 dependency.  I have no local work now and will go offline for some time now.
 But I will continue on it later.
+
+
+We don't want Tox
+=================
+
+
+About coverage
+==============
+
+I also understood a few things about coverage.
+For example the official coverage for atelier was 23% until now.
+That's very low because actually we don't yet use coverage correctly.
+
+I read https://coverage.readthedocs.io/en/coverage-4.3.4/subprocess.html
+
+The second option, "Create a .pth file in your Python installation" seemed best
+to me... until I read that
+`pth files are going to be deprecated in 3.8
+<https://bugs.python.org/issue33944>`_.
+
+So we must edit the :file:`sitecustomize.py` file. This file is usually defined
+in the system Python:
+
+>>> import sitecustomize
+>>> sitecustomize.__file__
+'/usr/lib/python3.6/sitecustomize.py'
+>>>
+
+I added this test and a warning in the :cmd:`inv cov` command.  When you run
+:cmd:`inv cov` while not under coverage, you now get a warning.
+
+But there is more. In order to get a "full coverage report", we must run
+:cmd:`inv prep test clean -b bd` in *all projects*.  And *all this* must be
+covered by a single coverage report. For example
+
+- many parts of atelier aren't tested by the atelier test suite, but they are
+  tested when we use them for testing the other projects.
+
+- Running the tests for welfare tests parts of lino or lino_xl code that are not
+  covered by the book test suite.
+
+I created a file :xfile:`run_coverage.sh` in the book repository which does
+exactly this.
+
+I removed the `combine` and `report` parts from :cmd:`inv cov` because we don't
+want them for each project.
