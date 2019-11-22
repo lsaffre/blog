@@ -1,0 +1,53 @@
+:date: 2019-11-22
+
+=========================
+Friday, November 22, 2019
+=========================
+
+Okay tox insists on creating its own separate environment for running tests.
+That's why the :xfile:`tox.ini` somehow resembles the :xfile:`.travis.yml`.
+
+When I run the book test suite on my machine, I don't want it to clone the lino
+repository.  Which means that I cannot do the following in the
+:xfile:`tox.ini`::
+
+  pip install -r requirements.dev.python3.txt
+  inv install
+
+skipsdist means: "Flag indicating to perform the packaging operation or not. Set
+it to true when using tox for an application, instead of a library."
+
+So skipsdist must be true, which means that I must install
+
+  pip install -U pip
+  pip install -e {toxinidir}
+
+
+Note that for me it wasn't enought to say::
+
+  $ sudo apt-get install python3-dev
+
+I had to say::
+
+  $ sudo apt-get install python3.7-dev
+
+Seems that the default python is 3.6 on my machine but we support only 3.7
+
+Together with Hamza I reviewed the requirements files for book : we no longer
+need Python 2 support, renamed LINO_VERSION to REQ_VERSION, and introduced a new
+REQ_VERSION "local".
+
+When I got this working, I realized that pytest does not discover the doctests
+(:ticket:`3353`).
+It is because the doctests use the unittest load_tests feature.
+I read their tickets `3548
+<https://github.com/grpc/grpc/pull/3548>`__ and `992
+<https://github.com/pytest-dev/pytest/issues/992>`__. So indeed they discussed
+about this topic some years ago and could not imagine that I would write
+:func:`atelier.test.make_docs_suite` and that we rely heavily on it.
+
+So I tried unittest2 instead, and this discovered the doctests out of the box.
+
+I checked in, but there are still many failures cause by some missing
+dependency.  I have no local work now and will go offline for some time now.
+But I will continue on it later.
