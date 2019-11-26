@@ -1,0 +1,33 @@
+:date: 2019-11-25
+
+=========================
+Monday, November 25, 2019
+=========================
+
+Today I adapted the book test suite after changes in :ticket:`3313`.  This
+caused some more API optimizations:
+
+- New database field :attr:`lino_xl.lib.tickets.Site.private`.
+- lino.core.auth.utils.AnonymousUser.is_anonymous
+- New method :meth:`lino.modlib.comments.Commentable.add_comments_filter`
+
+It's the first time I use a `Reverse Generic Relation
+<https://docs.djangoproject.com/en/2.2/ref/contrib/contenttypes/#reverse-generic-relations>`__.
+We need it for specifying the filter condition
+in :meth:`lino_xl.lib.tickets.Ticket.add_comments_filter`.
+
+I recorded most of my work today in seven screen casts  "Watch Luc adapting the
+doctests in book after changes for #3313" which  I published on youtube in a new
+playlist named  `Lino developer sessions
+<https://www.youtube.com/playlist?list=PL5qugrzfIhI9G53OMI2Zb8Ao2wNCiPeXX>`__.
+Updated the :ref:`dev.screencasts` page.
+
+
+
+
+En passant (and without a screen cast) I also fixed a bug in atelier: You may
+invoke :cmd:`inv test` from any subdir of the project.  But after the changes
+for :ticket:`3340`  (use `unittest2` instead of :cmd:`python setup.py test`)
+this was failing.  Now :mod:`atelier.invlib.tasks`  changes the current working
+directory to the project's :attr:`root_dir` before launching
+:envvar:`test_command`.
