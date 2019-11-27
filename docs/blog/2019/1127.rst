@@ -1,0 +1,76 @@
+:date: 2019-11-27
+
+============================
+Wednesday, November 27, 2019
+============================
+
+After having tried yesterday some time without a new database field
+:attr:`lino.modlib.comments.Comment.private` for every single comment, I now
+think that we need this field indeed.  The author of a comment can (potentially,
+if the application developer decides to expose this field) mark individual
+comments as private or not.  Also imagine the case that some ticket is marked as
+private, comments are being written with confidential data, and then the change
+the ticket to non-private: the existing comments should not become public in
+that case.
+
+Applications can control the default value for this field  by setting the new
+plugin attribute :attr:`private_default` or by overriding
+:meth:`Commentable.is_ticket_private`.  The latter is done e.g. by
+tickets.Ticket so that every new comment on a public site will be public by
+default.
+
+In Noi (that's a decision of the :term:`application carrier`), even private
+tickets are visible to other team members.  Their visibility depends on the user
+itself (not just on the user_type): even unprivileged users can see private
+tickets and sites if they are member of the team.
+
+Model.get_queryset is an important feature for the Lino framework : the
+:term:`application developer` can limit visibility of individual rows depending
+on the user.  That's not feasible with a Django objects manager.
+
+While trusted developers can see private tickets and sites without being a
+member of their team, they cannot see private comments unless they are a team
+member.
+
+New role :class:`lino.modlib.comments.roles.PrivateCommentsReader`. And trusted
+developers have this role in Noi.  Why did we need this new role?
+
+We now have **team comments** : A team comment is a comment to the whole team,
+not about a given ticket.  The feature came into Noi as a side effect together
+with the team notion (because :class:`lino_xl.lib.groups.Group` inherits from
+:class:`lino.modlib.comments.Commentable`).  I think it makes sense for us: e.g.
+for notifications about team meetings or discussions that span several tickets.
+
+Team comments are private by default: they are not seen by anonymous users. But
+they should be seen by contributors who are member of the team.
+
+I renamed  :meth:`Model.get_queryset` to
+:meth:`lino.core.model.Model.get_user_queryset` to differentiate it more clearly
+from :meth:`lino.core.dbtables.Table.get_queryset`.
+
+It is important to protect comments that are marked as private from being seen
+by unauthorized people.
+Comment.get_user_queryset returns an empty queryset if the user is not
+a :class:`lino.modlib.comments.roles.CommentsReader`.
+
+The :class:`Commentable` mixin no longer defines a database field
+:attr:`private`.  For example in :ref:`avanti` the Client model is
+:class:`Commentable`, and until now every client had a field private, but this
+field was neither visible nor used. Also :class:`groups.Group` no longer has
+this field.  Team comments are always private by default.
+
+I pushed my work to master because it seems basically okay now. Though some
+tests are still failing. The RecentComments table is still empty for anonymous
+users, but we *do* want our comments on public tickets to be public, don't we?
+
+I got the answers to these questions when explaining the problem to Hamza.  You
+can actually `watch this on youtube <https://youtu.be/AOtoq6KUr-8>`__.
+
+Basically the AnonymousUser in Noi was not yet inheriting from CommentsReader.
+
+I also added test cases to avanti where we definitively do not want any comments
+to be seen to anonymous: :ref:`avanti.specs.comments`. This document is similar
+to :ref:`noi.specs.comments`, and we should have a similar page for :ref:`tera`.
+
+.. Today we learned: Never release to a production release when the test suite
+   isn't passing

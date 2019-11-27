@@ -1,0 +1,75 @@
+:date: 2019-11-26
+
+==========================
+Tuesday, November 26, 2019
+==========================
+
+On the :class:`tickets.Ticket` class we now have the following::
+
+    comments = GenericRelation('comments.Comment',
+        content_type_field='owner_type', object_id_field='owner_id',
+        related_query_name="ticket")
+
+I thought it is a pity that we had no ticket with more than one comment in our
+demo data.  So I changed that in the :fixture:`demo2` fixture of
+:mod:`lino.modlib.comments`.
+
+>>> from lino import startup
+>>> startup('lino_book.projects.team.settings.demo')
+>>> from lino.api.doctest import *
+
+On every ticket we now have an attribute :attr:`comments` which is an object
+manager that returns all the comments pointing to this ticket, i.e. that have
+:attr:`lino.modlib.comments.Comment.owner` set to this ticket.  Similar to the
+related_name of a ForeignKey, but for a GenericForeignKey.
+
+>>> obj = tickets.Ticket.objects.get(pk=1)
+>>> list(obj.comments.all())
+[Comment #85 ('Comment #85'), Comment #86 ('Comment #86'), Comment #87 ('Comment #87'), Comment #88 ('Comment #88'), Comment #89 ('Comment #89'), Comment #90 ('Comment #90'), Comment #91 ('Comment #91'), Comment #92 ('Comment #92')]
+
+And because we specified the `related_query_name` ``"ticket"``, we *also* have a
+virtual field named :attr:`ticket` on each comment which contains almost the
+same as the GFK :attr:`owner`, but only if that owner is a ticket.
+
+>>> obj = comments.Comment.objects.get(pk=85)
+>>> obj.owner #doctest: +ELLIPSIS
+Ticket #1 ('#1 (⛶ Föö fails to bar when baz)')
+
+>>> obj.ticket.first()
+Ticket #1 ('#1 (⛶ Föö fails to bar when baz)')
+
+The `ticket` field is implemented as an object manager, that's why we must call
+:meth:`first` to get the actual ticket.  Don't ask me why.
+
+>>> obj.ticket #doctest: +ELLIPSIS
+<django.db.models.fields.related_descriptors.create_reverse_many_to_one_manager.<locals>.RelatedManager object at ...>
+
+We can ask them all, but there will always be either one or no ticket.
+
+>>> list(obj.ticket.all())
+[Ticket #1 ('#1 (⛶ Föö fails to bar when baz)')]
+
+That worked fine already yesterday.  The problem I stumbled into today was that
+Lino did not yet support remote fields on the reverse generic relation. For
+example to show, in a table of comments, the site of the ticket of a comment.
+
+>>> rt.login("robin").show(comments.Comments,
+... column_names="id owner owner_type ticket__site", offset=82, limit=6)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+==== =============================================== ====================== ========
+ ID   Controlled by                                   Controlled by (type)   Site
+---- ----------------------------------------------- ---------------------- --------
+ 83   `Developers <Detail>`__                         Team
+ 84   `Managers <Detail>`__                           Team
+ 85   `#1 (⛶ Föö fails to bar when baz) <Detail>`__   Ticket                 welket
+ 86   `#1 (⛶ Föö fails to bar when baz) <Detail>`__   Ticket                 welket
+ 87   `#1 (⛶ Föö fails to bar when baz) <Detail>`__   Ticket                 welket
+ 88   `#1 (⛶ Föö fails to bar when baz) <Detail>`__   Ticket                 welket
+==== =============================================== ====================== ========
+<BLANKLINE>
+
+
+>>> from django.db.models import Q
+>>> flt1 = Q(private=True)
+>>> flt2 = Q(private=False)
+>>> comments.Comment.objects.filter(flt1|flt2).count()
