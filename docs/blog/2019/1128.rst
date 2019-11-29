@@ -45,8 +45,8 @@ Another article suggests to simply use :cmd:`dd`:
 https://vitux.com/how-to-create-a-bootable-usb-stick-from-the-ubuntu-terminal/
 
 
-Lino and Django 3.0
-===================
+Lino gets ready for Django 3.0
+==============================
 
 It's already 10 days ago that they released `Django 3.0 release candidate 1
 <https://www.djangoproject.com/weblog/2019/nov/18/django-30-release-candidate-1-released/>`__.
@@ -110,3 +110,19 @@ Now I did :cmd:`pip install --pre -U django` and ran the test suite. I opened
 
   The solution is to use a chooser, i.e. a choicelist_choices method. Now it
   works at least in Django 2.
+
+- All primary keys had sums in doctests. Lino assumes that the sum of a primary
+  key makes no sense and therefore it is automatically hidden.  This logic lives
+  in the :class:`lino.core.elems.AutoFieldElement` class where we say::
+
+    class AutoFieldElement(NumberFieldElement):
+
+        def value2num(self, v):
+            return 0
+
+  The :func:`lino.core.elems.field2elem` works by looping over a list of Django
+  database field classes and finds the first element class found for the
+  database field. One thing that's new in Django 3 : AutoField now inherits from
+  IntegerField.  That makes sense, but it caused Lino to return an
+  IntegerFieldelement for AutoField as well.  The solution was easy: simply test
+  for AutoField before testing for IntegerField.

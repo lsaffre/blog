@@ -1,0 +1,37 @@
+:date: 2019-11-29
+
+=========================
+Friday, November 29, 2019
+=========================
+
+:meth:`ContentType.__str__` has changed
+=======================================
+
+The `build 618312859
+<https://travis-ci.org/lino-framework/book/jobs/618312859>`__ shows the next
+(and maybe last) problem with Django 3: the :meth:`__str__` method of
+:class:`contenttypes.ContentType` now includes the plugin name.
+
+..
+  >>> from lino import startup
+  >>> startup('lino_book.projects.min2.settings.demo')
+  >>> from lino.api.doctest import *
+
+>>> ct = rt.models.contenttypes.ContentType.objects.get_for_model(rt.models.contacts.Person)
+>>> ct  # in Django 2:
+<ContentType: Person>
+
+>>> ct  # in Django 3:
+<ContentType: contacts | Person>
+
+The change makes sense because it was sometimes disturbing to not have this
+information.  But it causes a few test cases to break.   To "fix" this
+temporarily, I do a live patch in :mod:`lino.modlib.contenttypes` to restore the
+Django 2 behaviour::
+
+  if VERSION[0] > 2:
+      def old__ct_str(self):
+          return self.name
+      ContentType.__str__ = old__ct_str
+
+Commit `28480c6 <https://github.com/lino-framework/lino/commit/f87f4c1ce564aca41b02a0f8889a00ff828480c6>`__.
