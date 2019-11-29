@@ -7,7 +7,7 @@ Friday, November 29, 2019
 :meth:`ContentType.__str__` has changed
 =======================================
 
-The `build 618312859
+`Build 618312859
 <https://travis-ci.org/lino-framework/book/jobs/618312859>`__ shows the next
 (and maybe last) problem with Django 3: the :meth:`__str__` method of
 :class:`contenttypes.ContentType` now includes the plugin name.
@@ -35,3 +35,211 @@ Django 2 behaviour::
       ContentType.__str__ = old__ct_str
 
 Commit `28480c6 <https://github.com/lino-framework/lino/commit/f87f4c1ce564aca41b02a0f8889a00ff828480c6>`__.
+
+The new :attr:`private <lino.modlib.comments.Comment.private>` field of a comment
+=================================================================================
+
+For :ticket:`3313` there is at least one more thing to consider: what happens
+when migrating existing comments to the new version with a
+:attr:`lino.modlib.comments.Comment.private` field?  Answer: they will get the
+default value defined in :attr:`lino.modlib.comments.Plugin.private_default`.
+Which is `True`.  So all existing comments will be private.   Do we want this?
+Actually comments on public tickets should be public, shouldn't they?  OTOH it
+makes sense to say that existing comments are private because the author didn't
+say explicitly they are public.
+
+Do we need some kind of confirmation when submitting a comment that's not
+private?  Probably not. But here is one code change:
+
+- To make the privacy more "transparent", I added the
+  :attr:`lino.modlib.comments.Comment.private` field to the detail and insert
+  layouts. Which changes the implementation for applying the default privacy
+  when inserting comments:  We cannot do this in
+  :meth:`lino.core.model.Model.after_ui_create` any more because we want to know
+  the value *before* the instance is created. We must use either
+  :meth:`lino.core.dbtables.Table.create_instance` or
+  :meth:`lino.core.model.Model.on_create`.
+
+Other thoughts (for later):
+
+- don't we actually need 3 "privacy" settings: "private",
+  "public" and "group"? IOW instead of having a checkbox we would have a combobox
+  and a choicelist...
+
+- Should we throw away comments.CommentType?
+
+Oops, `this build <https://travis-ci.org/lino-framework/book/jobs/618503126>`_
+shows that I forgot to think about the demo fixtures.
+
+
+
+OperationalError: no such table: django_content_type
+====================================================
+
+Hamza and I are observing :ticket:`3363` which I observed already 10 days ago
+(:doc:`1119`) in `amici
+<https://travis-ci.org/lino-framework/book/jobs/618503126>`_ on travis.  The
+:cmd:`inv prep` command fails with :message:`django.db.utils.OperationalError:
+no such table: django_content_type` during the :manage:`prep` in the
+:mod:`lino_amici.projects.herman` demo project. Hamza has it on his machine as
+well. I don't.  He also has it in team and lydia. Travis not.
+
+
+When it fails::
+
+  Synchronizing apps without migrations:
+    ...
+      Running deferred SQL...
+  Traceback (most recent call last):
+
+When it doesn't fail::
+
+  Synchronizing apps without migrations:
+    ...
+      Running deferred SQL...
+  Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    ...
+
+I tried with Python 3.7 instead of 3.6::
+
+  virtualenv -p python3.7 py37
+  . py37/bin/activate
+  go book
+  pip install -r requirements.local.txt
+  pip install -e .
+  go team
+  pm prep
+
+No change. Still no problem on my machine.
+
+I tried with Django 3.0rc1 and Django 2.2.7.  No change.
+
+Very strange.  I give up here because Hamza can at least reproduce it locally,
+so he has more chances to find it.
+
+Hamza, here is my pip freeze::
+
+  alabaster==0.7.12
+  appy==1.99.dev0
+  argh==0.26.2
+  args==0.1.0
+  asgiref==3.2.3
+  atelier==1.1.23
+  Babel==2.7.0
+  beautifulsoup4==4.8.1
+  bleach==3.1.0
+  BTrees==4.6.1
+  cairocffi==1.1.0
+  CairoSVG==2.4.2
+  certifi==2019.11.28
+  cffi==1.13.2
+  chardet==3.0.4
+  Click==7.0
+  clint==0.5.1
+  -e git+git@github.com:lsaffre/commondata.git@a3d6773594419260ccd5f1c32551e6115867baf1#egg=commondata
+  -e git+git@github.com:lsaffre/commondata-be.git@7870148b73cfbf6c9e42ae66dbbe0538191d2f1a#egg=commondata.be
+  -e git+git@github.com:lsaffre/commondata-ee.git@1188a475ff4f2fd1102600df3d0dfcabee399229#egg=commondata.ee
+  -e git+git@github.com:lsaffre/commondata-eg.git@f252fe5d10acb89b8ee59ae7854611560d3628b9#egg=commondata.eg
+  cssselect2==0.2.2
+  dateparser==0.7.2
+  DateTime==4.3
+  defusedxml==0.6.0
+  Django==3.0rc1
+  django-auth-ldap==2.0.0
+  django-countries==5.5
+  django-iban==0.3.1
+  django-localflavor==2.2
+  django-mailbox==4.5.4
+  django-wkhtmltopdf==3.2.0
+  djangorestframework==3.10.3
+  docutils==0.15.2
+  eidreader==1.0.5
+  et-xmlfile==1.0.1
+  etgen==1.0.0
+  future==0.18.2
+  getlino==19.11.0
+  html2text==2019.9.26
+  html5lib==1.0.1
+  icalendar==4.0.4
+  idna==2.8
+  imagesize==1.1.0
+  invoke==1.3.0
+  jdcal==1.4.1
+  Jinja2==2.10.3
+  -e git+git@github.com:lino-framework/lino.git@db54bd01e88e2c9b3c8d2bd0bbcdb9579cd5cc52#egg=lino
+  lino-amici==18.8.0
+  -e git+git@github.com:lino-framework/avanti.git@b6bfca65d5827adec22b0ec4ce9bdfc6522f0f94#egg=lino_avanti
+  -e git+git@github.com:lino-framework/book.git@fef4c72eafdddc3496c024c0a2d23c71fc1f5af9#egg=lino_book
+  -e git+git@github.com:lino-framework/care.git@620f9a8354a44b4261827fc9400baab4fc2f48e6#egg=lino_care
+  -e git+git+ssh://git@github.com/lino-framework/cosi.git@2925d467eba773098358d3d865deccdecd292aca#egg=lino_cosi
+  -e git+git@github.com:lino-framework/noi.git@05a79f704789f01b1703dc27b1e77959d1b5909d#egg=lino_noi
+  -e git+git@github.com:lino-framework/openui5.git@e462af210c8ab73e6e4c4064ecf3f1c9fa981ace#egg=lino_openui5
+  -e git+git@github.com:lino-framework/tera.git@8e8326d2bdda7d30855241e63a8c7443070f23b4#egg=lino_tera
+  -e git+git@github.com:lino-framework/vilma.git@ea2b2b47ed1b93b20b4046fe4fd31b9e7d95e68f#egg=lino_vilma
+  -e git+git+ssh://git@github.com/lino-framework/voga.git@885430a5942e11e4bb38c26ccefcfea8ea1a4504#egg=lino_voga
+  lino-welfare==19.9.1
+  -e git+git@github.com:lino-framework/xl.git@9d6f13da62959f9139f0c921033a1902243aa3e6#egg=lino_xl
+  lxml==4.4.2
+  MarkupSafe==1.1.1
+  Metafone==0.5
+  mock==3.0.5
+  oauthlib==3.1.0
+  odfpy==1.4.0
+  openpyxl==3.0.1
+  packaging==19.2
+  persistent==4.5.1
+  Pillow==6.2.1
+  pisa==3.0.33
+  pyasn1==0.4.8
+  pyasn1-modules==0.2.7
+  pycparser==2.19
+  Pygments==2.5.2
+  PyJWT==1.7.1
+  PyKCS11==1.5.5
+  pyparsing==2.4.5
+  Pyphen==0.9.5
+  python-dateutil==2.8.1
+  python-ldap==3.2.0
+  python-stdnum==1.12
+  python3-openid==3.1.0
+  pytidylib==0.3.2
+  pytz==2019.3
+  PyYAML==5.1.2
+  Radicale==2.1.11
+  regex==2019.11.1
+  reportlab==3.5.32
+  requests==2.22.0
+  requests-mock==1.7.0
+  requests-oauthlib==1.3.0
+  schedule==0.6.0
+  selenium==3.141.0
+  six==1.13.0
+  snowballstemmer==2.0.0
+  social-auth-app-django==3.1.0
+  social-auth-core==3.2.0
+  soupsieve==1.9.5
+  Sphinx==2.2.1
+  sphinxcontrib-applehelp==1.0.1
+  sphinxcontrib-devhelp==1.0.1
+  sphinxcontrib-htmlhelp==1.0.2
+  sphinxcontrib-jsmath==1.0.1
+  sphinxcontrib-qthelp==1.0.2
+  sphinxcontrib-serializinghtml==1.1.3
+  sqlparse==0.3.0
+  suds-py3==1.3.4.0
+  tinycss2==1.0.2
+  transaction==2.4.0
+  tzlocal==2.0.0
+  Unipath==1.1
+  urllib3==1.25.7
+  virtualenv==16.7.8
+  vobject==0.9.6.1
+  WeasyPrint==50
+  webencodings==0.5.1
+  zc.lockfile==2.0
+  ZConfig==3.5.0
+  ZODB==5.5.1
+  zodbpickle==2.0.0
+  zope.interface==4.7.1
