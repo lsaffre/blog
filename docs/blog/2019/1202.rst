@@ -1,0 +1,65 @@
+:date: 2019-12-02
+
+========================
+Monday, December 2, 2019
+========================
+
+I am working on :ticket:`3374` (invoice is being printed in landscape
+orientation) .
+
+It occurs in both extjs and react.
+
+Also, under React, the help text of the print button is "Print a Belgian VAT
+declaration". It should be "Create an excerpt in order to print this data
+record" (which is not the perfect example of an end-user friendly help text, but
+that's another ticket).
+
+Under ExtJS the "Clear cache" button is missing.
+
+The :xfile:`base.weasy.html` template has::
+
+  @page {
+      size: {%- block pagesize %}landscape{%- endblock %};
+
+But the :xfile:`default.weasy.html` template for
+:class:`lino_xl.lib.bevats.Declaration` still was using the ``set page_size``
+approach::
+
+  {%- set page_size = 'portrait' -%}
+  {%- extends "weasyprint/base.weasy.html" -%}
+
+
+I reviewed landscape/portrait for all weasy templates and added a section
+"Weasyprint templates included with the :ref:`xl`" in :ref:`specs.weasyprint`.
+
+The demo database contained *two* excerpt types "Special Belgian VAT declaration"
+(instead of only one).
+I added a test case in :ref:`tera.specs.misc` to cover this. The reason was that the
+:fixture:`std` fixture for bevats created a new ExcerptType instead of calling
+:meth:`lino_xl.lib.excerpts.ExcerptType.update_for_model`.
+
+That's also why the :mod:`lino_xl.lib.excerpts` plugin must come before any
+plugin that updates the ExcerptType for Certifiable.  This is done automatically
+now (at least for the VAT plugins) because I added :mod:`lino_xl.lib.excerpts`
+as a dependency for :mod:`lino_xl.lib.vat`.
+
+Changes in xl, book, presto
+
+
+TODO: invoices in lydia have a logo because they use appypdf build method. Those
+in apc don't have a logo and use the weasy print method.
+
+Sometimes there is no button to clear the print cache on certifiable objects.
+
+
+
+tests weren't being discovered
+==============================
+
+Running :cmd:`inv test` in lino, xl, tera, amici, ... said "Ran 0 tests in
+0.000s". IOW the test suite wasn't actually being run.  most of the tests on
+these repositories are done in the book, so these are only small test suites.
+But that's not an excuse.  Small test suite should run as the big ones.
+
+This was a side effect of moving from the setuptools testing to standard
+unittest testing.
