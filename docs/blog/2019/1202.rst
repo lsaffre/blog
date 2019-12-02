@@ -63,3 +63,216 @@ But that's not an excuse.  Small test suite should run as the big ones.
 
 This was a side effect of moving from the setuptools testing to standard
 unittest testing.
+
+
+The :func:`show_excerpts` function
+==================================
+
+I opened :ticket:`3375`.
+We should use the :func:`lino_xl.lib.excerpts.doctools.show_excerpts` function
+more systematically because it is good for both testing and illustrating.
+
+Its only usage is currently `a page about excerpts
+<https://de.welfare.lino-framework.org/excerpts.html>`__ in the German end user
+documentation for :ref:`weleup`.
+
+The function generates a reSTructuredText list of all generated pdf files of the
+excerpts in a database.
+It copies these files to a place where they are
+available on the Internet.
+It should be rather in a specs page than in end-user docs.
+It must run during :cmd:`inv bd`, not during
+:cmd:`inv test`.  Which means that it can work only in a doctree for which a
+global demo project has been defined in the :xfile:`conf.py` file. As currently
+in the :xfile:`conf.py` file of the `dedocs` doctree of the :ref:`weleup`
+repository::
+
+  from lino.sphinxcontrib import configure
+  configure(globals(), 'lino_welfare.projects.gerd.settings.doctests')
+
+
+The global demo project for :ref:`book` is currently
+:mod:`lino_book.projects.max`, which exists only because autodoc would work if
+no :envvar:`DJANGO_SETTINGS_MODULE` is defined.
+
+The comparison should *not* run during :cmd:`inv bd` but during :cmd:`inv test`.
+If a file has changed, it should be copied manually by the developer who reviewed whether the change is okay.
+The public place for those pdf files should be per demo project and not per doctree.
+Instead of just copying the files, we should
+also test whether they have changed (side note: How to compare the content of
+two pdf files?).  For example if we add a specs page with the excerpts of the
+avanti1 demo project, we would add a directory `docs/dl/expected/avanti1` to the
+books doctree (``dl`` is a conventional name for a directory whose content will
+automatically get copied to the docs output tree).
+
+This would require that the application-specific specs sections, which are
+currently in the book, should become separate doctrees.  The natural place for
+the noi specs section is indeed the docs tree of the noi repository.
+
+But if we do this, we must be aware of the fact that quite some specs pages
+would move from the book to the noi docs, leaving several plugins undocumented.
+Let's take the working plugin.  It is used only by noi.  But the code is part of
+the xl (and we want it to remain there because it might be used by some future
+application).
+
+Also consider that if we move the noi specs into the noi repository, noi will
+depend on book, and the book will no longer be able to refer to these specs. We
+cannot have a circular dependency between noi and book because that would cause
+a deadlock in the building and testing workflows. Which means that we would have
+to write a little demo app in the book if we want to show tested code examples
+in the :file:`docs/specs/working.rst` page.
+
+As a proof of concept I moved certain sections from :file:`specs/tickets.rst` to
+:file:`specs/noi/tickets.rst`.  Both pages existed already before, but were not
+yet seriously reviewed for this case. The :file:`specs/tickets.rst` page now
+uses the max demo project.  That's what I wanted to test. And it works.
+
+That would mean that the team demo project would move from the book to the noi
+repository.
+
+Regarding coverage : of course we are moving into a direction where anyway the
+book cannot cover everything. The :xfile:`run_coverage.sh` script would probably
+move to a new repository that depends on book, noi, presto and would do nothing
+else than running :cmd:`inv cov` an all these projects and publish the result.
+Idea to be verified: Maybe we we don't need to create a new repository! We can
+use getlino for this. Yes, that sounds good.  getlino actually depends on all
+our projects.  One problem is that the book would no longer be able to refer to
+the getlino doctree.  That's a bit stupid because the docs are currently
+authored based on this convention.
+
+OMG, this is quite complex!
+Ticket :ticket:`3375` will be quite some work and cause some restructuring of documentation.
+But I feel that this is where we want to go.
+Not urgent.
+
+
+
+Preparing Cosi demos
+====================
+
+- In the JournalsOverview table I added a shortcut to create a new voucher.
+
+  I don't use the (+) button but the journals
+  :attr:`lino_xl.lib.ledger.Journal.printed_name` field, which turned out to
+  need appropriate default values and their translations.
+
+  For example I had to research correct terms and translations for
+  :term:`paycheck`,  :term:`cash book`
+
+- I added a logo to the weasyprint invoices.  The logo is currently rendered in
+  the top-right corner of every page. ATM I don't plan to make the invoice
+  layout configurable via web interface, I think it's more efficient to have a
+  local template for every site who wants customization. To be observed.
+
+
+Cannot delete the printable excerpt generated by an invoice
+===========================================================
+
+goto apc demo project, runserver, sign in as robin, open the sales invoices,
+print an invoice. Note that "clear cache" doesn't work at the moment (that's
+another ticket). But "clear cache" is just a shortcut, you can click as well on
+the value of the "Printed" field. This opens the detail view on the generated
+excerpt. There you can hit the Delete button and confirm.  But that trick
+doesn't work under react. It keeps asking whether you want to delete. I guess it
+is the "b" prefix in the xcallback of the Ajax call, which is ``"GET
+/api/excerpts/Excerpts/1?an=delete_selected&fmt=json&rp=weak-key-55&sr=1&xcallback__b%22%5Cxed%5Cxfa%5E%5Cxc4%5Cx04%5Cx91~%5Cx9f%5Cxf5%29%5Cxc7%5Cxc1%5Cxdc%5Cxb1%27%5Cxb7%22=yes&xcallback__b%27%5Cx87f%2C%5Cxecv%5Cxc7%5B%5Cx10%5Cxe5%5Cxdb%5Cx0e%5Cx97%3BF-%5Cxf6%27=yes"``
+
+
+Reverse dependency between getlino and book
+===========================================
+
+An important question for :ticket:`3375` is the question whether it is good to
+reverse the dependency between getlino and book. The book would no longer be
+able to refer to the getlino doctree (using intersphinx).  And the getlino docs
+would then be able to refer to the book.
+
+
+The Lino installation instructions are currently spread over three pages: one
+for simple developers,  one for becoming a contributing developer, and a third
+one for installing a production server.
+
+We do *not* need to move them all from the book to getlino. The only consequence
+is that we cannot link from the book to individual getlino commands any more.
+
+
+I ran :cmd:`pp inv clean -b` and then :cmd:`pp inv bd pd` in order to test
+whether all dependencies are resolved.
+
+- The nginx configs for vilma, pronto and avanti were not correct or missing,
+  but I managed to fix them.
+
+Note: what means the following warning (which comes twice for every :cmd:`sudo
+nginx -t`)::
+
+  nginx: [warn] could not build optimal proxy_headers_hash, you should increase
+  either proxy_headers_hash_max_size: 512 or proxy_headers_hash_bucket_size: 64;
+  ignoring proxy_headers_hash_bucket_size
+
+
+Thanks to `this thread
+<https://talk.plesk.com/threads/nginx-server_names_hash_bucket_size-directive-is-duplicate.342512/>`__
+for a helpful advice::
+
+  $ find /etc/nginx -type f -name "*.conf" -exec grep --color -Hni "proxy_headers_hash_bucket_size"  {} \;
+  $ find /etc/nginx -type f -name "*.conf" -exec grep --color -Hni "proxy_headers_hash_max_size"  {} \;
+
+IOW I verified that I have no config file that overrides the default values.
+But if the default values aren't good, which values are good?
+
+The `nginx docs <http://nginx.org/en/docs/hash.html>`_ says "if nginx emits the
+message requesting to increase either hash max size or hash bucket size then the
+first parameter should first be increased."
+
+I changed this in our :file:`/etc/nginx/nginx.conf`. The instruction in the docs
+wasn't helpful, but I tried intuitively without really understanding until the
+warnings were gone.
+
+
+
+getlino test suite is failing
+=============================
+
+I noticed that the getlino test suite was failing  with
+:message:`AttributeError: module 'lino.api.dd' has no attribute
+'python_2_unicode_compatible'`.
+
+Interesting! How can you do final polish for a demo when your test suite is
+broken!
+
+An obvious error is the ordering of the ``--dev-repos`` option when saying::
+
+  sudo getlino startsite noi noi1 --batch --dev-repos 'lino noi xl'
+
+This can't work because the dev-repositories are installed in the given order.
+If you specify noi before xl, it will install noi first, run ``pip install -e``
+for noi before having installed xl, and noi requires xl, so it will install the
+PyPI version.
+
+  sudo getlino startsite noi noi1 --batch --dev-repos 'lino xl noi'
+
+But even this did not work, there was a second error: the
+:meth:`run_docker_command` wraps single quotes around the command.  That leads
+to unpredictable result when the command contains itself single quotes.  So we
+must use double quotes::
+
+  sudo getlino startsite noi noi1 --batch --dev-repos "lino xl noi"
+
+I had some fun before I understood this, and *en passant* I did a few
+optimizations.
+
+I also fixed yet another bug::
+
+  /home/lino/lino/env/bin/pull.sh: line 18: cd: /home/lino/lino/env/repositories/linopull: No such file or directory
+
+The error was in the :xfile:`pull.sh` template::
+
+  {% for name in dev_packages.split() -%}
+  pull {{name}}
+  {%- endfor %}
+
+Read the Jinja template designer docs about what those dashes after `{%` or
+before `%}` do!
+
+There are still resource warnings popping up::
+
+  .../python3.6/site-packages/requests/structures.py:41: ResourceWarning: unclosed <socket.socket fd=7, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
