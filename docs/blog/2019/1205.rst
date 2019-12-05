@@ -1,0 +1,71 @@
+:date: 2019-12-05
+
+==========================
+Thursday, December 5, 2019
+==========================
+
+Working on getlino test suite
+=============================
+
+I opened :ticket:`3383` and then saw that Hamza had already done it :-) I saw
+that `travis now says <https://travis-ci.org/lino-framework/getlino>`__
+:message:`AttributeError: 'BaseDockerTest' object has no attribute 'docker_tag'`
+and fixed that (it was a typo in my last commit). Next problem : I opened
+:ticket:`3384` but didn't start working on this.
+
+
+Preparing a demo for cosi_ee
+============================
+
+Summary of the demo tour:
+
+- create a person "Tom Testa", register a sales invoice for him. Dated today (outside the dates of existing invoices)
+- create a company "Testers OÜ" and register a purchases invoice for them. Same date.
+- register a VAT declaration
+
+At this point I saw that (1) it's not easy to visualize which invoices are
+covered by a declaration and (2) The Estonian VAT declaration is currently just
+an adapted copy of the Belgian one. I started to adapt it to the `Estonian law
+<https://www.riigiteataja.ee/akt/118112014002?leiaKehtiv>`__, but that's not
+finished.
+
+
+See invoices being declared by a VAT declaration
+================================================
+
+..currentmodule:: lino_xl.lib.vat
+
+Two new tables :class:`PurchasesByDeclaration` and :class:`SalesByDeclaration`
+in :mod:`lino_xl.lib.vat`.  These are included in the :class:`VatDeclaration`
+detail view of :mod:`lino_xl.lib.eevat` (other national plugins will follow).
+
+As a side effect we have a new model mixin :class:`VatVoucher`. This mixin is
+needed as the model of the new table :class:`VatInvoices`, which is the abstract
+base for our two new tables and the two existing tables :class:`IntracomSales`
+and :class:`IntracomPurchases`.  A table on an abstract model calls --of
+course-- only the :meth:`setup_parameters
+<lino.core.model.Model.setup_parameters>` of the abstract model.  So we needed a
+mixin that extends :class:`VatDocument` by inheriting also from
+:class:`lino_xl.lib.ledger.Voucher` and :class:`lino_xl.lib.sepa.Payable`. This
+was needed because otherwise the two new tables didn't get the parameter fields
+`start_period` and `end_period` defined in
+:class:`lino_xl.lib.ledger.PeriodRangeObservable`.
+
+
+I fell into a subtle pit: :class:`IntracomPurchases` had the following
+:attr:`params_layout` inherited from :class:`ledger.PartnerVouchers`::
+
+  params_layout = "partner project state journal start_period end_period cleared"
+
+and it has the following :attr:`hidden_elements`::
+
+    hidden_elements = frozenset(
+        """entry_date journal__trade_type journal number
+        journal__trade_type state user""".split())
+
+The hidden_elements are meant for data fields, but two of them (journal and
+state) have the same name as a parameter field.  I must explicitly remove them
+from the :attr:`params_layout` to avoid an error message about "expected 6
+parameter values but got only 4"::
+
+  params_layout = "partner project start_period end_period cleared"
