@@ -1,0 +1,51 @@
+:date: 2019-12-10
+
+==========================
+Tuesday, December 10, 2019
+==========================
+
+I continued to configure the Estonian VAT declaration.
+
+VAT classes are the classes of trade objects to be differentiated in the VAT
+declaration.  For example in Estonia the VAT office wants to know how much money
+you spend for buying vehicles or real estate objects.  In Belgium both vehicles
+and real estate objects are considered together as investments.
+
+The demo data for ledger purchases now uses all VAT classes. Until now it used
+always the default VAT class.
+
+There is no longer a VAT class "normal". You must decide whether it is a "good"
+or a "service".
+
+The furniture fixture now defines two new products, a book and a stamp, just to
+have something with reduced and exempt VAT class::
+
+  yield product("29.90", 3, **dd.str2kw('name', _("Book"), vat_class="reduced"))
+  yield product("1.40", 3, **dd.str2kw('name', _("Stamp"), vat_class="exempt"))
+
+The furniture fixture was duplicated in xl, cosi and pronto.  And only that of
+cosi was actually being used.
+
+VAT columns aren't actually needed for filling the Estonian VAT declaration.
+This configuration logic was originally taken from TIM.
+I guess that they are actually useless in Belgium as well.
+
+
+TIL : dict.get() returns None when you call it without giving a default value.
+I had to verify this:
+
+>>> items_dict = {"a" : 1}
+>>> def get_by_value(value, *args):
+...     return items_dict.get(value, *args)
+>>> get_by_value("a")
+1
+>>> get_by_value("b", 2)
+2
+>>> print(get_by_value("b"))
+None
+>>> print(items_dict.get("b"))
+None
+
+
+
+https://www.emta.ee/et/ariklient/tulu-kulu-kaive-kasum/kaibedeklaratsiooni-esitamine/kaibedeklaratsiooni-tehniline

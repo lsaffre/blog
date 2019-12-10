@@ -1,0 +1,48 @@
+:date: 2019-12-06
+
+========================
+Friday, December 6, 2019
+========================
+
+Today's changes are about two things.
+
+Optimizations around MissingAccount
+===================================
+
+I fixed two bugs that came when some common account was not configured: A bug in
+:mod:`lino_xl.lib.sheets` that caused a  TypeError  "int() argument must be a
+string, a bytes-like object or a number, not 'MissingAccount'" when you tried to
+render :class:`lino_xl.lib.sheets.Report`. And an AttributeError
+"'MissingAccount' object has no attribute 'get_detail_action'" when tried to
+show the list of trade types.
+
+The :fixture:`std` fixture for :mod:`lino_xl.lib.ledger` now deliberately leaves
+one common account (the "Net loss" one, which isn't used anywhere so far)
+without a database object in order to reproduce this situation. I added test
+cases to cover it.
+
+Testing the content of a detail window
+======================================
+
+After this side step I can finally configure the fields of the VAT
+declaration...
+
+... but the main challenge with this task is that the mere *testing of the
+results* ("Is the number in field XYZ correct?") is a lot of work because it
+requires diving into the stuff and the language of VAT offices. I want to do
+that work only once if possible. IOW : no manual testing. Everything must be
+tested in the specs.  A good example of where you want test-driven development.
+
+And Lino does not yet have a way to say in a doctest:
+
+>>> obj = eevat.VatDeclaration.objets.get(id=3)
+>>> rt.show(obj)
+(and the expected output would be a textual representation of a detail window of
+that database object)
+
+So I opened :ticket:`3395`. At first I thought about doing it with Selenium, but
+then I simply extended :func:`lino.utils.py2rst` to also support rendering a
+database object. I added a test case to the specs page for :ref:`xl.eevat`.
+
+Voilà, testing is set up.
+I can start doing that dull work of configuring those damn VAT fields.

@@ -1,0 +1,26 @@
+:date: 2019-12-07
+
+==========================
+Saturday, December 7, 2019
+==========================
+
+Django 3 knows how to say "Year" in French
+==========================================
+
+`This failure <https://travis-ci.org/lino-framework/welfare/jobs/621917966>`__
+was because my tests were still in Django 3 pre, but the final release knows
+that "Year" is "Année" in French.
+
+To fix it, I didn't change the expected output but rather added an explicit
+`language="en"` to my calls to :func:`lino.api.rt.show`.  Because specs pages
+should make sense also to people who don't know French.
+
+Miscellaneous
+=============
+
+A failure in :file:`docs/specs/tera/sql.rst` seems to be because some arbitrary
+evaluation order at some place.  One possible culprit is the :fixture:`demo2`
+fixture of :mod:`lino_xl.lib.excerpts`, which didn't specify :meth:`order_by`
+when looping over the excerpt types::
+
+  for et in ExcerptType.objects.all().order_by('id'):
