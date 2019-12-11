@@ -31,9 +31,9 @@ VAT columns aren't actually needed for filling the Estonian VAT declaration.
 This configuration logic was originally taken from TIM.
 I guess that they are actually useless in Belgium as well.
 
-
-TIL : dict.get() returns None when you call it without giving a default value.
-I had to verify this:
+I fixed a pitfall in the lino.utils.cycler : it didn't complain when I specified
+a string with an invalid value for a choicelist field. TIL: dict.get() returns
+None when you call it without giving a default value. I had to verify this:
 
 >>> items_dict = {"a" : 1}
 >>> def get_by_value(value, *args):
@@ -47,6 +47,10 @@ None
 >>> print(items_dict.get("b"))
 None
 
+Note the difference between :class:`ledger.MovementsByVoucher` and
+:class:`vat.MovementsByVoucher`.
 
+I start to think that I might do the xml file export en passant now that I am
+inside this stuff:
 
 https://www.emta.ee/et/ariklient/tulu-kulu-kaive-kasum/kaibedeklaratsiooni-esitamine/kaibedeklaratsiooni-tehniline
