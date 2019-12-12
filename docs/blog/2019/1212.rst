@@ -1,0 +1,58 @@
+:date: 2019-12-12
+
+===========================
+Thursday, December 12, 2019
+===========================
+
+Both the Belgian and Estonian VAT declarations have a double field for the
+"final result", i.e. the sum of all amounts to pay or to receive. I guess that
+they want to have a clear visual difference between a negative and a positive
+results. Understandable.
+
+TIL : But in Lino we are not going to waste two separate database fields for
+this.  It's too easy to add this condition in the template for the printable or
+the XML file. A positive number means "positive" for the VAT office because they
+will get money from us. When using :mod:`lino_xl.lib.bevats` you will never ask
+to return VAT, so the number in that field will always be positive.
+
+Learning about mail servers
+===========================
+
+I am manually checking the :file:`/etc/postfix.main.cf` file on SR and LF.
+
+- `mydomain` was wrong. It was set to "mail.lino-framework.org" but must be
+  "lino-framework.org".
+
+- mydestination had duplicate entries.
+
+- I removed "compatibility_level=2"
+
+- mydestination = $myhostname localhost.$mydomain localhost $mydomain
+
+  Until now this was repeated manually instead of using the variables, and it
+  had commas as separators.
+
+
+Here are now our standard config settings::
+
+  myhostname = mail.example.com
+  myorigin = /etc/mailname
+  mydestination = $myhostname localhost.$mydomain localhost $mydomain
+  relayhost =
+  mynetworks = 127.0.0.0/8 [::ffff:127.0.0.0]/104 [::1]/128
+  mynetworks_style = host
+  relay_domains =
+  inet_interfaces = all
+
+
+Here is what status should say::
+
+  $ sudo service postfix status
+  ● postfix.service - Postfix Mail Transport Agent
+     Loaded: loaded (/lib/systemd/system/postfix.service; enabled; vendor preset: enabled)
+     Active: active (exited) since Thu 2019-12-12 12:01:59 UTC; 7s ago
+    Process: 2262 ExecStart=/bin/true (code=exited, status=0/SUCCESS)
+   Main PID: 2262 (code=exited, status=0/SUCCESS)
+
+  Dec 12 12:01:59 my-host-name systemd[1]: Starting Postfix Mail Transport Agent...
+  Dec 12 12:01:59 my-host-name systemd[1]: Started Postfix Mail Transport Agent.

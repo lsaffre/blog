@@ -1,0 +1,124 @@
+:date: 2019-12-11
+
+============================
+Wednesday, December 11, 2019
+============================
+
+Learning about mail servers
+===========================
+
+The PTR record issue seems fixed, but ticket :ticket:`3339` is still open. There
+are at least two mailing list on LF having this problem.   The people say that
+they have no problem receiving mails to their @hot.ee address from other
+senders. I want to understand what's happening.
+
+``mx1.hot.ee[194.126.101.119]:25``
+continues to say "Service currently unavailable (in reply to RCPT TO command))"
+when LF wants to deliver them 3 mails to recipients `@hot.ee`.  And when LF
+tries again 5 minutes later, it even says "550 5.7.1 Connection timed out (in
+reply to end of DATA command))".
+
+I guess they are using postscreen. Quote from the `docs
+<http://www.postfix.org/POSTSCREEN_README.html>`_: "In a typical deployment,
+postscreen(8) handles the MX service on TCP port 25, while MUA clients submit
+mail via the submission service on TCP port 587 which requires client
+authentication. Alternatively, a site could set up a dedicated, non-postscreen,
+"port 25" server that provides submission service and client authentication, but
+no MX service."
+
+How can I test an SMTP relay server from outside?   I mean a little program that
+sends an email and then reports how the server "behaves". On `wormly.com
+<https://www.wormly.com/test-smtp-server>`__ there is a page that does exactly
+what I mean. When sending to luc@lino-framework.org I get a normal answer::
+
+  Resolving hostname...
+  Connecting...
+  Connection: opening to lino-framework.org:25, timeout=300, options=array (
+        	         )
+  Connection: opened
+  SERVER -> CLIENT: 220 mail.lino-framework.org ESMTP Postfix (Debian/GNU)
+  CLIENT -> SERVER: EHLO tools.wormly.com
+  SERVER -> CLIENT: 250-mail.lino-framework.org
+        	         250-PIPELINING
+        	         250-SIZE 10240000
+        	         250-VRFY
+        	         250-ETRN
+        	         250-STARTTLS
+        	         250-AUTH PLAIN
+        	         250-AUTH=PLAIN
+        	         250-ENHANCEDSTATUSCODES
+        	         250-8BITMIME
+        	         250-DSN
+        	         250-SMTPUTF8
+        	         250 CHUNKING
+  CLIENT -> SERVER: STARTTLS
+  SERVER -> CLIENT: 220 2.0.0 Ready to start TLS
+  CLIENT -> SERVER: EHLO tools.wormly.com
+  SERVER -> CLIENT: 250-mail.lino-framework.org
+        	         250-PIPELINING
+        	         250-SIZE 10240000
+        	         250-VRFY
+        	         250-ETRN
+        	         250-AUTH PLAIN
+        	         250-AUTH=PLAIN
+        	         250-ENHANCEDSTATUSCODES
+        	         250-8BITMIME
+        	         250-DSN
+        	         250-SMTPUTF8
+        	         250 CHUNKING
+  CLIENT -> SERVER: MAIL FROM:
+  SERVER -> CLIENT: 250 2.1.0 Ok
+  CLIENT -> SERVER: RCPT TO:
+  SERVER -> CLIENT: 250 2.1.5 Ok
+  CLIENT -> SERVER: DATA
+  SERVER -> CLIENT: 354 End data with .
+  CLIENT -> SERVER: Date: Wed, 11 Dec 2019 09:34:17 +0000
+  CLIENT -> SERVER: To: luc@lino-framework.org
+  CLIENT -> SERVER: From: Wormly SMTP Test
+  CLIENT -> SERVER: Subject: Wormly SMTP Test Message
+  CLIENT -> SERVER: Message-ID: <1639293d056826af4d71d7d9cf551c96@blog.wormly.com>
+  CLIENT -> SERVER: MIME-Version: 1.0
+  CLIENT -> SERVER: Content-Type: text/plain; charset=iso-8859-1
+  CLIENT -> SERVER:
+  CLIENT -> SERVER: This message was sent using the Wormly SMTP testing tool by this user:
+  CLIENT -> SERVER: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:71.0) Gecko/20100101 Firefox/71.0
+  CLIENT -> SERVER: 84.50.167.213
+  CLIENT -> SERVER:
+  CLIENT -> SERVER: .
+  SERVER -> CLIENT: 250 2.0.0 Ok: queued as AA3D27E54
+  CLIENT -> SERVER: QUIT
+  SERVER -> CLIENT: 221 2.0.0 Bye
+  Connection: closed
+  Message completed successfully.
+
+But when sending to lucsaffre@hot.ee I get the following answer::
+
+  Resolving hostname...
+  Connecting...
+  Connection: opening to hot.ee:25, timeout=300, options=array (
+        	         )
+  SMTP ERROR: Failed to connect to server: Connection refused (111)
+  2019-12-11 09:35:16	SMTP connect() failed. https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting
+  Message sending failed.
+
+But then. Testing LF on `mxtoolbox.com
+<https://mxtoolbox.com/SuperTool.aspx?action=smtp%3alino-framework.org&run=toolpage>`__
+told me "Reverse DNS is not a Valid Hostname".  More precisely "Your Reverse DNS
+Record (PTR) is not a valid host name. According to email sending best
+practices, a PTR Record should be a valid host name. If the PTR Record is not a
+valid hostname, there is a likelihood that you will experience email delivery
+issues with anti-spam services.""
+
+Finally I have a way to reproduce the problem!  Thanks, mxtoolbox :-)
+
+The problem disappeared on mxtoolbox when I changed the reverse DNS name for my
+IP address from  ``lino-framework.org.`` to ``mail.lino-framework.org.``
+
+While it works now on mxtoolbox, I am now getting the following answer from ``mx1.hot.ee`` ::
+
+  Dec 11 12:48:23 vps-ssd-1-sbg1 postfix/smtp[9360]: 118557D24: to=<xxx@hot.ee>,
+  relay=mx1.hot.ee[194.126.101.119]:25, delay=6.4, delays=0.69/0.06/5.4/0.18,
+  dsn=4.3.2, status=deferred (host mx1.hot.ee[194.126.101.119] said: 450 4.3.2
+  Service currently unavailable (in reply to RCPT TO command))
+
+Maybe their postscreen has blacklisted my server? I asked Telia to verify.
