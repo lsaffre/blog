@@ -1,0 +1,111 @@
+:date: 2019-12-13
+
+=========================
+Friday, December 13, 2019
+=========================
+
+I upgraded our own :ref:`cosi` production site, which made me discover a bug.
+
+I had reviewed the names and values for :class:`lino_xl.lib.ledger.CommonAccounts`
+(`commit <https://github.com/lino-framework/xl/commit/f3f4c54d6a49de3a37c2239416c4338252ea06a2#diff-0f305d08e906793950f4cb18ce44a786>`_)
+and :class:`lino_xl.lib.vat.VatClasses`
+(`commit <https://github.com/lino-framework/xl/commit/f3f4c54d6a49de3a37c2239416c4338252ea06a2#diff-ec62eebf936040bd8ac09a880e7d0f42>`_).
+
+As expected, this caused a series of error messages:
+
+- ledger.Account type object 'CommonAccounts' has no attribute '4400' (1 object(s) with primary key 4)
+- ledger.Account type object 'CommonAccounts' has no attribute '4550' (1 object(s) with primary key 46)
+- ledger.Account type object 'CommonAccounts' has no attribute '4600' (1 object(s) with primary key 6)
+- ledger.Account type object 'CommonAccounts' has no attribute '4512' (1 object(s) with primary key 9)
+- ledger.Account type object 'CommonAccounts' has no attribute '4511' (1 object(s) with primary key 66)
+- ledger.Account type object 'VatClasses' has no attribute '0' (2 object(s) with primary key 36, 55)
+- vat.InvoiceItem type object 'VatClasses' has no attribute '2' (39 object(s) with primary key 6, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 24, 26, 35, 37, 38, 40, 42, 43, 46, 48, 49, 50, 52, 53, 55, 56, 58, 60, 62, 63, 65, 66, 67, 69, 71)
+
+So this change requires the following code in the :xfile:`restore.py`::
+
+  from lino.api import rt
+  rt.models.ledger.CommonAccounts.old2new = {
+    '4400' : '4100', # suppliers
+    '4550' : '4800', # clearings
+    '4600' : '4500', # tax_offices
+    '4511' : '4530', # vat_returnable
+    '4512' : '4520', # vat_deductible
+    '4500' : '4200', # employees
+  }
+  rt.models.vat.VatClasses.old2new = {
+    '0' : '030', # exempt
+    '1' : '020', # reduced
+    '2' : '010', # goods
+  }
+  # our antional vat plugin
+  rt.models.eevat.VatColumns.old2new = {
+    ...
+  }
+
+Above trick requires a little change in the way Lino handles the
+:attr:`old2new <lino.core.choicelists.ChoiceList.old2new>` attribute: this map
+must get looked up before testing whether a value exists.  Because otherwise I
+cannot handle cases where a choicelist with values a, b and c changes these to
+c, d, and e.
+
+The sign_in action was no longer available when
+:attr:`is_demo_site <lino.core.site.Site.is_demo_site>` was False.
+Because UsersOverview was abstract. As a quick fix I re-made it available also when
+:attr:`is_demo_site <lino.core.site.Site.is_demo_site>` is False.
+
+:mod:`lino_xl.lib.eevat` was still using the F12 field in one of the
+:attr:`lino.core.actors.Actor.column_names`.
+
+
+New ideas
+=========
+
+Start a new Lino application "Lino Nido". (At least this is my current favourite
+for the name: a nest of Lino sites.) Nido would be a Lino application running at
+the top-level domain of a Lino server  like `mylino.net`. It manages users,
+contacts, and sites. A Site in Nido, is a Lino site running on the same machine.
+Creating a Site would call :mod:`getlino.startsite`.  Every site is owned by a
+user. Nido will want online registration. Users can ask for a snapshot of their
+site.  (Inspired by  a post  `How to Create Your Own Video Conference Server
+using Jitsi Meet on Ubuntu 18.04 LTS
+<https://www.howtoforge.com/tutorial/how-to-create-your-own-video-conference-using-jitsi-meet-on-ubuntu-1804/>`_)
+
+Before starting this, we should rename Site to Order in
+:mod:`lino_xl.lib.tickets`. There is a ticket for this.
+
+
+Publishing a calendar to mobile iPhone and Android clients
+==========================================================
+
+I did some research for :ticket:`3144`.
+
+The `sporttracks.mobi
+<https://sporttracks.mobi/blog/how-publish-your-sporttracks-calendar>`__ website
+has or had this feature implemented using an ics file.  And the comments reveal
+that they invested quite some time and encountered those same problems that made
+us stop this way some time ago:
+
+- Google loads any changes from the ics file only every 24 hours.
+- no hope to synchronize back from the mobile client to the Lino server
+
+My next idea is to extend Lino so that the calendar entries get published to a
+Google calendar using the Google calendar Python API.
+
+https://developers.google.com/calendar/quickstart/python
+
+Okay, the quickstart example is not enough because I want to publish.
+
+But the `Calendar API
+<https://developers.google.com/resources/api-libraries/documentation/calendar/v3/python/latest/>`__
+PyDocs might be interesting.
+
+I downloaded my credentials.json file and installed the required packages::
+
+  google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
+I started to play and published the result of my first session as a
+file :file:`docs/examples/google/calendar1.py` in the :ref:`book` repository.
+
+`This thread on stackoverflow
+<https://stackoverflow.com/questions/26536772/google-calendar-api-calendars-vs-calendarlist>`__
+explains the difference between "calendars" and "calendarList".
