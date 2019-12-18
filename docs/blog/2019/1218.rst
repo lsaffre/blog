@@ -1,0 +1,39 @@
+:date: 2019-12-18
+
+============================
+Wednesday, December 18, 2019
+============================
+
+Although Tonis promised to work on :ticket:`3339` today, the question "Should
+we run our own mail server or not?" didn't let me sleep. After reading `4
+Reasons to Run Your Own Email Server
+<https://danielmiessler.com/blog/4-reasons-run-email-server/>`__ I still thought
+"Let's learn how to do it", but then I read `Configure Postfix to Send Mail
+Using an External SMTP Server
+<https://www.linode.com/docs/email/postfix/postfix-smtp-debian7/>`__
+and decided to try this way as next step.
+
+The `libsasl2-modules` package was already installed.
+Changed `myhostname` from `mail.saffre-rumma.net` to simply `saffre-rumma.net`.
+Otherwise just as in the linode docs::
+
+ sudo nano /etc/postfix/sasl_passwd
+ sudo postmap /etc/postfix/sasl_passwd
+ sudo chown root:root /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+ sudo chmod 0600 /etc/postfix/sasl_passwd /etc/postfix/sasl_passwd.db
+ sudo nano /etc/postfix/main.cf
+ ll /etc/ssl/certs/ca-certificates.crt
+ sudo service postfix restart
+ sudo service postfix status
+
+
+
+I opened :ticket:`3412` and worked on it.   To make the problem more visible I
+added a fixture :fixture:`demo2` for :mod:`lino_xl.lib.lists`, which adds a list
+membership for every partner. In :ref:`amici` we now have a detail window for
+partners as well.  This seems an easy and reasonable solution for the main
+problem.  
+The :class:`lino_xl.lib.lists.MembersByList` table has two new
+(virtual) columns "Address" and "Contact details".
+:class:`lino_xl.lib.lists.MembersByPartner` is now in summary display mode, and
+list memberships now have a detail window.
