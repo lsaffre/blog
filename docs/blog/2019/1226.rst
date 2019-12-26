@@ -90,17 +90,27 @@ I changed them to what getlino does::
 
 I also noted that the apache subdir of hobbit was not writable for www-data.
 
-
+Missing ``monit`` package in Debian Buster
+==========================================
 
 In getlino I changed the debian dockerfile : FROM bullseye instead of from
 buster.  Because I started to believe that indeed monit will never be in buster.
 Which raises the question of whether and how to upgrade a production site from
-buster to bullseye.
+buster to bullseye. Or should we rather use a `backport
+<https://backports.debian.org/Instructions/>`__?
 
-https://backports.debian.org/Instructions/
+Not sure, but the following two commands in the test suite were hanging and got
+reactivated after pressing ENTER twice::
 
-Not sure, but the following two commands in the test suite were hanging forever
-but got reactivated after pressing ENTER twice:
+  . ~/lino/env/bin/activate && getlino startsite noi mynoi1 --batch --dev-repos "lino xl noi" =====
+  . ~/lino/env/bin/activate && getlino startsite cosi mycosi1 --batch --dev-repos "lino xl cosi" =====
 
-===== run in <Container: 98cf76e235> :
-. ~/lino/env/bin/activate && getlino startsite cosi mycosi1 --batch --dev-repos "lino xl cosi" =====
+
+Another bug in :mod:`lino_xl.lib.vat`
+=====================================
+
+I found and fixed a bug in :mod:`lino_xl.lib.vat` : Lino didn't compute
+correctly when you defined a  :class:`DeclarationField` with a condition on
+:attr:`DeclarationField.vat_classes` which mentioned only vat classes to be
+*excluded* (i.e. no VAT class without an "!").  Same for
+:attr:`DeclarationField.vat_columns` and :attr:`DeclarationField.vat_regimes`
