@@ -1,0 +1,25 @@
+:date: 2019-12-22
+
+=========================
+Sunday, December 22, 2019
+=========================
+
+I realized that we want, in :ref:`amici` multiple addresses for households and
+organizations as well. So we no longer change
+:attr:`lino_xl.lib.households.Plugin.partner_model` from its default value to
+`contacts.Person`.
+
+Which means that we must adapt the detail layouts for households and
+organizations.  For the latter this is trivial because Amici already has a
+custom contacts plugin.  But for households I had to choose: make a custom
+plugin for amici just for overriding the detail layout? Sounds a bit of an
+overkill.  So I decided to fix this by making :mod:`lino_xl.lib.households`
+aware of :mod:`lino_xl.lib.addresses` and :mod:`lino_xl.lib.phones` : it now
+provides a usable :class:`HouseholdDetail` when these two other plugins are also
+installed.
+
+I stumbled into a bug :ticket:`3429` (TypeError: must be str, not __proxy__).
+Happened on a recurrent event with non-empty
+:attr:`lino_xl.lib.cal.RecurrenceSet.positions` field and occurring on more than
+one weekday.  Fixed the bug and added coverage in the :ref:`book.specs.cal`
+doctest.

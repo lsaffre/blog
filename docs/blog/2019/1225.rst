@@ -1,0 +1,32 @@
+:date: 2019-12-25
+
+============================
+Wednesday, December 25, 2019
+============================
+
+I had an :message:`AttributeError: 'TableHandle' object has no attribute
+'store'` traceback on an :ref:`amici` production site.  It went away after
+:xfile:`reload_services_sh`. So it was maybe the same reason as :ticket:`3178`.
+The problem with that ticket is that we cannot reproduce it.
+
+This time the traceback helped me to understand a bug in
+:meth:`lino.core.actors.Actor._get_handle`::
+
+    @classmethod
+    def _get_handle(self, ar, hname):
+        h = self.__dict__.get(hname, None)
+        if h is None:
+            h = self._handle_class(self)
+            setattr(self, hname, h)
+            settings.SITE.kernel.setup_handle(h, ar)
+        return h
+
+What happens when an exception occurs during :meth:`setup_handle`?  This method
+should not store the handle instance in that case. Because the exception is
+caught by calling code, so the unfinished handle remains in memory and gets used
+by subsequent calls, causing tracebacks like the above one.  Now the
+:func:`setattr` is being called *after* :meth:`setup_handle`. I have some hope
+that this might fix ticket :ticket:`3178`.
+
+En passant I removed the :meth:`lino.core.site.Site.setup_layouts` methods
+because AFAICS it isn't used anywhere any more.

@@ -1,0 +1,38 @@
+:date: 2019-12-26
+
+===========================
+Thursday, December 26, 2019
+===========================
+
+Oops, I saw that my quick fix yesterday (:meth:`Actor._get_handle
+<lino.core.actors.Actor._get_handle>`) broke everything.  I can't store the
+handle instance only after setup because once a handle has been instantiated,
+subsequent calls to :meth:`_get_handle` should return that instance. They occur
+already during :meth:`setup_handle`. Which also means that this change is less
+probable to fix the problem.
+
+I worked on :ticket:`3430`. This was less easy than I had imagined.
+
+The basic plan is to change :meth:`Voucher.__str__` so that a voucher is
+displayed as journal, number and year (e.g. "SLS 1/2019") only when it is
+*registered*, and that otherwise the internal primary key is displayed
+("#12345").
+
+This change wasn't that easy because the match becomes valid only when the
+voucher state is set. Which means that we cannot call :meth:`get_default_match`
+during the process of registering when collecting the movements to generate.
+That's why I removed get_default_match and say now that `str(voucher)` or
+`str(voucheritem)` returns the match, and when collecting the movements, I set
+their match to the object itself, not a string.  Django will call :meth:`str` on
+that object when it actually stores the movement.  Is that hackerish? But it
+even fixed a problem with matches 
+that was visible in :ref:`specs.search` but
+that nobody had noticed so far.
+
+
+Miscellaneous changes en passant:
+
+- New plugin attribute :attr:`lino_xl.lib.ledger.Plugin.registered_states`.
+
+- The :class:`lino_xl.lib.vat.MovementsByDeclaration` table now also shows the
+  :term:`VAT class` of every ledger account, making diagnostics more intuitive.

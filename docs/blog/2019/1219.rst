@@ -1,0 +1,70 @@
+:date: 2019-12-19
+
+===========================
+Thursday, December 19, 2019
+===========================
+
+
+Managing addresses
+==================
+
+As a user of :ref:`amici` I entered a friend with his address (a :class:`Person
+<lino_xl.lib.contacts.Person>` with one :class:`Address
+<lino_xl.lib.addresses.Address>`).  Later I also get introduced to his wife.  I
+enter her as well, and I register a household (:class:`Household
+<lino_xl.lib.households.Household>`) with them as members.  How can I avoid to
+enter the address three times?  Answer:
+
+- add his wife as a person and their household without address
+- Go to :menuselection:`Explorer --> Contacts --> Addresses`
+- Use quick search and filter parameters to find your friend's address
+- Change the :attr:`partner <lino_xl.lib.addresses.Address.partner>` of that address from your friend to the household
+
+To make above scenariou work, I had to add filter parameters to the
+:class:`lino_xl.lib.addresses.Address` model.
+
+>>> from lino import startup
+>>> # startup('lino_book.projects.min9.settings.doctests')
+>>> startup('lino_amici.projects.herman.settings.demo')
+>>> from lino.api.doctest import *
+>>> from django.db.models import Q
+
+>>> pprint(rt.models.addresses.Addresses.parameters)
+{'address_type': <lino.core.choicelists.ChoiceListField: address_type>,
+ 'partner': <django.db.models.fields.related.ForeignKey: partner>,
+ 'place': <django.db.models.fields.related.ForeignKey: place>}
+
+>>> rt.models.addresses.Addresses.params_layout.main
+'place partner address_type'
+
+
+Learning ForeignKey fields
+==========================
+
+Until now we had one case of a :term:`learning foreign key` field : the
+:attr:`city` field of the address of a
+:class:`lino_xl.lib.countries.CountryCity` (e.g. of a partner). When you specify
+a country and then discover that the city does not yet exist, you simply leave
+the "invalid" city name in the combobox (Lino accepts it) and save the partner.
+Lino will then silently create a city of that name.
+
+Now we have a second use case: the :attr:`lino_xl.lib.contacts.Role.person`
+field is now learning.  You can see the new feature in every application with
+contacts.  For example min1. In the detail of a company, you have the
+RolesByCompany slave table. In the Person column of that table you can now type
+the name of a person that does not yet exist in the database.  Lino will create
+it silently, and you can then click on the pointer to edit more information.
+
+
+Miscellaneous
+=============
+
+Some tests in the book were still failing after my yesterday work. The
+:mod:`lino_xl.lib.lists` plugin now supports being used in an application where
+:mod:`lino_xl.lib.addresses` is not installed.
+
+The "Diving into Lino" section of the developer guide had an "Introduction" that
+contained mostly obsolete nonsense.
+
+The quick search field in the members of a partner list now searches the partner
+name. Otherwise it wasn't useful.
