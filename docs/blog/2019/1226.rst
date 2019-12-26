@@ -4,12 +4,8 @@
 Thursday, December 26, 2019
 ===========================
 
-Oops, I saw that my quick fix yesterday (:meth:`Actor._get_handle
-<lino.core.actors.Actor._get_handle>`) broke everything.  I can't store the
-handle instance only after setup because once a handle has been instantiated,
-subsequent calls to :meth:`_get_handle` should return that instance. They occur
-already during :meth:`setup_handle`. Which also means that this change is less
-probable to fix the problem.
+Cannot easily see whether invoices are registered
+=================================================
 
 I worked on :ticket:`3430`. This was less easy than I had imagined.
 
@@ -25,7 +21,7 @@ That's why I removed get_default_match and say now that `str(voucher)` or
 `str(voucheritem)` returns the match, and when collecting the movements, I set
 their match to the object itself, not a string.  Django will call :meth:`str` on
 that object when it actually stores the movement.  Is that hackerish? But it
-even fixed a problem with matches 
+even fixed a problem with matches
 that was visible in :ref:`specs.search` but
 that nobody had noticed so far.
 
@@ -36,3 +32,75 @@ Miscellaneous changes en passant:
 
 - The :class:`lino_xl.lib.vat.MovementsByDeclaration` table now also shows the
   :term:`VAT class` of every ledger account, making diagnostics more intuitive.
+
+Hobbit says "RuntimeError: populate() isn't reentrant"
+======================================================
+
+I also worked on :ticket:`3178`.
+
+Oops, I saw that my quick fix yesterday (:meth:`Actor._get_handle
+<lino.core.actors.Actor._get_handle>`) broke everything.  I can't store the
+handle instance only after setup because once a handle has been instantiated,
+subsequent calls to :meth:`_get_handle` should return that instance. They occur
+already during :meth:`setup_handle`. Which also means that this change is less
+probable to fix the problem.
+
+TIL : Having more than 20 years of experience as a developer doesn't exempt you from
+having to run the test suite before publishing a change, even if the change
+seems trivial.
+
+In the afternoon the original problem was again occurring on hobbit.  I looked
+at the error logs and saw::
+
+  [Thu Dec 26 10:38:03.007191 2019] [wsgi:error] [pid 31665] [remote
+  197.2.66.96:53356] mod_wsgi (pid=31665): Target WSGI script
+  '/usr/local/python/.../apache/wsgi.py' does not contain WSGI
+  application 'application'.
+
+The :xfile:`wsgi.py` scripts for hobbit and jane were still using the old
+approach using :xfile:`lino_local.py`. They said::
+
+  import sys ; sys.path.append('/usr/local/python')
+  from lino_local import setup_wsgi ; setup_wsgi(globals())
+
+And :file:`lino_local.py` contained::
+
+  def setup_wsgi(globals_dict,*args,**kw):
+      filename = globals_dict['__file__']
+      home_dir,tail = split(dirname(abspath(filename)))
+      assert tail == 'apache', "%r is not apache" % tail
+      setup(home_dir, *args, **kw)
+      #import django.core.handlers.wsgi
+      #globals_dict.update(application=django.core.handlers.wsgi.WSGIHandler())
+      from django.core.wsgi import get_wsgi_application
+      try:
+          application = get_wsgi_application()
+          globals_dict.update(application = application)
+      except RuntimeError as e:
+          print(e)
+          print("Wsgi application is not yet ready")
+
+I changed them to what getlino does::
+
+  import os, sys
+  sys.path.insert(0, '/usr/local/python')
+  os.environ.setdefault("DJANGO_SETTINGS_MODULE", "lino_sites.hobbit.settings")
+  from django.core.wsgi import get_wsgi_application
+  application = get_wsgi_application()
+
+I also noted that the apache subdir of hobbit was not writable for www-data.
+
+
+
+In getlino I changed the debian dockerfile : FROM bullseye instead of from
+buster.  Because I started to believe that indeed monit will never be in buster.
+Which raises the question of whether and how to upgrade a production site from
+buster to bullseye.
+
+https://backports.debian.org/Instructions/
+
+Not sure, but the following two commands in the test suite were hanging forever
+but got reactivated after pressing ENTER twice:
+
+===== run in <Container: 98cf76e235> :
+. ~/lino/env/bin/activate && getlino startsite cosi mycosi1 --batch --dev-repos "lino xl cosi" =====
