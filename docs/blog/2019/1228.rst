@@ -1,0 +1,82 @@
+:date: 2019-12-28
+
+===========================
+Saturday, December 28, 2019
+===========================
+
+One possible explanation is that we have no DMARC record.
+According to  `mxtoolbox.com <https://mxtoolbox.com/SuperTool.aspx?action=mx%3alino-framework.org&run=toolpage#>`__.
+
+On `zytrax.com <https://www.zytrax.com/books/dns>`__ I found valuable information:
+
+A `DMARC record <https://www.zytrax.com/books/dns/ch9/dmarc.html>`__
+is defined in the DNS file for our domain, i.e. at `zone.eu`.
+It allows us to indicate to a mail receiver (e.g. hot.ee):
+
+- the mechanisms used to authenticate its email (DKIM, SPF or both).
+
+- how to handle mail that fails validity checks.
+
+- Optionally request the receiver to send a feedback report, allowing the
+  sender to analyze what's happening
+
+IOW before writing a DMARC record I must setup SPF or DKIM.
+DKIM is more complex than SPF, so I choose
+`SPF <https://www.zytrax.com/books/dns/ch9/spf.html>`__.
+
+The SPF information must be defined using a standard TXT resource record (RR)
+that looks like this::
+
+  name ttl  class TXT  "v=spf1 ..."
+
+But what to put into that ``"v=spf1 ..."``?
+
+Notes from `How to Build Your SPF Record in 5 Simple Steps
+<https://www.validity.com/blog/how-to-build-your-spf-record-in-5-simple-steps/>`__:
+
+  To protect your customers, your brand, and your business from phishing and
+  spoofing attacks, you must authenticate your email. An SPF-protected domain is
+  less attractive to fraudsters and is therefore less likely to be blacklisted by
+  spam filters.
+
+  Step 1 : identify which mail servers you use to send email from your domain.
+
+  It is important to create SPF records for all the domains you control, even the
+  ones you’re not mailing from. Why? Because once you have protected your sending
+  domains with SPF, the first thing a criminal will do is try to spoof your
+  non-sending domains.
+
+
+If I understand this page well, our SPF record is simply::
+
+  name ttl  class TXT  "v=spf1 ip4:167.114.229.225 -all"
+
+Actually this means that I add "v=spf1 ip4:167.114.229.225 -all" in the zone.eu
+DNS file setup form at the right place.
+
+Now for the DMARC1 record, this is another TXT record with the following
+options::
+
+  v=DMARC1; p=quarantine
+
+Where `v=DMARC1` is mandatory and `p` must be either `none` or `quantine` or
+`reject`. For documentation about the allowed tags in a DMARC record see
+https://dmarc.org//draft-dmarc-base-00-01.html#iana_dmarc_tags
+
+The actual zone file looks as follows::
+
+  ; 2 TXT record(s)
+  lino-framework.org.		IN	TXT	"v=spf1 ip4:167.114.229.225 -all"
+  lino-framework.org.		IN	TXT	"v=DMARC1; p=quarantine"
+
+When I first tried `mxtoolbox.com
+<https://mxtoolbox.com/SuperTool.aspx?action=mx%3alino-framework.org&run=toolpage#>`__
+it still said "No DMARC Record found".  That's because it takes some time for
+the DNS record to get replicated.
+
+At a first attempt I said "v=DMARC1 p=none" instead of "v=DMARC1; p=none" and
+mxtoolbox correctly reported a Syntax Error.
+
+Oops, and I must probably say "v=spf1 ip4:167.114.229.225 ip4:193.70.18.144
+-all" instead of "v=spf1 ip4:167.114.229.225 -all" because LF uses the ovh relay
+server, so hot.ee receives my mail via this.

@@ -1,0 +1,29 @@
+:date: 2019-12-27
+
+=========================
+Friday, December 27, 2019
+=========================
+
+I fixed yet another side effect caused by :ticket:`3430`. Not only VAT
+declarations but also payment orders and bank statements were affected by the
+problem that :meth:`lino_xl.lib.ledger.Voucher.register_voucher` is now called
+after having saved the voucher. To fix these problems,
+:meth:`get_wanted_movements` and :meth:`get_payable_sums_dict` now will save the
+voucher again. This is a side effect, i.e. not very nice style. But it works,
+and I don't currently see a better implementation.
+
+I did some code cleanup : removed the ``DECLARED_IN`` constant because I no
+longer believe that we will ever want it back.
+
+The button_text for the ToggleState action was "Õ" (rather accidentally). Now it
+is "⏼" (23FC "Toggle power").
+
+The field :attr:`lino_xl.lib.ledger.Account.vat_column` is now declared in
+:mod:`lino_xl.lib.ledger` instead of being injected by :mod:`lino_xl.lib.vat`.
+The difference is rather philosophic: I think it's more natural to say that
+ledger be aware of vat, i.e. it defines those fields, knowing that they become
+dummy fields if vat isn't installed.  The inject approach is more accurate when
+you have some rather extravagant plugin that is not used often.
+
+I discovered and fixed another bug in the Estonian VAT declaration: a sales
+intracom invoice must not generate a debit and credit with a VAT amount.

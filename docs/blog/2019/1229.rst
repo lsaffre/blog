@@ -1,0 +1,136 @@
+:date: 2019-12-29
+
+=========================
+Sunday, December 29, 2019
+=========================
+
+RuntimeError: populate() isn't reentrant
+========================================
+
+Again :ticket:`3178`. This time I tried into another direction and found a more
+plausible explanation about what's happening.
+
+As usual, the problem comes only "sometimes at random moments" and disappears
+when we call :xfile:`reload_services.sh`.
+
+The last traceback in the log file is::
+
+  mod_wsgi (pid=12432): Failed to exec Python script file '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  mod_wsgi (pid=12432): Exception occurred processing WSGI script '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  Traceback (most recent call last):
+    File "/usr/local/python/lino_sites/hobbit/apache/wsgi.py", line 5, in <module>
+      application = get_wsgi_application()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/registry.py", line 83, in populate
+      raise RuntimeError("populate() isn't reentrant")
+  RuntimeError: populate() isn't reentrant
+
+But these subsequent tracebacks are not the real reason. They just mean that
+something went wrong during Django startup, and that you should scroll back in
+the log until you find that initial traceback. Our initial exception is this::
+
+  mod_wsgi (pid=12432): Failed to exec Python script file '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  mod_wsgi (pid=12432): Exception occurred processing WSGI script '/usr/local/python/lino_sites/hobbit/apache/wsgi.py'.
+  Traceback (most recent call last):
+    File "/usr/local/python/lino_sites/hobbit/apache/wsgi.py", line 5, in <module>
+      application = get_wsgi_application()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/registry.py", line 91, in populate
+      app_config = AppConfig.create(entry)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/apps/config.py", line 116, in create
+      mod = import_module(mod_path)
+    File "/usr/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+    File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/channels/apps.py", line 6, in <module>
+      import daphne.server
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/daphne/server.py", line 18, in <module>
+      asyncioreactor.install()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/twisted/internet/asyncioreactor.py", line 320, in install
+      reactor = AsyncioSelectorReactor(eventloop)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/twisted/internet/asyncioreactor.py", line 62, in __init__
+      eventloop = get_event_loop()
+    File "/usr/lib/python3.7/asyncio/events.py", line 644, in get_event_loop
+      % threading.current_thread().name)
+  RuntimeError: There is no current event loop in thread 'Dummy-1'.
+
+
+The site has :attr:`lino.core.site.Site.use_websockets` enabled, so it
+uses channels and daphne. When Django tries to import the channels plugin, that
+plugin calls `import daphne.server` which raises a :message:`RuntimeError: There
+is no current event loop in thread 'Dummy-1'` exception.
+
+But Django isn't designed to get an exception at this point.
+When the wsgi process starts up, it runs
+:meth:`django.apps.registry.Apps.populate`, which acquires an rlock and then
+does::
+
+        # populate() might be called by two threads in parallel on servers
+        # that create threads before initializing the WSGI callable.
+        with self._lock:
+            if self.ready:
+                return
+
+            # An RLock prevents other threads from entering this section. The
+            # compare and set operation below is atomic.
+            if self.loading:
+                # Prevent reentrant calls to avoid running AppConfig.ready()
+                # methods twice.
+                raise RuntimeError("populate() isn't reentrant")
+            self.loading = True
+
+            # Phase 1: initialize app configs and import app modules.
+            for entry in installed_apps:
+                if isinstance(entry, AppConfig):
+                    app_config = entry
+                else:
+                    app_config = AppConfig.create(entry)  # raises RuntimeError
+                if app_config.label in self.app_configs:
+                    raise ImproperlyConfigured(
+                        "Application labels aren't unique, "
+                        "duplicates: %s" % app_config.label)
+
+                self.app_configs[app_config.label] = app_config
+                app_config.apps = self
+
+            ...
+
+            self.ready = True
+
+So our exception causes the django.apps.registry to have ready=False and
+loading=True.
+
+I'd suggest that Django should behave differently here. The process should
+simply stop. That would be a more intuitive behaviour, and the real problem
+would no longer get hidden by the subsequent tracebacks caused by every incoming
+request. But anyway that wouldn't be a solution for our problem.
+
+I still could not reproduce it systematically. I thought that it might occur
+only when the server has been rebooted. But nope: I rebooted the server, and the
+problem was *not* there.
+
+After all these investigations I had the following idea.  We must somehow wait
+until the daphne server is ready before allowing Django to start up.  So we can
+add something like this in the :xfile:`settings.py` file::
+
+  import time
+  ok = False
+  while not ok:
+    try:
+      import channels
+      import daphne.server
+      ok = True
+    except RuntimeError as e:
+      print(e)
+      time.sleep(1)
