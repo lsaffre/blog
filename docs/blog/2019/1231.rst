@@ -1,0 +1,54 @@
+:date: 2019-12-31
+
+==========================
+Tuesday, December 31, 2019
+==========================
+
+Some mailman list members don't receive any mail
+================================================
+
+Still working on :ticket:`3339`.
+
+It seems that the easiest way to reproduce our problem it to have our own mail
+server, i.e.postfix at LF does not use a relay. Because then we can at least see
+what happens.  And this is what happens when I try to send something to any
+recipient `@hot.ee`::
+
+  Dec 30 04:39:52 myhostname-1 postfix/smtp[5611]: 1E78DAC52:
+  to=<lucsaffre@hot.ee>, relay=mx1.hot.ee[194.126.101.119]:25, delay=6.2,
+  delays=0.02/0.05/6.1/0.1, dsn=4.3.2, status=deferred (host
+  mx1.hot.ee[194.126.101.119] said: 450 4.3.2 Service currently unavailable (in
+  reply to RCPT TO command))
+
+The system admin of hot.ee thinks that maybe I am greylisted and suggests that I
+increase my timeout, iow to be more patient when waiting for their answer.
+
+As explained `here
+<https://serverfault.com/questions/24121/understanding-a-postfix-log-file-entry>`_::
+
+  # Message delivery time stamps
+  # delays=a/b/c/d, where
+  #   a = time before queue manager, including message transmission
+  #   b = time in queue manager
+  #   c = connection setup including DNS, HELO and TLS;
+  #   d = message transmission time.
+
+So the "connection setup including DNS, HELO and TLS" took 6.1 seconds.  I
+looked for configuration settings that might instruct postscript to stop
+waiting::
+
+  $ sudo postconf | grep timeout
+  connection_cache_protocol_timeout = 5s
+  lmtp_connect_timeout = 0s
+  postscreen_upstream_proxy_timeout = 5s
+  smtpd_upstream_proxy_timeout = 5s
+  # (showing only entries with less than 10s)
+
+I looked up the meaning of those settings in the `docs
+<http://www.postfix.org/postconf.5.html>`__ but could not find anything that
+looks worth a test.
+
+
+I verified that our server is not listed at spamhaus::
+
+  https://www.spamhaus.org/query/ip/167.114.229.225

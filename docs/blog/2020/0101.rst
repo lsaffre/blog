@@ -1,0 +1,26 @@
+:date: 2020-01-01
+
+==========================
+Wednesday, January 1, 2020
+==========================
+
+In :mod:`atelier.invlib.tasks` there was a bug causing a traceback under Python
+3 when creating the first entry of a new year.  I fixed this, and also removed
+two places where it says::
+
+      if six.PY2:
+          content = content.encode('utf-8')
+
+I removed these additional tests, and dependency to `six`.
+
+
+I had a traceback::
+
+  File ".../site-packages/localflavor/generic/checksums.py", line 2, in <module>
+    from django.utils import six
+
+  ImportError: cannot import name 'six' from 'django.utils' (.../site-packages/django/utils/__init__.py)`
+
+Which I fixed using::
+
+  $ pip install -U django-localflavor
