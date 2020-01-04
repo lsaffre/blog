@@ -1,0 +1,68 @@
+:date: 2020-01-04
+
+=========================
+Saturday, January 4, 2020
+=========================
+
+  $ python manage.py dump2py 20200104
+  $ ./pull.sh
+
+
+As expected, there is some change in the database::
+
+  $ python manage.py dump2py -o t
+  Traceback (most recent call last):
+  ...
+  django.db.utils.OperationalError: (1054, "Unknown column 'comments_comment.private' in 'field list'")
+
+I try using Django migrations::
+
+  $ python manage.py makemigrations
+  Started manage.py makemigrations (using lino_sites.jane.settings) --> PID 21156
+  Traceback (most recent call last):
+    File "manage.py", line 10, in <module>
+      from lino_local import manage ; manage(__file__)
+    File "/usr/local/python/lino_local.py", line 10, in manage
+      execute_from_command_line(sys.argv)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/__init__.py", line 381, in execute_from_command_line
+      utility.execute()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/__init__.py", line 375, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/base.py", line 323, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/base.py", line 364, in execute
+      output = self.handle(*args, **options)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/base.py", line 83, in wrapped
+      res = handle_func(*args, **kwargs)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/core/management/commands/makemigrations.py", line 87, in handle
+      loader = MigrationLoader(None, ignore_no_migrations=True)
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/db/migrations/loader.py", line 49, in __init__
+      self.build_graph()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/db/migrations/loader.py", line 206, in build_graph
+      self.load_disk()
+    File "/mnt/disk/jane/env3/lib/python3.7/site-packages/django/db/migrations/loader.py", line 108, in load_disk
+      migration_module = import_module(migration_path)
+    File "/usr/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+    File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+    File "/usr/local/python/lino_sites/jane/migrations/users/0002_user_user_type.py", line 9, in <module>
+      class Migration(migrations.Migration):
+    File "/usr/local/python/lino_sites/jane/migrations/users/0002_user_user_type.py", line 19, in Migration
+      field=lino.core.choicelists.ChoiceListField(blank=True, choicelist=lino.modlib.users.choicelists.UserTypes, choices=[(lino.modlib.users.choicelists.UserType('000', 'Anonymous', lino_noi.lib.noi.user_types.Anonymous, 'anonymous', authenticated=False, readonly=True), '000 (000 (Anonymous))'), (lino.modlib.users.choicelists.UserType('100', 'Customer', lino_noi.lib.noi.user_types.Customer, 'customer'), '100 (100 (Customer))'), (lino.modlib.users.choicelists.UserType('200', 'Contributor', lino_noi.lib.noi.user_types.Contributor, 'contributor'), '200 (200 (Contributor))'), (lino.modlib.users.choicelists.UserType('400', 'Developer', lino_noi.lib.noi.user_types.Devloper, 'developer'), '400 (400 (Developer))'), (lino.modlib.users.choicelists.UserType('900', 'Administrator', lino_noi.lib.noi.user_types.SiteAdmin, 'admin'), '900 (900 (Administrator))')], default=None, help_text='The user_type of a user is what defines her or his permissions.', max_length=20, verbose_name='User type'),
+  AttributeError: module 'lino_noi.lib.noi.user_types' has no attribute 'Devloper'
+  Done manage.py makemigrations (PID 21156)
+
+So I do it the old way::
+
+  $ mv migrations migrations.old
+  $ python manage.py run 20200104/restore.py
+
+
+
+
+TypeError: Group() got an unexpected keyword argument 'private'

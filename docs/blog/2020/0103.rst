@@ -4,11 +4,19 @@
 Friday, January 3, 2020
 =======================
 
-:ref:`presto`  `build #32
-<https://travis-ci.org/lino-framework/presto/builds/632035378>`_ failed with
-:message:`ModuleNotFoundError: No module named 'lino_book'`.  This was caused by
-some obsolete approach for filling intersphinx in the :xfile:`conf.py` file.
-I compared with the :xfile:`conf.py` file in :ref:`amici`.
+No module named 'lino_book'
+===========================
+
+Build `#32 <https://travis-ci.org/lino-framework/presto/builds/632035378>`_ in
+:ref:`presto` failed with :message:`ModuleNotFoundError: No module named
+'lino_book'`.  I guess that this is caused by some obsolete approach for filling
+intersphinx in the :xfile:`conf.py` file. I compared with the :xfile:`conf.py`
+file in :ref:`amici`.
+
+But that wasn't enough (as build `#34
+<https://travis-ci.org/lino-framework/presto/builds/632146350>`__ shows).  Yes,
+indeed, it seems that we do need a PyPI release of book just for making its docs
+available to intersphinx!
 
 Challenges when preparing a release in a team
 =============================================
@@ -22,14 +30,14 @@ this wouldn't be a problem, but they also asked us to make sure that the upgrade
 "will not cause any problems". And it is interesting to analyze the challenges
 of this new situation.
 
-I have set up a preview site, and Hamza has now access to both the production
-and the preview site.  HE has been working 5 hours on this yesterday in order to
-find differences. He has created and updated a Google Drive document "ÖSHZ Eupen
-20.2.0 release notes". I had started release notes in German long time ago in a
-Sphinx document :ref:`weleup.19.11.0`. But I had no time to explain to Hamza all
-the bells and whistles of using a Sphinx document. Hamza decided to use a table,
-but I am afraid that this is not readable for the customer. We must rather use a
-format as in :ref:`weleup.19.11.0`.
+I have set up a preview site and a migration script, and Hamza has now access to
+both the production and the preview site.  He has been working 5 hours on this
+yesterday in order to find differences. He has created and updated a Google
+Drive document "ÖSHZ Eupen 20.2.0 testing report". I had started release notes in
+German long time ago in a Sphinx document :ref:`weleup.19.11.0`. But I had no
+time to explain to Hamza all the bells and whistles of using a Sphinx document.
+Hamza decided to use a table, but I am afraid that this is not readable for the
+customer. We must rather use a format as in :ref:`weleup.19.11.0`.
 
 I started a documentation page about :ref:`dev.changes`
 
@@ -47,7 +55,37 @@ vocabulary page with a few dozen of entries would be enough to make everybody
 happy.  I vaguely remember that I once even started such a page, but I didn't
 find it right now.
 
-Questions to Gerd:
+Remarks to Gerd:
 
-- Would you agree to replace Dutch by English on your site?
-- Would you agree to get the release notes in English only?  Or in French only?
+- I suggest to replace Dutch by English on your site.
+
+
+We started a new document :ref:`weleup.changes.2020`.
+
+Release notes for :ref:`weleup` are no longer done in German but in English.
+The customer can ask for a summary or presentation in German.
+
+
+no module named lino_care.lib.care.workflows
+============================================
+
+Build `#1637.2 <https://travis-ci.org/lino-framework/book/jobs/632146357>`_ in
+book failed with sphinx.errors.SphinxWarning:
+:message:`[autosummary] failed to import 'lino_care.lib.care.workflows': no module named lino_care.lib.care.workflows`
+
+I guess that this is just because the PyPI version of care is obsolete. The
+:ref:`care` project fell asleep more than a year ago because the application
+carrier went out of money.  It is still a part of the book.  I might move the
+relevant docs files from the book into the care repository and let the project
+sleep in peace. But it is less work to just make a pro-forma release of care.
+
+Advancing in :ref:`cosi`
+========================
+
+I upgraded our :ref:`cosi` production site and tested the new :term:`preliminary
+transactions` feature. It works, and (finally!) Lino gives the same numbers in
+our January 2018 VAT declaration as those we declared using TIM.
+
+One non-blocking issue : the new field
+:attr:`lino_xl.lib.ledger.Journal.preliminary`  was not yet included in the
+detail view.
