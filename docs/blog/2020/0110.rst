@@ -1,0 +1,24 @@
+:date: 2020-01-10
+
+========================
+Friday, January 10, 2020
+========================
+
+I found and fixed another bug in :mod:`lino_xl.lib.vat`:  Now that we inverted
+the booking direction of :term:`returnable VAT`, it's the vat_account of a VAT
+rule (not the returnable_vat_account) that must be optional. And as a
+consequence we do not need the separate returnable_vat boolean any more.
+
+The :meth:`lino_xl.lib.ledger.PeriodRange.get_period_filter` now automatically
+adds a filter to ignore preliminary movements when a starting period is given.
+Note that this required a change to the method's signature.
+
+There were two bugs in :mod:`lino_book.projects.chatter` : :ticket:`3460` and
+:ticket:`3462`.
+
+I opened and did :ticket:`3459` (Move calendar view from "cal" to a separate
+plugin :mod:`lino_xl.lib.calview`).
+
+One consequence for data migration: DailyPlannerRow has moved from cal to calview
+
+En passant I removed Python 2 code whenever I saw it.

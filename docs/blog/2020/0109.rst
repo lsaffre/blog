@@ -1,0 +1,206 @@
+:date: 2020-01-09
+
+=========================
+Thursday, January 9, 2020
+=========================
+
+I released XL to PyPI in order to advance with :ticket:`2810` (Migrate Rumma &
+Ko accounting to Cosi).
+
+I manually reviewed and changed the following cases  in Jane that caused problems during the last migration
+because of :ticket:`2049` (Users don't need to be partners in Noi)::
+
+  202001-04 14:12:49 WARNING [dpy 21382 140330224551744] : Abandoning with 34 unsaved instances:
+  - tickets.Ticket Person matching query does not exist. (3 object(s) with primary key 1741, 1789, 2786)
+  - tickets.Ticket {'end_user': ['Person instance with partner_ptr 302 does not exist.']} (6 object(s) with primary key 2029, 2030, 2031, 2032, 2139, 2197)
+  - tickets.Ticket {'end_user': ['Person instance with partner_ptr 214 does not exist.']} (1 object(s) with primary key 2246)
+  - tickets.Ticket {'end_user': ['Person instance with partner_ptr 223 does not exist.']} (2 object(s) with primary key 2659, 2691)
+  - tickets.Ticket {'end_user': ['Person instance with partner_ptr 331 does not exist.']} (1 object(s) with primary key 2891)
+  - github.Commit {'ticket': ['Ticket instance with id 2197 does not exist.']} (1 object(s) with primary key 2576)
+  - github.Commit {'ticket': ['Ticket instance with id 2691 does not exist.']} (2 object(s) with primary key 5633, 5635)
+  - tickets.Link {'parent': ['Ticket instance with id 2197 does not exist.']} (1 object(s) with primary key 184)
+  - working.Session Ticket matching query does not exist. (17 object(s) with primary key 6232, 6388, 7429, 7502, 7503, 7504, 7505, 7988, 8232, 8302, 8418, 10529, 10531, 10709, 10711, 11175, 117
+  27)
+
+
+Milestone March
+===============
+
+I record our yesterday's standup meeting here because it has historic value.
+During the next months we will change some priorities.
+
+Luc: Hi. I cannot talk because I'm sitting with Iiris in the bus to Pärnu, the bus has WiFi but I forgot my headset
+
+Okay I now agree: let's remove Ciao and Amici from the list of hosted
+applications.  Because it is difficult to explain why they are useful. So we
+need only the following demo sites :
+
+- Così using ExtJS
+- Noi using React
+- later maybe Voga and Welfare
+
+Tonis: Maybe react for cosi as well, so 3 sites.
+
+Luc: Yes, the exact setup must be flexible anyway. For example there will be at least an estonian and a belgian cosi
+
+Let me focus on Cosi while you focus on Noi.
+
+For March I would like to have an "impressing" Lino Noi that I can present to
+some people in Tallinn for my project "Gaudete".
+Slogan : "Discuss as easily as on Facebook, but find back your discussions when
+you need them."
+
+Tonis: Mmhm, so definitely we'll need to have something like zulip for chat. Also need
+to get the websockets working on react, otherwise it doesn't work at all...
+
+Luc: I am not convinced that we need desktop notifications in the beginning.
+Rather just a dynamic "refresh" button at different places that indicates
+whether there is something to refresh.
+
+Tonis: I think we should have some nestable comments / replies.
+
+Should have another look at zulip, see what ordering they're doing.
+
+It should be that newest at the top of the ui. But if you have a reply, should
+the reply be under the parent comment, or on top...  if that's understandable.
+reddit has it so the parent is always on top, as you're usually reading a
+thread for the first time,  IIRK twitter and perhaps zulip have it the other
+way, as you're checking back on a thread....
+
+Luc:
+
+(We should do more) regular brainstormings on what needs to be changed in Noi.
+My first spontaneous list of ideas:
+
+- "Recent comments" : (a) optimize the design (b) add a "Reply link to every comment
+- add upvotes and downvotes as on reddit
+- add a new kind of views: additionally to the existing "grid" and "detail" views, Lino should introduce a "navigate" view.
+
+"Navigate" view:
+
+- current detail view (e.g. https://hobbit.saffre-rumma.net/#/api/tickets/Tickets/411) shows the ticket in "ready to Edit" mode.
+
+- the new navigate view (e.g. https://hobbit.saffre-rumma.net/t/411) shows the ticket in "navigate" mode where a meaningful and intuitive overview is the primary goal. Customized per model.
+
+I want to get the Gaudete people to start a Noi site. I believe that we can do it. Let's put all our energy into these two projects (Noi and Cosi).
+I'd even say : If I cannot convince the Gaudete people in March, then I give up Lino.
+
+Tonis: Gaudete are the church group or?
+
+Luc: yes.
+I'll try to describe the needs. but anyway it will be dynamic requirements.
+First important thing is that you can discuss using your mobile phone. some of them never use a desktop.
+But the admins do.
+Another important new thing is this "navigation" view. (Or "Surfer" view... I am not yet sure bout the name).
+Not sure whether that customized view per model should be done using element trees or rather using jinja templates.
+The goal of these navigation views is that users can share via url a web page about a given ticket (or user,  calendar entry, comment, ...) so that the content makes sense to external surfers.
+
+Tonis: Mmhm, we have a perma-link for each item, but there's no share button... might be worth having.
+
+Luc: a share button can come later. i think that most people are able to share a link using their browser. imho...
+
+I imagine that navigate view as follows:
+
+1) a model mixin "Surfable" with a method get_html_page() and a class attribute "surf_url_root".
+And another instance method get_id()
+
+Oops we arrive in Tallinn...
+
+
+weleup : Final sprint for coming site upgrade
+=============================================
+
+I analyzed the following warnings during data migration:
+
+- aids.IncomeConfirmation ['Datumsbereich 01.03.17...14.10.17 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.03.17...13.10.17.'] (2 object(s) with primary key 6112, 6111)
+- aids.IncomeConfirmation ['Datumsbereich 01.03.17...15.10.17 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.03.17...13.10.17.'] (1 object(s) with primary key 5382)
+- aids.IncomeConfirmation ['Datumsbereich 01.02.09...15.04.18 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.02.09...14.04.18.'] (1 object(s) with primary key 5428)
+- aids.IncomeConfirmation ['Datumsbereich 22.12.16...14.05.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 22.12.16...13.05.19.'] (1 object(s) with primary key 5534)
+- aids.IncomeConfirmation ['Datumsbereich 06.04.19...06.04.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.03.19...10.03.19.'] (2 object(s) with primary key 5626, 5881)
+- aids.IncomeConfirmation ['Datumsbereich 01.05.18...01.05.18 au<C3><9F>erhalb der Laufzeit des Beschlusses 08.09.18....'] (1 object(s) with primary key 6030)
+- aids.IncomeConfirmation ['Datumsbereich 03.09.19...03.09.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 16.08.19...02.09.19.'] (1 object(s) with primary key 6043)
+- aids.IncomeConfirmation ['Datumsbereich 05.09.19...01.11.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 05.09.19...31.10.19.'] (1 object(s) with primary key 6218)
+- aids.IncomeConfirmation ['Datumsbereich 14.07.18...26.10.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 13.07.18...14.09.18.'] (2 object(s) with primary key 6260, 6261)
+- aids.RefundConfirmation ['Datumsbereich 15.02.19...15.02.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 5904)
+- aids.RefundConfirmation ['Datumsbereich 15.03.19...15.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 5989)
+- aids.RefundConfirmation ['Datumsbereich 19.03.19...19.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 5990)
+- aids.RefundConfirmation ['Datumsbereich 18.03.19...18.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 14.03.19...17.03.19.'] (1 object(s) with primary key 5997)
+- aids.RefundConfirmation ['Datumsbereich 18.03.19...18.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.06.15...12.03.19.'] (1 object(s) with primary key 6002)
+- aids.RefundConfirmation ['Datumsbereich 20.03.19...20.03.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 6008)
+- aids.RefundConfirmation ['Datumsbereich 04.04.19...04.04.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 6062)
+- aids.RefundConfirmation ['Datumsbereich 09.05.19...10.05.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 6167)
+- aids.RefundConfirmation ['Datumsbereich 09.05.19...09.05.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 6168)
+- aids.RefundConfirmation ['Datumsbereich 05.07.19...05.07.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 01.08.19....'] (1 object(s) with primary key 6342)
+- aids.RefundConfirmation ['Datumsbereich 12.11.19...12.11.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 12.01.16...01.10.19.'] (1 object(s) with primary key 6680)
+- aids.RefundConfirmation ['Datumsbereich 25.11.19...25.11.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 02.09.18...12.11.19.'] (1 object(s) with primary key 6717)
+- aids.RefundConfirmation ['Datumsbereich 05.12.19...05.12.19 au<C3><9F>erhalb der Laufzeit des Beschlusses 12.01.16...01.10.19.'] (1 object(s) with primary key 6767)
+
+These warnings were normal because I must adapt the value of the
+:attr:`aids.no_date_range_veto_until` plugin config. I now changed it from::
+
+        yield ('aids', 'no_date_range_veto_until', 5343)
+
+to::
+
+        yield ('aids', 'no_date_range_veto_until', 6767)
+
+Tonight Hamza or I will run :xfile:`pull.sh` followed by another
+:xfile:`initdb_from_prod.sh`.
+
+I reviewed the release notes.
+
+
+RelatedObjectDoesNotExist: Voucher has no journal
+=================================================
+
+Migrate our accounting from TIM to Lino
+=======================================
+
+I entered all sales invoices 2018.
+
+Next problem is in June : ost EL firmadelt (purchase of services from other EU
+countries).  The base amount should come in field 1, and the VAT amount in 4.1
+and 5.  Everything is correct except that the base amount is not shown in field
+1.
+
+
+How to handle requests via the IP address
+=========================================
+
+When the server's IP address is not listed in :setting:`ALLOWED_HOSTS`, Lino
+refuses to answer.  But one of our production site is obviously being monitored
+by some unknown third-party robots who use the IP address.  These third-party
+robots are e.g. 35.245.221.30 (IP owner is Google) or 34.238.127.187 (Amazon).
+The special thing with this site is that Lino runs on the main domain.  We
+usually have Lino on some subdomain, so that nginx or apache handle such
+requests.
+
+Actually it's correct that Lino refuses to answer these requests. But we don't
+want it to send an email "Invalid HTTP_HOST header: '95.142.174.49'. You may
+need to add '95.142.174.49' to ALLOWED_HOSTS." for each of them. I opened
+:ticket:`3457`.
+
+But the good solution is to change the DNS config. We don not yet want a
+`solution like this one
+<https://wellfire.co/learn/multi-tennancy-in-django-using-subdomains/>`__ where
+a Django app analyzes the subdomain.
+
+
+Estonian VAT declaration
+========================
+
+The base amount of intracom purchases must go to field 1.  So the field 1 in
+Estonian VAT declaration is a mixture of sales (with regime private or subject)
+and purchases (with regime intracom).  So we need to introduce two intermediate
+fields 1a and 1b that are not declared to the tax office, and field 1 becomes a
+sum of those fields.
+
+I found and fixed a bug in the general vat plugin : inversed sums (fieldname
+prefixed with -) were not yet correctly computed.
+
+Idem for field 2 for operations with reduced vat rate.
+
+And a third bug for today. A subtle one:  invoices with returnable VAT booked
+the couple movements (one + and one -) into the wrong direction. The amount is
+added to the vat_due account and subtracted from the vat_returnable_account (and
+not the opposite).
