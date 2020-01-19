@@ -1,0 +1,83 @@
+:date: 2020-01-15
+
+===========================
+Wednesday, January 15, 2020
+===========================
+
+
+I published a series of miscellaneous changes for different tickets in lino, xl, book :
+
+- atelier year blog index no longer shows a calendar when there are less than 10 blog entries
+- more changes in publisher (not yet finished but tests pass)
+- Estonian translations
+- remove py2 code
+
+
+The Publisher and CMS functionality
+===================================
+
+Should we start to use Lino for CMS? It seems that Tonis' sceptical reaction on
+Monday was right.  The publisher plugin becomes less urgent.
+
+I realized yesterday that even grassroot movements *do not* want a solution that
+integrates "outer" and "inner" functionality.
+
+- "outer" functionality ("front office") means CMS, blogs, news,... : everything
+  about your organization's "public image"
+
+- "inner" functionality ("back office") is e.g. contacts, calendar, groups :
+  everything about your actual functioning.
+
+Outer and inner should never be in a same database. First of all for security
+reasons. But also because these are different parts of an organisation.
+Even if some workers work in both sides, they neither need nor want an
+"automatic" link between both sides. Of course there is communication between
+both sides.
+
+For example in a webshop application there is quite outer and inner part is quite
+connected.  When a new user registered in
+
+For example a calendar
+
+Note that some plugins (e.g. comments and notifications) make sense for both
+type of applications.
+
+Until now Lino has experience only with "back office" applications.
+
+- Publish calendar entries and blog entries to Facebook
+
+- Notify participants of a published calendar entry about changes in the
+  announcement (date, time, place, ...)
+
+The Gaudete project is not yet ready for an inner application.
+They actually just need a website (and a webmaster and a hosting provider).
+
+It is probably utopical to believe that Lino will replace Wordpress soon.
+
+
+- Luc will finish his started work on plugins, then focus on Cosi
+
+- Tonis and Hamza focus on Noi. The goal for March is to make Lino Noi "convincing".
+  Probably the first thing is to get our team to use Jane for chatting and commenting.
+  Desktop notifications and websockets is almost ready.
+  One issue in the database schema is to `Add reactions to comments`_
+
+Add reactions to comments
+=========================
+
+The important difference between comments and notifications: a notification is
+temporary text to to be deleted when the recipient has seen it. A comment is a
+text written by one user about a topic, and we want to keep this text forever in
+the database.
+
+Notifications are either desktop notifications or email notifications.
+Notifications a exist in the database because when you submit a comment, you
+don't want to wait until an email has been sent to all observers.
+
+We need a new model comments.Reaction(), which represents the reaction of a user
+to a given comment.
+
+
+The "My tickets needing feedback"
+"My tickets waiting for feedback"
+tables will become useless.

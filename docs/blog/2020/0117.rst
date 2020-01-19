@@ -1,0 +1,35 @@
+:date: 2020-01-17
+
+========================
+Friday, January 17, 2020
+========================
+
+Make lino-book installable via pip
+===================================
+
+`This failure <https://travis-ci.org/lino-framework/presto/builds/638048589>`__
+has been there for a while already, seems that I must take it::
+
+  ERROR: Packages installed from PyPI cannot depend on packages which are not also hosted on PyPI.
+  lino-book depends on django-mailbox@ git+https://github.com/cylonoven/django-mailbox
+
+Yes, Presto's travis file installs the book using pip.  No normal guy wants that
+because the purpose of the book is to explain and test.
+
+But the presto docs are a first case of something that seems normal:
+a package not covered by the book, and whose docs
+do intersphinx links to the book.
+The lino_presto package itself
+doesn't require lino_book to be installed.
+But Sphinx gets the URL of the book by importing it
+and asking for its :envvar:`intersphinx_url`.
+We what to have that URL in a central place.
+I don't see any better way.
+
+So I moved the django-mailbox dependency from the book's :xfile:`setup_info.py`
+to :file:`requirements-include.txt`.  Also had to release a new PyPI version of
+the book, of course.
+
+Note that the current approach doesn't check whether we have a local clone of
+Tonis' django-mailbox, and that this git repo isn't managed by `getlino
+configure --clone`.  I am not sure whether this is a problem.

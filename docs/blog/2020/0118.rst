@@ -1,0 +1,34 @@
+:date: 2020-01-18
+
+==========================
+Saturday, January 18, 2020
+==========================
+
+:ref:`cosi` is alomost ready for a demo to Taavi. I was already recording a
+screen cast. But during the session I discovered :ticket:`3470` and started
+working on it...
+
+The :class:`lino_xl.lib.ledger.ExpectedMovements` table and its subclasses are
+virtual tables, and each row is a volatile :class:`DueMovement <lino_xl.lib.ledger.DueMovement>`
+instance. That's why its :meth:`get_row_by_pk
+<lino.core.actors.Actor.get_row_by_pk>` is rather tricky.
+It needs to know the voucher because the D/C of a DueMovement depends on the "target".
+
+The request itself was perfect::
+
+  in request POST /api/finan/SuggestionsByBankStatement (data: <QueryDict: {
+    'pv': ['', '12.06.2019', '', '6', '', '', '', ''],
+    'lv': ['1579407249.1660907'],
+    'mk': ['263'], 'mt': ['42'],
+    'query': ['brec'], 'an': ['do_fill'],
+    'sr': ['921']}>)
+
+The problem was a bug in the :mod:`lino.core.requests`:  The
+:meth:`set_selected_pks` method (which calls :meth:`get_row_by_pk
+<lino.core.actors.Actor.get_row_by_pk>`) is called when the
+:attr:`master_instance` has been set.
+
+
+Another bug was that :class:`lino.core.actions.DeleteSelected` did not set
+`refresh_all` to True.  That's a bit strange, it even explicitly said True.  I
+can't imagine why we were saying this.
