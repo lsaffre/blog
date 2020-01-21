@@ -1,0 +1,18 @@
+:date: 2020-01-20
+
+========================
+Monday, January 20, 2020
+========================
+
+I realized that Lino doesn't yet generate annual closings (Profit/Loss
+declarations) and opened :ticket:`3476`.  At the moment, we would have to make a
+manual misc transaction that  puts the balance of all costs and incomes accounts
+back to 0 at the end of a fiscal year.
+
+As a first step I opened and did :ticket:`3475` (Make Declaration a mixin in ledger):
+The current VAT declaration contains functionality that we will also want for
+income declarations and employment declarations.  Their common logic is to
+"observe" a given period range.
+
+As a side effect, the :class:`lino_xl.lib.ledger.Payable` mixin had to move from
+sepa to ledger.  Which makes sense and confirms the idea.
