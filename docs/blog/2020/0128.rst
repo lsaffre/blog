@@ -1,0 +1,57 @@
+:date: 2020-01-28
+
+=========================
+Tuesday, January 28, 2020
+=========================
+
+Until today the state field of a voucher had one global choicelist for all
+voucher types (:class:`lino_xl.lib.ledger.VoucherStates`).  This same list of
+allowed voucher states was used for sales invoices, purchase invoices, bank
+statements, vat declarations, all types of orders, and whatever type of voucher
+we may imagine in the future. That was actually a design flaw because the
+workflow of vouchers can potentially vary.  For example the "signed" state isn't
+actually used by any of our applications.  And more urgently, for the presto
+project it now turns out that we need a customized workflow for orders.  So I
+decided to dive into this and fix it.  Two days of work.
+
+I considered the possibility to make Voucher abstract. But after some
+experimenting I can confirm once more that this would be (1) not trivial and (2)
+bad. Because a great fundamental feature is that Lino supports configurations
+where sales invoices are stored as :class:`vat.AccountInvoice`, or where
+purchase invoices are stored  as :class:`sales.VatProductInvoice`.
+
+Changes:
+
+- The state field of a voucher is no longer defined in the Voucher model (the
+  MTI parent for all implementing voucher models) but in the implementing models
+  themselves.  This will cause some fun when migrating existing data (mostly
+  rumma and weleup afaics). At the SQL level, the state field of a voucher is no
+  longer stored in the ledger_voucher table but in sales_vatproductinvoice,
+  finan_bankstatement etc.
+
+- When you implement a Registrable, you must define yourself a field
+  named "state", and that field must be a ChoiceListField on a choicelist that is
+  a subclass of VoucherStates.
+
+- A Voucher is no longer Registrable. All implementing subclasses must declare
+  themselves whether they also inherit from Registrable.  At the moment they all
+  do so, and I cannot imagine any useful case where we would want a voucher type
+  that is not also registrable.  But theoretically it is possible.
+
+
+This change was a bit tricky because the diagram for vouchers is complex. For
+example here is inheritance diagram for :class:`VatProductInvoice
+<lino_xl.lib.sales.VatProductInvoice>`:
+
+
+ .. inheritance-diagram:: lino_xl.lib.sales.models.VatProductInvoice
+    :parts: 1
+    :top-classes: lino.core.model.Model
+
+
+I had a reproducible AttributeError "'TableHandle' object has no attribute
+'store'" and added a test in ext_renderer so that it gives a more useful
+exception messages.  Same for when it has no attribute 'list_layout'". And maybe
+more important: Actor._get_handle now logs the exception detail when
+setup_handle fails. That's the traceback we have been looking for in
+:ticket:`3172` and :ticket:`1173`. Maybe also `3178`.
