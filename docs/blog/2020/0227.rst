@@ -1,0 +1,72 @@
+:date: 2020-02-27
+
+===========================
+Thursday, February 27, 2020
+===========================
+
+.. include:: /../docs/shared/include/defs.rst
+
+>>> from lino import startup
+>>> startup('lino_book.projects.lydia.settings.doctests')
+>>> from lino.api.doctest import *
+
+We simulate an incoming request:
+
+>>> ar = rt.login("robin", renderer=settings.SITE.kernel.default_renderer)
+
+We create a sub-request, i.e. another action request object which represents
+"the action of clicking the Insert button". Note that this object just
+*describes* the action, it doesn't actually execute it.
+
+>>> sar = rt.models.cal.Events.insert_action.request_from(ar)
+>>> sar.known_values = dict(start_date=dd.today())
+
+Now we ask Lino to generate the HTML for a button that would execute our action:
+
+>>> e = sar.ar2button()
+
+We get an ElementTree object (see `The lxml.etree Tutorial
+<https://lxml.de/tutorial.html>`__ for documentation about these):
+
+>>> e  #doctest: +ELLIPSIS
+<Element a at ...>
+
+We can use the
+:func:`etgen.html.tostring` function to see how it would be rendered as HTML.
+
+>>> from etgen.html import tostring
+>>> tostring(e)  #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+'<a style="vertical-align:-30%;" title="Open a ... &quot;record_id&quot;: null })"><img src="/static/images/mjames/add.png" alt="add"/></a>'
+
+This is a long and complicated chunk of HTML!  Let's cut it into smaller pieces.
+Basically it is just an ``<a>`` element around an |insert| icon without text.
+
+>>> e.tag
+'a'
+>>> e.text
+>>> [c.tag for c in e]
+['img']
+>>> tostring(e[0])
+'<img src="/static/images/mjames/add.png" alt="add"/>'
+
+The complicated part is the ``href``:
+
+>>> print(e.get('href'))  #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+javascript:Lino.cal.Events.insert.run(null,{
+  "base_params": { "start_date": "23.05.2015" },
+  "data_record": { "data": {
+    "amount": null,
+    "disabled_fields": {
+      "amount": true, "assign_to_me": true, "build_time": true, "calendar": true, "created": true, "duration": true, "modified": true, "reset_event": true, "take": true
+    },
+    "end_time": null, "event_type": null, "event_typeHidden": null, "project": null,
+    "projectHidden": null, "start_date": "23.05.2015", "start_time": "...",
+    "summary": "", "user": "Robin Rood", "userHidden": 1
+  },
+  "phantom": true, "title": "New Calendar entry" },
+  "param_values": {
+    "event_type": null, "event_typeHidden": null, "presence_guest": null,
+    "presence_guestHidden": null, "project": null, "projectHidden": null,
+    "room": null, "roomHidden": null, "user": null, "userHidden": null
+  }, "record_id": null
+})

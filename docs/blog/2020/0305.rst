@@ -1,0 +1,24 @@
+:date: 2020-03-05
+
+=======================
+Thursday, March 5, 2020
+=======================
+
+I was about to commit my work of the last weeks, but then discovered that the
+daily links in monthly planner are broken.
+
+- from navigator (works):
+  javascript:Lino.calview.DailyView.detail.run("ext-comp-1266",{ "base_params": {  },
+  "param_values": { "event_type": null, "event_typeHidden": null, "presence_guest": null, "presence_guestHidden": null, "project": null, "projectHidden": null, "room": null, "roomHidden": null, "user": null, "userHidden": null },
+  "record_id": -1 })
+
+- from monthly planner cell (doesn't work):
+  javascript:Lino.calview.DailyView.detail.run("ext-comp-1269",{ "base_params": { "mk": 0 },
+  "param_values": { "event_type": null, "event_typeHidden": null, "presence_guest": null, "presence_guestHidden": null, "project": null, "projectHidden": null, "room": null, "roomHidden": null, "user": null, "userHidden": null },
+  "record_id": [ "18.05.2015", "19.05.2015", "20.05.2015", "21.05.2015", "22.05.2015", "23.05.2015", "24.05.2015" ] })
+
+The TableWithHeaderRow mixin was overkill. Replaced by a class attribute :attr:`with_header_row`.
+
+The difference between :meth:`get_request_queryset` and :meth:`get_data_rows`
+caused problems and requires a special test in :meth:`DaySlave.get_data_rows`.
+We want to use the DaySlave mixin for both virtual an database tables.

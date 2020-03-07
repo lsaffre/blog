@@ -9,11 +9,11 @@ father was at this time the proud possessor of a `Tandy TRS-80
 <https://en.wikipedia.org/wiki/TRS-80>`_ with 64 KB of RAM and a
 graphics resolution of 127 x 64 black and white pixels.
 
-Before becoming a programmer, I studied Biology at the University of 
-Namur (French-speaking part of Belgium), during two years from 
-September 1986 to September 1988. Although I abandoned these 
-studies, I think that these two years were not lost for me. They had 
-a deep contribution on how I look at our world. I am most thankful 
+Before becoming a programmer, I studied Biology at the University of
+Namur (French-speaking part of Belgium), during two years from
+September 1986 to September 1988. Although I abandoned these
+studies, I think that these two years were not lost for me. They had
+a deep contribution on how I look at our world. I am most thankful
 to J.L. De Sloover for his teachings.
 
 In **June 1990** I finished my studies of Gradué en informatique.
@@ -93,35 +93,6 @@ Lino.  After some search for a valuable user interface, I started to
 use ExtJS_ in **August 2009**.
 
 
-**Where is the songbook project? Where is your private blog?**
-
-One of my projects is dead. It was called `songbook
-<https://pypi.python.org/pypi/songbook/1.0.0>`_ and was a tool to
-manage song collections and generate printable `.pdf` files with and
-without scores in different sizes.  We used it to print the Estonian
-version of the Taizé songs (`Taizé laulud
-<http://www.taize.fr/en_article957.html?territ=27&category=1&lang=et>`_).
-The project was designed to be of general use also for others, so the
-code repository contained some example files, one of which contained
-texts of over 200 German songs.  Some of these songs had an empty
-``author`` field, but I didn't care much about copyright questions
-because this file was a plain text markup format and not directly
-printable. I just added a remark "It is not allowed to use this
-document for anything else than learning how the *songbook* module
-works.  Before publishing this document or parts of it, you would need
-to check with the copyright holders of the individual songs."  And
-four of these songs were written by a German songwriter.  The author
-discovered them, and he *did* care about copyright, and in august 2012
-he asked me to pay a license fee of 630€.  Even though I removed the
-whole project immediately and convinced him that I was not doing any
-business with "his" "property".  Oh my god.  And it seems that this
-was still a rather cheap price for a sin against copyright.  I paid it
-because I knew that the costs would become even worse if that guy
-decided to go to court.  I then noticed that my private blog contained
-probably other similar sins against copyright. So I removed it before
-getting more invoices for license fees.
-
-
 .. _AbAKUS: http://www.abakus.be
 .. _TIM: http://tim.lino-framework.org/129.html
 .. _Lino: http://www.lino-framework.org
@@ -133,6 +104,3 @@ getting more invoices for license fees.
 .. _Eupen: http://en.wikipedia.org/wiki/Eupen
 .. _atelier: http://atelier.lino-framework.org
 .. _davlink: https://github.com/lsaffre/davlink
-
-
-

@@ -1,0 +1,58 @@
+:date: 2020-02-24
+
+=========================
+Monday, February 24, 2020
+=========================
+
+Customized calendar views
+=========================
+
+About :ticket:`3502`.
+I try to formulate a problem on which I have been meditating during almost three weeks now.
+I advance slowly, partly because the problem is complex
+and partly because I have so many other urgent projects to think about.
+
+Summary of the problem in one sentence: The calview plugin needs some
+fundamental changes to make customized calendar views possible.
+
+A calendar is a set of three "calendar views" (called "daily", "weekly" and
+"monthly") that share a common **calendar navigator**.  That navigator knows
+about the three views and can intuitively switch between them.
+
+The default calendar is set up as follows:
+
+======== ================= ================
+view     rows              columns
+======== ================= ================
+daily    DailyPlannerRows  PlannerColumns
+weekly   DailyPlannerRows  weekdays
+monthly  weeks             weekdays
+======== ================= ================
+
+Where :class:`calview.DailyPlannerRows` defaults to two rows "AM" and "PM".
+:class:`cal.PlannerColumns` defaults to two rows "internal" and "external".  The
+first is a data table while the second is a choicelist.
+
+Each calendar view is an actor.   While the daily view is a data table, the two
+others are virtual tables.  What they have in common is (a) that they have no
+grid view (default action is :class:`ShowDetail`) and (b) that their detail
+views contain a "calendar navigator" on the left side and some "calendar slave"
+on the right side.
+
+A **calendar slave** is a slave table whose master is :class:`calview.Day`.
+
+In Presto we want an additional "customized" calendar where
+:class:`calview.DailyPlannerRows` is replaced by :class:`contacts.Workers`.
+
+
+Meanwhile I realized that we need a new choicelist "calview.Navigators" where
+each choice has the following properties (in addition to the normal properties
+of a choice)::
+
+  daily_view
+  weekly_view
+  monthly_view
+  plannable_model
+
+The "plannable" model of a navigator is a database model that inherits from
+`calview.Plannable`.
