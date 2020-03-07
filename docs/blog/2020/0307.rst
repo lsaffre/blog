@@ -8,11 +8,11 @@ Customized calendar views
 =========================
 
 Uff! Seems that I can finally publish my work for :ticket:`3502` (Customized
-calendar views). The :mod:`lino_presto.lib.contacts` plugin is our first usage
-example.  It introduces a second "navigator" which, unlike the default navigator
-shows the workers instead of the time slots as the rows of the weekly and daily
-views. The new workers navigator has no monthly view because that wouldn't make
-sense.
+calendar views). More than 30 hours of work, distributed over one month.  The
+:mod:`lino_presto.lib.contacts` plugin is our first usage example.  It
+introduces a second "planner" which, unlike the default planner shows the
+workers instead of the time slots as the rows of the weekly and daily views. The
+new workers planner has no monthly view because that wouldn't make sense.
 
 Here is a summary of my manual test suite:
 
@@ -36,5 +36,18 @@ TODO:
   popup div for selecting another month
 - customize the title tags of individual calendar entries
 - customize the text to show per event
-- switch between the two Navigators (e.g. from the general weekly view in a
+- switch between the two planners (e.g. from the general weekly view in a
   given week to the workers view in that same week)
+
+
+New feature : when the label of a table is None, the ExtJS front-end now
+suppresses the header of the grid panel (including the "open in own window"
+button).   This is used by the slave tables in the detail layouts of the
+calendar views. But note that you cannot simply set ``label = None`` on the
+actor because that default value is overridden by the model's
+:attr:`verbose_name_plural`. So to get an actor without label you be more
+explicit and say::
+
+    @classmethod
+    def get_actor_label(cls):
+        return None
