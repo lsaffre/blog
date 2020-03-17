@@ -1,0 +1,34 @@
+:date: 2020-03-17
+
+=======================
+Tuesday, March 17, 2020
+=======================
+
+Adding task management to Presto
+================================
+
+:class:`lino_xl.lib.cal.TasksByController` now has :attr:`display_mode` set to
+'summary' by default.
+Only in :ref:`welfare` we manually set it back to 'grid' to remain conservative.
+This little change made me discover the following bug.
+
+About the URIs of a JS renderer
+===============================
+
+Today I worked mostly on :ticket:`3545`.  It seems that this was a bug that
+existed already some time (I guess :blogref:`20190719`) without having been
+noticed: the action links in a table summary panel used permalink URIs although
+they should use javascript URIs. At least in a default summary panel, i.e.
+without a custom :meth:`lino.core.actors.Actor.get_summary_table` method.
+
+I wrote first docs about
+:attr:`lino.core.requests.BaseRequest.is_on_main_actor`.
+
+I added a new attribute :attr:`lino.core.requests.BaseRequest.permalink_uris`.
+
+The following doctests cover this subtle and complex topic:
+
+- :ref:`noi.specs.memo`
+- :ref:`noi.specs.std`
+- :ref:`lino.specs.html`
+- :ref:`welfare.specs.memo`
