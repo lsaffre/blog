@@ -1,0 +1,40 @@
+:date: 2020-03-20
+
+======================
+Friday, March 20, 2020
+======================
+
+For :ref:`presto` we want to add a custom parameter field to the cal.Tasks
+table.  This is the moment to convert tasks and events to using the new
+:class:`DateRangeObservable` mixin instead of an :class:`ObservedDateRange` for
+their :attr:`parameters`.  I created a separate :ticket:`3551` for this.
+
+Also e.g. the `user` field in the parameters is still being specified manually
+although this should be done automatically by UserAuthored.
+
+Most of the filters applied in Event.calendar_param_filter are now done by the
+mixins (Assignable, ProjectRelated, ...), they are easy cases of
+`get_simple_parameters`.
+
+Also comments.Comment can now inherit from DateRangeObservable instead of
+reinventing the wheel.
+
+TODO: check how Event.calendar_param_filter now behaves for calview. Because
+this is a special case (we want the virtual table row calview.Day to "inherit"
+the parameters defined by cal.Event.
+I had to move :meth:`setup_parameters` and :meth:`get_simple_parameters`
+from Model to TableRow for this.
+
+There is at least one --subtle-- confirmation that this was a good thing.
+Visible in :ref:`lino.specs.export_excel`: The title of  cal.MyEntries has
+changed from:
+
+  My appointments (Managed by Robin Rood, Dates 01.08.2017 to 31.08.2017)
+
+to:
+
+  My appointments (Responsible user Robin Rood, Dates 01.08.2017 to 31.08.2017)
+
+Indeed the Event.user field is labelled "Responsible user", not "Managed by".
+
+But the most visible advantage is that we have less code now.
