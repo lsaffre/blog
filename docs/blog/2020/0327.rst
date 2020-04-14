@@ -1,0 +1,48 @@
+:date: 2020-03-27
+
+======================
+Friday, March 27, 2020
+======================
+
+I continued on :ticket:`3477`.  The :term:`end-user documentation`
+(:ref:`presto.de.tour`) is getting presentable.  I hope to record some screen
+casts soon.
+
+I removed the :attr:`purchase_stories` plugin attribute as setting this to False
+was functionally equivalent of having :attr:`lino_xl.lib.vat.declaration_plugin`
+set to `None`. Side effect: the pierre demo project had no declaration plugin
+and therefore no longer has purchase invoices, and consequently cannot serve as
+example in :ref:`xl.specs.ledger`.  We use apc instead.  Adapting the doctests
+took some time...
+
+Oops: inserting a task on a client in cal.TasksByProject doesn't assign the task
+to that client. Yes, :attr:`lino_presto.lib.presto.settings.Site.project_model`
+is "presto.Client".   That's strange because e.g. for TicketsBySite it works.
+That's a ticket on its own: :ticket:`3562`.
+
+Inserting in TasksByProject doesn't set the project
+===================================================
+
+When I insert in
+TicketsBySite, the mt and mk are included with the POST request. Aha, the
+problem comes only when using the insert button provided by the summary panel.
+The bug was in lino/core/actors.py::
+
+    ir = cls.insert_action.request_from(ar)
+
+En passant I added a new method
+:meth:`lino.core.requests.BaseRequest.is_obvious_field` which is now used by
+:class:`lino.mixins.ProjectRelated` to add the project (between parantheses) in
+the :meth:`lino.core.model.Model.summary_row`, except "when it is obvious".
+Especially for the tasks listed in `TasksByProject` you don't want Lino to
+repeat the client name for each task.
+
+Until now this typical behaviour had to be implemented explicitly by the
+application developer. Now is is "out of the box" at least for
+:class:`lino.mixins.ProjectRelated`, which can be considered an example of this
+design pattern.  TODO: rename this to `get_row_description` and write
+documentation.
+
+A minor disadvantage: the ordering of the description items have changed for
+:class:`lino_xl.lib.cal.Component`.  There is some danger that :ref:`welfare`
+users might complain about it.
