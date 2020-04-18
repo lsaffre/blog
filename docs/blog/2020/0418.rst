@@ -1,0 +1,87 @@
+:date: 2020-04-18
+
+========================
+Saturday, April 18, 2020
+========================
+
+
+Printing a weekly sheet for workers
+===================================
+
+I pushed my work of the last days on :ticket:`3589`.
+
+The :xfile:`orders/Order/base.weasy.html` template (in (in
+:mod:`lino_xl.lib.orders`) no longer prints some fields in an intro block. This
+was never useful and rather disturbing.
+
+But the :xfile:`weasyprint/base.weasy.html` template now produces a default main
+block  that says  "You probably want to use a template that overrides the main
+block."
+
+In :mod:`lino_presto.lib.contacts` I renamed the :class:`Member` model to
+:class:`Membership`.
+
+The :meth:`get_calview_chunks` method is no longer used, we use
+:meth:`get_event_summary` instead.
+
+We currently have a print_actions field in the Worker detail, which prints a
+weekly "roster" per worker using the  :xfile:`contacts/Person/roster.weasy.html`
+template. That's basically what we want, but it's impolite to ask the secretary
+to enter the start and end dates for each worker. It's actually impolite to ask
+them at all. That action should move to the workers' calendar view where Lino
+knows the week.
+
+Change in the framework: I moved the virtual field :attr:`name_column` from
+contacts.Partner to :attr:`core.model.Model`.  It does almost the same as the
+existing :attr:`mobile_item` field.  Not yet sure about these things. Needs more
+documentation.
+
+In Presto I now override the name_column field in the WorkersParameters actor.
+
+The :xfile:`orders/Order/default.weasy.html` template in the
+:mod:`lino_presto.projects.noereth` demo project now features a German text that
+will actually be used on their production site.  Christophe kindly gave
+permission to publish this text.
+
+TODO: Customize WorkersParameters.name_column so that it adds a print button.
+
+Here is the current application code that adds a weekly print button to the
+workers calendar view::
+
+    @dd.displayfield(_("Worker"))
+    def name_column(cls, obj, ar):
+        d = ar.master_instance.date  # first day of current week
+        ba = obj.print_roster
+        if ba is None:
+            return E.p(obj.obj2href(ar))
+        pv = dict(start_date=d, end_date=d + ONE_WEEK)
+        btn = ar.instance_action_button(ba, "Print",
+            request_kwargs=dict(action_param_values=pv))
+        return E.p(obj.obj2href(ar), " ", btn)
+
+.. currentmodule:: lino.core.actions
+
+I had to remove the :attr:`Action.keep_user_values`  for the  print_roster
+action. Setting the :attr:`Action.keep_user_values` of a :term:`window action`
+to `True` means that we don't want it to automatically re-initialize the default
+values of its parameters to their default value upon each usage. This feature
+(1) is not used on any production site and (b) has the side effect of causing
+the fields to never have a default value, even not on first execution, and even
+not when you explicitly specify programmatic field values.
+
+Added a new observable date range :class:`lino.mixins.periods.Weekly`.
+
+Remark (to be integrated somewhere in the Lino book) Isn't it a kind of design
+flaw of the action API that we cannot define just the action class and specify,
+as a class attribute, the model it is to be installed on?  At least for
+PrintRoster that would be more clear. There are other cases where it looks quite
+tedious that we define an action class (e.g. QuickAssignTo) and then still need
+to instantiate it on the model like a field::
+
+  quick_assign_to_action = QuickAssignTo()
+
+This double name has at least one advantage: we can reuse a same action class on
+different models. Or we have actions where we use instances of a same class with
+different instance values.  Okay we might define the print_roster action as a
+method on the model.  But that's syntactically less readable, and currently
+there is no way to specify that it inherits from DirectPrintAction.

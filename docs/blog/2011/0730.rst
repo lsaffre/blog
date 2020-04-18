@@ -23,8 +23,8 @@ None of the following commands gives any output::
   blkid -o value -s UUID
   blkid -o value -s UUID /dev/sda
   blkid -o value -s UUID /dev/sda1
-  
-  
+
+
 Here is my :file:`/etc/default/grub`::
 
   # If you change this file, run 'update-grub' afterwards to update
@@ -55,7 +55,7 @@ Here is my :file:`/etc/default/grub`::
   # Uncomment to get a beep at grub start
   #GRUB_INIT_TUNE="480 440 1"
 
-I uncommented the ``GRUB_HIDDEN_TIMEOUT=0`` line and removed the ``quiet`` 
+I uncommented the ``GRUB_HIDDEN_TIMEOUT=0`` line and removed the ``quiet``
 from `GRUB_CMDLINE_LINUX_DEFAULT`, then ran ``sudo update-grub``.
 
 The boot menu now appears, and it has a lot of entries::
@@ -70,8 +70,8 @@ The boot menu now appears, and it has a lot of entries::
 
 each entry is twice (the second time with recovery mode).
 
-Selecting either of the 2.6.32-33 kernel options leads to my behaviour. 
-Since I removed the ``quiet`` boot option, I can now see the last 
+Selecting either of the 2.6.32-33 kernel options leads to my behaviour.
+Since I removed the ``quiet`` boot option, I can now see the last
 message before it hangs::
 
   [    1.251341] scsi0 : ahci
@@ -79,7 +79,7 @@ message before it hangs::
   [    1.251785] ata1: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408100 irq 22
   [    1.251824] ata2: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408180 irq 22
 
-and there it stops, displaying after a while the 
+and there it stops, displaying after a while the
 "Gave up waiting for root device." messages.
 
 This thread seems to have the same problem:
@@ -91,18 +91,18 @@ http://ubuntuforums.org/showpost.php?p=11091566&postcount=16
 Linux, notebooks and power management
 -------------------------------------
 
-Aha, ich habe gerade erst erfahren, dass es wohlbekannte Gründe dafür 
-gibt, dass der Ventilator auf :term:`Rose` ständig läuft:
+Aha, ich habe gerade erst erfahren, dass es wohlbekannte Gründe dafür
+gibt, dass der Ventilator auf :term:`rose` ständig läuft:
 http://de.wikipedia.org/wiki/ACPI (s.h. Untertitel "Kritik")
 
 Dabei funktioniert ACPI doch scheinbar ausgezeichnet.
-Die Spielereien im Artikel 
-`How Many Watt Consumed in Ubuntu Laptop? 
+Die Spielereien im Artikel
+`How Many Watt Consumed in Ubuntu Laptop?
 <http://studiawan.blogspot.com/2011/04/how-many-watt-consumed-in-ubuntu-laptop.html>`_
 konnte ich jedenfalls leicht nachvollziehen.
 
-Ich habe mal die Pakete 
- `uswsusp` und `acpitail` ausprobiert. 
+Ich habe mal die Pakete
+ `uswsusp` und `acpitail` ausprobiert.
 
 `uswsusp` scheint nicht mehr maintained zu sein::
 
@@ -114,18 +114,18 @@ Ich habe mal die Pakete
       sys_version  = "0396100000010D10000000000"
       bios_version = "F.07"
   See http://suspend.sf.net/s2ram-support.html for details.
-  
+
   If you report a problem, please include the complete output above.
-  
-Die besagte Adresse wird dann jedoch automatisch nach 
+
+Die besagte Adresse wird dann jedoch automatisch nach
 http://en.opensuse.org/SDB:Suspend_to_RAM
 weitergeleitet, und dort steht:
 
-  Note that the s2ram whitelist described here is 
-  deprecated and no longer maintained. Do not send additional 
-  machines details to the maintainers. Instead, use a kernel 
-  with KMS drivers where suspend should just work. If it doesn't, 
-  file a bug against the Linux kernel.  
+  Note that the s2ram whitelist described here is
+  deprecated and no longer maintained. Do not send additional
+  machines details to the maintainers. Instead, use a kernel
+  with KMS drivers where suspend should just work. If it doesn't,
+  file a bug against the Linux kernel.
 
 
 `acpitail` funktioniert, aber scheint mir nicht sehr wichtig::
@@ -142,72 +142,72 @@ https://bugs.launchpad.net/ubuntu/+source/acpi/+bug/107937
 
 https://bugs.launchpad.net/ubuntu/+source/linux/+bug/370173
 
-Die beiden Bugs sind scheinbar genau mein Problem: der Ventilator 
-läuft ständig, aber nicht unnützerweise, sondern da ist es 
-wirklich heiß drin. Ubuntu auf einem Compaq Presario wirkt 
-quasi wie ein Heizgebläse. Im Winter mag das noch angehen, 
-aber *gut* ist das bestimmt nicht. Außerdem beklagt Ly sich, 
+Die beiden Bugs sind scheinbar genau mein Problem: der Ventilator
+läuft ständig, aber nicht unnützerweise, sondern da ist es
+wirklich heiß drin. Ubuntu auf einem Compaq Presario wirkt
+quasi wie ein Heizgebläse. Im Winter mag das noch angehen,
+aber *gut* ist das bestimmt nicht. Außerdem beklagt Ly sich,
 dass er sich ab und zu von selber ausschaltet.
 
 Aber hier:
 http://ubuntuforums.org/archive/index.php/t-3267.html
 
-Fehlanzeige, dieser Tipp scheint zu alt zu sein. 
+Fehlanzeige, dieser Tipp scheint zu alt zu sein.
 Ein Kernelmodul "powernow-k7" scheint es nicht mehr zu geben.
-Und überhaupt ist mir das alles ein bisschen zu technisch. 
+Und überhaupt ist mir das alles ein bisschen zu technisch.
 
-Ich probiere es mal mit der neuesten Ubuntu-Version: 
+Ich probiere es mal mit der neuesten Ubuntu-Version:
 Uprade von 10.04. LTS zum letzten "normalen Release" 10.10
-(über Menüs wie auf Seite 
+(über Menüs wie auf Seite
 https://help.ubuntu.com/community/MaverickUpgrades
 beschrieben).
 
-Während des Runterladens habe ich mich schlafen gelegt. 
-Als ich wieder schauen kam, war der Rechner ausgeschaltet. 
+Während des Runterladens habe ich mich schlafen gelegt.
+Als ich wieder schauen kam, war der Rechner ausgeschaltet.
 Verdächtig.
 Kann sein, dass es eine Strompanne gegeben hat.
 Einschalten.
 Im Boot-Menü ist jetzt ein neuer Kernel 2.6.35-30 hinzugekommen.
-wenn ich den auswähle, kriege ich aber die gleichen Symptome 
+wenn ich den auswähle, kriege ich aber die gleichen Symptome
 wie oben, er hängt sich auf nach der Zeile::
 
   [    1.251824] ata2: SATA max UDMA/133 abar m1024@0x90408000 port 0x90408180 irq 22
 
-Wenn ich mit dem alten Kernel starte, meldet Gnome: 
-"Your system has not yet been configured, please 
+Wenn ich mit dem alten Kernel starte, meldet Gnome:
+"Your system has not yet been configured, please
 contact your computer administrator"
 
-Ich gehe mit Ctrl+Alt+F1 in eine Textkonsole und starte dort 
+Ich gehe mit Ctrl+Alt+F1 in eine Textkonsole und starte dort
 nochmal dist-upgrade.
-Der lädt nochmal eine Stunde lang Dateien runter, 
+Der lädt nochmal eine Stunde lang Dateien runter,
 aber als ich wieder schauen komme hängt sich aber wieder auf
 
 
 Aha, jetzt weiß ich, woher meine Probleme kommen:
 
-In `einem Thread auf forums.debian.net 
+In `einem Thread auf forums.debian.net
 <http://forums.debian.net/viewtopic.php?f=3&t=54519>`_
 schrieb Bulkley im August 2010:
 
   Consider that this problem is not about either Ubuntu or Debian. Consider that your new laptop is so new that Linux has not caught up with it. Consider that your compaq pressario cxq61-405sa is so locked into Windows that the Linux kernel and X can't get around it. Consider that some proprietary hardware is "host driven" much like some old modems were. Consider returning that laptop for a refund. Consider that Compaq has no incentive to be Linux friendly.
   (http://forums.debian.net/viewtopic.php?f=3&t=54519#p315551)
-  
+
 Im gleichen Thread schrieb stevepusser tags darauf:
 
-  As for Ubuntu, many laptops have a poorly written BIOS and poor acpi implementations. You can test this by booting Ubuntu with the kernel cheat 
+  As for Ubuntu, many laptops have a poorly written BIOS and poor acpi implementations. You can test this by booting Ubuntu with the kernel cheat
 
   acpi=off
 
   and see if that fixes the issue. It will cause much more trouble than it fixes, though, because you will lose power control, screen dimming, battery monitoring, and everything else that acpi handles. The command is just for diagnostics.
-  
+
   Steve (whose Toshiba laptop freezes up the same way with the 2.6.35 kernel unless booted with that command. Previous kernels work well on the machine)
 
-In der Tat, mit der Kernel-Option ``acpi=off`` scheint alles 
+In der Tat, mit der Kernel-Option ``acpi=off`` scheint alles
 zu klappen (außer natürlich das Power-Management).
 
 Also nicht nur mit HP Compaq, sondern auch mit Toshiba hat Linux dieses Problem.
 
-Aber gibt es denn keine Liste 
+Aber gibt es denn keine Liste
 "Hardware, die Linux-Benutzer besser gar nicht erst kaufen sollten"?
 Or positively formulated a "Ubuntu Laptop buyer's guide"?
 Aha, Google "linux laptop shopping guide" meldet:
@@ -215,6 +215,6 @@ Aha, Google "linux laptop shopping guide" meldet:
 - http://www.cyberciti.biz/tips/linux-laptop.html
 - http://www.laptopical.com/buying-guide.html
 
-Diese beiden sagen eigentlich eher, dass Linux auf allen Laptops funktioniert. 
-Ich kann das aber nicht bestätigen, da ich es auf unserem HP Compaq Presario 
+Diese beiden sagen eigentlich eher, dass Linux auf allen Laptops funktioniert.
+Ich kann das aber nicht bestätigen, da ich es auf unserem HP Compaq Presario
 nur ohne acpi laufen lassen kann...

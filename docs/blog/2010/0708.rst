@@ -3,7 +3,7 @@
 
 (Fortsetzung von :doc:`gestern <0707>`)
 
-Also Felder mit eindimensionaler Auswahlliste brauchen nicht nur kein hidden field, 
+Also Felder mit eindimensionaler Auswahlliste brauchen nicht nur kein hidden field,
 sondern dürfen keins haben. Das funktioniert jetzt einigermaßen (mit ein paar Schönheitsfehlern, die aber nicht blockierend sind).
 Einige der Konsequenzen:
 
@@ -13,41 +13,41 @@ Einige der Konsequenzen:
     def template_choices(cls,print_method):
         return mixins.template_choices(print_method)
     template_choices.simple_values = True
-    
-  Aber da hatte ich mich geirrt. Weil die Methode schon den Dekorator `@classmethod` hat, 
+
+  Aber da hatte ich mich geirrt. Weil die Methode schon den Dekorator `@classmethod` hat,
   kann man ihr keine Attribute mehr verpassen::
-    
+
     AttributeError: 'classmethod' object has no attribute 'simple_values'
-    
+
   Um das zu umgehen, benutze ich momentan die alte Syntax::
-  
+
     def template_choices(cls,print_method):
         return mixins.template_choices(print_method)
     template_choices.simple_values = True
     template_choices = classmethod(template_choices)
-  
+
   Was sind eigentlich Dekoratoren? Ein interessanter `Artikel von Bruce Eckel <http://www.artima.com/weblogs/viewpost.jsp?thread=240808>`_ half mir zu verstehen.
-  
+
 - Die Antwort auf http://127.0.0.1:8000/api/notes/NoteTypes?fmt=json kommt nun richtig; :attr:`NoteType.template` hat jetzt kein Hidden-Feld mehr::
 
-    { 
-      count: 2, rows: [ 
-        { print_methodHidden: "appy", print_method: "AppyPrintMethod", 
-          id: 0, template: "phone.odt", 
-          name: "phone report" 
-        }, 
-        { print_methodHidden: null, print_method: null, 
-          id: null, 
-          template: "", 
-          name: "" 
-        } 
-      ], 
-      title: "NoteTypes" 
+    {
+      count: 2, rows: [
+        { print_methodHidden: "appy", print_method: "AppyPrintMethod",
+          id: 0, template: "phone.odt",
+          name: "phone report"
+        },
+        { print_methodHidden: null, print_method: null,
+          id: null,
+          template: "",
+          name: ""
+        }
+      ],
+      title: "NoteTypes"
     }
-  
-- Das ``this.value = v;`` am Ende meiner :func:`ComboBox.setValue` musste wieder rein. 
 
-Check-In 
+- Das ``this.value = v;`` am Ende meiner :func:`ComboBox.setValue` musste wieder rein.
+
+Check-In
 
 Diverse Bugs im extjsu behoben
 ------------------------------
@@ -57,10 +57,10 @@ Nächstes Problem: in http://127.0.0.1:8000/api/countries/Countries?fmt=grid wur
 Nächstes Problem: wenn ich in der Grid ein neues Land erstellen wollte, dann schickter er zwar ein korrektes `POST http://127.0.0.1:8000/api/countries/Countries`, aber der Server machte dann::
 
   ValidationError: {'isocode': ValidationError({'isocode': u"Primary key '' may not be modified."})}
-  
+
 Merke: der pk einer neu erstellten und noch nicht gespeicherten Instanz ist nicht unbedingt ``None``, sondern kann (wenn pk ein CharField ist) auch ``''`` sein.
 
-:class:`countries.Country` hat jetzt ein Detail-Layout, in dem der neue Report CitiesByCountry angezeigt wird. 
+:class:`countries.Country` hat jetzt ein Detail-Layout, in dem der neue Report CitiesByCountry angezeigt wird.
 
 
 :mod:`lino.modlib.dsbe.management.commands.load_tim` vergaß, das Feld :attr:`contacts.Contact.country` zu füllen. Behoben.
@@ -72,6 +72,4 @@ Mehrere Check-Ins und zum Schluss:
 Release Lino 0.8.2 & DSBE 0.1.1
 -------------------------------
 
-Diese Versionen laufen jetzt im :ref:`cpaseupen` und auf :term:`Tups`. Es sind noch viele Bugs drin, aber ich wollte mal sehen, wie die Performance auf einem "Produktionsserver" ist. Mein erster Eindruck: eher besorgniserregend... aber jetzt ist Feierabend.
-
-
+Diese Versionen laufen jetzt im :ref:`cpaseupen` und auf :term:`tups`. Es sind noch viele Bugs drin, aber ich wollte mal sehen, wie die Performance auf einem "Produktionsserver" ist. Mein erster Eindruck: eher besorgniserregend... aber jetzt ist Feierabend.

@@ -3,8 +3,8 @@
 
 Continued on `Tx25 (new style CBSS connection)`.
 
-After weeks of trying and fiddling, we finally got a first 
-RetrieveTIGroups request working using :term:`suds`::
+After weeks of trying and fiddling, we finally got a first
+RetrieveTIGroups request working using :term:`Suds`::
 
   import logging
   logging.basicConfig(level=logging.INFO)
@@ -36,14 +36,13 @@ RetrieveTIGroups request working using :term:`suds`::
   print client.service.retrieveTI(ic,None,si)
 
 
-The main obstacle was: to access the CBSS, we cannot query 
-the WSDL online, we must use a locally stored file which contains 
+The main obstacle was: to access the CBSS, we cannot query
+the WSDL online, we must use a locally stored file which contains
 the "hard-coded" location.
 
-Der SOAP-Server der BCSS antwortet auf einen Request "...?wsdl" 
+Der SOAP-Server der BCSS antwortet auf einen Request "...?wsdl"
 zwar mit einer WSDL-Definition, aber die kann
 unmöglich gültig sein, weil der Server nicht wissen kann, über welchen
 Namen wir ihn anrufen. Weil er hinter einem reverse proxy steht. Wir
 müssen mit einer lokalen wsdl-Datei arbeiten. Ist auch prinzipiell kein
 Problem.
-
