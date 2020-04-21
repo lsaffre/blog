@@ -1,0 +1,34 @@
+:date: 2020-04-20
+
+======================
+Monday, April 20, 2020
+======================
+
+I am preparing a first screencast for :ref:`presto`.
+
+Oops, found a bug in the calendar workflow: cannot set the calendar entry to
+"planned" because 1 worker is "planned".  Opened :ticket:`3599`.
+
+The default guest state in Presto was "invited".
+I changed it to "present" because the internal guest state name "invited" is
+what triggers the message in the voga workflow.
+
+Note that we do not want Lino to change the guest_state automatically to
+"present" (by setting :attr:`force_guest_states` to True).  Because when a
+worker has been replaced by another worker, we want to see them both in the
+database for this deployment.
+
+But how to change the default value of a choicelist field? The following tricks
+didn't work::
+
+  dd.update_field(Guest, 'state', default='present')
+  dd.update_field(Guest, 'state', default=GuestStates.present.as_callable())
+
+The former doesn't work because specifying the default value of a choicelist
+field as a string works only when the field is created, not when updating it.
+And there is no on-update hook yet (and that would be overkill). The latter
+doesn't work because the guest states are filled only after having imported the
+models.  We might put that line in the :attr:`Site.custom_workflows_module`.
+
+Another idea was to add a new plugin setting
+:attr:`default_guest_state <lino_xl.lib.cal.Plugin.default_guest_state>`.

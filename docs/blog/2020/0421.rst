@@ -1,0 +1,78 @@
+:date: 2020-04-21
+
+=======================
+Tuesday, April 21, 2020
+=======================
+
+(Continued from :doc:`0420`)
+
+That worked, but it didn't fix my original problem:  MarkEventTookPlace now
+complained that there is no guest state "invited".
+
+So I leave the default guest state at "invited", but that's only the internal
+name, the verbose name is "Planned" or "Present".  In Presto they want to use
+something quite similar to the voga workflow, but they really don't want to have
+to mark their workers as present or not before marking an entry as "took place".
+Marking an entry as took place, in Presto, means that all workers who were
+planned where present.
+
+We want to inherit from Voga workflows, but we want to remove the
+MarkEventTookPlace transition. But it's not possible to undo an
+:meth:`add_transition` because the transition action immediately gets quite
+installed into the system.
+
+To fix this, I added an attribute :attr:`transition` to the
+:class:`lino.core.workflows.State` class.  This has a side effect: Lino no
+longer allows to define several transitions for the same target state.  If you
+try this, you get an exception "Tried to add another transition to <state
+name>".
+
+There were about 3 cases where this side effect occurred, and I could convert
+them into normalized transitions.
+
+I removed several workflow modules from the autosummary directives, i.e. they
+are no longer included in the autodoc API docs.  Indeed they are like the
+:xfile:`models.py` modules and :xfile:`choicelists.py` modules of a plugin: thy
+import :mod:`lino.api.dd` at module level and therefore might Django to raise  a
+:class:`django.core.exceptions.AppRegistryNotReady` exception :message:`Apps
+aren't loaded yet`. I just don't understand why it worked until now.
+
+
+
+About ticket dependencies
+=========================
+
+I have been working now many hours on :ticket:`3599`.
+We needed this for :ticket:`3477`.
+
+Of course this would be difficult to explain to the customer. Of course there
+are always two basic attitudes when working on a customer request:
+
+- fix it using a quick hack, get rid of the problem, do just what they asked,
+  don't overkill the bug
+
+- analyze it and learn from it, improve the quality of the underlying source
+  code in order to have less work in the future with similar topics.
+
+That's why it is better to sell such projects with a flat rate price, not with
+an hourly tariff.
+
+But independently of the sales agreement we want to know at least internally how
+things are related, why a given change has been done, etc.
+
+- :ticket:`3599` : Develop and install a next version of their software
+  according to their 20 page specifications
+
+- :ticket:`3477` : A seemingly minor problem that occurred while working on
+  :ticket:`3599`.  I decided that this is an interesting case for the Calendar
+  plugin and maybe even for Lino in general.
+
+The customer (and we) would like to see in their service report that I have been
+working on a :ticket:`3477` for which they didn't ask directly but which was
+indirectly needed for their general request.
+
+It is very difficult to estimate how much time I had spent on this issue if my
+goal was just a "quick hack".  A quick hack can take more time than a thorough
+analysis.
+
+Every ticket with an end_user is actually a wish.
