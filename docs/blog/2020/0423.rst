@@ -1,0 +1,33 @@
+:date: 2020-04-23
+
+========================
+Thursday, April 23, 2020
+========================
+
+Registrable and toggle_state
+============================
+
+Oops, :ticket:`3602` was more complex. No no,  the :class:`Registrable
+<lino.mixins.registrable.Registrable>` mixin worked also when there was no state
+named "registered". We *do* want certain fields of a course to be read-only in
+certain states.  We don't want let end users edit e.g. the teacher or the room
+of an active course. To change these fields, you need to first switch back to
+"draft".  This concept of "registrable fields" is the main feature of
+Registrable.
+
+Only the relatively new :meth:`toggle_state
+<lino.mixins.registrable.Registrable.toggle_state>` action also required a state
+named "registered".
+
+I undid my yesterday changes (i.e. Reservation again inherits from Registrable)
+and moved the :meth:`toggle_state
+<lino.mixins.registrable.Registrable.toggle_state>` action to the
+:class:`lino_xl.lib.ledger.RegistrableVoucher` mixin.   Also started to review
+the docstrings.
+
+
+A screen cast about :ref:`presto`
+=================================
+
+Yesterday I recorded a first screen cast about :ref:`presto` (in German) and
+added a link to it in :ref:`presto.de.tour`.

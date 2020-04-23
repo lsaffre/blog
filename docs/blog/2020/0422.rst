@@ -1,0 +1,19 @@
+:date: 2020-04-22
+
+=========================
+Wednesday, April 22, 2020
+=========================
+
+I investigated about :ticket:`3602`. Yes, the new Avanti had a new button
+ToggleState on :class:`courses.Course`. And clicking on that button produced a
+user warning "type object 'CourseStates' has no attribute 'registered'" (but
+otherwise did nothing).
+
+Indeed this was a relatively harmless design flaw:
+:class:`lino_xl.lib.cal.Reservation` was inheriting from
+:class:`lino.mixins.registrable.Registrable`.  There was no reason for this.  At
+least I couldn't find one.  I removed the base class and the
+:meth:`get_registrable_fields <lino.mixins.registrable.Registrable.get_registrable_fields>` method.
+
+EDIT: If you believe above explanation, then you are as wrong as I were. See
+:doc:`0423`.
