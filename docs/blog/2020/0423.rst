@@ -26,8 +26,40 @@ and moved the :meth:`toggle_state
 the docstrings.
 
 
-A screen cast about :ref:`presto`
-=================================
+Miscellaneous
+=============
+
+We fixed a subtle bug : Lino can get confused when collecting
+:setting:`STATICFILES_DIRS` on a site having a :attr:`project_dir` containing a
+symbolic link. This later caused Django to complain about duplicate files during
+:manage:`collectstatic`.
+
+And Lino no longer sets the :setting:`STATICFILES_DIRS` Django setting.  This
+setting is not used by Lino, I remember vaguely that I have been trying to use
+it when experimenting with a Qooxdoo front end years ago.
+
+The default name of the directory used as :setting:`STATIC_ROOT` is now
+:xfile:`static_root` (and no longer :xfile:`static`).   Getlino always creates
+it as a subdirectory of the environment.
+
+That's mainly because
+:xfile:`static` is used for the "source" directories of the
+:manage:`collectstatic` command, and it sounds a bit dangerous to use the same
+name for the target directory.
+
+
+Presto
+======
 
 Yesterday I recorded a first screen cast about :ref:`presto` and added a link to
 it in :ref:`presto.de.tour`. Yes, it's in German, the customer's language.
+
+Today I fixed a few demo effects encountered in the screen cast (search by
+client name, filter per team in Orders table)
+
+I started to prepare the next screen cast, which will show the calendar view. At
+least one thing was still missing there : customized values in
+:class:`lino_xl.lib.cal.PlannerColumns`.
+
+Discovered another bug : filtering doesn't seem to work in the weekly or daily
+calendar view.
