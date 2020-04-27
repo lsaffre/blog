@@ -12,15 +12,14 @@ Sitemap
 .. toctree::
    :maxdepth: 1
 
-   blog/index
+   Blog <blog/2020/index>
    about/index
 
 
 .. toctree::
    :hidden:
 
+   blog/index
    tickets/index
    glossary
    ref/index
-
-

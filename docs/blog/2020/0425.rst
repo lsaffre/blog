@@ -1,0 +1,56 @@
+:date: 2020-04-25
+
+========================
+Saturday, April 25, 2020
+========================
+
+.. 25.04.2019 02.50-04.45
+.. 25.04.2019 11:25-12:15 partner details + misc
+.. 25.04.2019 12:15-12:35 move municipality field from avanti to courntries
+.. 26.04.2019 03:55-05:23 support remote field pointing to virtual FK
+.. 26.04.2019 17:45-18:11 use get_queryset()
+.. 26.04.2019 19:05-19:45 municipality_choices
+.. 26.04.2019 22:53-23:16 municipality_choices (Lino doesn't find chooser for remote fields)
+.. 27.04.2019 04:30-05:52 municipality_choices (Lino doesn't find chooser for remote fields)
+.. 27.04.2019 10:03-10:26 verbose_name for municipality
+.. 27.04.2019 10:58- review book tests
+
+
+I moved the virtual :attr:`municipality
+<lino_xl.lib.countries.CountryCity.municipality>` field from Avanti to countries
+because we will also use it for presto.  And it is now a virtual ForeignKey
+field (and no longer a :func:`lino.core.fields.displayfield`).
+
+Because I want :ref:`presto` to be able to filter calendar entries by the
+municipality.
+
+New feature : Lino now understands remote fields forwarding to a virtualfield as
+actor parameters.  But the application developer must define themselves what to
+do
+
+.. Side effect : Model.add_param_filter is no longer called only for simple
+   actor parameters but for all actor parameters.
+
+AttributeError: 'VirtualField' object has no attribute 'get_lookup'
+
+Exception: lino.core.layouts.ParamsLayout on lino_xl.lib.cal.ui.AllEntries
+  has no data element 'project__municipality ('VirtualField' object has no attribute 'blank')'
+
+I moved some internal utility functions from one module to another
+(make_converter, make_remote_field, get_chooser_for_field etc)
+
+The caching in check_for_chooser() didn't actually work.
+
+.. dt docs/blog/2020/0425.rst
+
+>>> from lino import startup
+>>> startup('lino_presto.projects.noereth.settings.doctests')
+>>> from lino.api.doctest import *
+>>> ses = rt.login('robin')
+
+Note that Lino's :class:`lino.core.fields.RemoteField` has nothing to do with
+Django's :attr:`remote_field` of a FK field.
+
+>>> fld = rt.models.contacts.Partner._meta.get_field('city')
+>>> fld.remote_field
+<ManyToOneRel: contacts.partner>
