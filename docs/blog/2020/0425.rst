@@ -16,29 +16,42 @@ Saturday, April 25, 2020
 .. 27.04.2019 10:58- review book tests
 
 
-I moved the virtual :attr:`municipality
-<lino_xl.lib.countries.CountryCity.municipality>` field from Avanti to countries
-because we will also use it for presto.  And it is now a virtual ForeignKey
-field (and no longer a :func:`lino.core.fields.displayfield`).
+This weekend I moved the virtual :attr:`municipality
+<lino_xl.lib.countries.CountryCity.municipality>` field from :ref:`avanti` to
+:mod:`lino_xl.lib.countries` because we will also use it for :ref:`presto`.
+Also this field is now a virtual ForeignKey field (and no longer a
+:func:`lino.core.fields.displayfield`).
 
-Because I want :ref:`presto` to be able to filter calendar entries by the
-municipality.
+I did this because I want :ref:`presto` to be able to filter calendar entries by
+the municipality.  That is, I wanted, in :class:`cal.AllEntries`, a table
+parameter "Municipality" that, if set, would show only calendar entries whose
+:attr:`lino_xl.lib.cal.Entry.project` field points to a
+:class:`lino_presto.lib.presto.Client` who lives either in that :term:`place` or
+in a place that is part of it.
 
-New feature : Lino now understands remote fields forwarding to a virtualfield as
-actor parameters.  But the application developer must define themselves what to
-do
+This change caused a series of internal optimizations.
 
-.. Side effect : Model.add_param_filter is no longer called only for simple
-   actor parameters but for all actor parameters.
+After doing it, I realized that it was not really necessary for :ref:`presto`
+because I they simply print "service reports" using the
+:xfile:`service_report.weasy.html
+<sales/VatProductInvoice/service_report.weasy.html>` template.
 
-AttributeError: 'VirtualField' object has no attribute 'get_lookup'
+New developer feature : Lino now also understands remote fields that forward to
+a virtualfield as actor parameters.  The application developer must define
+themselves how to translate this parameter into a queryset filter by providing a
+custom :meth:`get_request_queryset` method.
 
-Exception: lino.core.layouts.ParamsLayout on lino_xl.lib.cal.ui.AllEntries
+The virtual municipality field and its chooser is defined on the
+:class:`lino_xl.lib.countries.CountryCity` mixin. Presto uses it in
+:mod:`lino_presto.lib.cal`.
+
+.. AttributeError: 'VirtualField' object has no attribute 'get_lookup'
+
+.. Exception: lino.core.layouts.ParamsLayout on lino_xl.lib.cal.ui.AllEntries
   has no data element 'project__municipality ('VirtualField' object has no attribute 'blank')'
 
 I moved some internal utility functions from one module to another
-(make_converter, make_remote_field, get_chooser_for_field etc)
-
+(make_converter, make_remote_field, get_chooser_for_field etc).
 The caching in check_for_chooser() didn't actually work.
 
 .. dt docs/blog/2020/0425.rst

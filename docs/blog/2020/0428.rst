@@ -1,0 +1,40 @@
+:date: 2020-04-28
+
+=======================
+Tuesday, April 28, 2020
+=======================
+
+Trying to fix :ticket:`3613` (book failing on travis with "error: package
+directory 'lino_react/projects' does not exist").
+
+I noticed that react had no :xfile:`test_packages.py`.  I added it.  My
+suggestion to remove :mod:`lino_react.projects` from the packages in
+:xfile:`setup.py` won't work then.  Until now all our repos adhere to the rule
+that all packages are published in the PyPI as well.  Whether this rule is good
+deserves meditation, but the easiest way and fix the problem seems to  to stick
+to the rule for now and just remove the prune from the :xfile:`MANIFEST.in`. I
+started new-style change logging for react (one page per year,
+:ref:`react.changes.2020`).
+
+Released lino-react 20.4.28 to PyPI and restarted a build of book on
+:ref:`travis`. Now the test suite passes.
+
+But the build then fails during :cmd:`inv bd`:
+
+https://travis-ci.org/github/lino-framework/book/jobs/680152993
+
+
+I also noted the following warnings that get issued during :cmd:`inv test`:
+
+  func=xmlSecCheckVersionExt:file=xmlsec.c:line=188:obj=unknown:subj=unknown:error=19:invalid version:mode=abi compatible;
+  expected minor version=2;
+  real minor version=2;
+  expected subminor version=25;
+  real subminor version=26
+
+I guess that they are unrelated and not important.
+
+
+
+Publisher proof of concept
+==========================

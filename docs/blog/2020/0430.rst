@@ -1,0 +1,70 @@
+:date: 2020-04-30
+
+========================
+Thursday, April 30, 2020
+========================
+
+.. 30.04.2020 02:20-04:05
+   add cal.Event.positions field to layout
+
+I recorded a next screen cast about calendar management in :ref:`presto`, also
+about the :attr:`municipality` field.  But I had some work before Lino was ready
+for this.  Because I discovered that the filter parameters in calendar views
+were still being ignored.  This caused a whole series of internal changes.
+
+We have a new plugin parameter :attr:`lino_xl.lib.calview.Plugin.params_layout`,
+which specifies the layout of the table parameters used by all calendar views.
+
+calview.EventsParameters must not call Event.setup_parameters but
+Events.setup_parameters.
+
+This change in turn caused the problem that setup_parameters requires Actor.model to be resolved.
+Until now kernel called class_init() on each actor, and class_init() called setup_parameters().
+But calview.EventsParameters for some reason is coming before cal.Events.
+To fix this, I splitted Actor.class_init into a new method :meth:`init_layouts`
+
+Now the other problem: all those methods that map parameter values to queryset
+filters.  The param_values AttrDict contains only values for those parameters
+that are being used.  Which is a problem.
+
+I changed the signature of :meth:`calendar_param_filter` : it nmow receives the
+queryset and is responsible for adding filters on it (no longer for creating
+it).  This was one of the main reasons why filter parameters were being ignored.
+
+I also understood why I had to write::
+
+    if pv.get('project__municipality'):
+
+instead of the usual::
+
+    if pv.project__municipality:
+
+The latter syntax failed for tables on cal.Event that don't have the field
+mentioned in their params_layout.  Because, yes, remote fields are kind of
+volatile fields and get created on the fly when a layout asks for them.  That's
+why, when you want to use a remote field as table parameter, you should also
+write a setup_parameters method on your model::
+
+    from lino.core.fields import make_remote_field
+
+    @classmethod
+    def setup_parameters(cls, params):
+        super(Event, cls).setup_parameters(params)
+        params['project__municipality'] = make_remote_field(cls, 'project__municipality')
+
+    @classmethod
+    def get_request_queryset(cls, ar, **filter):
+        qs = super(Event, cls).get_request_queryset(ar, **filter)
+        pv = ar.param_values
+        if pv.project__municipality:
+            places = pv.project__municipality.whole_clan()
+            qs = qs.filter(project__isnull=False, project__city__in=places)
+        return qs
+
+
+There was no more need for a separate :meth:`calendar_param_filter` method on
+:class:`cal.Event`, so I removed it.
+
+Before committing, I had once more some fun with writing documentation about
+these things. But I am far from being done.  I added the ``--keep-going`` option
+to :cmd:`inv bd`.
