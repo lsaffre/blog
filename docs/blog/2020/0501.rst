@@ -1,0 +1,36 @@
+:date: 2020-05-01
+
+===================
+Friday, May 1, 2020
+===================
+
+Tonis and I started :ticket:`3617` (Model.as_list_item() / Support choosing
+Jinja template over ElementTree). It is a preparation for the new "data view"
+actor Tonis is working on.  This actor is going to produce something similar to
+:meth:`get_table_summary`, but with pagination controls and other features, e.g.
+drag-and-drop.  We took :class:`lino.modlib.comments.Comment` as an example.
+
+I love generating HTML in Python using ElementTree. But Tonis prefers Jinja
+templates.  That's why we conceived an API that satisfies both of us. As an
+:term:`application developer` you can either override the
+:meth:`get_data_card_elements <lino.core.model.Model.get_data_card_elements>` or
+the :meth:`summary_row <lino.core.model.Model.summary_row>` method of your
+model.  The former is for when you want to use ElementTree, the latter is for
+when you want to use Jinja templates.
+
+These changes might have introduced bugs that are not detected by the test
+suite, so I manually ran several tests regarding printing. Everything seems
+okay.  This made me discover a bug in :ref:`avanti` that was obviously
+introduced after their end-user tests last week. Glad that I found it.
+
+There is one change in :mod:`etgen.html.to_rst` (which is heavily used in
+doctests, but not in production sites): if the value is a str, then it is
+supposed to be raw html.
+
+I removed Comment.as_li (and tickets/Ticket.detail.html now calls as_summary_row
+instead). I also removed Model.mobile_item, Site.mobile_view, Layout.main_m and
+Actor.columns_m because these were not used.
+
+TODO: lino.core.actors.Actor.get_table_summary and
+lino.modlib.comments.Comment.get_table_summary are very similar. Make them one.
+Add a possibility to open a table summary in a main window.

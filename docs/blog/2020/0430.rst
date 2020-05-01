@@ -8,9 +8,13 @@ Thursday, April 30, 2020
    add cal.Event.positions field to layout
 
 I recorded a next screen cast about calendar management in :ref:`presto`, also
-about the :attr:`municipality` field.  But I had some work before Lino was ready
-for this.  Because I discovered that the filter parameters in calendar views
-were still being ignored.  This caused a whole series of internal changes.
+about the :attr:`municipality` field.
+
+https://youtu.be/NwpJH349D18
+
+But I had some work before Lino was ready for this.  Because I discovered that
+the filter parameters in calendar views were still being ignored.  This caused a
+whole series of internal changes.
 
 We have a new plugin parameter :attr:`lino_xl.lib.calview.Plugin.params_layout`,
 which specifies the layout of the table parameters used by all calendar views.
@@ -27,9 +31,8 @@ Now the other problem: all those methods that map parameter values to queryset
 filters.  The param_values AttrDict contains only values for those parameters
 that are being used.  Which is a problem.
 
-I changed the signature of :meth:`calendar_param_filter` : it nmow receives the
-queryset and is responsible for adding filters on it (no longer for creating
-it).  This was one of the main reasons why filter parameters were being ignored.
+There was no more need for a separate :meth:`calendar_param_filter` method on
+:class:`cal.Event`, so I removed it.
 
 I also understood why I had to write::
 
@@ -62,9 +65,6 @@ write a setup_parameters method on your model::
         return qs
 
 
-There was no more need for a separate :meth:`calendar_param_filter` method on
-:class:`cal.Event`, so I removed it.
-
 Before committing, I had once more some fun with writing documentation about
-these things. But I am far from being done.  I added the ``--keep-going`` option
-to :cmd:`inv bd`.
+these things. I am still far from having finished.  I added the ``--keep-going``
+option to :cmd:`inv bd`.
