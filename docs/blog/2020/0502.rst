@@ -1,0 +1,69 @@
+:date: 2020-05-02
+
+=====================
+Saturday, May 2, 2020
+=====================
+
+I opened #3620 (Lino Noi sprint May 2020). The following tickets look like
+candidates for this sprint:
+
+- #3621 (Better user interface for ticket dependency management)
+- #3466 (Add feedback to comments plugin)
+- #3369 (Priority, Urgence and Importance)
+- #3498 (Bring back the stars plugin to Noi)
+- #3367 (List of recently touched sites)
+- #3301 (Maintenance orders and service reports in Noi)
+  Optimize the management of service reports. Started :blogref:`20191028`.
+- #3541 (Optimizations to time tracking)
+
+I deactivated some tickets:
+
+- #3540 (Add "customer requirements" to Noi) --> Refused.
+  Replaced by better ticket dependency management.
+- #3530 (Chat using XMPP or Matrix?) --> Sleeping. Before starting on this we
+  should actually switch to some free IM solution.
+
+Concrete steps:
+
+- #3621 The current implementation of "Trigger a spawned ticket" is simply bad.
+  Convert it to a :term:`dialog action` that also asks for the link type.
+  Review the `LinksByTicket` table summary. Add an `insert_layout` for `tickets.Links`.
+
+- #3369 Have Ticket inherit from Sequenced. Make sure the seqno of a ticket
+  relates to its `site`. Make TicketsBySite be sorted by seqno.
+
+- #3369 Rename "Priority" to "Urgence".
+
+- #3301 Turn service reports into vouchers that can use credit. Add a journal
+  for invoices that fill up credit. Time credit is now expressed in euro rather
+  than in hours.
+
+- #3301 Add a model `Sponsoring`.  Move fields company, contact_person
+  and reporting_type from Site to Sponsoring (`company` and `contact_person` are
+  the sponsor, `site` is the site being sponsored, `reporting_type`, maybe also
+  a percentage). During data migration, replace a non-empty `company` of a
+  `Site` by a `Sponsoring`.
+
+- #3466 Add a choicelist comments.ReplyTypes and a field Comment.reply_type with
+  choices "Seen", "Like" and "Dislike". The reply_type field makes sense only
+  when Comment.reply_to is given (add a validation rule reply_type must be empty
+  when reply_to is empty).
+- #3466 CommentsByRFC : visualize when a comment is a reply to another comment.
+
+
+I started with the first step (#3621):
+
+Converted `tickets.SpawnTicket` to a :term:`dialog action` that also asks for the link type.
+Reviewed the `LinksByTicket` table summary. Added an `insert_layout` for `tickets.Links`.
+Dependencies (Links) now get deleted in cascade with their ticket.
+
+The ``deploy.SpawnTicketFromWish`` action in  no longer works. I saw this when
+it was too late. I disabled it as this plugin isn't used anywhere in production.
+
+I added a LinkType "duplicates". Actually I re-added it back.  I think that now
+we will replace the duplicate_of field back to a link. But to be observed.  Also
+I am not yet so sure about the list of link types: do we need them all? Or do we
+need more of them?
+
+TODO: I had to manually set ``ar._status = None`` to disable caching of the
+status. Make a method for this and document it.

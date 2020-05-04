@@ -1,0 +1,121 @@
+:date: 2020-05-04
+
+===================
+Monday, May 4, 2020
+===================
+
+.. program:: getlino configure
+
+The :ref:`getlino.install.prod` page should say more clearly that we usually
+don't want to :option:`--clone` on a :term:`production server`. It now also
+explains the :term:`master environment`.
+
+:cmd:`getlino configure` must default :option:`--shared-env` to the current
+:envvar:`VIRTUAL_ENV` only when :option:`--clone` was given (not always). And
+while we're there I think that it also must create the ``repos_base`` only then.
+
+In the site project dir there was a symbolic link :xfile:`env` pointing to
+``/usr/local/lino/shared/master/``. This was clearly wrong. We don't want this
+production site to use any shared repositories. I did::
+
+  $ go prod
+  $ rm env
+  $ virtualenv env
+  $ . env/bin/activate
+  $ pip install lino-avanti
+
+
+Oops::
+
+   ERROR: Could not find a version that satisfies the requirement openpyxl==3.0.1 (from lino->lino-xl->lino-avanti) (from versions: 1.1.0, 1.1.4, 1.1.5, 1.1.6, 1.1.7, 1.2.3, 1.5.0, 1.5.1, 1.5.2, 1.5.3, 1.5.4, 1.5.5, 1.5.6, 1.5.7, 1.5.8, 1.6.1, 1.6.2, 1.7.0, 1.8.0, 1.8.1, 1.8.2, 1.8.3, 1.8.4, 1.8.5, 1.8.6, 2.0.2, 2.0.3, 2.0.4, 2.0.5, 2.1.0, 2.1.1, 2.1.2, 2.1.3, 2.1.4, 2.1.5, 2.2.0, 2.2.1, 2.2.2, 2.2.3, 2.2.4, 2.2.5, 2.2.6, 2.3.0, 2.3.1, 2.3.2, 2.3.3, 2.3.4, 2.3.5, 2.4.0, 2.4.1, 2.4.2, 2.4.4, 2.4.5, 2.4.7, 2.4.8, 2.4.9, 2.4.10, 2.4.11, 2.5.0, 2.5.1, 2.5.2, 2.5.3, 2.5.4, 2.5.5, 2.5.6, 2.5.7, 2.5.8, 2.5.9, 2.5.10, 2.5.11, 2.5.12, 2.5.14, 2.6.0a1, 2.6.0b1, 2.6.0, 2.6.1, 2.6.2, 2.6.3, 2.6.4)
+   ERROR: No matching distribution found for openpyxl==3.0.1 (from lino->lino-xl->lino-avanti)
+
+Yes, Lino was saying openpyxl==3.0.1 as install requirements. Which was probably
+something old.  They are at 3.0.3 now. And I guess that this version no longer
+exists.  Removed the version requirement.
+
+Quite disturbing because now I need to make a PyPI release for Lino and XL as
+well. Which means that Tonis' and my latest work will be on their production
+site. Which should be avoided because they did already end-user tests.
+
+The main reason for this embarrassing situation is that this problem wasn't
+covered by the getlino test suite. So I reviewed the getlino test suite. There
+was quite some bullshit there!
+
+Just in case I ran the book tests on my machine with the new openpyxl version.
+
+En passant I removed two lino_openui5.projects from the demo_sites in book.
+
+No problem with openpyxl, but in :file:`docs/dev/sphinx/intro.rst` I got this
+failure ::
+
+    Exception: An item named 'user' is already defined in UserTypes
+
+Hey, nice to meet you! This is the error message I didn't manage to reproduce in
+#3614 (ImportError: no module named lino_vilma.lib.vilma.user_types)!
+
+Now I have it reproducible on my machine. I started to explore it. The challenge
+is that the exception comes when it's too late. Yes, there is an attribute
+"user" dangling around on the UserTypes class. But why?!  It shouldn't be there
+because we called :meth:`clear`. Seems to be related to the fact that in cosi we
+don't specify a name  for the UserType "User".
+
+I am working on this file::
+
+  $ doctest docs/dev/sphinx/intro.rst`
+
+If fails, and the debug messages are interesting.
+
+But I am now too tired to continue on this.
+It was a bit too much of surprises.  Johanna must wait another day.
+I leave everything open and push all my work in case Hamza or Tonis want to dive into this.
+If you find the explanation, I'll pay you a cup of ice cream ;-)
+
+10:21 : The ice cream goes to myself... I found the culprit (in :mod:`lino_noi.lib.noi.user_types`)::
+
+  UserTypes.clear()
+  add = UserTypes.add_item
+  add('000', _("Anonymous"), Anonymous, 'anonymous',
+      readonly=True, authenticated=False)
+  add('100', _("Customer"), Customer, 'customer')
+  add('200', _("Contributor"), Contributor, 'contributor')
+  add('400', _("Developer"), Developer, 'developer')
+  add('900', _("Administrator"), SiteAdmin, 'admin')
+
+  UserTypes.user = UserTypes.customer
+
+Yes... this example shows what I love with the Python language: it even allows
+you to shoot in your knee.  Should we forbid this kind of shooting in your knee?
+Seems that it would be difficult: my first idea, adding a ``__slots__``
+attribute, works only on class *instances*, not on the class objects themselves.
+Python says :message:`TypeError: nonempty __slots__ not supported for subtype of
+'type'`, as they explain in `this thread
+<https://stackoverflow.com/questions/9654133/metaclasses-and-slots>`__
+
+I "fixed" the problem by saying that in Noi, the user type with internal name
+"user" is called "Customer" in the web interface.  That's no truly elegant
+solution, either.
+
+A more elegant way to avoid at least above kind of knee-shooting is to add
+support for specifying *multiple names* for a choice of a choicelist. OMG, and I
+couldn't help but quickly doing this as well... which caused yet another
+avalanche of (internal) changes.
+
+The :fixture:`demo` fixture of :mod:`lino_book.projects.team`  is a usage
+example.  It gives Marc the user type `customer` and doesn't know that this is
+the same as user type `user`.
+
+:class:`lino.modlib.users.UserType` had a custom :meth:`__repr__` method. I
+removed it. And as yet another optimization I changed the :meth:`__repr__`
+method of :class:`lino.core.choicelists.Choice` to include the plugin name.
+(Which caused again a few dozen of doctests to fail...)
+
+
+TODO on the prod server (later):
+
+- go prod ; pip install lino-avanti
+
+- There are three config files in :xfile:`/etc/nginx/sites-available` : remove
+  the useless ones
+
+- Remove useless virtualenvs and repositories.
