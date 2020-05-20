@@ -1,0 +1,106 @@
+:date: 2020-05-13
+
+=======================
+Wednesday, May 13, 2020
+=======================
+
+TypeError: must be str, not `__proxy__`
+=======================================
+
+I worked on :ticket:`3637` because it is probably a regression (and they just
+didn't yet report it).
+
+First step : can I reproduce it manually?  go avanti1 and then try. Yep. Got to
+some course, open the detail, click on the first calendar entry that is in state
+"?". Some guests are still invited. Click on "Took place". There it is.
+The users sees "Bad Request. TypeError: must be str, not __proxy__"
+
+I note the request URL:
+  http://127.0.0.1:8000/api/cal/OneEvent/200?_dc=1589335910278&lv=1589020882.721552&an=wf3
+
+Second step : write a test that reproduces it automatically.  (1) Find an
+existing test that does something similar. Search for :file:`test_*.py` files
+that contain "cal.Event".  I chose :file:`test_delete_veto.py` in
+:mod:`lino_book.projects.min9`.
+
+I remove the `_dc=1589335910278&lv=1589020882.721552` params from the GET
+request because they would disturb, and they are not needed.  The following code
+in my test reproduces the problem::
+
+        from lino.utils.instantiator import create_row as create
+
+
+        self.user_root = settings.SITE.user_model(
+            username='root', language='en', user_type='900')
+        self.user_root.save()
+        self.client.force_login(self.user_root)
+
+        p1 = avanti.Client(first_name="John", last_name="Doe")
+        p1.full_clean()
+        p1.save()
+
+        evt = cal.Event()
+        evt.full_clean()
+        evt.save()
+        guest = cal.Guest(event=evt, partner=p1)
+        guest.full_clean()
+        guest.save()
+
+
+        utpl = "/api/cal/OneEvent/{0}?&an=wf3"
+        url = utpl.format(evt.pk)
+        res = self.client.get(url, REMOTE_USER='root')
+        self.assertEqual(res.status_code, 200)
+
+
+
+I convert the original to use the :func:`lino.utils.instantiator.create_row`
+
+Oops, I noticed that :file:`test_delete_veto.py` in roger fails. The header of
+the second column in :class:`contacts.RolesByCompany` has changed from  "Contact
+Role" to "Function". I remember that indeed we changed this some time ago.
+But the book test suite did not fail recently. How is that possible?
+Indeed : roger and min9 were missing in :file:`test_demo.py` of the book test
+suite.  Great! I found and eliminated an important issue!
+
+I started to change :file:`test_delete_veto.py` to make it pass, but I abandoned
+at some moment because there are quite some internal changes in the Ajax
+requests involved with action confirmations.  I remember we have been doing
+quite some work on these.  The callback id is a binary literal and isn't passed
+to the client as expected, but it works.  Only the test is failing.  Either
+adapt the test to that quirky json interface, or first clean up the json
+interface. Leaving this test failing and hope that Tonis can have a look at it.
+
+
+When anonymous tries to act as another
+======================================
+
+I opened :ticket:`3644` (Requesting http://127.0.0.1:8000/?su=5 as anonymous).
+This situation obviously can come when an end user had been acting as somebody
+else and their browser tries to re-open the URL after a server upgrade.
+
+It fails when trying to render a ShowInsert button for Anonymous on
+cal.MyEntries. Which indeed is absolute nonsense. But why is it trying to do
+this?
+
+The explanation is that an anonymous request also sets subst_user, which is
+then used for deciding whether a dashboard item (here cal.MyEntries) should be
+rendered or not. And then the rendering fails because it's not a real user.
+Actually Lino (:class:`lino.core.auth.WithUserMiddleware`) should not even look
+up any :attr:`subst_user` when the user is anonymous.
+
+But even before finding the explanation, I also wanted to have the problem
+covered.  Which made me do some changes in
+:class:`lino.utils.djangotest.WebIndexTestCase`.
+This generic test case now
+(1) runs on the populated demo data (and no longer on an empty database created by the django test runner)
+(2) checks several variants of `test_urls`
+(3) tests them for each user (unless :attr:`lino.core.site.Site.user_model` is None)
+
+:file:`test_addresses.py` in :mod:`lino_book.projects.min9` was not being tested
+by the book suite. Now it is, which revealed that it had been failing since
+:blogref:`20181004`.
+
+The projects  :mod:`lino_book.projects.polls` and
+:mod:`lino_book.projects.polls2` were not being preped. Which now made their
+tests fail.

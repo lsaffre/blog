@@ -1,0 +1,38 @@
+:date: 2020-05-19
+
+=====================
+Tuesday, May 19, 2020
+=====================
+
+
+Lino Noi May 2020 sprint
+========================
+
+I started working on :ticket:`3301` (Implement service reports as invoices).
+
+The basic implementation was surprisingly easy, which demonstrates once more how
+flexible :mod:`lino_xl.lib.invoicing` is.  Changes:
+
+- Added several plugins to :ref:`noi`: :mod:`lino_xl.lib.invoicing`, :mod:`lino_xl.lib.sales`, :mod:`lino_xl.lib.ledger`
+- New plugin :mod:`lino_noi.lib.products`
+- A :class:`lino_xl.lib.working.Session` now inherits from :class:`lino_xl.lib.invoicing.InvoiceGenerator`
+- Renamed :attr:`lino_xl.lib.products.PriceRule.event_type` to :attr:`lino_xl.lib.products.PriceRule.selector`
+- New plugin attribute :attr:`lino_xl.lib.products.Plugin.price_selector` which defaults to ``'cal.EventType'``.
+- :meth:`lino_xl.lib.invoicing.InvoiceGenerator.get_invoiceable_qty` may now return `None` (which means that no item should generated)
+
+There are detail devils to fix before we can actually use this new feature for
+sending service reports:
+
+- The invoiced date range must be on the invoice
+
+- Each invoice item must show at least the ticket numbers
+
+- The invoice should also include a description of the tickets and sites that
+  are being invoiced.
+
+While I was there (anyway we will need to migrate the PriceRule model), let's
+also rename :attr:`PriceRule.fee` to
+:attr:`lino_xl.lib.products.PriceRule.product`. And then, of course
+:meth:`get_rule_fee` to something else... let's say :meth:`get_ruled_price`.
+This merely linguistic change took me another couple of hours of work because I
+also reviewed documentation about these topics.
