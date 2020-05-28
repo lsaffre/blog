@@ -1,0 +1,43 @@
+:date: 2020-05-22
+
+====================
+Friday, May 22, 2020
+====================
+
+I am playing with the invoice template in different sites. A new test project
+:mod:`lino_book.projects.confdirs` is now used for doctests in
+:ref:`config_dirs`.
+
+I wanted to have a way to quickly get an overview of certain site settings and
+wrote the new :manage:`status` command.
+
+I added a local :xfile:`config` directory to :mod:`lino_book.projects.apc` with
+a custom logo.
+
+I added a section :ref:`specs.weasyprint.logo` to the docs.
+I extended the :ref:`config_dirs` page.
+
+The :xfile:`weasyprint/base.weasy.html` template contains
+among others::
+
+
+    {% set logo_file = rt.find_config_file("logo.jpg", "weasyprint") %}
+    {% if logo_file %}
+    margin: 15mm; margin-top: 35mm; margin-bottom: 15mm;
+    @top-right {
+      height: 20mm;
+      // width: 40mm;
+      padding: 0px;
+      text-align: right;
+      // background-image: url(file://{{logo_file}});
+      // background-size: contain;
+      content: url(file://{{logo_file}});
+    }
+    {% else %}
+    margin: 15mm; margin-top: 15mm; margin-bottom: 15mm;
+    {% endif %}
+
+
+This logo, :xfile:`weasyprint/logo.jpg`,
+has a size of 336 x 195 pixels and a resolution of 72ppi.
+So the physical height is about 69 mm (195 / 72 * 25.4).

@@ -1,0 +1,53 @@
+:date: 2020-05-21
+
+======================
+Thursday, May 21, 2020
+======================
+
+I worked on :ticket:`3652`.
+Steve made me discover a design bug in :mod:`lino_xl.lib.vat`: the `item_vat`
+option (whether we want to include VAT in the price of the items of an invoice)
+does not depend on the :term:`VAT regime`. My solution at the moment is to have
+it configurable as a plugin attribute, i.e. globally per site.  This works for
+now. Though it is maybe also not the final solution because we might get a
+customer who wants certain invoices with `item_vat` set to True and others with
+`item_vat` set to False. Maybe it should become a database field on Journal. But
+it's too early for a decision.  Let's leave this question open until we have
+such a customer.
+
+This caused some work for adapting the test cases because  most invoices now
+have a bigger amount.
+
+:ref:`specs.cosi.apc`
+
+How to edit the invoice template
+================================
+
+Steve wants to be able to configure himself his invoice template. :ticket:`3656`.
+
+First step : make a local copy of the relevant templates::
+
+  $ go mysite
+  $ cp -a env/lib/python3.6/site-packages/lino_xl/lib/sales/config .
+
+
+
+Lino doesn't find the local config dir
+======================================
+
+I discovered that Lino doesn't find the local :xfile:`config` directory for
+switcom.  :ticket:`3657`
+
+In weleup this bug doesn't come out because the :xfile:`config` subdir of the
+project directory is actually a symbolic link::
+
+  $ ls -ld config
+  lrwxrwxrwx 1 lsaffre  www-data     19 Sep 28  2018 config -> media/webdav/config
+
+In that case the :func:`os.path.isdir` returns `False`, which
+I obviously ignored when I wrote
+:meth:`lino.core.site.Site.get_settings_subdirs`.
+We definitively should resolve symbolic links before asking whether it is a directory.
+This second bug made that the first didn't come out.
+
+One thing is clear : the local config directory should come first.
