@@ -1,0 +1,41 @@
+:date: 2020-06-16
+
+======================
+Tuesday, June 16, 2020
+======================
+
+
+I continued to work on :ticket:`3683` (Cannot query "Eleonora ...": Must
+be "Client" instance.)
+
+Remember what we had in :doc:`0610`:
+
+>>> import lino
+>>> lino.startup('lino_book.projects.avanti1.settings.doctests')
+>>> from lino.api.doctest import *
+>>> u = rt.login('robin').get_user()
+>>> qs = rt.models.uploads.Upload.objects.all()
+>>> qs = qs.filter(project__coachings_by_client__user=u)
+Traceback (most recent call last):
+...
+ValueError: Cannot query "Robin Rood": Must be "Client" instance.
+
+In our doctest the problem  does *not* disappear after the first request:
+
+>>> qs = rt.models.uploads.Upload.objects.all()
+>>> qs = qs.filter(project__coachings_by_client__user=u)
+
+Which means that something else makes it disappear... mysterious!
+
+The root of the problem is that `uploads.Uploads` has a filter parameter
+:attr:`coached_by` which makes sense only when the :mod:`lino_xl.lib.coachings`
+is installed.  Django seems to not behave 100% consistently when you ask to
+filter using an invalid lookup, but that's not a big issue.
+
+In :ref:`welfare` we want a filter parameter :attr:`coached_by` for upload
+files. This is different from the upload's author.  Social agents want to see
+expiring upload files for the clients they are coaching even when the uploader
+was a colleague.
+
+This functionality might make sense in Avanti where they have no coaching
+history.

@@ -1,0 +1,85 @@
+:date: 2020-06-11
+
+=======================
+Thursday, June 11, 2020
+=======================
+
+On luc@laudate I said::
+
+  $ echo "body" | mail -s "test 20200611" luc.saffre@gmx.net tonis.piip@gmail.com luc@saffre-rumma.net
+
+and here are the responses from three different providers::
+
+  to=<luc.saffre@gmx.net>, relay=mx01.emig.gmx.net[212.227.17.5]:25,
+  status=bounced (host mx01.emig.gmx.net[212.227.17.5] said: 550-Requested action
+  not taken: mailbox unavailable 550 invalid DNS MX or A/AAAA resource record (in
+  reply to MAIL FROM command))
+
+  to=<tonis.piip@gmail.com>,
+  relay=gmail-smtp-in.l.google.com[2a00:1450:4010:c06::1a]:25,
+  status=bounced (host
+  gmail-smtp-in.l.google.com[2a00:1450:4010:c06::1a] said: 550-5.7.1
+  [2a01:4f9:c010:9a4f::1] Our system has detected that this message does 550-5.7.1
+  not meet IPv6 sending guidelines regarding PTR records and 550-5.7.1
+  authentication. Please review 550-5.7.1
+  https://support.google.com/mail/?p=IPv6AuthError for more information 550 5.7.1
+  . s9si1542418ljg.411 - gsmtp (in reply to end of DATA command))
+
+  to=<luc@saffre-rumma.net>, relay=mail.saffre-rumma.net[167.114.252.122]:25,
+  status=bounced (host mail.saffre-rumma.net[167.114.252.122] said: 504 5.5.2
+  <luc@laudate>: Sender address rejected: need fully-qualified address (in reply
+  to RCPT TO command))
+
+Three different messages to the same mail. The third error is the most helpful
+here because it says <luc@laudate>: Sender address rejected. IOW our postfix did
+not convert the local domain "laudate" into the fqdn "laudate.ee". I guess that
+this is the main problem.
+
+Furthermore, when I specify the from: header myself, it works::
+
+  $ echo "body" | mail -s "some test" -a From:luc@laudate.ee luc.saffre@gmx.net tonis.piip@gmail.com hamza@saffre-rumma.net
+
+Except that it doesn't because it hits a next problem::
+
+  Jun 11 18:38:08 laudate postfix/smtp[10449]: D18143FFEE: to=<luc.saffre@gmx.net>, relay=mx01.emig.gmx.net[212.227.17.5]:25, delay=0.52, delays=0/0.02/0.24/0.25, dsn=5.0.0, status=bounced (host mx01.emig.gmx.net[212.227.17.5] said: 550-Requested action not taken: mailbox unavailable 550 invalid DNS MX or A/AAAA resource record (in reply to MAIL FROM command))
+
+
+550 invalid DNS MX or A/AAAA resource record
+============================================
+
+Another problem was that Thunderbird now gave me this error message when sending
+to tonis@laudate.ee:
+
+  An error occurred while sending mail. The mail server responded:
+  Requested action not taken: mailbox unavailable
+  invalid DNS MX or A/AAAA resource record.
+  Please check the message recipient "tonis@laudate.ee" and try again
+
+Same when sending to luc@saffre-rumma.net or to luc@lino-framework.org. These
+seem to be caused by the fact that we changed th MX records of our servers from
+`FQDN` to `mail.FQDN`.
+
+I read `a blog post in German
+<https://www.heinlein-support.de/blog/mailserver/gmx-blockt-e-mail-adressen-ohne-aaaaa-record/>`__,
+which complains that GMX refuse to accept incoming mail when the MX server of
+the recipient has no A/AAAA record. Indeed we did not have an A record for
+mail.SR, we "only" had a wildcard CNAME that points to SR itself. This should
+theoretically be enough.  But above blog post made me try to also add an A
+record for mail.SR (which of cours points to the same IP as SR itself). And
+--miracle!-- it it made the TB error disappear. TIL : it seems that the domain
+given by the MX record (the FQDN of our mail server) needs to have its separate
+A record. Just a CNAME is not enough for a mail server.
+
+
+Unauthenticated email from xxx is not accepted due to domain's 550-5.7.26 DMARC policy
+======================================================================================
+
+We also saw this reply::
+
+  relay=gmail-smtp-in.l.google.com[2a00:1450:4010:c06::1b]:25,
+  status=bounced (host gmail-smtp-in.l.google.com[2a00:1450:4010:c06::1b] said:
+    550-5.7.26 Unauthenticated email from laudate.ee is not accepted due to
+    domain's 550-5.7.26 DMARC policy.
+    Please contact the administrator of laudate.ee domain 550-5.7.26 if this was
+    a legitimate mail. Please visit 550-5.7.26  https://support.google.com/mail/answer/2451690
+    to learn about the 550 5.7.26 DMARC initiative.

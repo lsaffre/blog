@@ -1,0 +1,58 @@
+:date: 2020-05-29
+
+====================
+Friday, May 29, 2020
+====================
+
+Exploring Laktor
+================
+
+I stumbled once more into the Lektor static site generator, and gave it another
+try.
+
+In the `installation instructions
+<https://www.getlektor.com/docs/installation/>`__ they ask me to run :cmd:`curl
+-sf https://www.getlektor.com/installer.py | python3`. But I prefer to say
+:cmd:`pip install lektor` instead. Is there something wrong with that?  Yes, as
+they say: "Lektor actively manages virtualenvs for plugin installations in very
+specific ways and this might or might not work in your setup. We support pip
+installations for deployment environments and local development only."
+
+My next page was `Quickstart <https://www.getlektor.com/docs/quickstart/>`__.
+Great.
+
+https://www.getlektor.com/docs/project/structure/
+
+
+
+About rounding
+==============
+
+I had a look into :ticket:`3662` and noticed that the original problem is not
+directly reproducible:
+
+>>> from lino_xl.lib.ledger.utils import myround, Decimal
+>>> 1487.50 * 0.21
+312.375
+>>> print(myround(Decimal("312.375")))
+312.38
+
+The problem is that Lino computes and rounds the VAT amount for every item. And
+consequently the total of VAT amounts is not necessarily the same as the VAT of
+the total amount.  This situation is actually legally okay (as far as I
+remember).
+
+Furthermore I realized that the item_vat option must be configurable per
+journal. Having it as a global parameter won't be enough because in a salespoint
+invoice we will want it to be True while in a b2b sales invoice we want it
+False.  And in a purchase invoice we sometimes want to manually adjust the VAT
+amount because each vendor's accounting system might have its own rounding
+philosophy (per item or not)
+
+One solution might be to add an option "re-compute VAT per invoice". If that
+option is set, Lino would do another loop over the dict returned by
+:meth:'get_payable_sums_dict' where the VAT amount would be computed from the
+total base amount.  This would mean that the VAT amounts of the individual items
+are "just informative".
+
+To be meditated.

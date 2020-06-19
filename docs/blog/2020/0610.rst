@@ -1,0 +1,244 @@
+:date: 2020-06-10
+
+========================
+Wednesday, June 10, 2020
+========================
+
+Retry wagtail as a CMS
+======================
+
+I think we are going to use a wagtail site for the laudate project.  In theory I
+would prefer to do it with a Lino site, but reality sometimes differs from
+theory: the users of the laudate project won't have time to actively contribute
+to development. And why not have a look over the fence into other projects.
+
+https://docs.wagtail.io/en/stable/getting_started
+
+First steps on the laudate server::
+
+  $ cd /usr/local/lino/lino_local
+  $ mkdir laudate
+  $ cd laudate
+  $ virtualenv -p python3 env
+  $ a
+  $ pip install wagtail
+  $ wagtail start mysite
+  Creating a Wagtail project called mysite
+  Success! mysite has been created
+
+  $ cd mysite
+  $ pip install -r requirements.txt
+  $ ./manage.py migrate
+  $ ./manage.py createsuperuser
+  $ ./manage.py runserver
+
+I noticed that it requires Django<3.1
+
+I then noticed that this quick start is for a developer site. Need to adapt the
+settings for a production site.
+
+
+How to properly configure postfix and mailman
+=============================================
+
+I continued (partly with Tonis and partly with Hamza) to try to get the mail
+systems running properly. I started a new section :ref:`admin.mail` in the
+hoster's guide of the book.
+
+Now we get another error from the recipient's SMTP server:
+
+  status=deferred (host mx01.emig.gmx.net[212.227.17.5] refused to talk to me: 554-gmx.net (mxgmx115)
+  Nemesis ESMTP Service not available 554-No SMTP service 554-Bad DNS PTR resource
+  record. 554 For explanation visit
+  https://www.gmx.net/mail/senderguidelines?ip=95.217.218.29&c=rdns)
+
+How to test an SMTP server::
+
+  $ telnet lino-framework.org 465
+  Trying 167.114.229.225...
+  Connected to lino-framework.org.
+  Escape character is '^]'.
+
+For laudate we had to uncomment the ``smtps`` entry in
+:xfile:`/etc/postfix/master.cf`::
+
+  smtps     inet  n       -       y       -       -       smtpd
+
+
+
+Mxtools said "Reverse DNS is not a Valid Hostname" for laudate. That's fixed
+now.
+
+TIL that also reverse DNS has a propagation time.
+
+TIL that I can say :cmd:`dig` to do a DNS lookup, and  :cmd:`dig -x` to do a
+reverse DNS lookup. :cmd:`dig laudate.ee` gives me `95.217.218.29` and :cmd:`dig
+-x 95.217.218.29` gives me `laudate.ee`::
+
+  $ dig laudate.ee
+  ; <<>> DiG 9.11.3-1ubuntu1.12-Ubuntu <<>> laudate.ee
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 58844
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 65494
+  ;; QUESTION SECTION:
+  ;laudate.ee.			IN	A
+
+  ;; ANSWER SECTION:
+  laudate.ee.		3600	IN	A	95.217.218.29
+
+  ;; Query time: 12 msec
+  ;; SERVER: 127.0.0.53#53(127.0.0.53)
+  ;; WHEN: Wed Jun 10 17:03:36 EEST 2020
+  ;; MSG SIZE  rcvd: 55
+
+  $ dig -x 95.217.218.29
+
+  ; <<>> DiG 9.11.3-1ubuntu1.12-Ubuntu <<>> -x 95.217.218.29
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 26604
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 65494
+  ;; QUESTION SECTION:
+  ;29.218.217.95.in-addr.arpa.	IN	PTR
+
+  ;; ANSWER SECTION:
+  29.218.217.95.in-addr.arpa. 72562 IN	PTR	mail.laudate.ee.
+
+  ;; Query time: 6 msec
+  ;; SERVER: 127.0.0.53#53(127.0.0.53)
+  ;; WHEN: Wed Jun 10 17:06:59 EEST 2020
+  ;; MSG SIZE  rcvd: 84
+
+
+But why does it say ``mail.laudate.ee`` instead of simply ``laudate.ee``?
+
+Both FQDN resolve to the same IP address because we configured a wildcard in the
+zone file.
+
+Note that the same is true for ``mail.lino-framework.org``, which is given as
+the Reverse DNS for the IP address of LF::
+
+  $ telnet mail.lino-framework.org 465
+
+In the ovh console I noticed that the "Reverse DNS" for the LF server was set to
+"mail.lino-framework.org". I changed this to "lino-framework.org" (without the
+"mail" subdomain). Afterwards everything (both sending and receiving a mail via
+luc@LF using TB) was still working.
+
+It seems that the `mail` subdomain (or sometimes `smtp` or `mx`) is general
+practice.  It makes sense to have your mail server on a
+different machine than your application.  Already for security reasons.
+Also in order to be scalable.
+
+https://serverfault.com/questions/711600/reverse-dns-is-not-a-valid-hostname-error-from-mxtoolbox
+
+The free "MX plan" at OVH is limited to about 100 messages per hour. With our
+playing around today this limit has been reached and they blocked the account.
+
+The mail log says:
+
+  to=<luc.saffre@gmx.net>, relay=ssl0.ovh.net[193.70.18.144]:587,
+  status=deferred (SASL authentication failed; server ssl0.ovh.net[193.70.18.144] said: 535 5.7.1 Authentication failed)
+
+It's relatively easy to unblock it by simply changing the password. Though that
+means that we need to change the :xfile:`/etc/postfix/sasl_passwd` file on every server that
+uses this account.  That's a disadvantage of using a relay host.
+
+Rather than unlocking it I'd prefer to try once more the direct way of talking
+to the SMTP servers.
+
+How to change your hostname::
+
+  $ sudo hostnamectl set-hostname laudate
+
+But :cmd:`echo "body" | mail -s "some test" luc.saffre@gmx.net` does not seem to
+understand the new hostname. It is still using the original hostname `hetz1`,
+which I specified at creation and which we changed to `jane` last week.  Yes, I
+can say ``-a "From:me@my.com"``, but where does the :cmd:`mail` command get the
+default value for the ``From:`` header field?
+
+http://mailutils.org/manual/html_node/configuration.html
+
+I can say::
+
+  $ mail --show-config-options | grep SYSCONFDIR
+  SYSCONFDIR=/etc 	- System configuration directory
+
+Which means that actually the config files are in :file:`/etc/main`. And one of
+them, :file:`/etc/mail/local-host-names` contains my default ``From`` header.
+
+:file:`/etc/mail/local-host-names`
+
+::
+
+  $ mail --config-lint
+  mail: opening configuration file /etc/mailutils.conf
+  mail: configuration file /etc/mailutils.conf doesn't exist
+  mail: opening configuration file /home/luc/.mail
+  mail: configuration file /home/luc/.mail doesn't exist
+
+
+Also I cannot find how to disable the relay host.
+
+:cmd:`sudo postconf -d | grep relayhost`
+
+Jun 10 12:33:19 hetz1 postfix/smtp[16646]: A8CD040107:
+to=<tonis.piip@gmail.com>, relay=ssl0.ovh.net[193.70.18.144]:587, delay=1.8,
+delays=0.03/0.03/1.5/0.24, dsn=2.0.0, stat us=sent (250 2.0.0 Ok: queued as
+404C2133B946F)
+
+
+
+::
+
+  Jun 10 15:50:13 localhost postfix/pickup[2096]: 5DE2A7D07: uid=1001 from=<luc@localhost>
+  Jun 10 15:50:13 localhost postfix/cleanup[2124]: 5DE2A7D07: message-id=<20200610155013.5DE2A7D07@lino-framework.org>
+  Jun 10 15:50:13 localhost postfix/qmgr[17652]: 5DE2A7D07: from=<luc@localhost.org>, size=334, nrcpt=1 (queue active)
+  Jun 10 15:50:13 localhost postfix/smtp[2126]: 5DE2A7D07: to=<luc.saffre@gmx.net>, relay=mx00.emig.gmx.net[212.227.15.9]:25, delay=0.55, delays=0.05/0.05/0.26/0.19, dsn=5.0.0, status=bounced (host mx00.emig.gmx.net[212.227.15.9] said: 550-Requested action not taken: mailbox unavailable 550 Sender address has null MX (in reply to MAIL FROM command))
+  Jun 10 15:50:13 localhost postfix/cleanup[2124]: E4AAEA46B: message-id=<20200610155013.E4AAEA46B@lino-framework.org>
+  Jun 10 15:50:13 localhost postfix/qmgr[17652]: E4AAEA46B: from=<>, size=2350, nrcpt=1 (queue active)
+  Jun 10 15:50:13 localhost postfix/bounce[2127]: 5DE2A7D07: sender non-delivery notification: E4AAEA46B
+  Jun 10 15:50:13 localhost postfix/qmgr[17652]: 5DE2A7D07: removed
+  Jun 10 15:50:14 localhost postfix/local[2128]: E4AAEA46B: to=<luc@localhost.org>, relay=local, delay=0.08, delays=0/0.05/0/0.02, dsn=2.0.0, status=sent (delivered to command: procmail -a "$EXTENSION")
+  Jun 10 15:50:14 localhost postfix/qmgr[17652]: E4AAEA46B: removed
+
+
+
+https://www.cyberciti.biz/faq/how-to-configure-postfix-relayhost-smarthost-to-send-email-using-an-external-smptd/
+
+
+Cannot query "Eleonora ...": Must be "Client" instance
+======================================================
+
+Tonis and I also had a look at :ticket:`3683` (Cannot query "Eleonora ...": Must
+be "Client" instance.)
+
+The problem is reproducible in a doctest snippet:
+
+>>> import lino
+>>> lino.startup('lino_book.projects.avanti1.settings.doctests')
+>>> from lino.api.doctest import *
+>>> u = rt.login('robin').get_user()
+>>> qs = rt.models.uploads.Upload.objects.all()
+>>> qs = qs.filter(project__coachings_by_client__user=u)
+Traceback (most recent call last):
+...
+ValueError: Cannot query "Robin Rood": Must be "Client" instance.
+
+Tonis observed that the problem "disappears" in the web client after the first
+request. That is, when you invoke the same menu command a second time (within a
+same runserver session), then the problem no longer occurs.
+
+In our doctest the problem  does *not* disappear after the first request:
+
+>>> qs = rt.models.uploads.Upload.objects.all()
+>>> qs = qs.filter(project__coachings_by_client__user=u)
+
+Which means that something else makes it disappear... mysterious!

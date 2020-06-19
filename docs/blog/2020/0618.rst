@@ -1,0 +1,46 @@
+:date: 2020-06-18
+
+=======================
+Thursday, June 18, 2020
+=======================
+
+Johanna confirmed that the functionality defined by :doc:`lino_xl.lib.uploads`
+(see :doc:`0616`) is useful for :ref:`avanti` as well. When no coaching history
+is installed, the filtering must simply ask about the currently defined coach. I
+opened a new :ticket:`3695`
+
+I moved some demo from :ref:`welfare` to :mod:`lino_xl.lib.clients` :
+:fixture:`std` and :fixture:`demo2`. New plugin setting
+:attr:`lino_xl.lib.uploads.Plugin.demo_coach`. I converted the deprecated
+:meth:`setup_plugins` in welfare to :meth:`lino.core.plugin.Plugin.get_plugin_configs`.
+
+How to "transfer" the existing translations from welfare to xl: Manually copy
+the content of the welfare po files (one file per language) to the end of the xl
+po files.  Then run :cmd:`inv mm` in xl, which will assign them to their code
+files and line numbers. Then run :cmd:`inv mm` in welfare which will remove the
+translations that are no longer used.
+
+I considered whether we should rather leave all upload types in welfare and
+create another set of (similar) upload types for avanti?  The problem is that
+until now they are in the pcsw fixtures (which is a design flaw for historical
+reasons), and if I add demo fixtures to the clients plugin, we will have them
+twice in welfare.
+
+The "Identifying document" shortcut is no longer defined in
+:mod:`lino_welfare.modlib.welfare.workflows` but in :mod:`lino_xl.lib.clients`::
+
+  from lino.modlib.uploads.choicelists import add_shortcut as add
+  add('pcsw.Client', 'id_document', _("Identifying document"),
+      target='uploads.UploadsByClient')
+
+I would have wanted to specify the ``needs_plugins = 'lino_xl.lib.clients'`` in xl.uploads
+because my comment "don't manage dependency automatically because that would
+also merge their menus" is so silly. But this has a side effect: when the clients plugin
+is loaded automatically already by uploads, then e.g.  the menu command "Client
+contact types" should be under the "PCSW" menu, not under "Uploads". So I would have needed
+to change the order of installed apps in welfare, which becomes visible to end
+users in the ordering of the main menu.  PCSW would come before "Calendar" and
+"Reception". Not good.
+
+TODO: add_param_filter is called only for simple parameters. Why? For
+MyExpiringUploads we want it to work for the coached_by param.
