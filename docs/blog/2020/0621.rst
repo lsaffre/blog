@@ -1,0 +1,73 @@
+:date: 2020-06-21
+
+=====================
+Sunday, June 21, 2020
+=====================
+
+Worker has no field named 'purchase_account_id
+==============================================
+
+The :class:`contacts.Worker` model in :ref:`presto` does have a field
+:attr:`purchase_account` (which is a FK and therefore creates a field
+`purchase_account_id`).
+
+The :attr:`purchase_account` is a bit special because it is injected
+automatically by  the :mod:`lino_xl.lib.ledger.choicelists` module where we have
+this code::
+
+  TradeTypes.add_item(
+      'P', _("Purchases"), 'purchases', dc=CREDIT,
+      base_account=CommonAccounts.purchase_of_goods,
+      main_account=CommonAccounts.suppliers,
+      invoice_account_field_name='purchase_account',
+      invoice_account_field_label=_("Purchase account")
+  )
+
+Every trade type potentially injects a series of fields into certain models.
+One of these fields is given by :attr:`invoice_account_field_name`.
+
+Later in the same module we define a receiver for the `pre_analyze` event that
+injects the :attr:`purchase_account` field into :class:`contacts.Partner`::
+
+  @dd.receiver(dd.pre_analyze)
+  def inject_tradetype_fields(sender, **kw):
+      for tt in TradeTypes.items():
+          if tt.invoice_account_field_name is not None:
+              dd.inject_field(
+                  'contacts.Partner', tt.invoice_account_field_name,
+                  dd.ForeignKey(
+                      'ledger.Account',
+                      verbose_name=tt.invoice_account_field_label,
+                      on_delete=models.PROTECT,
+                      related_name='partners_by_' + tt.invoice_account_field_name,
+                      blank=True, null=True))
+
+          ...
+
+
+My first guess was to suspect the :func:`lino.core.inject.inject_field`
+function, which accesses undocumented Django internals and therefore might be
+broken. But the problem occurs also when I downgrade my Django to 2.2.5 (the
+version used on their production site), so this is not the explanation.
+
+What's the trigger? Why does this problem occur only in :ref:`presto` and in no
+other application? Presto isn't the only application that uses
+:mod:`lino_xl.lib.ledger`.
+
+Maybe the inheritance scheme? In presto (see :mod:`lino_presto.lib.contacts`) we
+have custom  :class:`Partner` and :class:`Person` models, and then define
+:class:`Worker` as a subclass of our custom :class:`Person`::
+
+  from lino_xl.lib.contacts.models import *
+  ...
+  class Partner(Partner, mixins.CreatedModified):
+    ...
+  class Person(Partner, Person):
+    ...
+  class Worker(Person, SSIN, Plannable):
+    ...
+
+But nothing has changed with these things between the version on their
+production site and the current version.
+
+I gave up the ticket for now, hoping that Tonis or Hamza have some inspiration.

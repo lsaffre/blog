@@ -1,0 +1,126 @@
+:date: 2020-06-22
+
+=====================
+Monday, June 22, 2020
+=====================
+
+The lino_xl.lib.clients plugin (in its :meth:`on_site_startup` method) adds
+a Shortcut ``id_document`` with ``"presto.Client"``` as `model_spec`::
+
+    def on_site_startup(self, site):
+        add = site.models.uploads.Shortcuts.add_item
+        add(self.client_model, 'id_document', _("Identifying document"),
+            target='uploads.UploadsByClient')
+        self.client_model = site.models.resolve(self.client_model)
+        super(Plugin, self).on_site_startup(site)
+
+Presto doesn't use this shortcut but shouldn't get disturbed by it.  But adding
+this shortcut seems to have a side effect.  uploads.models defines a
+`pre_analyze` receiver that injects a virtual display field on the `model_spec`
+of every shortcut::
+
+  @dd.receiver(dd.pre_analyze)
+  def before_analyze(sender, **kwargs):
+      for i in Shortcuts.items():
+          ...
+          vf = dd.VirtualField(dd.DisplayField(i.text), f)
+          dd.inject_field(i.model_spec, i.name, vf)
+
+The pre_analyze signal is run long before on_site_startup
+
+Maybe inject_field fails when it is called a second time on a model before the
+model is prepared?
+
+
+::
+
+  20200622 Run /home/luc/work/lino/lino/modlib/users/models.py:305 for <class 'lino.modlib.users.models.Authority'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/countries/models.py:152 for <class 'lino_xl.lib.countries.models.Place'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/contacts/models.py:614 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/calview/models.py:49 for <class 'lino_xl.lib.calview.models.DailyPlannerRow'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/contacts/models.py:173 for <class 'lino_presto.lib.contacts.models.Person'>
+  20200622 Run /home/luc/work/lino/lino/modlib/checkdata/models.py:172 for <class 'lino.modlib.checkdata.models.Problem'>
+  20200622 Run /home/luc/work/lino/lino/modlib/gfks/mixins.py:50 for <class 'lino.modlib.checkdata.models.Problem'>
+  20200622 Run /home/luc/work/lino/lino/modlib/gfks/mixins.py:54 for <class 'lino.modlib.checkdata.models.Problem'>
+  20200622 Run /home/luc/work/lino/lino/modlib/gfks/mixins.py:59 for <class 'lino.modlib.checkdata.models.Problem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/mixins.py:750 for <class 'lino_xl.lib.cal.mixins.RecurrenceSet'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:125 for <class 'lino_xl.lib.cal.models.Room'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:127 for <class 'lino_xl.lib.cal.models.Room'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:349 for <class 'lino_xl.lib.cal.models.RecurrentEvent'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:915 for <class 'lino_xl.lib.cal.models.Event'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1120 for <class 'lino_presto.lib.users.models.User'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1127 for <class 'lino_presto.lib.users.models.User'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1137 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1148 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1157 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/cal/models.py:1167 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/cal/models.py:223 for <class 'lino_presto.lib.cal.models.Event'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/cal/models.py:224 for <class 'lino_xl.lib.cal.models.EventType'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/cal/models.py:316 for <class 'lino_xl.lib.cal.models.Guest'>
+  20200622 Run /home/luc/work/lino/lino/modlib/uploads/models.py:185 for <class 'lino.modlib.uploads.models.Upload'>
+  20200622 Defer /home/luc/work/xl/lino_xl/lib/ledger/ui.py:415 for ledger.Account
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/ui.py:434 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1123 for <class 'lino_xl.lib.ledger.models.Account'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/models.py:1132 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/orders/models.py:352 for <class 'lino_xl.lib.orders.models.Enrolment'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/orders/models.py:354 for <class 'lino_xl.lib.orders.models.Enrolment'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/orders/models.py:409 for <class 'lino_xl.lib.ledger.models.Journal'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/sales/mixins.py:63 for <class 'lino_xl.lib.sales.mixins.SalesDocument'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/sales/mixins.py:64 for <class 'lino_xl.lib.sales.mixins.SalesDocument'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/sales/mixins.py:65 for <class 'lino_xl.lib.sales.mixins.SalesDocument'>
+  20200622 Run /home/luc/work/lino/lino/modlib/dashboard/models.py:44 for <class 'lino_presto.lib.users.models.User'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/clients/models.py:61 for <class 'lino_xl.lib.clients.models.ClientContact'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/clients/models.py:67 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/households/models.py:525 for <class 'lino_presto.lib.contacts.models.Person'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/excerpts/models.py:631 for <class 'lino_xl.lib.excerpts.models.Excerpt'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/excerpts/models.py:633 for <class 'lino_xl.lib.excerpts.models.Excerpt'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:28 for <class 'lino_xl.lib.vat.models.VatAccountInvoice'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:29 for <class 'lino_xl.lib.vat.models.VatAccountInvoice'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:63 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:79 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:84 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:87 for <class 'lino_xl.lib.ledger.models.Movement'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/models.py:90 for <class 'lino_xl.lib.ledger.models.Movement'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/sales/models.py:65 for <class 'lino_xl.lib.sales.models.VatProductInvoice'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/sales/models.py:67 for <class 'lino_xl.lib.sales.models.VatProductInvoice'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/sales/models.py:69 for <class 'lino_xl.lib.sales.models.InvoiceItem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:84 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:510 for <class 'lino_xl.lib.products.models.Product'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:514 for <class 'lino_xl.lib.sales.models.VatProductInvoice'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:517 for <class 'lino_xl.lib.sales.models.VatProductInvoice'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:524 for <class 'lino_xl.lib.sales.models.InvoiceItem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:530 for <class 'lino_xl.lib.sales.models.InvoiceItem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:535 for <class 'lino_xl.lib.sales.models.InvoiceItem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/invoicing/models.py:549 for <class 'lino_xl.lib.sales.models.InvoiceItem'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/sepa/models.py:114 for <class 'lino_xl.lib.ledger.models.Journal'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/notes/models.py:175 for <class 'lino_xl.lib.notes.models.Note'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/notes/models.py:177 for <class 'lino_xl.lib.notes.models.Note'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/notes/models.py:274 for <class 'lino.modlib.system.models.SiteConfig'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/presto/models.py:156 for <class 'lino_presto.lib.presto.models.Client'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/presto/models.py:158 for <class 'lino_presto.lib.presto.models.Client'>
+  20200622 Run /home/luc/work/presto/lino_presto/lib/presto/models.py:159 for <class 'lino_presto.lib.presto.models.Client'>
+  20200622 Run /home/luc/work/lino/lino/modlib/users/models.py:318 for <class 'lino_presto.lib.users.models.User'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/vat/desktop.py:142 for vat.VatInvoices
+  20200622 Run /home/luc/work/lino/lino/modlib/uploads/models.py:447 for <class 'lino_presto.lib.presto.models.Client'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/choicelists.py:409 for <class 'lino_xl.lib.products.models.Product'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/choicelists.py:414 for <class 'lino_xl.lib.products.models.Product'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/ledger/choicelists.py:400 for <class 'lino_presto.lib.contacts.models.Partner'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/products/models.py:190 for <class 'lino_xl.lib.products.models.PriceRule'>
+  20200622 Run /home/luc/work/xl/lino_xl/lib/products/models.py:193 for <class 'lino_presto.lib.contacts.models.Partner'>
+
+
+Maybe I must run fix_field_cache also on all MTI children? Yes! This was the bug:
+
+- When using :func:`lino.core.inject.inject_field` on a model, Lino did not
+  reset the field cache of the MTI children of that model.  This turned out to
+  be necessary in some sitations.
+
+Unrelated changes en passant:
+
+- get_installed_apps of presto now yields :mod:`uploads` earlier.
+- :func:`lino.api.doctest.show_choicelists`now also shows the number of items in each choicelist.
