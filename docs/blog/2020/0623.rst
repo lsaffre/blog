@@ -1,0 +1,144 @@
+:date: 2020-06-23
+
+======================
+Tuesday, June 23, 2020
+======================
+
+About zone files
+================
+
+We own the ``mylino.net`` domain, and our registrar is ``ovh.com``.
+The OVH web interface lets us edit the zone file for our domain.
+But this interface is meant for simple setups.
+The ``mylino.net`` zone file is more complex than usual as it is used for several servers.
+That's why we probably prefer to edit the file directly.
+Which has another advantage: we can store a local backup of our zone file on our computers.
+
+I did this and had a look at our zone file. I am far from understanding every
+detail in this file.
+The Wikipedia article on `Zone file <https://en.wikipedia.org/wiki/Zone_file>`__
+is useful here because it has a section about the file format.
+
+
+If the ``$ORIGIN`` keyword (which specifies the starting point for the zone in
+the DNS hierarchy) is omitted, the origin is inferred by the server software
+from the reference to the zone file in its server configuration.
+
+The ``$TTL`` keyword specifies the default expiration time of all resource
+records without their own TTL value.
+
+As a minimum, the zone file must specify the ``SOA`` record (Start of Authority)
+with the name of the authoritative master name server for the zone and the email
+address of someone responsible for management of the name server. The email
+address in the SOA RR has the @ symbol replaced by a period.
+
+In the zone file, host names that do not end in a period are relative to the
+origin. Names ending with a full stop (or point) are said to be fully qualified
+domain names.
+
+
+Introductions into the DNS system:
+
+- Steve Cope explains basic concepts of DNS by comparing it to a football team in
+  his guide `DNS Zones and Zone Files Explained
+  <http://www.steves-internet-guide.com/dns-zones-explained/>`__
+
+- `What is a DNS ZONE file: A Complete Tutorial on zone file and its contents
+  <https://www.slashroot.in/what-dns-zone-file-complete-tutorial-zone-file-and-its-contents>`__
+
+
+Configuring the avanti server
+=============================
+
+I worked on avanti server (mdg2)::
+
+  $ sudo apt-get install opendkim opendkim-tools
+  $ sudo nano /etc/opendkim.conf
+
+Configure laudate mailing lists
+===============================
+
+https://lists.laudate.ee/ says "502 Bad gateway".
+
+The nginx error.log  says::
+
+  2020/06/23 08:17:01 [crit] 750#750: *3828 connect() to
+    unix:/opt/mailman/mailman-suite/mailman-suite_project/mailman.sock
+    failed (13: Permission denied) while connecting to upstream,
+    client: 176.46.90.31, server: lists.laudate.ee,
+    request: "GET / HTTP/1.1",
+    upstream: "uwsgi://unix:/opt/mailman/mailman-suite/mailman-suite_project/mailman.sock:",
+    host: "lists.laudate.ee"
+
+
+I changed the user in :file:`/etc/supervisor/conf.d/mailman.conf` from "hamza"
+to "www-data".
+
+I changed the owner of the socket file::
+
+  $ sudo chown www-data:www-data /opt/mailman/mailman-suite/mailman-suite_project/mailman.sock
+
+Now the error message changed from `(13: Permission denied)` to `(111: Connection refused)`::
+
+  2020/06/23 08:30:32 [error] 1791#1791: *6 connect() to
+  unix:/opt/mailman/mailman-suite/mailman-suite_project/mailman.sock
+  failed (111: Connection refused) while connecting to upstream,
+  client: 176.46.90.31, server: lists.laudate.ee,
+  request: "GET / HTTP/1.1",
+  upstream: "uwsgi://unix:/opt/mailman/mailman-suite/mailman-suite_project/mailman.sock:",
+  host: "lists.laudate.ee"
+
+Aha, the files below :file:`/opt/mailman` were not group-owned by ``www-data``.
+
+Now the connect works and I can see the mailman web interface. But it says:
+
+  Something went wrong.
+  Mailman REST API not available. Please start Mailman core.
+
+Here is the status of what I would call the "Mailman core"::
+
+  $ sudo service mailman3 status
+  ● mailman3.service - LSB: Mailman3 server
+     Loaded: loaded (/etc/init.d/mailman3; generated)
+     Active: active (exited) since Tue 2020-06-23 09:11:16 CEST; 2s ago
+       Docs: man:systemd-sysv-generator(8)
+    Process: 2675 ExecStart=/etc/init.d/mailman3 start (code=exited, status=0/SUCCESS)
+
+  Jun 23 09:11:16 laudate systemd[1]: mailman3.service: Succeeded.
+  Jun 23 09:11:16 laudate systemd[1]: Stopped LSB: Mailman3 server.
+  Jun 23 09:11:16 laudate systemd[1]: Starting LSB: Mailman3 server...
+  Jun 23 09:11:16 laudate systemd[1]: Started LSB: Mailman3 server.
+
+Looks okay, doesn't it?
+
+The :file:`/var/log/mailman3/uwsgi-error.log` file says::
+
+  *** Starting uWSGI 2.0.18 (64bit) on [Sun Jun  7 01:08:30 2020] ***
+  compiled with version: 8.3.0 on 06 June 2020 23:03:41
+  os: Linux-4.19.0-8-amd64 #1 SMP Debian 4.19.98-1+deb10u1 (2020-04-27)
+  nodename: jane
+  machine: x86_64
+  clock source: unix
+  detected number of CPU cores: 2
+  current working directory: /opt/mailman/mailman-suite/mailman-suite_project
+  detected binary path: /opt/mailman/venv/bin/uwsgi
+  !!! no internal routing support, rebuild with pcre support !!!
+  cannot setgid() as non-root user
+
+I asked Ecosia about "mailman3 no internal routing support, rebuild with pcre
+support" and found `this page
+<https://stackoverflow.com/questions/21669354/rebuild-uwsgi-with-pcre-support>`__.
+So I tried::
+
+  $ sudo apt-get install libpcre3 libpcre3-dev
+  libpcre3 is already the newest version (2:8.39-12).
+  The following additional packages will be installed:
+    libpcre16-3 libpcre32-3 libpcrecpp0v5
+  The following NEW packages will be installed:
+    libpcre16-3 libpcre3-dev libpcre32-3 libpcrecpp0v5
+
+  $ . /opt/mailman/venv/bin/activate
+  $ pip freeze | grep uWSGI
+  uWSGI==2.0.18
+
+But no, that didn't help.

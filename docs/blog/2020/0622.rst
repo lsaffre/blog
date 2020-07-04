@@ -4,6 +4,9 @@
 Monday, June 22, 2020
 =====================
 
+Worker has no field named 'purchase_account_id'
+===============================================
+
 The lino_xl.lib.clients plugin (in its :meth:`on_site_startup` method) adds
 a Shortcut ``id_document`` with ``"presto.Client"``` as `model_spec`::
 
@@ -123,4 +126,41 @@ Maybe I must run fix_field_cache also on all MTI children? Yes! This was the bug
 Unrelated changes en passant:
 
 - get_installed_apps of presto now yields :mod:`uploads` earlier.
-- :func:`lino.api.doctest.show_choicelists`now also shows the number of items in each choicelist.
+- :func:`lino.api.doctest.show_choicelists` now also shows the number of items in each choicelist.
+
+
+
+Configure mail server for avanti
+================================
+
+I am applying :ref:`admin.mail` for the new avanti server.
+
+I added an MX record::
+
+    mail.avanti.mylino.net. 10 avanti.mylino.net.
+
+I changed the Reverse DNS record for 51.178.46.165 from their default value
+"165.ip-51-178-46.eu" to "mail.avanti.mylino.net".
+
+Before::
+
+  $ dig -x 51.178.46.165
+
+  ; <<>> DiG 9.11.3-1ubuntu1.12-Ubuntu <<>> -x 51.178.46.165
+  ;; global options: +cmd
+  ;; Got answer:
+  ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 29163
+  ;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+  ;; OPT PSEUDOSECTION:
+  ; EDNS: version: 0, flags:; udp: 65494
+  ;; QUESTION SECTION:
+  ;165.46.178.51.in-addr.arpa.	IN	PTR
+
+  ;; ANSWER SECTION:
+  165.46.178.51.in-addr.arpa. 7026 IN	PTR	165.ip-51-178-46.eu.
+
+  ;; Query time: 0 msec
+  ;; SERVER: 127.0.0.53#53(127.0.0.53)
+  ;; WHEN: Mon Jun 22 18:02:51 EEST 2020
+  ;; MSG SIZE  rcvd: 88

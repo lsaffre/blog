@@ -1,0 +1,35 @@
+:date: 2020-06-29
+
+=====================
+Monday, June 29, 2020
+=====================
+
+I continued working on :ticket:`3695`. Two final little changes:
+
+.. currentmodule:: lino_xl.lib.uploads
+
+- :class:`MyExpiringUploads` is now a dashboard item. In
+  avanti1 you can sign in as user Nathalie to have an example in your dashboard.
+  The demo data has two expiring upload files for client 114.  You can then
+  change the primary coach of that client and see that the expiring upload files
+  are now in the dashboard of that user, no longer in Nathalie's dashboard.
+
+- Two new settings :attr:`Plugin.expiring_start` and :attr:`Plugin.expiring_end`
+  because I guess that the current default values 0 and 365 don't match their
+  needs.
+
+
+The last build of the book on travis
+(`1940 <https://travis-ci.org/github/lino-framework/book/builds/702647361>`__)
+is still failing::
+
+  File "/home/travis/build/lino-framework/book/docs/specs/cosi/apc.rst", line 312, in apc.rst
+  Failed example:
+      print(rt.find_config_file("logo.jpg", "weasyprint"))  #doctest: +ELLIPSIS
+  Expected:
+      /.../lino_book/projects/apc/settings/config/weasyprint/logo.jpg
+  Got:
+      /home/travis/virtualenv/python3.6.10/src/lino-xl/lino_xl/lib/sales/config/weasyprint/logo.jpg
+
+This is not a missing ellipsis.  Seems that Lino doesn't find the local config
+dir when running on travis. Maybe because lino_cache is being used.

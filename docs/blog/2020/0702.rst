@@ -1,0 +1,41 @@
+:date: 2020-07-02
+
+======================
+Thursday, July 2, 2020
+======================
+
+Today I had some fun: my notebook computer didn't restart. It remained hanging
+somewhere in the middle of the book process.
+
+It took me some time to find out how to get into the rescue mode: hit ESC at
+startup to activate the BIOS menu. There select "continue" and hold ESC key
+again.
+
+It then turned out that I had simply run out of disk space.
+
+Okay my 20 years of private pictures and videos take 400 GB, but where is the
+rest? What is taking up so much of my terabyte?
+
+I used ``sudo baobab`` in order to see. And voilà, the guilty was Docker. Or
+rather me, because I didn't read their docs which say clearly: "Docker takes a
+conservative approach to cleaning up unused objects." In
+:file:`/var/lib/docker/overlay` there was another 250GB of data. Each
+:ref:`getlino` test run creates two new virtual Linux machines.  I simply said::
+
+  $ sudo docker system prune
+  WARNING! This will remove:
+  - all stopped containers
+  - all networks not used by at least one container
+  - all dangling images
+  - all dangling build cache
+
+  Are you sure you want to continue? [y/N] y
+  Deleted Containers:
+  8e00fae0c56985e8a6ed10b147b52c2ac769aca9e7164dae1e6155f9f57b370f
+  ...
+  Deleted Images:
+  deleted: sha256:093ab511c463ec62911de1d6f24f07b6be8072f1c87778f539bfc9c8f29f13f8
+  ...
+  Total reclaimed space: 201.7GB
+
+Reviewed the :ref:`admin.du` page.
