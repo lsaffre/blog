@@ -1,0 +1,36 @@
+:date: 2020-07-14
+
+======================
+Tuesday, July 14, 2020
+======================
+
+I pushed my work of the last days to master.  Quick summary of the changes:
+
+- Fix :ticket:`3711` (Upload.manager_roles_required in :ref:`avanti`)
+- Increase configurability of :mod:`lino.modlib.weasyprint` via some new plugin settings
+- Remove call to main block's super in some weasyprint templates
+- Restored the Partners.detail_layout for :ref:`tera`.
+- Remove some ResourceWarning
+
+Some details:
+
+.. currentmodule:: lino.modlib.weasyprint
+
+New plugin settings for :mod:`lino.modlib.weasyprint`:
+:attr:`Plugin.header_height`
+:attr:`Plugin.footer_height`
+:attr:`Plugin.top_right_width`
+:attr:`Plugin.top_right_image`
+:attr:`Plugin.header_image`
+:attr:`Plugin.margin_left`
+:attr:`Plugin.margin`
+
+
+Removed some ResourceWarning caused by constructs like::
+
+  exec(compile(open(fn, "rb").read(), fn, 'exec'))
+
+which I replaced by::
+
+  with open(fn, "rb") as fd:
+      exec(compile(fd.read(), fn, 'exec'))
