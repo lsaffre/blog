@@ -1,0 +1,35 @@
+:date: 2020-07-15
+
+========================
+Wednesday, July 15, 2020
+========================
+
+Fixed several little problems when building the book docs (:cmd:`inv clean -b bd`).
+
+**WARNING: [autosummary] failed to import 'lino_avanti.lib.avanti.user_types': no module named lino_avanti.lib.avanti.user_types**
+
+How to reproduce it::
+
+  $ python -c "import lino; lino.startup('lino_book.projects.max.settings.doctests'); import lino_avanti.lib.avanti.user_types"
+
+Explanation: The :mod:`lino_xl.lib.uploads` plugin didn't work when
+:attr:`lino_xl.lib.clients.Plugin.client_model` was not a subclass of ClientBase. Because the `coached_by`
+parameter field wasn't created at all. Now it gets created as a dummy field.
+
+Also the memo parser refused to have a second renderer for a same model.  But
+that's a legitimate thing happening when
+:attr:`lino_xl.lib.clients.Plugin.client_model` was as its default value
+`'contacts.Person'`: we then have two memo commands ``person`` and ``client``
+both pointing to the same model.  Which is actually no problem. It just means
+that the inverse mechanism (rendering a given database object as a memo command)
+will yield one of them.
+
+
+**ResourceWarning: unclosed file <_io.BufferedReader name='/home/luc/work/lino/lino/modlib/languages/fixtures/iso-639-3_20100707.tab'>**
+
+--> Fixed some more causes for ResourceWarning, but then removed the line (in
+:file:`lino/__init__.py`) that turns the warning into an error.
+
+**intersphinx inventory has moved: http://www.sphinx-doc.org/en/master/objects.inv -> https://www.sphinx-doc.org/en/master/objects.inv**
+
+--> Changed http to https

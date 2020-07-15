@@ -23,7 +23,7 @@ configure(globals(), 'lino_book.projects.max.settings.doctests')
 
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
-intersphinx_mapping['cg'] = ('http://community.lino-framework.org/', None)
+intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
 
 extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']
