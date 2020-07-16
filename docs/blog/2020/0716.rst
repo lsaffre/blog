@@ -1,0 +1,26 @@
+:date: 2020-07-16
+
+=======================
+Thursday, July 16, 2020
+=======================
+
+Ismail is trying to get lino_openui5 running on a Windows machine.  He
+discovered a first bug: the openui5 demo projects import settings from
+lino_book, which is not a good idea. I changed the openui5 demo projects to not
+require lino_book anymore.
+
+I then discovered yet another bug in Lino that made OpenUI5 unusable. User
+objects in Django we have an attribute `is_authenticated
+<https://docs.djangoproject.com/en/3.0/topics/auth/default/#limiting-access-to-logged-in-users>`__.
+The attribute of same name is always False for AnonymousUser.  But in Lino this
+was a method, not an attribute. I guess that this comes from very early
+childhood more than 10 years ago. It seems that somebody changed it from a
+method into an attribute... but forgot to do this change on AnonymousUser.   And
+Lino also had an attribute `authenticated` (without the prefix `is_`), probably
+also for historic reasons. Which then later led to code like this::
+
+  not_anon = u.is_authenticated if type(u.is_authenticated) == bool else u.is_authenticated()
+
+I tidied up these things and their usage (User no longer has an attribute
+`authenticated`, and `is_authenticated` is no longer a method on AnonymousUser),
+which hopefully killed that bug thoroughly.

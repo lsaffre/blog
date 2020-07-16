@@ -4,7 +4,7 @@
 Wednesday, July 15, 2020
 ========================
 
-Fixed several little problems when building the book docs (:cmd:`inv clean -b bd`).
+Fixed several problems when building the book docs (:cmd:`inv clean -b bd`).
 
 **WARNING: [autosummary] failed to import 'lino_avanti.lib.avanti.user_types': no module named lino_avanti.lib.avanti.user_types**
 
@@ -32,4 +32,40 @@ will yield one of them.
 
 **intersphinx inventory has moved: http://www.sphinx-doc.org/en/master/objects.inv -> https://www.sphinx-doc.org/en/master/objects.inv**
 
---> Changed http to https
+--> Changed http to https for diverse intersphinx_urls
+
+
+Configuring mailman lists for laudate
+=====================================
+
+
+Our first mailman 3 server at
+https://lists.laudate.ee/postorius/lists/
+was saying:
+
+| Something went wrong
+| Mailman REST API not available. Please start Mailman core.
+
+In /etc/mailman/mailman.cfg I changed use_https from no to yes::
+
+  # Whether or not requests to the web service are secured through SSL.
+  use_https: yes
+
+I read  `Mailman 3 Core REST API
+<https://mailman.readthedocs.io/en/latest/src/mailman/rest/docs/rest.html>`__.
+
+But that document tells me e.g. to run the "mailman info" command, and such a
+command does not exist. Solution::
+
+  $ cd /opt/mailman/venv
+  $ . bin/activate
+
+Hamza installed the `Mailman Suite <https://docs.mailman3.org/en/latest/>`__
+into :file:`/opt/mailman`.
+
+
+The :file:`/etc/nginx/sites-available/mailman.conf` defines the nginx site
+
+The :file:`/etc/supervisor/conf.d/mailman.conf` defines the postorius django app
+
+The :file:`/opt/mailman/mailman-suite/mailman-suite_project/uwsgi.ini`
