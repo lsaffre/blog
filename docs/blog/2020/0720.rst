@@ -1,0 +1,143 @@
+:date: 2020-07-20
+
+=====================
+Monday, July 20, 2020
+=====================
+
+Run a Lino application on PythonAnywhere
+========================================
+
+I started the page :ref:`admin.pyanywhere` because it would be nice for future
+hosting providers to see that a Lino :term:`production site` can run on
+PythonAnywhere.
+
+There were still some issues in getlino which caused the installation to fail on
+PA. I released getlino 20.7.2, tried, and then found more bugs:
+
+The two messages :message:`The following system packages were not installed
+because you aren't root...` and  :message:`The following system services were
+not restarted because you aren't root...`  in
+:meth:`getlino.utils.Installer.restart_services` and
+:meth:`getlino.utils.Installer.apt_install` were deactivated, and getlino tried
+to install packages or restart services by prefixing sudo. No, that's not how
+getlino is meant! getlino itself doesn't try to run commands as root when you
+didn't start it as root (or with sudo).  It needs sudo only when you choose
+postgresql, but there it is to say ``sudo -u postgres``, i.e. not to become
+root.
+
+But oops! Above paragraph didn't consider that in a docker container we do need
+a way to tell getlino "Okay, I am not running as root (because I want a
+developer env), but I have permission to run sudo, and when you suggest that I
+should install packages, then please do it for me."
+
+And then we have the problem that on PA the maintainer is not member of the
+www-data group.  But getlino says "Error: You don't belong to the
+www-data user group."  I removed
+
+I released getlino 20.7.3.
+
+Now it works...  but we still hit the disk quota limit...
+
+I moved three dependencies from lino to book (and then released Lino to PyPI):
+docutils beautifulsoup4 and reportlab. That's not enough.
+
+But there is hope : most parts of atelier are actually not needed on a
+production site. Atelier is actually meant for development. It installs packages
+like Sphinx, docutils, sphinx_rtd_theme...
+
+So I moved a series of utilities from :mod:`atelier.utils` to :mod:`lino.utils`:
+AttrDict, is_pure, is_string, ... Most of them weren't use by atelier, so it was
+definitively a good move.  Only two of them (confirm and i2d) are also needed by
+atelier itself, so they are duplicated at the moment.  To fix the duplicate, I
+should move them into a separate module. But a Python module just for two silly
+functions sounds overkill.
+
+Manual tests on weleup preview site
+===================================
+
+Benutzer Anja hat im testlino 51 offene Datenprobleme.
+
+Change in get_date_range_veto() : the pk specified in no_date_range_veto_until
+is now the pk of the granting, not the pk of the confirmation. Because there are
+three tables for confirmations. And it can now be set to a negative number to say
+
+
+Bug in :mod:`lino_welfare.modlib.cal` : EntriesByClient shows all calendar
+entries unfiltered. This was a simple misunderstanding about the following
+methods:
+
+- `Model.get_request_queryset(self, ar, **filter)`:
+  used to add `select_related()`
+  calls `get_user_queryset()`
+
+- `Model.get_user_queryset(self, user, **filter)`: used for user level row
+  filtering. Usage examples `comments.Comment` and `tickets.Ticket`.
+
+- `Actor.get_queryset(self, ar)`:
+
+- `DbTable.get_queryset(self, ar)`:
+  default implementation calls `self.model.get_request_queryset(ar, **filter)`
+
+- `DbTable.get_request_queryset(self, ar, **filter)`: used to define how filter parameters of the actor should influence the queryset.
+
+- `Actor.get_request_queryset(self, ar)`: used to define how filter parameters of the actor should influence the queryset.
+
+I started a new page :ref:`dev.querysets` with above documentation and fixed
+this in several applications.
+
+
+Using getlino on PythonAnywhere
+===============================
+
+On PythonAnywhere we need to be greedy about disk space and therefore must put
+everything (getlino and the app) into a single environment.
+
+.. program:: getlino configure
+
+Two changes in :cmd:`getlino configure`:
+
+:option:`--shared-env` *is* useful also without `--clone`. And this makes sense
+not only on PA. Also e.g. a demo server without clones. And the default value
+for :option:`--shared-env` is the current virtualenv unless configure is running
+as root. On a demo server we run as root and want a shared env, but we always
+specify it at the command line.
+
+Should getlino store the shared-env as an absolute path even when you specify
+it a as a relative path? Not sure whether that's a good idea.
+
+
+"Distutils was imported before Setuptools"
+==========================================
+
+Something is causing the following warnings::
+
+  UserWarning: Distutils was imported before Setuptools. This usage is discouraged and may exhibit undesirable behaviors or errors. Please use Setuptools' objects directly or at least import Setuptools first.
+
+I read `this
+<https://stackoverflow.com/questions/11887762/how-do-i-compare-version-numbers-in-python>`__.
+As it seems I was using distutils for comparing versions, but nowadays one
+should use setuptools.
+
+Code before::
+
+  from distutils.version import LooseVersion
+  LooseVersion("x")
+
+Code after::
+
+  from pkg_reseources import parse_version
+  version.parse("x")
+
+
+
+Releases
+========
+
+I released the following packages to PyPI :
+
+- atelier, getlino, lino, xl, avanti, tera, presto
+
+Does book require welfare?
+
+TODO:
+- welfare weleup welcht

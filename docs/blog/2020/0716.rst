@@ -4,6 +4,9 @@
 Thursday, July 16, 2020
 =======================
 
+The Lino OpenUI front end
+=========================
+
 Ismail is trying to get lino_openui5 running on a Windows machine.  He
 discovered a first bug: the openui5 demo projects import settings from
 lino_book, which is not a good idea. I changed the openui5 demo projects to not
@@ -24,3 +27,50 @@ also for historic reasons. Which then later led to code like this::
 I tidied up these things and their usage (User no longer has an attribute
 `authenticated`, and `is_authenticated` is no longer a method on AnonymousUser),
 which hopefully killed that bug thoroughly.
+
+I released the following packages to PyPI so that Ismail can test them:
+:ref:`lino` 20.7.1, :ref:`xl` 20.7.2, :ref:`tera` 20.7.0, :ref:`openui5` 20.7.0.
+
+
+getlino test suite and docker
+=============================
+
+
+Should the :xfile:`prep.sh` file of getlino run `docker container prune
+<https://docs.docker.com/engine/reference/commandline/container_prune/>`__ in
+order to delete all stopped containers?  Just to protect myself from running
+into troubles after some time because my hard disk is full. On my machine that
+makes sense, but what if some potential contributor tries to get started and
+uses docker for other projects, and then discovers that running the getlino test
+suite has removed all their containers?
+
+# docker image rm getlino_ubuntu
+
+I still had several unused docker images on my machine. I removed them manually
+`docker image rm
+<https://docs.docker.com/engine/reference/commandline/image_rm/>`__.
+Here is my list before running the test suite::
+
+  $ docker image ls
+  REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+  getlino_ubuntu      latest              ea6262153601        6 hours ago         529MB
+  getlino_debian      latest              7ed028f980a4        6 hours ago         618MB
+
+And then after running the test suite::
+
+  $ docker image ls
+  REPOSITORY          TAG                 IMAGE ID            CREATED              SIZE
+  getlino_ubuntu      latest              4167bd107978        About a minute ago   513MB
+  getlino_debian      latest              4f39eb31621c        3 minutes ago        598MB
+  <none>              <none>              ea6262153601        6 hours ago          529MB
+  <none>              <none>              7ed028f980a4        6 hours ago          618MB
+  ubuntu              bionic              d27b9ffc5667        9 days ago           64.2MB
+  debian              buster              1b686a95ddbf        5 weeks ago          114MB
+
+Okay, `ubuntu:bionic` and `debian:buster` were not unused. Docker downloads them
+because they are the parent of the getlino images (getlino_ubuntu and
+getlino_debian). But what are these `<none>` images? I read
+https://www.projectatomic.io/blog/2015/07/what-are-docker-none-none-images/ but
+do not yet feel experienced enough to decide. So I leave the  :xfile:`prep.sh`
+file unchanged for now, and will manually watch my docker images from time to
+time.

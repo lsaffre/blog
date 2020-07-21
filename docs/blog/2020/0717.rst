@@ -1,0 +1,82 @@
+:date: 2020-07-17
+
+=====================
+Friday, July 17, 2020
+=====================
+
+Ismail reported the following error during ``pip install getlino``::
+
+  AttributeError: module 'platform' has no attribute 'dist'
+
+Yep, I didn't know that :attr:`platform.dist` is "deprecated since version 3.5,
+will be removed in version 3.8: See alternative like the distro package."
+
+I changed the test suite: use debian bullseye instead of buster, use mysql
+instead of postgresql.
+
+Failure::
+
+  Package python-mysqldb is not available, but is referred to by another package.
+  This may mean that the package is missing, has been obsoleted, or
+  is only available from another source
+
+  E: Package 'python-mysqldb' has no installation candidate
+  Error: sudo apt-get install -y zip logrotate libffi-dev cron uwsgi-plugin-python3 build-essential git python-mysqldb libmariadb-dev-compat libssl-dev libmariadb-dev python3 swig supervisor monit subversion python3-dev python3-setuptools tidy python3-pip python3-uno redis-server python-dev nginx libreoffice mariadb-server ended with return code 100
+
+
+
+getlino test suite freezes with bullseye
+========================================
+
+When using Debian bullseye instead of buster, the getlino test suite freezes at this point::
+
+  Successfully built d15605a434a4
+  Successfully tagged getlino_debian:latest
+  Run test command python -m unittest discover -s tests :
+  ===== run in <Container: 034fa1f395> : mkdir ~/lino && virtualenv -p python3 ~/lino/env =====
+  ===== run in <Container: 034fa1f395> : ls -l =====
+  /home/luc/virtualenvs/py3/lib/python3.6/site-packages/requests/structures.py:58: ResourceWarning: unclosed <socket.socket fd=8, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+    return (casedkey for casedkey, mappedvalue in self._store.values())
+  ===== run in <Container: 034fa1f395> : . ~/lino/env/bin/activate && pip3 install -e .  =====
+  ===== run in <Container: 034fa1f395> : . ~/lino/env/bin/activate && getlino configure --batch --db-engine postgresql =====
+  /usr/lib/python3.6/email/message.py:121: ResourceWarning: unclosed <socket.socket fd=11, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+    self.policy = policy
+  ===== run in <Container: 034fa1f395> : . ~/lino/env/bin/activate && getlino startsite cosi cosi1 --batch --dev-repos "lino xl cosi" =====
+  ===== run in <Container: 034fa1f395> : . ~/lino/env/bin/activate && getlino startsite noi noi1 --batch --dev-repos "lino xl noi" =====
+  ===== run in <Container: 034fa1f395> : . ~/lino/env/bin/activate && getlino startsite avanti avanti1 --batch --dev-repos "lino xl avanti" =====
+  F===== run in <Container: 0b44af9bff> : ls -l =====
+  /home/luc/virtualenvs/py3/lib/python3.6/site-packages/requests/structures.py:41: ResourceWarning: unclosed <socket.socket fd=14, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+    self._store = OrderedDict()
+  /home/luc/virtualenvs/py3/lib/python3.6/site-packages/requests/structures.py:41: ResourceWarning: unclosed <socket.socket fd=16, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+    self._store = OrderedDict()
+  /home/luc/virtualenvs/py3/lib/python3.6/site-packages/requests/structures.py:41: ResourceWarning: unclosed <socket.socket fd=18, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+    self._store = OrderedDict()
+  ===== run in <Container: 0b44af9bff> : sudo mkdir -p /usr/local/lino/shared/env =====
+  ===== run in <Container: 0b44af9bff> : cd /usr/local/lino/shared/env && sudo chown root:www-data . && sudo chmod g+ws . && virtualenv -p python3 master =====
+  ===== run in <Container: 0b44af9bff> : . /usr/local/lino/shared/env/master/bin/activate && sudo pip3 install -e . =====
+  ===== run in <Container: 0b44af9bff> : ls -l =====
+  ===== run in <Container: 0b44af9bff> : . /usr/local/lino/shared/env/master/bin/activate && sudo getlino configure --batch --monit =====
+
+
+I guess that ``sudo getlino configure --batch --monit`` is asking some user
+input (maybe because monit package is being installed?). Question: how can I see
+what's going on?
+
+It seems that the problem is gone when calling exec_run() with tty=True and
+stdin=True.  Don't ask me why. It was an intuitive guess after surfing around.
+
+Run Lino on PythonAnywhere
+==========================
+
+::
+
+  $ virtualenv -p python3 env
+  $ . env/bin/activate
+  $ pip install getlino
+  $ sudo getlino configure
+
+Aha, there is no sudo on PythonAnywhere.
+
+
+Fixed a bug in :ref:`getlino`: local-prefix was root_only, which caused
+configure to fail when not run as root.
