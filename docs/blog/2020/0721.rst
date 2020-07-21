@@ -171,13 +171,52 @@ Bescheinigung EiEi : hier steht im Adressfeld jetzt "(no recipient address)"
 (wenn die Bescheinigung keinen Empfänger hat), und unterm Namen sind
 irgendwelche Logos.
 
+Here is a run script I used to localize the problem::
 
-from lino.api.shell import *
-this = rt.models.excerpts.Excerpt.objects.get(pk=28109)
-print(this.get_address_html(5, **{'class':"Recipient"}))
+  from lino.api.shell import *
+  this = rt.models.excerpts.Excerpt.objects.get(pk=28109)
+  print(this.get_address_html(5, **{'class':"Recipient"}))
+
+The reason was a changed behaviour in appy in when you have both a ``do text
+from`` and a ``do text if`` comment in a same paragraph::
+
+  do text
+  from html(this.get_address_html(5, **{'class':"Recipient"}))
+
+  do text if this.excerpt_type.print_recipient
+
+Here is how I explained it to Gaetan:
+
+  Je viens d'observer une différence subtile entre la nouvelle version de appy et
+  la vielle version. Dans un template du CPAS j'ai un paragraphe encadré qui
+  contient un texte "(recipient address)". Voir image. Ce texte sera effacé car le
+  paragraphe contient aussi un commentaire "do text from". Jusqu'ici pas de
+  différence. Mais dans ce meme paragraphe il y a encore un deuxième commentaire
+  "do text if". Dans la nouvelle version appy, j'ai du déplacer l'ancre de
+  commentaire avant mon text "(recipient address") car sinon ce texte n'était pas
+  écrasé.
+
+.. image:: 0721_app3.png
 
 
-do text
-from html(this.get_address_html(5, **{'class':"Recipient"}))
+Ismail getting started
+======================
 
-do text if this.excerpt_type.print_recipient
+Ismail reported a problem installing :ref:`noi`, and I guess that it's just
+because noi hasn't been released to pypi for a while.
+
+Oho, while trying to reproduce his problem I realized that etgen depends on
+atelier.  Because of ``atelier.rstgen``. Maybe move ``rstgen`` from `atelier` to
+`etgen`, and make `atelier` depend on it? No, that would create a circular
+dependence.  But wait, I can simply move ``atelier.rstgen`` into a spearate
+package named ``rstgen``.  That name is still available on PyPI.
+
+All in all it was easier than I feared: I declared the new package :mod:`rstgen`
+on PyPI: https://pypi.org/project/rstgen/20.7.0/
+
+How to test whether the README.rst file of a new package contains syntax
+errors::
+
+  $ rst2html.py --strict README.rst
+
+I updated the :ref:`dev.overview` page of the book.
