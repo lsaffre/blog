@@ -1,0 +1,90 @@
+:date: 2020-07-23
+
+=======================
+Thursday, July 23, 2020
+=======================
+
+Now that the big move to Python 3 is finally done (after 20 months of stable
+operation), weleup will become more active again.
+
+Steve and I decided that :class:`lino_welfare.modlib.pcsw.IdentityChecker` is
+useless and gets deactivated.
+
+The :class:`lino_xl.lib.coachings.ClientChecker` mixin was duplicated
+:mod:`lino_welfare.modlib.pcsw`.  Actually it should be named
+``CoachableChecker``, but that's a minor naming inconsistency.
+
+The checkdata message "Similar clients" appeared in English and not in the
+language of the responsible user. That was because the checker did this::
+
+  msg = _("Similar clients: {clients}").format(
+      clients=', '.join([str(i) for i in lst]))
+  yield (False, msg)
+
+The correct way is like this::
+
+  msg = format_lazy(_("Similar clients: {clients}"),
+      clients=', '.join([str(i) for i in lst]))
+  yield (False, msg)
+
+
+
+After-release on weleup site
+============================
+
+First minor upgrade with above changes plus those since their code freeze
+(20200720), including especially the reorganization into new package
+:mod:`rstgen`.
+
+Releases to PyPI with today's work: xl 20.7.7, welfare 20.7.2, weleup 20.7.1
+
+Todo on the server::
+
+  $ sudo service apache2 stop
+  $ sudo service supervisor stop
+  $ go prod
+  $ ./make_snapshot.sh  # just in case
+  $ a
+  $ pip uninstall atelier
+  $ pip install -U rstgen etgen lino lino_xl lino_welfare lino_weleup
+  $ nano settings.py  # edit checkdata.responsible_user and title
+  $ python manage.py run checkdata_delete_all.py
+  $ python manage.py checkdata cal.ObsoleteEventTypeChecker --fix
+  $ python manage.py checkdata
+  $ sudo service apache2 start
+  $ sudo service supervisor start
+
+The :xfile:`checkdata_delete_all.py` script is a quick workaround for the
+problem that Lino does not (yet) delete "invalid" checkdata messages (i.e.
+messages with an unknown checker).
+
+They had a traceback caused by :mod:`lino.modlib.ipdict`::
+
+    File ".../lino/modlib/ipdict/models.py", line 46, in get_data_rows
+      key=lambda x: x.last_request))
+  TypeError: '<' not supported between instances of 'datetime.datetime' and 'NoneType'
+
+I don't know how they managed to do this, but indeed it is obviously possible to
+have an :class:`lino.modlib.ipdict.IPRecord` instance with :attr:`last_request`
+being `None`.  Okay, let's sort them as if their last_request was
+:attr:`lino.core.site.Site.startup_time`.  This is an untested theoretical bug
+fix.
+
+Changes in Lino (they don't get these today):
+
+- New command-line option ``--prune`` for :manage:`checkdata`.
+
+- Fix a bug that caused Lino to fail processing database rows with invalid
+  choicelist value even when
+  :attr:`lino.core.site.Site.strict_choicelist_values` was set to `False`.
+
+- Fix a bug in :mod:`lino.modlib.ipdict` that caused Lino to not show the list
+  of connections when one connection managed to have no :attr:`last_request`.
+  Not reproduced and not tested.
+
+
+Review dockerfiles for getlino
+==============================
+
+$ docker container rm mycont
+$ docker run -it --name mycont debian_with_getlino /bin/bash

@@ -6,22 +6,20 @@ Curriculum vitae
 Projects
 --------
 
-I am author and active maintainer of `Lino
-<http://www.lino-framework.org/>`__, a programming framework for
-writing customized database applications based on `Django
-<https://www.djangoproject.com/>`_ and `Sencha ExtJS
-<http://www.sencha.com/products/extjs/>`_.  I am also the author of
-TIM_, Lino's predecessor which still runs on 30 sites in Belgium.
+I am author and maintainer of :ref:`Lino <cg.lino.what>` and its predecessor
+TIM_, two frameworks for developing customized database applications. They are
+mostly used in Belgium.
 
 Other projects:
 
 - :ref:`atelier`, :ref:`eidreader` and davlink_ are independant
-  projects released under the BSD instead of LGPL.
+  projects released under the BSD instead or LGPL.
 
 - `Lino Welfare <http://welfare.lino-framework.org>`__,
   `Lino Noi <http://noi.lino-framework.org>`__,
-  `Lino Patrols <http://patrols.lino-framework.org>`__,
+  `Lino Amici <http://amici.lino-framework.org>`__,
   `Lino Voga <http://voga.lino-framework.org>`__ and
+  `Lino Presto <http://presto.lino-framework.org>`__ and
   `Lino Così <http://cosi.lino-framework.org>`__
   are Lino *applications*, released as free software.
 
@@ -122,19 +120,19 @@ Hobbies
 Personal views
 --------------
 
-- I grew up in a catholic family, and after moving to
-  Vigala engaged in the local lutheran church community.  My faith has
-  been influenced by the spirituality of the `Taizé
-  <http://taize.fr/>`_ community.
-  I classify myself as a convinced reasonable Christian.
+- I grew up in a catholic family, and after moving to Vigala engaged in the
+  local lutheran church community.  My faith has been influenced by the
+  spirituality of the `Taizé <http://taize.fr/>`_ community. I classify myself
+  as a `convinced reasonable Christian
+  <https://hw.saffre-rumma.net/christian.html>`__.
 
 - I am not actively engaged in any political party. The
-  politicalcompass.org website classified me as `Economically rather
+  `politicalcompass.org` website classified me as `Economically rather
   Left and Socially moderatedly Libertarian
   <https://www.politicalcompass.org/analysis2?ec=-8.63&soc=-4.26>`__. I
   believe that finding ways for global sustainable development is more
   important than keeping the consumer society running.  If given the
-  choice between a a world-wide economic crisis and climate
+  choice between an  economic crisis and a climate
   catastrophe, I'd chose the former.  We need new sociological methods
   in order to become rule this world.
 
@@ -146,4 +144,4 @@ Personal views
 .. _Django: https://www.djangoproject.com/
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _atelier: http://atelier.lino-framework.org
-.. _davlink: https://github.com/lsaffre/davlink
+.. _davlink: https://github.com/lino-framework/davlink

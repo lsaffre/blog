@@ -4,10 +4,10 @@
 Tuesday, July 21, 2020
 ======================
 
-`getlino configure --batch --monit` hanging forever
-===================================================
+The getlino test suite failing
+==============================
 
-The getlino test run on :ref:`travis` is failing::
+The getlino test suite gets stuck at  :cmd:`getlino configure --batch --monit`::
 
   ===== run in <Container: dad19689e7> : . /usr/local/lino/shared/env/master/bin/activate && sudo getlino configure --batch --monit =====
 
@@ -64,10 +64,13 @@ Here are the explanation of the STAT codes (taken from ``man ps``)::
    +    is in the foreground process group
    R    running or runnable (on run queue)
 
-I discovered how to run an interactive session in my docker container::
+I then discovered how to run an interactive session in my docker container::
 
   $ docker build -t getlino_debian -f Dockerfiles/debian .
   $ docker run -it --name mycont getlino_debian /bin/bash
+
+Hitting :kbd:`Ctrl-D`
+
   $ docker rm --force mycont
 
 ..
