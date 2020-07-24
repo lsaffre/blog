@@ -1,0 +1,85 @@
+:date: 2020-07-24
+
+=====================
+Friday, July 24, 2020
+=====================
+
+At 06:57 a first user started working. This causes Lino to generate
+:file:`lino_210_de.js`.
+At 07:56 the second user connects, she has another :attr:`user_type`, so Lino
+generates :file:`lino_410_de.js`.
+And then, 10 minutes later, we get a traceback.
+
+Here is the complete apache :file:`error.log`::
+
+  [Fri Jul 24 00:00:14.908601 2020] [wsgi:info] [pid 14140:tid 140669353153664] mod_wsgi (pid=14140): Attach interpreter ''.
+  [Fri Jul 24 06:57:07.812256 2020] [wsgi:info] [pid 14140:tid 140669235902208] [remote 10.187.254.254:45053] mod_wsgi (pid=14140, process='xxxxx', application=''): Loading Python script file '/usr/local/lino/lino_local/prod/wsgi.py'.
+  [Fri Jul 24 06:57:12.731921 2020] [wsgi:error] [pid 14140:tid 140669235902208] Started mod_wsgi (using lino_local.weleup1.settings) --> PID 14140
+  [Fri Jul 24 06:57:14.500322 2020] [wsgi:error] [pid 14140:tid 140669235902208] [remote 10.187.254.254:45053] Building /usr/local/lino/lino_local/weleup1/media/cache/js/lino_210_de.js ...
+  [Fri Jul 24 07:56:59.205118 2020] [wsgi:error] [pid 14140:tid 140669311436544] [remote 10.187.254.254:33591] Building /usr/local/lino/lino_local/weleup1/media/cache/js/lino_400_de.js ...
+  [Fri Jul 24 08:07:05.644278 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310] Traceback (most recent call last):
+  [Fri Jul 24 08:07:05.644354 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]   File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino/core/actors.py", line 905, in _get_handle
+  [Fri Jul 24 08:07:05.644359 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]     settings.SITE.kernel.setup_handle(h, ar)
+  [Fri Jul 24 08:07:05.644365 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]   File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino/core/kernel.py", line 831, in setup_handle
+  [Fri Jul 24 08:07:05.644369 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]     h.params_layout_handle = h.actor.make_params_layout_handle()
+  [Fri Jul 24 08:07:05.644374 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]   File "/usr/local/lino/lino_local/prod/env/lib/python3.7/site-packages/lino/core/actors.py", line 837, in make_params_layout_handle
+  [Fri Jul 24 08:07:05.644378 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310]     raise Exception("{} is abstract".format(cls))
+  [Fri Jul 24 08:07:05.644391 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310] Exception: notes.NotesByX is abstract
+  [Fri Jul 24 08:07:05.644492 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35310] notes.NotesByX setup_handle failed with notes.NotesByX is abstract
+  [Fri Jul 24 08:08:23.000049 2020] [wsgi:error] [pid 14140:tid 140669294651136] [remote 10.187.254.254:35639] run_action claudia notes.NotesByProject.submit_insert Client #203518 ('XXXXXXX xxxxx xxxx (203518)') []
+
+
+12.34.56.78 - claudia [24/Jul/2020:08:07:05 +0200] "GET /choices/notes/NotesByX/event_type?_dc=1595570823736&start=0&limit=20&query= HTTP/1.1" 200 728 "http://lino.example.com/" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101 Firefox/68.0"
+
+How to reproduce the problem: start runserver in the
+:mod:`lino_welfare.projects.gerd` demo project, sign in as robin, open the
+detail window of any client. Select the History tab. Klick (+) in the "Notes"
+panel. In the insert window, open the combobox of the event_type field (the
+first one). Result : the terminal shows an error message (but for the user
+everything works).
+
+It is because the `insert_layout` here is defined on `NotesByX`. And a Combobox
+field uses the name of its defining actor (not the one it is actually being used
+on) for requesting its choices.  And this even works because even an abstract
+actor knows its fields and can find the right chooser.  The problem was that
+recently we made the choices view create an action request, and an action
+request then wants the actor's handle as well. New rule: Lino now supports
+action requests on abstract actors, but these don't have an ``ah`` attribute.
+
+"Tried to get static handle for debts.PrintEntriesByBudget"
+===========================================================
+
+The :ref:`react` front end does not yet support dynamic actor handles. This is
+a missing feature, which is used only in :mod:`lino_welfare.modlib.debts`.
+Reproducible by switching the `default_ui` to `react` in the
+:mod:`lino_welfare.projects.gerd` demo project::
+
+  Traceback (most recent call last):
+    ...
+    File ".../lino_react/react/renderer.py", line 574, in write
+      py2js(actor)
+    File ".../lino/utils/jsgen.py", line 416, in py2js
+      v = cv(v)
+    File ".../lino_react/react/renderer.py", line 367, in py2js_converter
+      if hasattr(v.get_handle(), "get_columns"):
+    File ".../lino/core/actors.py", line 888, in get_handle
+      % (self, self.get_handle_name))
+  Exception: Tried to get static handle for debts.PrintEntriesByBudget (get_handle_name is <bound method PrintEntriesByBudget.get_handle_name of lino_welfare.modlib.debts.ui.PrintEntriesByBudget>)
+
+Optimizations for dealing with checkdata messages
+=================================================
+
+- When the end user deletes the object referred to by a checkdata problem
+  message, that message should automatically get deleted.
+
+- The confirmation message when deleting a record  now has an additional text
+  "as well as related volatile records (x Data problems)".
+
+- street_prefix should also be considered an address field to be synchronized
+  with the owner of an `addresses.Address`
+
+TODO:
+
+- DetailLayout of Household should show the address
+- Remove `region` field from PartnerDetail
+- Add a :class:`lino.modlib.checkdata.Problems` filter parameter `show_fixable`
