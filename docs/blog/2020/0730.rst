@@ -1,0 +1,23 @@
+:date: 2020-07-30
+
+=======================
+Thursday, July 30, 2020
+=======================
+
+I sent an email from luc.saffre@gmx.net to toimetus@laudate.ee, which is a
+simple alias that goes to 6 addresses.  The mail is being forwarded to the
+recipients, but one of them reported that my mail was marked as junk.
+
+I observed that indeed opendkim on laudate.ee did not sign the incoming email:
+
+  Jul 28 21:30:32 laudate opendkim[722]: 93C573FFFF: mout.gmx.net [212.227.15.15] not internal
+  Jul 28 21:30:32 laudate opendkim[722]: 93C573FFFF: not authenticated
+  Jul 28 21:30:32 laudate opendkim[722]: 93C573FFFF: no signing domain match for 'gmx.net'
+  Jul 28 21:30:32 laudate opendkim[722]: 93C573FFFF: no signing subdomain match for 'gmx.net'
+  Jul 28 21:30:32 laudate opendkim[722]: 93C573FFFF: s=badeba3b8450 d=gmx.net SSL
+
+That's actually normal. Anybody might send spam to toimetus@laudate.ee and
+laudate.ee would forward it to these recipients.
+
+So the /etc/aliases file must not be used as a simple forwarding to external
+mail recipients.

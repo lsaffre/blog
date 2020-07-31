@@ -4,6 +4,9 @@
 Monday, July 27, 2020
 =====================
 
+Optimized the address data checker
+===================================
+
 Wow, this week end I went into the 18000 checkdata problem messages at weleup.
 For historical reasons they have quite some differences between the partner
 addresses and the individual address records.  That's why I started
@@ -18,3 +21,37 @@ developers.  I plan to collect them in a single document, :ref:`team.mt`.
 
 The min9 demo now also has phones and sepa plugins. The idea of this demo is to
 have "all" plugins installed for testing purposes.
+
+
+Advancing with the getlino test suite
+=====================================
+
+The getlino test suite did not yet cover the instructions  for
+:ref:`dev.install`.
+I started by writing :ref:`getlino.using_docker`.
+I found and fixed some bugs.
+
+When I run :cmd:`inv test` on my machine, I see a series of warnings::
+
+  /home/luc/virtualenvs/py3/lib/python3.6/_collections_abc.py:833: ResourceWarning: unclosed <socket.socket fd=9, family=AddressFamily.AF_UNIX, type=2049, proto=0, raddr=/var/run/docker.sock>
+
+But I have no idea what is causing them.
+
+
+
+Ha! After activating `stream=True`, I found the explanation for a problem that
+had been a mystery to me for a while::
+
+  mysql_secure_installation
+
+
+  NOTE: RUNNING ALL PARTS OF THIS SCRIPT IS RECOMMENDED FOR ALL MariaDB
+        SERVERS IN PRODUCTION USE!  PLEASE READ EACH STEP CAREFULLY!
+
+  In order to log into MariaDB to secure it, we'll need the current
+  password for the root user.  If you've just installed MariaDB, and
+  you haven't set the root password yet, the password will be blank,
+  so you should just press enter here.
+
+
+  Enter current password for root (enter for none):

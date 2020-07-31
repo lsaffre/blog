@@ -1,0 +1,38 @@
+:date: 2020-07-31
+
+=====================
+Friday, July 31, 2020
+=====================
+
+
+The UploadsByClient table had this method::
+
+   @classmethod
+   def format_row_in_slave_summary(self, ar, obj):
+       if obj.end_date and obj.end_date < settings.SITE.today():
+           return None
+       return super(UploadsByClient, self).format_row_in_slave_summary(
+           ar, obj)
+
+This method has caused a few hours of worries to Johanna because she believed
+that Lino was automatically deleting all uploads when their validity date had
+expired.
+
+I now removed the method. I guess that this filtering was some old idea that
+nobody actually ever wanted.
+
+I renamed ``UploadsByClient`` to ``UploadsByProject``.  The :attr:`master` is no
+longer `dd.plugins.clients.client_model` but `lino.core.site.Site.project_model`
+(which is the same for all existing applications that use uploads).
+
+The uploads plugin in :ref:`presto` was not yet visible. After a feedback from
+Margarete I guess that they also want this plugin, and not just the plain modlib
+variant but the xl variant (with expiry date management)
+
+Presto adds another upload shortcut "Category certificate".
+
+Changed a few rules in the demo fixtures:
+
+The :fixture:`std` fixture of the :mod:`lino.modlib.uploads` plugin now
+automatically creates one upload type for each shortcut, and no longer requires
+the id_document shortcut.

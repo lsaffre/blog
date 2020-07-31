@@ -1,0 +1,91 @@
+:date: 2020-07-29
+
+========================
+Wednesday, July 29, 2020
+========================
+
+How to test getlino using Docker
+================================
+
+I read these articles:
+
+- https://docker-curriculum.com/#multi-container-environments
+- https://pythonspeed.com/articles/docker-caching-model/
+- https://pythonspeed.com/articles/dockerizing-python-is-hard/
+
+
+It seems to me that for testing getlino installation instructions we don't need
+multiple containers that work together using Docker compose, we rather need
+multiple Dockerfiles that depend on each other.
+
+We have **four Linux base systems** we want to support:  debian:buster,
+debian:bullseye, ubuntu:18.04 and ubuntu:20.04. For each of these we want to
+test our **four installation contexts**: dev, contrib, prod and demo.
+
+So we have at least 16 tests to run. Each test run will install lots of system
+packages and Python packages. We don't want to download these from the internet
+each time, we want to cache them.
+
+Each test will also install a user with sudo rights. The following is always the
+same for most test runs::
+
+  # Install sudo package and create a user lino
+  RUN apt-get install -yqq sudo
+  RUN adduser --disabled-password --gecos '' lino
+  RUN adduser lino sudo
+  RUN adduser lino www-data
+  RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+Do we need 16 rather constant base images that we want to build only once (i.e.
+not again and again after each change in getlino).
+
+We want to add the getlino sources to each image for each test run.
+
+Should each set of installation instructions be stored in a separate shell
+script? That would be easier to maintain. OTOH the current solution permits to
+verify the result of every single command line.
+
+Each installation results in a running web server. How to test whether that
+server actually works?
+
+Maybe we should generate 16 different Dockerfiles from a single template?
+
+In order to fix Ismail's problems I should do a getlino release with the recent
+bug fixes,
+
+About the num2words package
+===========================
+
+Ismail had many error reports that ended like this::
+
+  Loading data from /home/ismail/projects/venv/src/lino-noi/lino_noi/lib/cal/fixtures/std.py
+  Traceback (most recent call last):
+  ...
+  File "/home/ismail/projects/venv/src/lino-xl/lino_xl/lib/cal/mixins.py", line 605, in weekdays_text
+      return s.format(ord_count=num2words(self.every, to='ordinal', lang=translation.get_language()), day=day_text)
+  NameError: Problem installing fixture '/home/ismail/projects/venv/src/lino-noi/lino_noi/lib/cal/fixtures/std.py': name 'num2words' is not defined
+
+I updated :ref:`contrib.install`.  The :cmd:`pip install -r
+requirements-include.txt` was missing in the instructions.  It's actually a bit
+stupid that the contributor needs to run this manually.  Getlino should do this.
+
+You might wonder why this num2words package causes so much trouble. It is just
+one example for a general problem.
+
+num2words is required only by :mod:`lino_xl.lib.cal` (the calendar plugin). Many
+demo projects use this plugin, but not *all* projects. We don't want to simply
+add num2words to the dependencies of :mod:`lino_xl` because there might be a
+Lino application that uses :mod:`lino_xl` without the calendar plugin. For such
+an application it would be a pity to install num2words on every production site.
+
+We might ask "Why don't we put lino_xl.lib.cal into a Python package on its
+own?". Yes, that would be the right approach. Theoretically. But
+:mod:`lino.modlib` contains currently 37 plugins, and :mod:`lino_xl.lib`
+contains 74. We don't wnat to create more than 100 new Python packages!
+Especially because only some of them have such special requirements. And then it
+has historic reasons. When starting the cal plugin we didn't yet know that one
+day we want it to use the num2words package.
+
+And then Lino has the :manage:`install` command to fix that problem. The
+:file:`requirements-stable.txt` file in the book repository is basically the
+combined result of running "manage,py install" in every demo project.

@@ -1,0 +1,43 @@
+:date: 2020-07-28
+
+======================
+Tuesday, July 28, 2020
+======================
+
+Worked on developer guide and getlino
+=====================================
+
+Ismail continues to get started and sends many error reports.
+
+I reviewed the installation instructions for both developers and contributors
+(:ref:`dev.install` and :ref:`contrib.install`).  I also started to review
+:ref:`dev.translate`.
+
+While doing so, I found several bugs in getlino that explain many of the
+problems Ismail had.
+
+For example the bug that caused the following problem::
+
+    File "/.../lino_local/first/settings.py", line 16
+      use_linod =
+                 ^
+  SyntaxError: invalid syntax
+
+Another bug was that getlino startsite didn't set DEBUG to True on localhost
+(which then caused error messages like "You may need to add '127.0.0.1' to
+ALLOWED_HOSTS", missing SECRET_KEY etc.
+
+These bugs will be fixed in the next getlino version.  I didn't yet release
+getlino to PyPI because my work on the test suite isn't finished.
+
+
+Inserting templates in TinyMCE doesn't work
+===========================================
+
+Steve reported :ticket:`3731`, a problem after the weleup1 release: Inserting
+templates in TinyMCE doesn't work anymore. Apache answers to GET
+http://hostname/static/tinymce-3.5.11/plugins/template/template.htm with 404.
+And indeed, that file doesn't exist on their site. The reason is that
+:file:`*.htm` was missing in the :xfile:`MANIFEST.in` of Lino.  I fixed it
+manually by copying all :file:`*.htm` from the repository to their static
+directory.
