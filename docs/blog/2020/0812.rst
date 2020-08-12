@@ -1,0 +1,31 @@
+:date: 2020-08-12
+
+==========================
+Wednesday, August 12, 2020
+==========================
+
+The insert window in Office --> Uploads had the fields type and file on the same
+row, which doesn't render well in ExtJS (the type combo doesn't open).
+
+The UploadsByController in presto now has a custom insert_layout which adds the
+company field.
+
+The insert_layout defined on uploads.UploadsByProject was the same as the one
+defined on its parent uploads.UploadsByController. Removed duplicate code. This
+saves one duplicate object in the generated JS.
+
+Oops, the test i added yesterday for covering :ticket:`3745` caused side effects
+in the test suite because it created a client.  And in min9 the problem was not
+actually reproduced because min9 had no site_company (and therefore a new person
+didn't have any address field, so Lino didn't even try to create an Address).
+The test is now being done in  `min9.tests.test_addresses`.
+
+
+Luc getting started with React
+==============================
+
+
+I worked on :ticket:`3709` (Luc getting started with React).
+Merged a pull request introduced by a user g4ndy.
+
+My goal is to have a comprehensible documentation in :ref:`react.guide`.

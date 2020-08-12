@@ -1,0 +1,64 @@
+:date: 2020-08-07
+
+======================
+Friday, August 7, 2020
+======================
+
+I updated the :ref:`presto` site for Margarete.
+
+Added "python -m pip install -U pip" to the :xfile:`pull.sh` :ref:`getlino`
+template. Because on production sites this is usually the first thing you want
+to check, and pip is AFAICS a reliable package that we can safely upgrade
+without worrying very much.
+
+Upgraded their Django, which was still 2.2.5.
+
+Oho::
+
+  Traceback (most recent call last):
+    File "manage.py", line 6, in <module>
+      from lino_local import manage ; manage(__file__,py3=True)
+    ...
+    File "/home/admin/mypy/prod_sites/soshilfe/env/lib/python3.6/site-packages/lino/core/utils.py", line 15, in <module>
+      from django.db.models.fields import FieldDoesNotExist
+  ImportError: cannot import name 'FieldDoesNotExist'
+
+Seems that Lino doesn't yet collaborate with Django 3.1. Need to fix that
+locally. On the production site I work around it by saying::
+
+  $ pip install -U "Django<3.1"
+
+After upgrading django I also had to upgrade django-localflavor and django-click.
+
+Now::
+
+  $ python manage.py run snapshot/restore.py
+
+  TypeError: PriceRule() got an unexpected keyword argument 'event_type_id'
+
+Yes, remember :doc:`0519`.
+
+
+Before::
+
+  def create_products_pricerule(id, seqno, event_type_id, fee_id, pf_income):
+  #    if pf_income: pf_income = settings.SITE.models.presto.IncomeCategories.get_by_value(pf_income)
+      kw = dict()
+      kw.update(id=id)
+      kw.update(seqno=seqno)
+      kw.update(event_type_id=event_type_id)
+      kw.update(fee_id=fee_id)
+      kw.update(pf_income=pf_income)
+      return products_PriceRule(**kw)
+
+After::
+
+  def create_products_pricerule(id, seqno, event_type_id, fee_id, pf_income):
+  #    if pf_income: pf_income = settings.SITE.models.presto.IncomeCategories.get_by_value(pf_income)
+      kw = dict()
+      kw.update(id=id)
+      kw.update(seqno=seqno)
+      kw.update(selector_id=event_type_id)  # renamed event_type to selector
+      kw.update(product_id=fee_id)          # renamed fee to product
+      kw.update(pf_income=pf_income)
+      return products_PriceRule(**kw)
