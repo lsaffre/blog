@@ -1,0 +1,132 @@
+:date: 2020-08-13
+
+=========================
+Thursday, August 13, 2020
+=========================
+
+Lino React front end
+====================
+
+I committed and pushed miscellaneous changes in the :ref:`react` repo.
+
+I had a session with Tonis where I learned a lot about how to develop
+:mod:`lino_react`. We fixed the "TypeError: c.DomHandler is undefined" problem.
+
+- https://stackoverflow.com/questions/36795819/when-should-i-use-curly-braces-for-es6-import
+
+- https://www.sitepoint.com/understanding-module-exports-exports-node-js/
+
+Next steps planned: try to get rid of our primereact fork.
+
+
+Mailman3 on laudate
+===================
+
+I tried :cmd:`sudo apt install mainman3-full`.
+Before this I moved two config files to :file:`/opt/mailman-opt-files`::
+
+  /etc/nginx/sites-available/mailman.conf
+  /etc/supervisor/conf.d/mailman.conf
+
+It asked questions like these:
+
+- Configure database for mailman3 with dbconfig-common?  Yes
+
+- Database type to be used by mailman3: sqlite3
+
+But in the end it said: The service for mailman3 failed! The mailman3 service
+didn't start correctly. This is probably because you didn't configure the
+database appropriately. The service won't work until you do so. If you actually
+DID install the database appropriately, please report the bug to the maintainers
+of the mailman3 package.
+
+So mailman3 doesn't yet seem to work out of the box.
+I continued with our manual installation.
+Continued from :doc:`0715`.
+
+I created my own script for mailman::
+
+  # LS 20200813
+  # activate mailman venv
+  . /opt/mailman/venv/bin/activate
+  sudo env PATH=$PATH mailman $*
+
+So now it works::
+
+  $ mailman info
+  GNU Mailman 3.3.1 (Tom Sawyer)
+  Python 3.7.3 (default, Dec 20 2019, 18:57:59)
+  [GCC 8.3.0]
+  config file: /etc/mailman3/mailman.cfg
+  db url: sqlite:////var/lib/mailman3/data/mailman.db
+  devmode: DISABLED
+  REST root url: http://localhost:8001/3.1/
+  REST credentials: restadmin:****
+
+I continued to read `Mailman 3 Core REST API
+<https://mailman.readthedocs.io/en/latest/src/mailman/rest/docs/rest.html>`__.
+
+My problem atm is that https://lists.laudate.ee gives an error message
+"Something went wrong. Mailman REST API not available. Please start Mailman
+core."  Okay, something went wrong... but what exactly?
+
+The application running behind lists.laudate.ee is the so-called mailman suite,
+a combination of postorious and webkitty.  It is defined in
+/opt/mailman/mailman-suite/mailman-suite_project
+
+Here is the log file::
+
+  $ cd /opt/mailman/mailman-suite/mailman-suite_project
+  $ less logs/mailmansuite.log
+
+It says::
+
+  mailmanclient.restbase.connection.MailmanConnectionError:
+  ('Could not connect to Mailman API: ', 'ConnectionError(MaxRetryError("HTTPConnectionPool(
+  host=\'localhost\', port=8001):
+  Max retries exceeded with url: /3.1/lists?advertised=true&count=0&page=1
+  (Caused by NewConnectionError(\'<urllib3.connection.HTTPConnection object
+  at 0x7f439f159cc0>: Failed to establish a new connection: [Errno 111]
+  Connection refused\'))"))')
+
+Ha! But here::
+
+  $ sudo service mailman3 restart
+  Failed to restart mailman3.service: Unit mailman3.service is masked.
+
+Why is the service masked? I guess that it is to protect me from having the
+service running before I fully understood how to configure it.
+
+If that's true, I guess that some documentation about how to unmask the service
+is missing in https://docs.mailman3.org/en/latest/config-core.html
+
+I installed whoosh and pymysql::
+
+  $ cd /opt/mailman/mailman-suite/mailman-suite_project
+  $ ln -s /opt/mailman/venv env
+  $ a
+  $ pip install whoosh
+  $ pip install pymysql  # TODO: what's this?
+  $ pip install mysqlclient
+
+I created a mysql user and database for mailman::
+
+  $ sudo mysql -u root
+  MariaDB [(none)]> create user 'mailman'@'localhost' identified by 'my cool mailman password';
+  MariaDB [(none)]> create database mailman;
+  MariaDB [(none)]> grant all on mailman.* to mailman@localhost with grant option;
+
+
+Updated the ``[database]`` section in :file:`/etc/mailman3/mailman.cfg`.
+
+
+Now I can start the mailman service::
+
+  $ mailman start
+  Starting Mailman's master runner
+  Generating MTA alias maps
+
+
+Things start working. I could cre4ate a few lists. But I seem to have a postfix
+configuration problem because when I now send an email to test@laudate.ee (which
+is a valid list with two members), postfix doesn't even let it in.

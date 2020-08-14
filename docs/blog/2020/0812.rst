@@ -26,6 +26,57 @@ Luc getting started with React
 
 
 I worked on :ticket:`3709` (Luc getting started with React).
-Merged a pull request introduced by a user g4ndy.
-
 My goal is to have a comprehensible documentation in :ref:`react.guide`.
+
+I merged a pull request introduced by a user g4ndy. Nice surprise : this fixed
+my problem with the missing glyphs for the primereact fonts.
+
+I am testing it in the cms demo project::
+
+  $ go cms
+  $ pm runserver
+
+The first screen now displays correctly. But when I try to sign in, it gets
+blank and the JS console reports::
+
+  TypeError: c.DomHandler is undefined
+
+
+
+
+Adapt Lino to work with Django 3.1
+==================================
+
+I opened :ticket:`3748`.
+
+https://docs.djangoproject.com/en/3.1/releases/3.1/
+
+First problem is this::
+
+  ImportError: cannot import name 'FieldDoesNotExist'
+
+That was because the compatibility import of
+django.core.exceptions.FieldDoesNotExist in django.db.models.fields is removed.
+
+.. `Django REST framework <https://www.django-rest-framework.org/>`__ seems to not
+  have fixed the issue as well.  Wrong. Seems that this was because I said "pip install -U django_rest_framework" instead of "pip install -U djangorestframework".
+  https://github.com/encode/django-rest-framework/issues/7459
+
+A more difficult problem was this::
+
+  TypeError: related_objects() missing 1 required positional argument: 'objs'
+
+
+.. currentmodule:: lino.utils.mti
+
+This was in :mod:`lino.utils.mti`.
+The :func:`delete_child` function used a :class:`ChildCollector` until now.
+It is dangerous code.
+Remember the killer bug some years ago.
+But I trust that the test suite covers these things quite well.
+
+A last problem was in the welfare test suite
+(:file:`docs/specs/dupable_clients.rst`).  The sort order of the two Dorothées
+is changed.  The query has always been sorted by `['-num', 'pk']`.
+I did not find any explanation for it, but I now assume that it is
+irrelevant for us.

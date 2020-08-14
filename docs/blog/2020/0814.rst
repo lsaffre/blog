@@ -1,0 +1,82 @@
+:date: 2020-08-14
+
+=======================
+Friday, August 14, 2020
+=======================
+
+Installing Mailman 3 on Debian
+==============================
+
+Ha! The mailman service doesn't use :file:`/var/etc/mailman.cfg` as config file
+but
+:file:`/opt/mailman/mailman-suite/mailman-suite_project/var/etc/mailman.cfg`! Of
+course!  With mailman3 you can have more than one "mailman" on a same server.
+
+
+Here is an interesting page:
+https://wiki.list.org/DOC/Howto_Install_Mailman3_On_Debian10
+Very good beginning!
+Not not finished.
+
+My next question is : how will we manage upgrades? Hamza installed a git clone
+of the mailman suite, and that seems the way they also support. Which means that
+I should not directly modify the settings.py file, rather create a
+`local_settings.py` file.
+
+
+Martina cannot duplicate entries of a budget
+============================================
+
+Wow, a subtile bug that slipped through the test suite:
+Martina didn't have the Duplicate action on the entries of a budget.
+
+I remember how this bug was introduced. It was over a year ago when working for
+:ref:`tera`. They asked me to remove "that useless Duplicate button" for every
+normal user. So I added a role "Expert" and made both the Duplicate and the
+Merge actions require it.  And at that moment I didn't imagine that a debts
+mediator in welfare would need the duplicate action.
+
+The local fix was easy::
+
+  class Duplicate(actions.Action):
+     ...
+     def get_view_permission(self, user_type):
+          if user_type:
+              if user_type.readonly:
+                  return False
+              # if not user_type.has_required_roles([Expert]):
+              #     return False
+          return super(Duplicate, self).get_view_permission(user_type)
+
+And this is probably the most reasonable general solution as well. Even normal
+users in :ref:`tera` actually won't be too disturbed by seeing the `Duplicate`
+action on models that are duplicable.  I will need to explain this to Harry who
+called that button "useless".
+
+Changelog: The duplicate action is again visible for every user, not only for
+users having the :class:`lino.core.roles.Expert` role.
+
+The merge action is similar but different. It is similar in that it is a
+"standard" action, defined by the framework. Application developers have hooks
+to customize what happens when two database objects are merged, but the basic
+procedure is always the same.  We also have the :attr:`allow_merge_action
+<lino.core.model.Model.allow_merge_action>` attribute on Lino's base Model class
+because there are models for which merging makes no sense or would be very
+difficult to implement and control. For example on a :class:`contacts.Partner`,
+which can be MTI parent to several other database objects.
+
+The :ref:`dev.actions` page was still very useless for a new Lino developer.  I
+discovered that I can mix prosa documentation style with API docs. For example
+:attr:`lino.core.actions.Action.readonly` is now documented only in
+:file:`docs/dev/actions.rst`.  Until now I had been reluctant to convert docs
+about core classes to prosa because I didn't know this.
+
+
+No help_texts for lino
+======================
+
+Oho, I noticed a side effect of some change in Sphinx that caused the
+:xfile:`help_text.py` files to not get updated any more: seems that the
+:class:`sphinx.addnodes.desc_signature` node now stores the name of the
+described object now in the "ids" attribute instead of "names". I didn't
+understand every detail but it seems to work again.
