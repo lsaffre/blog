@@ -1,0 +1,113 @@
+:date: 2020-08-17
+
+=======================
+Monday, August 17, 2020
+=======================
+
+Certbot and the subdomains
+==========================
+
+There were again https warnings for laudate. We have two different certificates
+for laudate.ee and www.laudate.ee. Is that normal? Seems that something is
+messed up.
+
+We have nginx listening at www.laudate.ee and laudate.ee (both domains share the
+same content). Here is the summarized config file::
+
+  server {
+      server_name laudate.ee www.laudate.ee;
+      ...
+      listen 443 ssl; # managed by Certbot
+      ssl_certificate /etc/letsencrypt/live/www.laudate.ee/fullchain.pem; # managed by Certbot
+      ...
+  }
+
+  server {
+      server_name laudate.ee www.laudate.ee;
+      listen 80;
+
+      if ($host = www.laudate.ee) {
+          return 301 https://$host$request_uri;
+      } # managed by Certbot
+
+      if ($host = laudate.ee) {
+          return 301 https://$host$request_uri;
+      } # managed by Certbot
+
+      return 404; # managed by Certbot
+  }
+
+I say::
+
+  $ certbot-auto -d laudate.ee -d www.laudate.ee
+  ...
+  Your existing certificate has been successfully renewed, and the new certificate
+  has been installed.
+  The new certificate covers the following domains: https://laudate.ee and
+  https://www.laudate.ee
+
+ - Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/laudate.ee/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/laudate.ee/privkey.pem
+   Your cert will expire on 2020-11-15. To obtain a new or tweaked
+   version of this certificate in the future, simply run certbot-auto
+   again with the "certonly" option. To non-interactively renew *all*
+   of your certificates, run "certbot-auto renew"
+
+I removed the certificate files for `www.laudate.ee`.
+But the additional domain name was still there::
+
+  $ certbot-auto
+  Requesting to rerun /usr/local/bin/certbot-auto with root privileges...
+  Saving debug log to /var/log/letsencrypt/letsencrypt.log
+  Plugins selected: Authenticator nginx, Installer nginx
+
+  Which names would you like to activate HTTPS for?
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  1: laudate.ee
+  2: lists.laudate.ee
+  3: www.laudate.ee
+  4: ejane.mylino.net
+  5: jane.mylino.net
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  Select the appropriate numbers separated by commas and/or spaces, or leave input
+  blank to select all options shown (Enter 'c' to cancel): c
+
+I had to read  `the manual
+<https://certbot.eff.org/docs/using.html#where-are-my-certificates>`__ and
+discover the certificates command.  This revealed that I had erroneously given
+the following command when adding the certificate for the mailman3 interface::
+
+  $ certbot-auto -d lists.laudate.ee -d www.laudate.ee
+
+That was wrong. It must be::
+
+  $ certbot-auto -d lists.laudate.ee
+
+Done.
+
+
+How to install mailman3
+=======================
+
+https://www.gnu.org/software/mailman/devs.html : Mailman 3 is under active
+development and we would welcome your input and contributions. The primary
+gathering point for all development should be the Mailman Wiki and specifically
+the Development home space on the wiki. Because wikis are intended to be
+collaborative, you're free to contribute to this page in true wiki fashion.
+
+https://wiki.list.org/DEV/Home : Thank you for contributing to Mailman! Please
+also see the Mailman 3 release notes. NEW! This year we will be applying to
+Google's Season of Docs. For information about Mailman's project ideas, click
+here: Mailman Season of Docs 2019.
+
+Looks great. But I still can't edit neither the Home page nor Brian's page about
+`How to Install Mailman 3 on a Debian 10 Server
+<https://wiki.list.org/DOC/Howto_Install_Mailman3_On_Debian10>`__. Maybe that's
+because I registered only yesterday as a user.
+
+I started writing installation notes in :ref:`admin.mailman`.
+
+TODO: Get more contact with mailman developers. Should I integrate my docs about
+mailman to their wiki?
