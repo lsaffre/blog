@@ -1,0 +1,38 @@
+:date: 2020-08-22
+
+=========================
+Saturday, August 22, 2020
+=========================
+
+Ismail reported the following error when setting
+:attr:`default_ui <lino.core.site.Site.default_ui>` to :mod:`lino_openui5.openui5`::
+
+  [18/Aug/2020 01:58:12] "GET / HTTP/1.1" 500 99629
+  Internal Server Error: /
+  Traceback (most recent call last):
+    ...
+    File ".../lino/venv/lib/python3.8/site-packages/jinja2/loaders.py", line 429, in load
+      raise TemplateNotFound(name)
+  jinja2.exceptions.TemplateNotFound: openui5/main.html
+
+
+Yes, I can reproduce the problem in a contributor environment as follows:
+
+  1) uninstall the dev version and install the pip version of lino_openui5
+
+  2) run the following::
+
+      go cms
+      nano settings/__init__.py
+      # change default_ui  from 'lino_react.react' to 'lino_openui5.openui5'
+      runserver
+      # do a browser request
+
+It must be a packaging problem since it works with the dev version.
+
+Indeed there is no :xfile:`MANIFEST.in`  in the :ref:`openui5` repository.
+
+I added a :xfile:`MANIFEST.in` and released version 20.8.1 to PyPI. But I didn't
+test locally before releasing to PyPI. It turned out that I had forgotten to
+include the json files. So I needed a second release 20.8.2.  With this one it
+works.
