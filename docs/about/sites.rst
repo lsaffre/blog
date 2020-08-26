@@ -42,3 +42,9 @@ hoppel
 
 
 
+.. _hw:
+
+Human World project
+-------------------
+
+Website: https://hw.saffre-rumma.net

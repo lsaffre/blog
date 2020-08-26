@@ -1,0 +1,78 @@
+:date: 2020-08-23
+
+=======================
+Sunday, August 23, 2020
+=======================
+
+Performance on sites with nginx
+===============================
+
+With Apache it was okay to have 10 Lino sites on a same server with 2 GB of RAM
+and one core. With nginx it seems very slow. Is there something wrong in our
+:xfile:`uwsgi.ini` files?
+
+https://uwsgi-docs.readthedocs.io/en/latest/tutorials/Django_and_nginx.html
+
+We have 5 supervisor tasks running on this server::
+
+  $ sudo supervisorctl status
+  ejane-uwsgi                      RUNNING   pid 29808, uptime 0:14:17
+  jane-uwsgi                       RUNNING   pid 29810, uptime 0:14:17
+  libreoffice                      RUNNING   pid 29807, uptime 0:14:17
+  linod-jane                       RUNNING   pid 29809, uptime 0:14:17
+  mailman-uwsgi                    RUNNING   pid 29806, uptime 0:14:17
+
+NB supervisor task linod-jane was not running because it had a newline at the
+beginning of the file. Fixed.
+
+The free command reports only 200 MB of freed memory after restarting
+supervisor. Here is the output before and after::
+
+  $ free -h
+                total        used        free      shared  buff/cache   available
+  Mem:          1,9Gi       1,7Gi        67Mi        23Mi        94Mi        29Mi
+  Swap:            0B          0B          0B
+
+  $ free -h
+                total        used        free      shared  buff/cache   available
+  Mem:          1,9Gi       1,5Gi       135Mi        23Mi       259Mi       217Mi
+  Swap:            0B          0B          0B
+
+But these 200 MB might make a big difference when 1.5 of 1.9 GB are being used
+all the time.
+
+:cmd:`ps -o pid,user,%mem,command ax | sort -b -k3 -r` shows that there are
+indeed 10 processes for each Lino site, and each of them uses 6% of the total
+available memory. The mailman suite is more polite: only two processes, and each
+of them uses 2.5 and 1.8 % of available memory.
+
+I changed the :xfile:`uwsgi.ini` files for jane and ejane as follows::
+
+  processes = 2 (instead of 10)
+  # buffer-size 10000  (commented this out)
+
+The processes themselves didn't get smaller, but having 4 of them instead of 20
+is a big gain.  Jane on LF is very quick at the moment, quicker than Hobbit was
+on SR.  But I just did a supervisor restart, so this needs to be observed.
+
+I also replaced pidfile by safe-pidfile ater reading `this
+<https://github.com/unbit/uwsgi-docs/issues/281>`__.
+
+I also did these changes in the :xfile:`uwsgi.ini` template for :cmd:`getlino
+startsite`.
+
+
+I also wondered whether maybe somebody is heavily stressing our server. I
+installed :cmd:`iftop` after reading `this
+<https://linuxtechlab.com/top-7-commands-for-linux-network-traffic-monitoring/>`__.
+iftop shows that mail.laudate.ee quite busy, getting several requests per
+second.  But that doesn't seem to be a big problem.
+
+I ran :cmd:`apt autoremove` because apt advised me so. autoremove gave these
+warnings::
+
+  dpkg: warning: while removing fonts-font-awesome, directory '/usr/share/fonts/woff/font-awesome' not empty so not removed
+  dpkg: warning: while removing fonts-font-awesome, directory '/usr/share/fonts/truetype/font-awesome' not empty so not removed
+  dpkg: warning: while removing fonts-font-awesome, directory '/usr/share/fonts/svg/font-awesome' not empty so not removed
+  dpkg: warning: while removing fonts-font-awesome, directory '/usr/share/fonts/opentype/font-awesome' not empty so not removed
+  dpkg: warning: while removing fonts-font-awesome, directory '/usr/share/fonts/eot/font-awesome' not empty so not removed

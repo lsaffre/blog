@@ -1,0 +1,80 @@
+:date: 2020-08-25
+
+========================
+Tuesday, August 25, 2020
+========================
+
+I fixed :ticket:`3765` and did some changes in :ref:`hosting.backup`  and
+:ref:`hosting.mirror`.
+
+I tried the `insipid
+<https://insipid-sphinx-theme.readthedocs.io/en/0.1.1/>`__ Sphinx theme. Looks
+even nicer than RTD.
+I switched the :ref:`hw` to it.
+
+
+'NoneType' object has no attribute 'get_layout_handle'
+======================================================
+
+.. currentmodule:: lino.modlib.users
+
+I fixed :ticket:`3766`. This was a quite blocking bug: it was not possible to
+edit any combobox field in the :guilabel:`My Settings` form. The issue occurred
+only here because :class:`Users` is abstract and nevertheless has parameters
+defined. I added test cases to cover this in :ref:`specs.users` and
+:ref:`welfare.specs.reception`.
+
+There is an internal rule that when `parameters` is None, `params_layout` is
+also `None` and no functionality related to parameters is used. This rule was
+not satisfied here. It is not satisfied because :class:`Users` is abstract.
+Interesting to note that the Ajax call requests ``/Users/``, not ``/AllUsers/``
+or ``/MySettings/`` or some other non-abstract table name. That's because none
+of the non-abstract subclasses of :class:`Users` adds anything to the question
+"which choices do we have for field :attr:`User.coaching_type`?". That's why all
+fields use the same Ajax call. The problem occurred also for
+:attr:`User.partner` or :attr:`User.user_type`.
+
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.gerd.settings.doctests')
+>>> from lino.api.doctest import *
+
+>>> lh = users.AllUsers.get_detail_layout()
+>>> lh.layout._datasource
+lino.modlib.users.desktop.Users
+>>> lh.get_data_elem('coaching_type')
+<django.db.models.fields.related.ForeignKey: coaching_type>
+
+>>> show_choices('romain', '/choices/users/Users/coaching_type')
+<br/>
+SSG
+SI
+Médiation de dettes
+
+Internal side effect: Lino now supports action requests on an abstract actor.
+Such requests are of course limited, but we need them e.g. in above case.
+
+I did not remove the exception "has a params_layout but no parameters" e.g.
+ledger.ByJournal is just a mixin but provides a default value for its children
+
+Note also the special case :class:`lino_xl.lib.ledger.ByJournal`. This is a
+table mixin. It is not explicitly marked as abstract by the application
+developer. That's okay because a data table is automatically considered abstract
+when it has no model.
+
+
+Make Lino applications use Django the user model
+================================================
+
+Until now I was still assuming that "Django's approach provides no means for
+defining instance-specific permissions."  I now saw that this is no longer true.
+So think once more about whether we should support Lino applications that use
+the standard :mod:`django.contrib.auth` plugin instead of
+:mod:`lino.modlib.users`. The main obstacle is the fundamentally different
+permission system.  But there is a solution for it. Probably even several
+solutions. One of them would be to add an attribute
+:attr:`lino.core.actions.Action.required_permissions` and to have the
+:fixture:`std` fixture generate one Django user group for each :term:`user type`
+in Lino.
+
+I reviewed :ref:`about.auth`.
