@@ -1,0 +1,96 @@
+:date: 2020-09-01
+
+==========================
+Tuesday, September 1, 2020
+==========================
+
+Fixed some issues with learning foreign keys
+============================================
+
+I worked on :ticket:`3653`.
+Summary of changes:
+:term:`Learning foreign keys <learning foreign key>` now also work in :ref:`react`.
+The :attr:`lino_xl.lib.cal.Guest.partner` field is now a :term:`learning foreign key`.
+
+This didn't require any change in :ref:`react` because react actually handled
+LFKs better than extjs. I rather adapted Lino to accept the react way as well.
+
+I reviewed the internal API for defining learning FKs.
+Removed the :attr:`disable_create_choice` attribute of :class:`lino.core.model.Model`.
+The :meth:`lino.core.model.Model.choice_text_to_dict` method is now the only thing
+to implement. When it returns a dict, then the database object gets created.
+When it returns `None`, the user will see a warning.  Default implementation
+returns `None`.  The only implemented usage so far is in `contacts.Person`.
+
+NB it is still necessary to explicitly create a chooser and a
+:meth:`create_FOO_choice` method.  But now the :meth:`create_FOO_choice` method
+is a one-liner.
+
+An easy place for reproducing the problem:
+
+- go amici1, runserver, sign in as robin, go to the detail of some appointment.
+  Click on the "Person" field in the Presences panel to add a new person. Type
+  "Foo Bar" (name of a person that doesn't yet exist). Type Enter.
+
+- Expected behaviour: Lino should create a person `(first_name="Foo",
+  last_name="Bar")`.
+
+- Actual behaviour: the JS console says
+  SyntaxError: JSON.parse: unexpected character at line 1 column 1 of the JSON data
+
+It is --correctly-- sending a POST to
+http://127.0.0.1:8000/api/cal/GuestsByEvent
+
+And the POST request says::
+
+  an=grid_post&mk=209&mt=24&partner=foo+bar&rp=weak-key-24
+
+That is, it doesn't send a `partnerHidden` field, as it would when we select an
+existing person::
+
+  an=grid_post&mk=209&mt=24&partner=Odette+Adam&partnerHidden=227&rp=weak-key-24
+
+The extjs front end worked because there the combobox puts the value "foo bar"
+in both fields of the AJAX request (partner and partnerHidden). Which is not
+very elegant. I changed Lino to support an empty partner field and to look up the
+partnerHidden field for comboboxes of a learning FK.
+
+:meth:`storeField.form2obj` has three steps:
+
+- :meth:`extract_form_data`
+- :meth:`parse_form_value`
+- :meth:`set_value_in_object`
+
+The code to create the partner is no longer executed in :meth:`parse_form_value`
+but in :meth:`extract_form_data`. The internal "value" returned by
+:meth:`extract_form_data` is no longer the parsed primary key but the model
+instance (which potentially has been created on the fly).
+
+In `ParameterStore.parse_params` we do not use the learning FK feature.
+
+I moved the functions :func:`choices_response`  and :func:`choices_for_field`
+from :mod:`lino_react.react.views` to :mod:`lino.core.views` and to
+:mod:`lino.core.fields` because this was duplicated code. 
+
+Another bug
+===========
+
+I opened :ticket:`3773`:
+When I call, in react, in a slave table, the delete_selected action, react
+doesn't specify the mk and mt parameters.  Which sometimes works (when the
+master instance is not needed), but e.g. for a `cal.Guest` it failed.
+:meth:`cal.GuestsByEvent.disable_delete` now raises an explicit exception in
+that case::
+
+  raise Exception("You must specify a master instance")
+
+
+Reviewing the LETS tutorial
+===========================
+
+I realized that :ref:`lino.tutorial.lets` is actually a great example of
+developing your own Lino application from scratch. A moved it to the "Getting
+started" section of the developer guide.
+
+I moved the code and the specs for lets1 into a new repository
+https://gitlab.com/lino-framework/lets
