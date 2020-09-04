@@ -1,0 +1,77 @@
+:date: 2020-09-02
+
+============================
+Wednesday, September 2, 2020
+============================
+
+It seems that I messed certain things up when trying to install the certificate
+for https://lets.lino-framework.org yesterday.  Now I had a couple of hours to
+learn more about certbot.   I updated the :ref:`hosting.certbot` page and made
+some changes in :ref:`getlino`. Though I am still far from knowing everything...
+
+
+.. highlight:: console
+
+How to see which Debian I am running::
+
+  $ lsb_release -a
+  No LSB modules are available.
+  Distributor ID:	Debian
+  Description:	Debian GNU/Linux 10 (buster)
+  Release:	10
+  Codename:	buster
+
+
+https://certbot.eff.org/lets-encrypt/debianbuster-nginx
+
+::
+
+  $ sudo apt-get install certbot python-certbot-nginx
+  Reading package lists... Done
+  Building dependency tree
+  Reading state information... Done
+  certbot is already the newest version (0.31.0-1).
+  python-certbot-nginx is already the newest version (0.31.0-1).
+  0 upgraded, 0 newly installed, 0 to remove and 124 not upgraded.
+
+A "messy certificate" is a certificate that covers a domain which is already
+covered by another certificate. How to find messy certificates?
+
+I deleted a few of them using::
+
+  $ certbot-auto delete --cert-name team.new.lino-framework.org
+  Requesting to rerun /usr/local/bin/certbot-auto with root privileges...
+  Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  Deleted all files relating to certificate team.new.lino-framework.org.
+  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  (master) luc@lf:/usr/bin$
+
+How can I see all certificates that cover a given domain?
+
+  TODO
+
+How to see all enabled sites and the certificate they use::
+
+  $ cd /etc/nginx/sites-enabled
+  $ grep ssl_certificate_key *
+
+
+How to maintain the list of domains in a separate file.
+
+Let's say you have a certificate named ``example.com``
+
+Create a file named :file:`~/domains.txt` with one line per domain, each line
+starts with `-d`::
+
+  -d example.com
+  -d www.example.com
+  -d sub1.example.com
+  ...
+  -d sub9.example.com
+
+You can now always update this file and then run the following to updated your
+certificate::
+
+  $ xargs -a ~/domains.txt certbot-auto certonly --cert-name example.com

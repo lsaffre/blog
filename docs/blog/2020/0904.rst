@@ -1,0 +1,38 @@
+:date: 2020-09-04
+
+=========================
+Friday, September 4, 2020
+=========================
+
+I continued to work on the LETS tutorial (:ref:`dev.lets`).
+I added a branch "step2" and a section :ref:`dev.lets.step2`.
+I added a branch "step3" and a section :ref:`dev.lets.step3`.
+
+Internal optimizations:
+
+- :meth:`lino.core.site.Site.setup_quicklinks` no longer searches and executes a
+  global function :func:`setup_quicklinks` in each plugin, but calls the new
+  plugin method :meth:`lino.core.plugin.Plugin.get_quicklinks`.
+
+- :meth:`lino.core.model.Model.get_simple_parameters` may now yield an iterator of
+  a series of fields. Until now the application developer had to write::
+
+    @classmethod
+    def get_simple_parameters(cls):
+        for f in super(Demand, cls).get_simple_parameters():
+            yield f
+        yield "customer"
+        yield "customer__place"
+
+Now they can write more intuitively::
+
+    @classmethod
+    def get_simple_parameters(cls):
+        yield super(Demand, cls).get_simple_parameters()
+        yield "customer"
+        yield "customer__place"
+
+
+TODO: review the :class:`UserDetail` layout (in all three steps). There is
+"design problem": the LETS tutorial is in the Developer Guide but it requires a
+Contributor environment.
