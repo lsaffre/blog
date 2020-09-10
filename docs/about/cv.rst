@@ -124,7 +124,7 @@ Personal views
   local lutheran church community.  My faith has been influenced by the
   spirituality of the `Taizé <http://taize.fr/>`_ community. I classify myself
   as a `convinced reasonable Christian
-  <https://hw.saffre-rumma.net/christian.html>`__.
+  <https://hw.saffre-rumma.net/christian>`__.
 
 - I am not actively engaged in any political party. The
   `politicalcompass.org` website classified me as `Economically rather
