@@ -6,7 +6,7 @@ Curriculum vitae
 Projects
 --------
 
-I am author and maintainer of :ref:`Lino <cg.lino.what>` and its predecessor
+I am author and maintainer of :ref:`Lino <cg.lino.framework>` and its predecessor
 TIM_, two frameworks for developing customized database applications. They are
 mostly used in Belgium.
 

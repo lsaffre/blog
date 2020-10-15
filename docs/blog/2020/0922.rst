@@ -1,0 +1,55 @@
+:date: 2020-09-22
+
+===========================
+Tuesday, September 22, 2020
+===========================
+
+I had the following on my old notebook (`doll`)::
+
+  error: no such partition.
+  Entering rescue mode...
+  grub rescue>
+
+Surf:
+
+- https://olinux.net/grub-rescue-mode/
+- https://askubuntu.com/questions/266429/error-file-grub-i386-pc-normal-mod-not-found/462995#462995
+- https://www.gnu.org/software/grub/manual/grub/html_node/GRUB-only-offers-a-rescue-shell.html
+
+::
+
+  grub rescue> set
+  cmdpath=(hd0)
+  prefix=(hd0,msdos6)/boot/grub
+  root=hd0,msdos6
+
+  grub rescue> ls
+  (hd0) (hd0,msdos2) (hd0,msdos1) (hd1) (hd1,msdos1)
+  grub rescue> ls (hd0,msdos2)
+  (hd0,msdos2): Filesystem is unknown
+  grub rescue> ls (hd1,msdos1)
+  (hd1,msdos1): Filesystem is ext2
+
+  grub rescue> set boot=(hd1,msdos1)
+  grub rescue> set prefix=(hd1,msdos1)/boot/grub
+
+::
+
+  grub rescue> insmod normal
+  error: file `/boot/grub/i386-pc/normal.mod' not found.
+
+When I specified some of the other partitions in boot and prefix, it says::
+
+  grub rescue> insmod normal
+  error: no such partition
+
+And in both cases the following says::
+
+  grub rescue> normal
+  Unknown command `normal'.
+
+Funny:  I created an Lubuntu install usb, then changed the book order: move "USB
+device" one item up in order to book from the usb, but then I didn't need the
+usb stick because it booted into initram where I simply said "fsck /dev/sda1"
+(as instructed), then said ENTER to every "fix?" question, and afterwards
+everything was back...

@@ -1,0 +1,35 @@
+:date: 2020-10-13
+
+=========================
+Tuesday, October 13, 2020
+=========================
+
+Uff, I finished :ticket:`3817`.
+
+It seems that en passant this also fixed :ticket:`1985`. The use case is as
+follows. In :ref:`welfare` we have cascaded clearing. Cascaded clearing is used
+when we have more than one steps to be cleared. In welfare every purchase
+invoice goes through the following payment steps::
+
+  4100 Suppliers
+  4450 Disbursing orders to execute
+  4300 Pending payment orders
+
+I can manually create a REG, then suggest an AAW. The supplier is
+correctly cleared. But when I then let Lino suggest a ZKBC (based on the AAW),
+Lino books the counter booking again to 4100 (suppliers) instead of 4450
+(disbursing orders to execute), so that 4100 has now three movements and is
+again uncleared.
+
+This was because :meth:`FinancialVoucher.due2itemdict` was doing this::
+
+    def due2itemdict(self, due, **kwargs):
+        kwargs.update(match=due.match, account=due.account)
+        if due.trade_type:  # 20201014
+            ma = due.trade_type.get_main_account()
+            if ma:
+                kwargs.update(account=ma)
+
+That is, it *always* puts the main account of the trade type (when a trade type
+is known).  The trade_type of a DueMovement is the first suggestable trade type
+found, i.e. the one of the first invoice.
