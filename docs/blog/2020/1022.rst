@@ -1,0 +1,32 @@
+:date: 2020-10-22
+
+==========================
+Thursday, October 22, 2020
+==========================
+
+The getlino test suite now also tries to install a voga application. And this
+failed.  The :manage:`prep` on the newly created site said::
+
+  lino_xl.lib.ledger.models.DoesNotExist:
+  Problem installing fixture '/usr/local/lino/lino_local/voga1/env/lib/python3.7/site-packages/lino_xl/lib/finan/fixtures/payments.py':
+  Journal matching query does not exist.
+
+Explanation: the :fixture:`minimal_ledger` in :mod:`lino_xl.lib.ledger` created
+certain journals (SLC, PRC, PMO, ...) only when
+:attr:`lino_xl.lib.vat.Plugin.declaration_plugin` was set.  And there is no
+default value for this setting.
+An empty :attr:`declaration_plugin <lino_xl.lib.vat.Plugin.declaration_plugin>` is used e.g. in
+:mod:`lino_book.projects.pierre`, which is an example of a freelancer who uses
+Lino to just write invoices and has accounting done by an external expert.
+
+Should getlino ask (or provide a default value) for it? No. The solution is much
+easier:
+
+- Adapted the :fixture:`payments` fixture of :mod:`lino_xl.lib.ledger` to also
+  work when :attr:`declaration_plugin
+  <lino_xl.lib.vat.Plugin.declaration_plugin>` is empty.
+
+- Fixing this revealed a secondary bug: the :meth:`get_installed_plugins` of the
+  :class:`lino_voga.lib.voga.settings.Site` was yielding the
+  :mod:`lino_xl.lib.bevats` plugin, this is done automatically when
+  :attr:`declaration_plugin <lino_xl.lib.vat.Plugin.declaration_plugin>` is set.

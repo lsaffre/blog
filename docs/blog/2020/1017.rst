@@ -1,0 +1,27 @@
+:date: 2020-10-17
+
+==========================
+Saturday, October 17, 2020
+==========================
+
+The :ref:`mentori` test suite is still  `failing on GitLab
+<https://gitlab.com/lino-framework/mentori/-/jobs/796405040>`__. Obviously the
+environment there still uses a version of the xl where
+:mod:`lino_xl.lib.courses` still declares :mod:`lino_xl.lib.cal` as a
+dependency. Did I forget to release the xl to PyPI? Let's try::
+
+  $ go xl
+  $ git status
+  On branch master
+  Your branch is up to date with 'origin/master'.
+  nothing to commit, working tree clean
+  $ inv sdist release
+  ...
+  ABORT: lino-xl 20.10.0 has already been released.
+
+
+Aris had a few questions about the source code of :ref:`mentori`. This made me
+understand that the :xfile:`README.rst` of a Lino application (i.e. also in
+:ref:`algus`) should explain in a few sentences where to find the entry point.
+Because at the moment it is quite intimidating, even for an experienced Django
+site admin, to try to understand the code repository of a Lino application.

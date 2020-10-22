@@ -1,0 +1,148 @@
+:date: 2020-10-19
+
+========================
+Monday, October 19, 2020
+========================
+
+I fixed miscellaneous issues found in :ref:`algus` after using it for
+:ref:`mentori`.
+
+I updated some parts of the book, e.g. :ref:`dev.myapp`.
+
+"num2words not installed"
+=========================
+
+Ta-daa! The mentori pipeline on gitlab passed! For the first time.
+
+https://gitlab.com/lino-framework/mentori/-/pipelines/204606848
+
+The issues
+were trivial, but after years on :ref:`travis` I still have to learn how the
+gory details work on GitLab.
+
+A first issue was because in the :xfile:`.gitlab-ci.yml` file I asked to cache
+the pip cache and the venv. It was always using lino-xl version 20.8 instead of
+20.10
+
+After removing the cache, I had yet another series of failures like these::
+
+  **********************************************************************
+  File "/builds/lino-framework/mentori/docs/specs/courses.rst", line 15, in courses.rst
+  Failed example:
+      lino.startup('lino_mentori.projects.mentori1.settings.doctests')
+  Expected nothing
+  Got:
+      num2words not installed, use `python manage.py install` to install
+  **********************************************************************
+
+Yes, :mod:`lino_xl.lib.courses` imports :class:`lino_xl.lib.cal.EventGenerator`
+from the :mod:`lino_xl.lib.cal` mixins in order to say that a course is a
+calendar event generator.  It is perfectly okay to do this even when cal is not
+installed. When cal is not installed, the mixin simply has no effect. But until
+now it did have the side effect of printing this message.
+
+Failures in getlino
+===================
+
+The getlino test suite filed with::
+
+  ERROR: Could not install packages due to an EnvironmentError:
+  HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Max retries
+  exceeded with url:
+  /packages/ca/08/7c31e275777352db243b4d857de61d412f4a1300cda9bf9a7f0da20af852/appy-1.0.3.tar.gz
+  (Caused by
+  ReadTimeoutError("HTTPSConnectionPool(host='files.pythonhosted.org',
+  port=443): Read timed out. (read timeout=15)"))
+
+But when I run it manually, it works::
+
+  $ virtualenv -p python3 tt
+  $ . tt/bin/activate
+  (tt) luc@tups:~/tmp$ pip install appy
+  Collecting appy
+    Downloading appy-1.0.3.tar.gz (5.1 MB)
+       |████████████████████████████████| 5.1 MB 243 kB/s
+  Collecting zodb
+  ...
+  Successfully built appy
+  ...
+
+
+
+The getlino test suite is currently failing on my machine::
+
+  $ inv prep test
+  --------------------------------------------------------------------------------
+  Run main prep command ./prep.sh :
+  Sending build context to Docker daemon  15.88MB
+  Step 1/17 : ARG DEBIAN_FRONTEND=noninteractive
+  Step 2/17 : FROM debian:buster
+   ---> ae8514941ea4
+  Step 3/17 : ENV TERM=linux
+   ---> Using cache
+   ---> 3117ecf1c8b0
+  Step 4/17 : ENV PYTHONUNBUFFERED=1
+   ---> Using cache
+   ---> a71874e43c4a
+  Step 5/17 : ENV LC_ALL=en_US.UTF-8
+   ---> Using cache
+   ---> c5ce60691598
+  Step 6/17 : ENV LANG=en_US.UTF-8
+   ---> Using cache
+   ---> 84e4843b22de
+  Step 7/17 : ENV TZ=Europe/Brussels
+   ---> Using cache
+   ---> 6e1ba4433a49
+  Step 8/17 : RUN apt-get update -yqq
+   ---> Using cache
+   ---> 4de583ad6fdb
+  Step 9/17 : RUN apt-get install -y tzdata locales-all
+   ---> Using cache
+   ---> 245b8fa3c094
+  Step 10/17 : RUN apt-get upgrade -y
+   ---> Running in c0f791e1584b
+  Reading package lists...
+  Building dependency tree...
+  Reading state information...
+  Calculating upgrade...
+  The following packages will be upgraded:
+    base-files libgnutls30 perl-base
+  3 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+  Need to get 2,708 kB of archives.
+  After this operation, 16.4 kB of additional disk space will be used.
+  Err:1 http://deb.debian.org/debian buster/main amd64 base-files amd64 10.3+deb10u5
+    404  Not Found [IP: 151.101.86.133 80]
+  Get:2 http://deb.debian.org/debian buster/main amd64 perl-base amd64 5.28.1-6+deb10u1 [1,514 kB]
+  Get:3 http://deb.debian.org/debian buster/main amd64 libgnutls30 amd64 3.6.7-4+deb10u5 [1,124 kB]
+  E: Failed to fetch http://deb.debian.org/debian/pool/main/b/base-files/base-files_10.3+deb10u5_amd64.deb  404  Not Found [IP: 151.101.86.133 80]
+  E: Unable to fetch some archives, maybe run apt-get update or try with --fix-missing?
+  Fetched 2,638 kB in 2s (1,176 kB/s)
+  The command '/bin/sh -c apt-get upgrade -y' returned a non-zero code: 100
+
+Explanation was this::
+
+  Step 8/17 : RUN apt-get update -yqq
+   ---> Using cache
+   ---> 4de583ad6fdb
+
+Instead of actually updating, it used a cached version. It started to work after
+changing ``apt-get update -yqq`` to ``apt-get update -y``, but of course just
+because this invalidated because the RUN command was changed.
+
+
+Lino Voga
+=========
+
+I had a meeting with Arnold where we discovered :ticket:`3829`.  The roger demo
+project had no presences (guests) because :attr:`SiteConfig.pupil_guestrole`
+wasn't being set.
+
+Fixing this revealed another subtle issue: In Voga we can have multiple
+enrolments of a same pupil to a same course. In reality there is of course only
+one active enrolment per pupil per course at any given date. A same pupil can
+join a course, leave after some time, and then join again. The demo fixture
+creates duplicate enrolments whose date range overlaps. Which should be detected
+by a data checker. But I didn't yet write such a checker because the problem is
+only theoretic. But to avoid to also get duplicate *guests* (which causes a
+database integrity error), Voga now avoids duplicate guests when having
+overlapping enrolments.

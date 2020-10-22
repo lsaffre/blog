@@ -1,0 +1,67 @@
+:date: 2020-10-21
+
+===========================
+Wednesday, October 21, 2020
+===========================
+
+About the Lets Tutorial
+=======================
+
+In the lets repository we have four public branches (master, step2, step3 and
+step4) to express the four versions used in the tutorial. And this number is
+likely to increase in the future.  Now here is an interesting challenge:
+
+I saw that the :xfile:`conf.py` file in the docs had an obsolete way of defining
+:envvar:`intersphinx_mapping`.  The "modern" way to do it is::
+
+  interproject.configure(globals(), 'atelier lino_lets')
+  intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
+  intersphinx_mapping['book'] = ('https://www.lino-framework.org/', None)
+
+This change is not meaningful for the tutorial reader, we don't want to bother a
+new Lino user with this.  For the reader (when they run a :cmd:`git diff master`
+to see what has changed) everything should look as if that change had always
+been there.
+
+It is a kind of changing history after the fact.
+
+I did this change manually in all four steps of the tutorial. That was a bit
+stupid... but I didn't find a better way.
+
+The same case is for the :xfile:`.gitlab-ci.yml` file: I added it in master,
+but I would like that this same file exists in the other steps as well.
+
+Answer: that's a use case for the `git cherry-pick
+<https://www.atlassian.com/git/tutorials/cherry-pick>`__.
+
+TODO:
+
+- I noted yet another problem related to the lets tutorial: the book test suite
+  depends on it, but the book doesn't yet specify that dependency.   And also:
+  which branch should be activated in lets when the book tests run?  At the moment
+  it seems that they pass only with step4.
+
+- Should we add lino_lets to the known repositories in getlino?
+
+
+lino-framework.org is again slow
+================================
+
+When I run :cmd:`ps -o pid,user,%mem,command ax`, I can see that indeed the
+three Lino sites (3 to 4 processes for each) were using up more than 80% of the
+available memory.
+
+When I stop supervisor, the server runs like a charm.
+
+Should we switch to Apache? Probably not:
+https://kinsta.com/blog/nginx-vs-apache/
+
+Maybe reduce the sites to a single worker process?
+https://docs.nginx.com/nginx/admin-guide/basic-functionality/runtime-control/
+
+Yes, that worked! And I tried to delete an invoice (which causes a callback )
+
+
+Do the demo sites need a :manage:`linod` process? Hannes, please read the docs
+about it. If the a re not understandable to you, then we know that it is poorly
+documented.

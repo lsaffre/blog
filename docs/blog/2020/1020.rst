@@ -1,0 +1,69 @@
+:date: 2020-10-20
+
+=========================
+Tuesday, October 20, 2020
+=========================
+
+Lino Voga
+=========
+
+I had a quick :ref:`voga` demo session with Arnold. We observed that the voga
+demo project has no presences at all at the moment. And as I expected this was
+caused by a change for some other customer: Course lines must now have a guest
+role specified if you want them to fill the guest of calendar events.  When I
+did this change, I didn't care about voga and blindly adapted the doctests to
+match the new results without noting that this was anormal.
+
+I then discovered another subtle problem: Voga permits to have several
+enrolments for a same person in a same course, provided they have separate date
+ranges. Since this is a higher level integrity constraint, we remove that
+database level unique clause.
+
+:ref:`lf` is again slow
+=======================
+
+I started to setup a second front end for the voga1e demo site on :ref:`lf`
+(according to the instructions in :ref:`hosting.multiple_frontends`) and fell
+again into :ticket:`3825`.  As usual, the server seems to "freeze" as soon as I
+ask it to do something::
+
+  $ pip install -U lino lino_xl lino_cosi lino_voga lino_noi lino_react
+  Collecting lino
+    Downloading lino-20.10.0.tar.gz (10.1 MB)
+       |████████████████████████████████| 10.1 MB 151 kB/s
+  Collecting lino_xl
+    Downloading lino-xl-20.10.1.tar.gz (3.2 MB)
+       |████████████████████████████████| 3.2 MB 13.0 MB/s
+  Collecting lino_cosi
+    Downloading lino-cosi-20.10.0.tar.gz (608 kB)
+       |████████████████████████████████| 608 kB 12.2 MB/s
+  Collecting lino_voga
+    Downloading lino-voga-20.10.0.tar.gz (101 kB)
+       |████████████████████████████████| 101 kB 3.7 MB/s
+
+After some time it stayed stuck...
+Maybe it is because LF is a "Sandbox" server. OVH says: Instances with
+shared resources (Sandbox) are suitable for testing, verifications and
+development environments. Their performance may vary slightly over time.
+
+
+
+::
+
+  $ ps -o pid,user,%mem,command ax | sort -b -k3 -r
+    PID USER     %MEM COMMAND
+  18137 mysql     6.4 /usr/sbin/mysqld
+  31491 www-data  6.2 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/voga1e/nginx/uwsgi.ini
+   2319 www-data  6.2 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/voga1e/nginx/uwsgi.ini
+   6605 www-data  5.9 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/noi1r/nginx/uwsgi.ini
+  23921 www-data  5.7 python /usr/local/lino/lino_local/noi1r/manage.py linod
+  23916 www-data  5.6 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/voga1e/nginx/uwsgi.ini
+  24172 www-data  5.6 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/cosi1e/nginx/uwsgi.ini
+   6895 www-data  5.5 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/noi1r/nginx/uwsgi.ini
+  23923 www-data  5.5 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/noi1r/nginx/uwsgi.ini
+  24171 www-data  5.0 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/cosi1e/nginx/uwsgi.ini
+  23919 www-data  4.5 /usr/bin/uwsgi --ini /usr/local/lino/lino_local/cosi1e/nginx/uwsgi.ini
+  19552 www-data  4.5 python /usr/local/lino/lino_local/cosi1e/manage.py linod
+    699 list      1.9 /usr/bin/python /var/lib/mailman/bin/qrunner --runner=VirginRunner:0:1 -s
+    698 list      1.9 /usr/bin/python /var/lib/mailman/bin/qrunner --runner=OutgoingRunner:0:1 -s
+    694 list      1.6 /usr/bin/python /var/lib/mailman/bin/qrunner --runner=IncomingRunner:0:1 -s
