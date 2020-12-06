@@ -1,0 +1,43 @@
+:date: 2020-11-25
+
+============================
+Wednesday, November 25, 2020
+============================
+
+Some optimizations:
+
+Fixed a bug in get_title_tags that caused a text "Reply to <BLANK>" to appear.
+
+Fixed a bug that caused e.g. CommentsByMentioned to have an insert button
+despite the fact that it sets insert_layout to None or editable to False.
+
+I plan to discontinue the cards display mode that had been implemented by Tonis.
+This is an "intuitive" design decision because the topic is complex. For example
+cards work only with react and not in extjs.  Unlike Tonis I believe that
+formatting of table summaries should be done on the server, not on the client.
+
+I considered but did not yet do the following:
+
+  The body text of every comment is already stored as html, it actually makes no
+  sense to parse them into etree elements just to render them as strings.
+
+  Seems that unfortunately ElementTree does not have a mean to add a raw html
+  "element" as a child to another element (without parsing it).
+
+  One way to fix this would be to say that  summary_row must return a series of
+  strings containing escaped html, not a sequence of etree elements. Same for
+  methods obj2html obj2href and href_to. We would then also rename `summary_row`
+  to `get_summary_chunks` because it yields a series of html chunks to be glued
+  together into a single <p> or <li> or <td> element.
+
+  But if we do this, we need a clear convention about when escaping happens. In
+  order to avoid double escaping.
+
+Another idea that would avoid writing :meth:`get_dashboard_items` for most
+applications::
+
+  Actor.use_in_dashboard = None | 'v' | 'h'
+
+- None: Don't define a dashboard item
+- 'v' define a dashboard item that's visible by default
+- 'h' define a dashboard item that's hidden by default

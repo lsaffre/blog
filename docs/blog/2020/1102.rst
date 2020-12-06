@@ -1,0 +1,48 @@
+:date: 2020-11-02
+
+========================
+Monday, November 2, 2020
+========================
+
+Today I discovered the OpenGraph protocol, a standard used by Facebook to give
+meta information when sharing a web link. The `OpenGraph website
+<https://ogp.me>`__ says that it "is currently being consumed by Facebook,
+Google, and mixi", but the link under Google is broken and I didn't yet find any
+confirmation that it is being used outside of the Facebook imperium.
+
+It makes sense to learn this standard when you want to share news into Facebook.
+When I share a link on Facebook, the FB scraper includes the first image it
+finds on my web page.  I can optimize these things.
+
+Facebook's "scraper debuggr tool" helps with understanding how they perceive the
+world and my website:
+
+https://developers.facebook.com/tools/debug
+
+
+For example I would like to specify an explicit image url to be used when
+sharing a blog post.
+
+Does Sphinx support OpenGraph?
+Is it possible to specify more metadata entries in the html header?
+
+The docs (under `Meta-information markup
+<https://www.sphinx-doc.org/en/master/usage/restructuredtext/directives.html#meta-information-markup>`__)
+only mention two directives :rst:dir:`sectionauthor` and :rst:dir:`codeauthor`.
+
+docutils as a built-in `meta
+<https://docutils.readthedocs.io/en/sphinx-docs/ref/rst/directives.html#meta>`__
+directive, which we can use to specify OpenGraph tags.  The syntax is a bit
+special::
+
+  .. meta::
+     :property="og:image": https://www.example.com/_images/foo.jpg
+     :property="og:image:width": 1123
+     :property="og:image:height": 794
+     :property="og:type": article
+
+Specifying the width and height is optional since FB analyzes itself the image
+when they are not given.
+
+But FB has the following limitation: You should use a 1.91:1 image ratio, such
+as 600x314px.

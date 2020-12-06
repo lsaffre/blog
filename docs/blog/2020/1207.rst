@@ -1,0 +1,60 @@
+:date: 2020-12-07
+
+========================
+Monday, December 7, 2020
+========================
+
+Summary of my code changes this weekend for :ticket:`3850`.
+
+The detail of a ticket is now more mobile friendly.  Comments have a new field
+:attr:`emotion <lino.modlib.comments.Comment.emotion>`. When writing a comment,
+you do this now by clicking on one of the available emotions.
+The :class:`comments.CommentsByRFC` and :class:`comments.RepliesByComment` slave
+tables now use again the old summary view instead of the card view.
+
+These changes caused a change in the "summary API":
+
+:func:`qs2summary <lino.utils.qs2summary>` no longer returns a `<p>` element but
+a sequence of html elements. The caller can feed these into any container
+element, e.g. `<p>`, `<div>`, `<li>` or `<td>`. It may now yield also a sequence
+of `<p>` elements. It returns a flat stream, caring about separators. And
+:meth:`lino.core.actor.Actor.get_table_summary` now feeds them into a `<div>`
+(instead of a `<p>`)
+
+The :meth:`get_table_summary` method of :class:`lino.modlib.comments.Comments`
+doesn't use :func:`qs2summary <lino.utils.qs2summary>` because we want to wrap
+each row in its own paragraph, so we don't want a flat stream with separators.
+
+Side effect: I wrote the new method :meth:`Model.add_picker
+<lino.core.model.Model.add_picker>` for editing the  new
+:attr:`lino.modlib.comments.Comment.emotion` field of an existing comment, but
+that turned out to be irritating. Actually you don't usually want to change the
+emotion of an existing comment.
+
+The summary of a comment now adds the number of replies. This is done using an
+annotation.
+
+A comment should not reply to a comment that is about a different owner. TODO:
+add a data checker to report this condition.
+
+The :fixture:`demo2` fixture of :mod:`lino.modlib.comments` now creates some
+replies as well.
+
+I changed the :attr:`button_text <lino.core.choicelists.Choice.button_text>` for
+:attr:`lino_xl.lib.tickets.TicketStates.new` from "⛶" (U+26F6) to "⚹" (U+26B9)
+because the former wasn't rendered correctly in my firefox. Same for
+:attr:`lino_xl.lib.tickets.SiteStates.new`.
+
+TODO: :func:`qs2summary` calls :meth:`summary_row` on each row. We should
+probably rename this to :func:`row2summary`. Maybe also rename
+:attr:`lino.core.actors.Actor.preview_limit` to :attr:`summary_limit`.
+
+TODO: do we need to see all comments (replies) to a ticket (comment)? ATM we see
+only the direct replies, there is no longer a way to "expand" a full discussion
+thread. Maybe use a filter parameter for this.
+
+
+TODO: the welfare test suite is still failing because I am working on
+:ticket:`3581` which is waiting for feedback from Mathieu.  I guess they will
+decide to move the serious data fields of :mod:`lino_welfare.modlib.esf` from
+the ClientSummary to the Client model.

@@ -1,0 +1,77 @@
+:date: 2020-10-26
+
+========================
+Monday, October 26, 2020
+========================
+
+We received the following message::
+
+  Hello,
+
+  Your certificate (or certificates) for the names listed below will expire in 20 days (on 08 Nov 20 18:49 +0000). Please make sure to renew your certificate before then, or visitors to your website will encounter errors.
+
+  We recommend renewing certificates automatically when they have a third of their
+  total lifetime left. For Let's Encrypt's current 90-day certificates, that means
+  renewing 30 days before expiration. See
+  https://letsencrypt.org/docs/integration-guide/ for details.
+
+  lists.laudate.ee
+  www.laudate.ee
+
+  For any questions or support, please visit https://community.letsencrypt.org/. Unfortunately, we can't provide support by email.
+
+  For details about when we send these emails, please visit https://letsencrypt.org/docs/expiration-emails/. In particular, note that this reminder email is still sent if you've obtained a slightly different certificate by adding or removing names. If you've replaced this certificate with a newer one that covers more or fewer names than the list above, you may be able to ignore this message.
+
+  If you are receiving this email in error, unsubscribe at http://mandrillapp.com/track/unsub.php?u=30850198&id=48b230ed62ef4d4a89eda432d9a4259a.IXpg6KZCL1bZ4JeancyYNQgvV8Y%3D&r=https%3A%2F%2Fmandrillapp.com%2Funsub%3Fmd_email%3Dp%252A%252A%252A%252A%2540l%252A%252A%252A%252A.%252A%252A%252A
+
+  Regards,
+  The Let's Encrypt Team
+
+This is because at some moment we requested a certificate covering those two
+domains. The certbot server worries because this certificate hasn't been
+renewed. This is usually caused by a certificate that we requested some time ago
+but don't use any more.
+
+And indeed, laudate.ee we had these two messy certificates::
+
+  Certificate Name: lists.laudate.ee-0001
+    Serial Number: 32fb6c0c2175f07bdf0cd3645ee8726ba42
+    Domains: lists.laudate.ee
+    Expiry Date: 2020-11-15 03:16:22+00:00 (VALID: 19 days)
+    Certificate Path: /etc/letsencrypt/live/lists.laudate.ee-0001/fullchain.pem
+    Private Key Path: /etc/letsencrypt/live/lists.laudate.ee-0001/privkey.pem
+  Certificate Name: lists.laudate.ee
+    Serial Number: 467fe5acafafcfed866554c353c5126404a
+    Domains: lists.laudate.ee www.laudate.ee
+    Expiry Date: 2020-11-08 18:49:18+00:00 (VALID: 13 days)
+    Certificate Path: /etc/letsencrypt/live/lists.laudate.ee/fullchain.pem
+    Private Key Path: /etc/letsencrypt/live/lists.laudate.ee/privkey.pem
+
+The second certificate is not being used, and it is about the same two domains
+mentioned in our warning.
+
+  (master) luc@laudate:~$ grep lists.laudate.ee /etc/nginx/sites-enabled/*
+  /etc/nginx/sites-enabled/lists.conf:    server_name lists.laudate.ee;
+  /etc/nginx/sites-enabled/lists.conf:    ssl_certificate /etc/letsencrypt/live/lists.laudate.ee-0001/fullchain.pem; # managed by Certbot
+  /etc/nginx/sites-enabled/lists.conf:    ssl_certificate_key /etc/letsencrypt/live/lists.laudate.ee-0001/privkey.pem; # managed by Certbot
+  /etc/nginx/sites-enabled/lists.conf:    if ($host = lists.laudate.ee) {
+  /etc/nginx/sites-enabled/lists.conf:    server_name lists.laudate.ee;
+
+There is another certificate `lists.laudate.ee-0001` which covers the lists
+subdomain. We removed an unused certificate on laudate.ee::
+
+  $ certbot-auto delete --cert-name lists.laudate.ee
+
+It is a pity that the certbot warning does not give a unique id of the
+certificate.  The only way to see whether their warning notice matches an
+existing certificate is to search for candidates.
+
+And I guess that `certbot delete` command does not automatically notify the
+certbot server that they can delete this certificate. In other words they will
+bother us again about this certificate, maybe next week, and we will again spend
+some time to find out that we can ignore it.  But ok, I also don't see right now
+whether and how they would manage all use cases.
+
+Another thing is: how can we tell certbot to notify also Hannes about
+certificate expirations?  Answer: add hannes to postmaster.  The default mail
+address on the acme server is `postmaster@example.com`.

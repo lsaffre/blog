@@ -1,0 +1,200 @@
+:date: 2020-11-07
+
+==========================
+Saturday, November 7, 2020
+==========================
+
+My old Dell notebook, used now by Ly, doesn't start any more after it froze
+suddenly while Ly was working. Maybe it had gotten too hot.  Or some RAM or SSD
+is getting old.
+
+When starting it up, it only says "Invalid partition table!".  I created an
+lubuntu startup USB stick in order to boot.
+
+Strange: I created the lubuntu startup stick from an iso file I had downloaded
+already in September 22.  20.04.1
+
+The machine behaves perfectly when booted from the live lubuntu stick.
+
+::
+
+  $ sudo fdisk /dev/sda -l
+  Disk /dev/sda: 238,49 GiB, 256060514304 bytes, 500118192 sectors
+  Disk model: SAMSUNG SSD SM84
+  Units: sectors of 1 * 512 = 512 bytes
+  Sector size (logical/physical): 512 bytes / 512 bytes
+  I/O size (minimum/optimal): 512 bytes / 512 bytes
+  Disklabel type: dos
+  Disk identifier: 0x1427a579
+
+  Device     Boot     Start       End   Sectors   Size Id Type
+  /dev/sda1  *         2048    206847    204800   100M  7 HPFS/NTFS/exFAT
+  /dev/sda2          206848 209922047 209715200   100G  7 HPFS/NTFS/exFAT
+  /dev/sda3       209924094 500117503 290193410 138,4G  5 Extended
+  /dev/sda5       483469312 500117503  16648192     8G 82 Linux swap / Solaris
+  /dev/sda6       209924096 483469311 273545216 130,4G 83 Linux
+
+  Partition table entries are not in disk order.
+
+
+
+  $ sudo fdisk /dev/sda
+  Welcome to fdisk (util-linux 2.34).
+  Changes will remain in memory only, until you decide to write them.
+  Be careful before using the write command.
+  Command (m for help): v
+  Remaining 2734 unallocated 512-byte sectors.
+
+
+I started `sudo gparted`.  I selected :menuselection:`Device --> Attempt Data
+Rescue`:
+
+- No file systems found on /dev/sda
+- The disk scan by gpart did not find any recognizable file systems on this disk.
+
+Again in gparted I did right click on the /dev/sda1 partition and select
+"Check". Then "run pending operations".  This created the following report::
+
+  GParted 1.0.0
+
+  configuration --enable-libparted-dmraid --enable-online-resize
+
+  libparted 3.3
+
+  ========================================
+  Device:	/dev/sda
+  Model:	ATA SAMSUNG SSD SM84
+  Serial:	S12LNSAD707427
+  Sector size:	512
+  Total sectors:	500118192
+
+  Heads:	255
+  Sectors/track:	2
+  Cylinders:	980623
+
+  Partition table:	msdos
+
+  Partition	Type	Start	End	Flags	Partition Name	File System	Label	Mount Point
+  /dev/sda1	Primary	2048	206847	boot		ntfs	System Reserved
+  /dev/sda2	Primary	206848	209922047			ntfs
+  /dev/sda3	Extended	209924094	500117503			extended
+      /dev/sda6	Logical	209924096	483469311			ext4
+      /dev/sda5	Logical	483469312	500117503			linux-swap
+
+  ========================================
+  Device:	/dev/sdb
+  Model:	ATA WDC WD10SPCX-60H
+  Serial:	WD-WX41A9309763
+  Sector size:	512
+  Total sectors:	1953525168
+
+  Heads:	255
+  Sectors/track:	2
+  Cylinders:	3830441
+
+  Partition table:	msdos
+
+  Partition	Type	Start	End	Flags	Partition Name	File System	Label	Mount Point
+  /dev/sdb1	Primary	63	1953525167			ext4	Dell1TB
+
+  ========================================
+  Device:	/dev/sdc
+  Model:	USB Flash Memory
+  Serial:	none
+  Sector size:	512
+  Total sectors:	30253056
+
+  Heads:	255
+  Sectors/track:	2
+  Cylinders:	59319
+
+  Partition table:	none
+
+  Partition	Type	Start	End	Flags	Partition Name	File System	Label	Mount Point
+  /dev/sdc	Unpartitioned	0	30253055			iso9660	Lubuntu 20.04.1 LTS amd64
+
+  ========================================
+  Check and repair file system (ntfs) on /dev/sda1  00:00:00    ( SUCCESS )
+
+  calibrate /dev/sda1  00:00:00    ( SUCCESS )
+
+  path: /dev/sda1 (partition)
+  start: 2048
+  end: 206847
+  size: 204800 (100.00 MiB)
+  check file system on /dev/sda1 for errors and (if possible) fix them  00:00:00    ( SUCCESS )
+
+  ntfsresize -i -f -v '/dev/sda1'  00:00:00    ( SUCCESS )
+
+  ntfsresize v2017.3.23AR.3 (libntfs-3g)
+  Device name : /dev/sda1
+  NTFS volume version: 3.1
+  Cluster size : 4096 bytes
+  Current volume size: 104854016 bytes (105 MB)
+  Current device size: 104857600 bytes (105 MB)
+  Checking for bad sectors ...
+  Checking filesystem consistency ...
+  100.00 percent completed
+  Accounting clusters ...
+  Space in use : 60 MB (56,5%)
+  Collecting resizing constraints ...
+  Estimating smallest shrunken size supported ...
+  File feature Last used at By inode
+  $MFTMirr : 1 MB 1
+  Sparse : 35 MB 102
+  Ordinary : 103 MB 100
+  You might resize at 59219968 bytes or 60 MB (freeing 45 MB).
+  Please make a test run using both the -n and -s options before real resizing!
+  grow file system to fill the partition  00:00:00    ( SUCCESS )
+
+  run simulation  00:00:00    ( SUCCESS )
+
+  ntfsresize --force --force --no-action '/dev/sda1'  00:00:00    ( SUCCESS )
+
+  ntfsresize v2017.3.23AR.3 (libntfs-3g)
+  Device name : /dev/sda1
+  NTFS volume version: 3.1
+  Cluster size : 4096 bytes
+  Current volume size: 104854016 bytes (105 MB)
+  Current device size: 104857600 bytes (105 MB)
+  New volume size : 104854016 bytes (105 MB)
+  Nothing to do: NTFS volume size is already OK.
+  real resize  00:00:00    ( SUCCESS )
+
+  ntfsresize --force --force '/dev/sda1'  00:00:00    ( SUCCESS )
+
+  ntfsresize v2017.3.23AR.3 (libntfs-3g)
+  Device name : /dev/sda1
+  NTFS volume version: 3.1
+  Cluster size : 4096 bytes
+  Current volume size: 104854016 bytes (105 MB)
+  Current device size: 104857600 bytes (105 MB)
+  New volume size : 104854016 bytes (105 MB)
+  Nothing to do: NTFS volume size is already OK.
+
+
+
+I tried Christophe Grenier's testdisk utility::
+
+  $ sudo apt install testdisk
+
+It said that there were problems but that it cannot fix them.
+
+
+I copied the data to another machine.
+
+Memtest86 (version 5.01) always froze at the same place, at 63% of Test #2.
+Maybe it is just the problem described `here
+<https://www.memtest86.com/tech_freezing-lockups.html>`__: If the freeze occurs
+in MemTest86 but the system runs normally otherwise, the problem is likely with
+the UEFI firmware. The most common issue is when running MemTest86 using
+multiple CPU cores (default behaviour).
+
+
+
+The lubuntu boot usb can only start lubuntu but has no option
+
+
+I installed a new Ubuntu 20.10 on onto the first SSD (/dev/sda), overriding the
+partitions, including a Windows 7 that had been kept from doll's previous owner
+when we bought it many years ago.

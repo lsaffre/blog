@@ -1,0 +1,95 @@
+:date: 2020-11-06
+
+========================
+Friday, November 6, 2020
+========================
+
+Ismail getting started
+======================
+
+Ismail is working on a problem in :ref:`openui5`: The menu items don't work,
+they display correctly, but when you click on one of them, nothing happens. And
+the JS console says::
+
+  Uncaught DOMException: String contains an invalid character
+
+He found that the problem is somewhere in file
+:file:`config/openui5/controller/App.controller.js`::
+
+        handleMenuItemPress: function (oEvent) {
+            var oButton = oEvent.getSource();
+            var actor_id = oButton.data('actor_id');
+            var action_name = oButton.data('action_name');
+            var compressed_eval_js = oButton.data('eval_js');
+            var s = atob(compressed_eval_js);
+            var data = new Array(s.length);
+            var i;
+            for (i = 0; i < s.length; ++i) {
+                data[i] = s.charCodeAt(i);
+            }
+
+            var inflate = new Zlib.Inflate(data);
+            var decompress = inflate.decompress();
+            var eval_js = new TextDecoder("utf-8").decode(decompress);
+
+            var msg = "'" + oEvent.getParameter("item").getText() + actor_id + ":" + action_name + "' pressed";
+            MessageToast.show(msg);
+            eval(eval_js);
+            // this.routeTo(action_name, actor_id);
+
+Two remarks:
+
+- In order to understand the problem, you need to see what's in the
+  `compressed_eval_js` variable.
+
+- The error message "Uncaught DOMException: String contains an invalid
+  character" also comes when you open a table using a quick link (where it
+  works).  So this might not be the real problem at all.
+
+
+Change in generated XML file
+============================
+
+I am upgrading the :xfile:`IMP2PAIN.XML` file used by a TIM customer from
+version 2 to version 3 because they want to use a new feature: instant payments
+without additional costs.
+
+I upgraded the XSD file used by :mod:`etgen.sepa.validate`, then started a
+testing sequence: print a payment order in TIM to generate an xml file from the
+updated :xfile:`IMP2PAIN.XML` file, then validate that xml file.
+
+First error:
+The root element is no longer named `<pain.001.001.02>` (nor `<pain.001.001.03>`
+as I had expected), but  `<CstmrCdtTrfInitn>`.
+
+Next error::
+
+  lxml.etree.DocumentInvalid: Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}Grpg': This element is not expected. Expected is one of ( {urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}CtrlSum, {urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}InitgPty )., line 8
+
+Yes, version 2 had the following fragment::
+
+  <NbOfTxs>...</NbOfTxs>
+  <Grpg>MIXD</Grpg>
+  <InitgPty>
+  ...
+
+Indeed the docs no longer talk about `<Grpg>`. What did it mean?   Maybe it was
+about how to share the bank costs. Which is now done using `<ChrgBr>`.  But I am
+not sure. And anyway the `<ChrgBr>` element is not mandatory and seems to have
+reasonable default values. So I removed the `<Grpg>` element.
+
+Next error::
+
+        <Id><OrgId><PrtryId>
+            <Id>[=strtran(substr(MemNoTva,4),".","")]</Id>
+            <Issr>KBO-BCE</Issr>
+        </PrtryId></OrgId></Id>
+
+I guess that `<PrtryId>`  has been renamed to `<Othr>`. Occurred twice in the
+source file.
+
+Next problem:
+
+  lxml.etree.DocumentInvalid: Element '{urn:iso:std:iso:20022:tech:xsd:pain.001.001.03}Ctry': This element is not expected., line 35
+
+Seems that `<Ctry>` must now come before `<AdrLine>` in `<PstlAdr>`.

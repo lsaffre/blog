@@ -1,0 +1,36 @@
+:date: 2020-11-19
+
+===========================
+Thursday, November 19, 2020
+===========================
+
+Editable ESF fields
+===================
+
+I started working on :ticket:`3581`.
+
+We add a new boolean field :attr:`ClientSummary.user_modified`  and want Lino to
+automatically set this field to `True` whenever a statistical field gets
+manually edited by an :term:`end user`. Since there are many statistical fields,
+we don't want to define a :meth:`Model.FOO_changed` method on the model for each
+of them. This is a use case for a custom :meth:`before_ui_save
+<lino.core.model.Model.before_ui_save>` method.
+
+But we need a little optimization in the Lino core: the :meth:`before_ui_save
+<lino.core.model.Model.before_ui_save>` method now receives a second positional
+argument `cw` : the change watcher, or `None`.
+
+
+Step 4 of the LETS tutorial
+===========================
+
+The :ref:`dev.lets.step4` page of the  LETS tutorial (:ref:`lino.tutorial.lets`)
+caused a test failure when my copy of the lets repository was not at step4
+branch.  Ideed it is --by design-- not a good idea to have doctests on this
+page. That's why I moved these doctests to the specs in the `lets` tutorial.
+Also reviewed this page to provide more useful explanations. I discovered
+Sphinx's `diff` highlight mode.  The diff chunks render beautifully and a good
+for explaining, but they contain lines that start with ">>>" and which are not
+meant to be tested by doctest. That's why the book repository now uses the
+`exclude` keyword argument of :meth:`atelier.test.make_docs_suite` to exempt
+this file from being tested.

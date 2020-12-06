@@ -1,0 +1,47 @@
+:date: 2020-11-27
+
+=========================
+Friday, November 27, 2020
+=========================
+
+Ha, `abuseat.org <https://www.abuseat.org/helocheck.html>`__ helped me to
+understand what's missing in our email configurations::
+
+  $ sendemail -f luc@lino-framework.org -t helocheck@abuseat.org -u Hallo -m Versuch -s mail.abuseat.org -v -o tls=no
+  DEBUG => Connecting to mail.abuseat.org:25
+  DEBUG => My IP address is: 167.114.229.225
+  SUCCESS => Received: 	220 SMMail 1.48.1 ESMTP
+  INFO => Sending: 	EHLO localhost
+  SUCCESS => Received: 	250-emmex.spamhaus.org Hi mail.lino-framework.org [167.114.229.225], 250-PIPELINING, 250-SIZE 1000000000, 250 STARTTLS
+  INFO => Sending: 	MAIL FROM:<luc@lino-framework.org>
+  SUCCESS => Received: 	250 <luc@lino-framework.org>, sender OK - how exciting to get mail from you!
+  INFO => Sending: 	RCPT TO:<helocheck@abuseat.org>
+  WARNING => The recipient <helocheck@abuseat.org> was rejected by the mail server, error follows:
+  WARNING => Received: 	550 *** The HELO for IP address 167.114.229.225 was 'localhost' (invalid syntax) ***
+  ERROR => Exiting. No recipients were accepted for delivery by the mail server.
+
+Our postfix is saying "my name is localhost" in the HELO command.
+
+This was also interesting to explain the HELO command:
+http://unixwiz.net/techtips/postfix-HELO.html
+
+Seems that it is because the `mydomain` is not being set in our
+:file:`/etc/postfix/main.cf` file.
+
+How to restart postfix::
+
+  $ sudo service postfix restart
+  Failed to restart postfix.service: Unit postfix.service is masked.
+
+Doesn't work.
+Why is the postfix service masked?
+The mail.log file says interesting things like::
+
+  Nov 27 08:43:18 localhost postfix[3982]: Postfix is running with backwards-compatible default settings
+  Nov 27 08:43:18 localhost postfix[3982]: See http://www.postfix.org/COMPATIBILITY_README.html for details
+  Nov 27 08:43:18 localhost postfix[3982]: To disable backwards compatibility use "postconf compatibility_level=2" and "postfix reload"
+  Nov 27 08:43:18 localhost postfix/postfix-script[4017]: stopping the Postfix mail system
+  Nov 27 08:43:18 localhost postfix/master[478]: terminating on signal 15
+  Nov 27 08:43:18 localhost postfix/postfix-script[4024]: waiting for the Postfix mail system to terminate
+
+  sm-msp-queue[6325]: unable to qualify my own domain name (localhost) -- using short name
