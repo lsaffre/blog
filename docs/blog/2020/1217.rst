@@ -1,0 +1,53 @@
+:date: 2020-12-17
+
+===========================
+Thursday, December 17, 2020
+===========================
+
+I now saw that already before the upgrade there must have been some bug that
+caused all movements of a bank statement to be in the same direction::
+
+  loader.save(create_ledger_movement(462,25,210,1,6,'3000.00',False,'SWB 1:1',False,date(2018,12,31),None,None))
+  loader.save(create_ledger_movement(463,25,None,2,57,'0.16',False,'SWB 1:2',True,date(2018,12,31),None,None))
+  loader.save(create_ledger_movement(464,25,None,3,12,'3000.16',False,'',True,date(2018,12,31),None,None))
+
+  def create_ledger_movement(id, voucher_id, partner_id, seqno, account_id, amount, dc, match, cleared, value_date, vat_regime, vat_class):
+      if amount is not None: amount = Decimal(amount)
+  #    if vat_regime: vat_regime = settings.SITE.models.vat.VatRegimes.get_by_value(vat_regime)
+  #    if vat_class: vat_class = settings.SITE.models.vat.VatClasses.get_by_value(vat_class)
+      kw = dict()
+      kw.update(id=id)
+      kw.update(voucher_id=voucher_id)
+      kw.update(partner_id=partner_id)
+      kw.update(seqno=seqno)
+      kw.update(account_id=account_id)
+      if dc: amount = -amount
+      kw.update(amount=amount)
+      #kw.update(dc=dc)
+      kw.update(match=match)
+      kw.update(cleared=cleared)
+      kw.update(value_date=value_date)
+      kw.update(vat_regime=vat_regime)
+      kw.update(vat_class=vat_class)
+      return ledger_Movement(**kw)
+
+That was the missing piece. So we can assume that the migration instructions in
+the changelog (:ref:`xl.changes.2020`) are correct and that I can simply
+reregister all vouchers.
+
+I also found some places in the docs that had not yet been updated after
+removing the dc field.
+
+
+Here is how I manually made all vouchers registered::
+
+  >> from lino.api.shell import *
+  >> qs = sales.VatProductInvoice.objects.all()
+  >> qs.update(state="registered")
+  31
+  >> qs = vat.VatAccountInvoice.objects.all()
+  >> qs.update(state="registered")
+  46
+  >> qs = eevat.Declaration.objects.all()
+  >> qs.update(state="registered")
+  9
