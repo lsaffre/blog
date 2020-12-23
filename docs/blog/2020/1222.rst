@@ -1,0 +1,91 @@
+:date: 2020-12-22
+
+==========================
+Tuesday, December 22, 2020
+==========================
+
+Testing the new Sphinx version
+==============================
+
+After upgrading to new Sphinx 3.4 version and rebuilding all docs (which worked
+out of the box), I had the following changes in the :mod:`lino` repository::
+
+  diff --git a/lino/help_texts.py b/lino/help_texts.py
+  index 3575f44af..f3e6af743 100644
+  --- a/lino/help_texts.py
+  +++ b/lino/help_texts.py
+  @@ -64,7 +64,7 @@ two rows should be considered similar."""),
+       'lino.dupable.Dupable.update_dupable_words' : _("""Update the phonetic words of this row."""),
+       'lino.dupable.Dupable.find_similar_instances' : _("""Return a queryset or yield a list of similar objects."""),
+       'lino.dupable.DupableChecker' : _("""Checks for the following repairable problem:"""),
+  -    'lino.dupable.DupableChecker.model' : _("""alias of Dupable"""),
+  +    'lino.dupable.DupableChecker.model' : _("""alias of lino.mixins.dupable.Dupable"""),
+       'lino.dupable.SimilarObjects' : _("""Shows the other objects which are similar to this one."""),
+       'lino.dupable.SimilarObjects.master' : _("""alias of lino.core.model.Model"""),
+       'lino.duplicable.Duplicate' : _("""Duplicate the selected row."""),
+  @@ -193,13 +193,13 @@ of a Change."""),
+       'lino.modlib.changes.Change.master' : _("""The database object which acts as "master"."""),
+       'lino.modlib.changes.Change.object' : _("""The database object which has been modified."""),
+       'lino.modlib.changes.Changes' : _("""The default table for Change."""),
+  -    'lino.modlib.changes.Changes.model' : _("""alias of Change"""),
+  +    'lino.modlib.changes.Changes.model' : _("""alias of lino.modlib.changes.models.Change"""),
+       'lino.modlib.changes.ChangesByObject' : _("""Slave Table showing the direct changes related to the current
+   object."""),
+  -    'lino.modlib.changes.ChangesByObject.model' : _("""alias of Change"""),
+  +    'lino.modlib.changes.ChangesByObject.model' : _("""alias of lino.modlib.changes.models.Change"""),
+       'lino.modlib.changes.ChangesByMaster' : _("""Slave Table showing the changes related to the current object,
+   including those applied to "child" objects."""),
+  -    'lino.modlib.changes.ChangesByMaster.model' : _("""alias of Change"""),
+  +    'lino.modlib.changes.ChangesByMaster.model' : _("""alias of lino.modlib.changes.models.Change"""),
+       'lino.modlib.chat.Plugin' : _("""See lino.core.plugin.Plugin."""),
+       'lino.modlib.chat.Plugin.get_head_lines' : _("""Adds a JS constant to let react know we want to include WS chat info"""),
+
+The changed content of these help texts is itself obviously caused by some
+change in Sphinx's internals. Actually the help text has become better. What I
+don't understand is: why do we have a `help_text` for the :attr:`model`
+attribute of these tables? This is useless data, isn't it? Not urgent. To be
+continued.
+
+Remove custom activity layouts from Lino Voga default
+=====================================================
+
+After a first meeting with Celia for a new :ref:`voga` production site I started
+to review the end-user documentation page :ref:`voga.tour`. Which, as usual with
+me, lead rather to a set of code changes than to a noteworthy improved
+documentation.
+
+The following changes are mostly in the courses plugin but caused changes in 14
+repositories, e.g. avanti, presto, amici, mentori and other applications because
+most of them use some variant of the courses plugin.
+
+The three activity types "Courses", "Hikes" and "Journeys" are now specific to
+the :mod:`lino_voga.lib.roger.courses` plugin, which is used by the :mod:`roger
+<lino_book.projects.roger>`  and :mod:`ivo <lino_book.projects.ivo>`  demo
+projects, but not by a plain voga (e.g. :mod:`voga1
+<lino_book.projects.voga1>`). I wrote some developer documentation about
+:ref:`plugin_namespaces`.
+
+As a side effect of above, I continued to tidy up a historic naming problem. The
+default courses plugin had two tables :class:`Courses` and :class:`Activities`,
+and nobody (including myself) really understood their difference.  Now they are
+named Activities and ActivitiesByLayout. I also renamed most tables CoursesByXxx
+to ActivitiesByXxx, and the ActivityLayouts choicelist to ActivityLayouts. Note
+that the plugin appname itself remains "courses", and the model name remains
+"Course": changing these would cause extra work with database migrations.
+
+The actor attribute :attr:`_course_area` of Activities and Enrolments was until
+now the choice itself. Now it is named :attr:`activity_layout` and contains the
+*name* of the activity layout. This was needed because choicelists are loaded
+only after the models. Until now it worked rather by miracle.
+
+I fixed a subtle core behaviour that took me some time to understand. I was
+surprised to see that Lino chose :class:`AllActivities` instead of
+:class:`Activities` as default table for :class:`courses.Course`. The
+explanation and solution was in :func:`lino.core.actors.register_actor`.
+
+The courses workflows were missing in :ref:`voga`.
+
+The demo fixture of the :mod:`lino_xl.lib.courses` plugin now adds a
+:term:`calender entry type` called "Activities".
+
+I added the :mod:`lino_xl.lib.phones` plugin to :ref:`voga` (but not addresses).
