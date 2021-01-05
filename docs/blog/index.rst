@@ -2,6 +2,4 @@
 Blog
 ====
 
-.. blogger_index:: 
-
-
+.. blogger_index::

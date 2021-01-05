@@ -12,7 +12,7 @@ Sitemap
 .. toctree::
    :maxdepth: 1
 
-   Blog <blog/2020/index>
+   Blog <blog/2021/index>
    about/index
 
 
