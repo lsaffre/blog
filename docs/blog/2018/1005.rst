@@ -37,7 +37,7 @@ issued by the doctest module::
 
 The solution was to explicitly call :func:`str` on the translatable
 text::
-  
+
     print(str(cal.Event.update_guests.help_text))
 
 That's needed because :attr:`help_text` is lazy (it becomes a string
@@ -88,7 +88,7 @@ Vera will love to hear this. Our initial plan was that she must enter
 the totals of these invoices by hand, since importing them was
 estimated to be more work.  I am sure she will prefer verifying with
 me whether the 491 documents were correctly imported.
-  
+
 
 
 Migration tests
@@ -103,7 +103,7 @@ first applications with "stable migration support".
 
 We have a new class :class:`RestoreTestCase
 <lino.utils.djangotest.RestoreTestCase>` to be used simply as follows::
-  
+
     from lino.utils.djangotest import RestoreTestCase
 
     class TestCase(RestoreTestCase):
@@ -113,13 +113,13 @@ By convention this code should be in a file named
 :xfile:`test_restore.py` in the :xfile:`tests` directory of the demo
 project.  And of course the version numbers will change with every
 release of that application.
-        
+
 We have a new admin command :manage:`makemigdump`.  This command does
 not yet work, Hamza will write this according to what we planned.
 
 We started documentation in a new page :ref:`dev.migtest` and
 reorganized related documents.
-     
+
 
 
 Why we modify :attr:`sys.argv`
@@ -137,7 +137,7 @@ The implementation of the :class:`RestoreTestCase
 
 As you see, it contains a hack: we modify :attr:`sys.argv`.  That's
 not common practive, so here is why we did this.
-    
+
 :ticket:`2522` was because the :file:`test_restore.py` in lydia did::
 
     from django.core.management import call_command
@@ -146,12 +146,12 @@ not common practive, so here is why we did this.
 This Python process had been invoked as part of the test suite using::
 
     $ python manage.py test --noinput --failfast
-    
+
 so the value of :attr:`sys.argv` was::
-  
+
     ['manage.py', 'test', '--noinput', '--failfast']
 
-But Django admin commands are not supposed to look at
+But django-admin commands are not supposed to look at
 :attr:`sys.argv`, they should rely on the `args` and `options` passed
 to their :meth:`handle` method.  That's intended by design.  Django's
 :func:`call_command` does not modify :attr:`sys.argv`.
@@ -175,9 +175,9 @@ in speed was considerable: 13 minutes instead of 1 minute::
     real	0m34,735s
     user	0m23,253s
     sys	0m1,090s
-   
+
 EDIT: Afterwards I realized that we might convert :xfile:`restore.py`
-as a Django admin command, e.g. :manage:`restore`.  This would make
+as a :term:`django-admin command`, e.g. :manage:`restore`.  This would make
 above hack useless.  But caution: don't forget to adapt
 :xfile:`restore2preview.py` and :xfile:`initdb_preview_from_prod.sh`
 then.

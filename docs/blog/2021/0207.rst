@@ -1,0 +1,63 @@
+:date: 2021-02-07
+
+========================
+Sunday, February 7, 2021
+========================
+
+I pushed my work of the last days  (for :ticket:`632`) to master of lino and
+book.
+
+About screenshots
+=================
+
+For the first time in the history of Lino I got the
+:func:`lino.api.selenium.runserver` function working. It is a bit tricky because
+I wanted it to launch a Django development server in the background, then use
+selenium to open a headless firefox and run an automated "tour" in the demo
+database, taking screenshots on the go. And these screenshots would then be
+available for being included in documentation pages.
+
+Here is an example of such a screenshot:
+
+.. image:: ../../../../book/docs/specs/noi/tour/contacts.Companies.grid.params_en.png
+
+This screenshot is taken from :ref:`noi1e.tour`.
+
+But of course every fixed issue causes new questions to raise.
+
+I had to figure out how to organize everything.  Where to store those tours?
+They are no longer under :file:`/docs/tours`. I started to care about
+internationalization: we don't need "just screenshots", we need them in
+different languages. The selenium code that runs the tour is now
+language-agnostic and the same tour is run for different users. I converted the
+:xfile:`maketour.py` script into a script to be executed with :manage:`run`. I
+renamed :class:`lino.api.selenium.Album` to :class:`lino.api.selenium.Tour`.  I
+added a test case that actually runs our first :xfile:`maketour.py` script of
+the noi1e project.
+
+Where to hook the tours into the doc tree?  They are neither "Specs" nor "API".
+Each tour creates one :xfile:`.rst` page, that page is meant as a reference for
+the author of application documentation. It describes how the tour has been
+done, which screenshots are available, and it gives the names of the image
+files.
+
+I removed the tours index page (which was meant to list all
+the tours) because that was a useless file to maintain. Rather hook them into
+the specs of the application they describe.  So the noi1e tour is now in the
+:ref:`noi.specs` section.
+
+I added code in :file:`test_demo.py` that runs the noi1e tour.
+
+I had all this working, but after a system upgrade on my notebook (where also
+firefox was updated) it stopped to work again. After another hour of trying to
+get it back to work, I decided to abandon, comment out the lines in
+:file:`test_demo.py` that would run this test, and put it to sleep again. After
+all this is not urgent.
+
+TODO:
+
+- convert the :file:`make_screenshots.py` scripts in :mod:`lino_weleup` and :mod:`lino_welcht`
+  to :xfile:`maketour.py` scripts in the `gerd` and `mathieu` demo projects.
+- extend the `noi1e` tour to have more screenshots
+- write a tour for a react demo
+- write a tour outside of the book in an independent application, e.g. amici.

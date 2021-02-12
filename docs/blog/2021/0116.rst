@@ -1,0 +1,70 @@
+:date: 2021-01-16
+
+==========================
+Saturday, January 16, 2021
+==========================
+
+The content below was a first draft. Read :ref:`dev.sessions` for what it has
+become.
+
+Limiting the number of simultaneous user sessions per site
+==========================================================
+
+A new core feature for Lino would be that the site maintainer can set the
+:term:`sessions limit` of a site.
+
+.. glossary::
+
+  sessions limit
+
+    The maximum number of simultaneous :term:`end user` sessions  that are
+    allowed on this site.
+
+This setting could be used by a :term:`hosting provider` for negotiating their
+price.  After signing in, an :term:`end user` might potentially get a message
+"Sorry, there are already X users working on this site. Please try again later."
+
+Should we use :mod:`ipdict <lino.modlib.ipdict>` for this? Or rather
+:mod:`sessions <django.contrib.sessions>`?
+
+We can assume that all Lino sites that want to use this feature will also use
+:mod:`django.contrib.sessions` and the database backend.  I played around and
+did something like this::
+
+  from lino.api import rt
+  from lino.core.auth import SESSION_KEY
+  for ses in rt.models.sessions.Session.objects.all():
+      data = ses.get_decoded()
+      user = users.User.objects.get(pk=data[SESSION_KEY])
+      print(user.username, ses.session_key, ses.expire_date, data)
+
+Note that a session is created only when a user has authenticated. Se we cannot
+use :mod:`sessions <django.contrib.sessions>` to replace :mod:`ipdict
+<lino.modlib.ipdict>` because the main purpose of :mod:`ipdict
+<lino.modlib.ipdict>` is to protect against brute-force attacks, i.e. it acts
+before any session is created.
+
+At the moment :mod:`ipdict <lino.modlib.ipdict>` is not suitable for sites with
+very many users because it stores every connection in an in-memory `dict`.  We
+might optimize it some day in the future to remove every entry after a
+successful authentication.
+
+So it is more future-proof to use :mod:`sessions <django.contrib.sessions>` for
+implementing our new feature. And to even reimplement the `ipdict.Connections`
+table to use sessions instead of ipdict.
+
+Inactive sessions
+=================
+
+Sessions are deleted only when the user signs out manually.  If a user signs in
+from a different device or a different browser, they get a new session.
+
+
+The default value for :setting:`SESSION_COOKIE_AGE` is two weeks, which makes
+sense: if you use Lino once a week, you don't want to sign in each time. We
+don't want to change this.  But a :term:`site operator` won't be happy if
+inactive sessions are being counted when evaluating their sessions limit.
+
+A user signs in, starts working in Lino, then goes for a coffee break. The break
+lasts longer than one hour. Meanwhile other users have tried to sign in and the
+site's sessions limit has been reached.

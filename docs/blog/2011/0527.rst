@@ -5,7 +5,7 @@
 babel.add_babel_field silently fails
 ------------------------------------
 
-I noticed that some models didn't have their babel fields expanded 
+I noticed that some models didn't have their babel fields expanded
 in a Layout:
 
   countries.Language
@@ -13,7 +13,7 @@ in a Layout:
   dsbe.ContractType
   dsbe.ExamPolicy
   dsbe.AidType
-    
+
 Explanation:
 they still used `babel.add_babel_field` instead of `babel.BabelCharField`.
 Fixed.
@@ -25,9 +25,9 @@ Minor changes
 -------------
 
 - Grâce à http://www.wout-bosteels.be/countries.xml
-  countries/fixtures/all_countries.dpy importe maintenant la 
+  countries/fixtures/all_countries.dpy importe maintenant la
   liste des pays en français et néerlandais.
-  
+
 - Checkin `20110527a <http://code.google.com/p/lino/source/detail?r=7f0e358c0fd73cb02fd51572634072461a0fba8c>`_
 
 
@@ -36,7 +36,7 @@ Another case of `UnicodeDecodeError`
 
 A user reports the following `UnicodeDecodeError` during :term:`initdb`::
 
-  root@lino:/usr/local/django/myproject# ./initdb_demo.sh     
+  root@lino:/usr/local/django/myproject# ./initdb_demo.sh
   Gonna reset your database (myproject).
   Are you sure (y/n) ?y
   INFO Lino initdb ('std', 'all_countries', 'few_cities', 'all_languages', 'props', 'demo') started on database myproject.
@@ -104,49 +104,49 @@ We added a ``print`` statement just before that line 799 of :file:`logging/__ini
             raise
         except:
             self.handleError(record)
-            
-Now there is almost the same output, expect for the additional 
+
+Now there is almost the same output, expect for the additional
 line before the traceback::
 
   u"INFO Deferred Language #mao (M\u0101ori de Nouvelle-Z\xe9lande) : Incorrect string value: '\\xC4\\x81ori ...' for column 'name' at row 1"
 
-After removing the "Māori de Nouvelle-Zélande" language from `all_languages.dpy`, there is still 
+After removing the "Māori de Nouvelle-Zélande" language from `all_languages.dpy`, there is still
 another message::
 
-  u"INFO Deferred Person #93 (\u041a\u0430\u0437\u0435\u043d\u043d\u043e\u0432\u0430 \u0422\u0430\u0442\u044c\u044f\u043d\u0430 (93)) : {'id': [u'Person with this Partner # 
-  
+  u"INFO Deferred Person #93 (\u041a\u0430\u0437\u0435\u043d\u043d\u043e\u0432\u0430 \u0422\u0430\u0442\u044c\u044f\u043d\u0430 (93)) : {'id': [u'Person with this Partner #
+
 Removing also that person from the demo fixture leads to a successful `initdb_demo`.
 
 So here is the explanation:
 
-Lino's demo fixtures contain also "exotic" chars which are not 
-available in latin1 encoding. For example the fictive) 
+Lino's demo fixtures contain also "exotic" chars which are not
+available in latin1 encoding. For example the fictive)
 Person named Татьяна Казеннова.
 
-If your mysql database backend is not configured to use UTF-8 encoding, 
+If your mysql database backend is not configured to use UTF-8 encoding,
 it considers strings like "Māori de Nouvelle-Zélande"
-or "Татьяна Казеннова" as invalid. 
+or "Татьяна Казеннова" as invalid.
 The backend then throws an exception "Incorrect string value 'xyz'",
-where xyz is that invalid value. 
+where xyz is that invalid value.
 
 And my :mod:`lino.utils.dpy` tried to log this problem::
 
     dblogger.info("Deferred %s : %s",obj2str(obj),e)
 
-And that message is not a unicode 
+And that message is not a unicode
 string, but a utf8-encoded bytestring.
 
 I didn't think about what Vinay Sajip explains in
 `Python Issue 6991 <http://bugs.python.org/issue6991>`_,
-and that an Exception instance might always contain a 
-non-ascii bytestring. 
+and that an Exception instance might always contain a
+non-ascii bytestring.
 
 Here the tests I wrote in order to understand it.
 
 .. literalinclude:: 0527.py
    :language: python
    :linenos:
-   
+
 Output::
 
   WARNING:root:ðóð░ÐéÐîÐÅð¢ð░
@@ -186,23 +186,21 @@ Output::
 
 I would summarize my lesson on this topic:
 
-  When you pass more than one formatting argument to a 
-  logger function, and one of them is a unicode string, 
-  then the other argument(s) **may not** be bytestrings 
+  When you pass more than one formatting argument to a
+  logger function, and one of them is a unicode string,
+  then the other argument(s) **may not** be bytestrings
   containing non-ascii chars.
 
-The most pragmatic and safe solution is probably to use Django's 
+The most pragmatic and safe solution is probably to use Django's
 `force_unicode` function::
-    
+
     dblogger.info("Deferred %s : %s",obj2str(obj),force_unicode(e))
 
 
-Removed warning due to deprecated `reset` management command
-------------------------------------------------------------
+Removed warning due to deprecated `reset` django-admin command
+--------------------------------------------------------------
 
-Removed `DeprecationWarning`: 
-:mod:`lino.management.commands.initdb` now calls flush instead of reset followed by initdb 
+Removed `DeprecationWarning`:
+:mod:`lino.management.commands.initdb` now calls flush instead of reset followed by initdb
 
 Checkin
-
-
