@@ -1,0 +1,35 @@
+:date: 2021-02-15
+
+=========================
+Monday, February 15, 2021
+=========================
+
+In demo project lydia, "pm test tests.test_ipdict" passed, but "pm test" failed.
+Which indicated that test_ipdict.py somehow depends on the other test cases.
+This caused an avalanche of changes in the test suite.  I also learned a few
+things.  Lino has a new :term:`django-admin command` :manage:`demotest`.
+
+The Django docs warns "If your tests rely on database access such as creating or
+querying models, be sure to create your test classes as subclasses of
+django.test.TestCase rather than unittest.TestCase." I thought that when I don't
+use django.test.TestCase, my test will use the database defined in the manage.py
+file (i.e. the prepared demo data).
+
+
+So it seems that the Django tests in the demo projects (= run using
+:manage:`test` from a demo project directory, not using :cmd:`inv test` from the
+repository root) actually never use the database that has been prepared with
+:manage:`prep`.
+I thought that the WebIndexTestCase does this. But seems that I
+was wrong.
+
+The new :term:`django-admin command` :manage:`demotest` replaces what has
+previously been done by :xfile:`test_webindex.py` and :file:`test_ipdict.py`. I
+removed these files from all projects. It is now being called in the
+:xfile:`test_demo.py`, which I added to some repositories.  E.g. we now also
+have such a file in welfare, amici, algus, mentori and others.
+
+The demo projects in welfare and amici were not being tested at all.
+
+En passant this work unveiled a series of deprecation warnings, which I fixed. I
+had not seen them before because usually they are disabled.

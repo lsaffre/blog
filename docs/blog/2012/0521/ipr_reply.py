@@ -3,7 +3,7 @@
 Some experiments on how to explore the response to an 
 IdentifyPerson request.
 """
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from lino.utils.choicelists import Gender
 from suds.sax.parser import Parser
 PARSER = Parser()
