@@ -4,7 +4,7 @@ from lino.utils.pythontest import TestCase
 
 
 class LinoTestCase(TestCase):
-    django_settings_module = "lino_book.projects.docs.settings.demo"
+    django_settings_module = "lino_book.projects.min9.settings"
     project_root = Path(__file__).parent.parent
 
 
@@ -39,5 +39,3 @@ class BlogTests(LinoTestCase):
         self.run_simple_doctests("""
         docs/blog/2014/0902.rst
         """)
-
-

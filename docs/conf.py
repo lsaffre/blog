@@ -11,7 +11,6 @@
 # All configuration values have a default value; values that are commented out
 # serve to show the default value.
 
-# from __future__ import unicode_literals
 import lino
 from lino.sphinxcontrib import configure
 
@@ -19,7 +18,7 @@ extlinks = {}
 extensions = []
 templates_path = []
 
-configure(globals(), 'lino_book.projects.max.settings.doctests')
+configure(globals(), 'lino_book.projects.min9.settings')
 
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
