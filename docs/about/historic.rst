@@ -76,21 +76,21 @@ year*: continued the Java port project on my own and without getting
 money for it.  I once tried a *PHP* port that got quite far but is now
 forgotten.
 
-In **August 2002** I announced to the TIM users in Eastern Belgium
-that I would continue to maintain and give support for TIM, but at new
-conditions, requiring a yearly fee.
+In **August 2002** I announced to the TIM users in Eastern Belgium that I would
+continue to maintain and give support for TIM, but at new conditions, requiring
+a yearly fee. About half of the users joined the project, which was enough to
+provide a decent salary.  My vision received a financially sustainable base.
 
 In **2002** I discovered the Python_ programming language and
 abandoned C++, Java and PHP without tears.
 
-When I discovered Django_ in the end of **2008**, after having worked
-many months on my own database model, I was quickly fascinated.  The
-ORM and database model based on 'apps' is simply genial.  The way of
-how this is integrated into a web application server system: genial.
-But a few things disturbed me with Django, and I felt that I need to
-change them before I can be satisfied.  That's why I started to write
-Lino.  After some search for a valuable user interface, I started to
-use ExtJS_ in **August 2009**.
+When I discovered Django_ in the end of **2008**, after having worked many
+months on my own database model, I was quickly fascinated.  Django's  ORM and
+database model are simply genial.  The way of how this is integrated into a web
+application server system: genial. But a few things disturbed me with Django,
+and I felt that I need to change them before I can be satisfied.  That's why I
+started to write Lino.  After some search for a valuable user interface, I
+started to use ExtJS_ in **August 2009**.
 
 
 .. _AbAKUS: http://www.abakus.be

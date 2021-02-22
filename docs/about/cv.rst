@@ -6,24 +6,28 @@ Curriculum vitae
 Projects
 --------
 
-I am author and maintainer of :ref:`Lino <cg.lino.framework>` and its predecessor
-TIM_, two frameworks for developing customized database applications. They are
-mostly used in Belgium.
+I am author and maintainer of :ref:`Lino <cg.lino.framework>` and its
+predecessor TIM_, two frameworks for developing customized database
+applications. Our customers are mostly located in Belgium. All my work is
+released as free software, I am a fervent defender of the  `free open-source
+software philosophy <https://hw.saffre-rumma.net/fs/>`_.
 
 Other projects:
 
-- :ref:`atelier`, :ref:`eidreader` and davlink_ are independant
-  projects released under the BSD instead or LGPL.
-
 - `Lino Welfare <http://welfare.lino-framework.org>`__,
-  `Lino Noi <http://noi.lino-framework.org>`__,
-  `Lino Amici <http://amici.lino-framework.org>`__,
-  `Lino Voga <http://voga.lino-framework.org>`__ and
-  `Lino Presto <http://presto.lino-framework.org>`__ and
-  `Lino Così <http://cosi.lino-framework.org>`__
-  are Lino *applications*, released as free software.
+  `Noi <http://noi.lino-framework.org>`__,
+  `Amici <http://amici.lino-framework.org>`__,
+  `Voga <http://voga.lino-framework.org>`__
+  `Presto <http://presto.lino-framework.org>`__ and
+  `Così <http://cosi.lino-framework.org>`__
+  are :term:`Lino applications <Lino application>` for which there is at least
+  one :term:`production site`.
+
+- :ref:`atelier`, :ref:`eidreader` and :ref:`getlino <getlino>` are independant
+  projects that we also use.
 
 - TIMtools_ -- A suite of win32 command-line tools for TIM_.
+
 
 
 Work experience

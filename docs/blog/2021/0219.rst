@@ -1,0 +1,26 @@
+:date: 2021-02-19
+
+=========================
+Friday, February 19, 2021
+=========================
+
+I found and fixed two minor bugs: in :mod:`lino.modlib.checkdata`: the
+``--prune`` option of :manage:`checkdata` didn't actually work. And
+:manage:`checkdata` (without ``--prune``) didn't remove obsolete messages of
+unbound checkers.  These bugs became visible only now because
+:attr:`lino.modlib.uploads.UploadsFolderChecker` is the first :term:`unbound
+data checker` that has something to say (if we ignore
+:class:`lino_xl.lib.vat.VatColumnsChecker` which is rarely used at the moment.)
+
+New configuration option
+:attr:`lino.modlib.uploads.Plugin.remove_orphaned_files`.
+
+I reviewed the :ref:`book.specs.checkdata` page.
+Seems I found a way to properly document the
+:attr:`check_data <lino.core.model.Model.check_data>` and
+:attr:`fix_problems <lino.core.model.Model.fix_problems>` actions.
+
+I converted the settings package of :mod:`lino_book.projects.avanti1` into a
+simple :xfile:`settings.py` module. Mostly because I want to write demo fixtures
+that upload files, and the media folder is "at the wrong place" in projects with
+a settings package.

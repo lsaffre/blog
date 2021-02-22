@@ -41,4 +41,4 @@ years of content of the years 1998 to 2012) is visible only to me because I
 didn't yet have time to make it copyright-compliant.
 
 One can say that this was a key experience in my life and one of the reasons why
-I wrote the `Lutsu manifesto <https://hw.saffre-rumma.net/lutsu.html>`__.
+I wrote the `Lutsu manifesto <https://hw.saffre-rumma.net/lutsu/>`__.
