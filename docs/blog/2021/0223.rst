@@ -1,0 +1,66 @@
+:date: 2021-02-23
+
+==========================
+Tuesday, February 23, 2021
+==========================
+
+
+I read the docs about PrimeReact's DataTable:
+
+https://www.primefaces.org/primereact/showcase/#/datatable
+
+The example uses axios. What's that? Here a nice introduction:
+
+https://dev.to/veewebcode/what-is-axios-and-how-to-use-it-4an1
+
+Might be useful to play around with it. But not now.
+
+I still don't fully understand what's a state in React.
+
+A `<DataTable>` component needs at least a `value` attribute.
+And its children must be a `<Column>` components, one child per column).
+
+Once more, npm asks me to upgrade, and I do it::
+
+  npm notice New patch version of npm available! 7.5.4 -> 7.5.6
+  npm notice Changelog: https://github.com/npm/cli/releases/tag/v7.5.6
+  npm notice Run npm install -g npm@7.5.6 to update!
+
+  $ sudo npm install -g npm
+
+I get this warning in my JS console:
+
+  Warning: Can't perform a React state update on an unmounted component. This is
+  a no-op, but it indicates a memory leak in your application. To fix, cancel
+  all subscriptions and asynchronous tasks in the componentWillUnmount method.
+
+This warning is caused by the `<DataProvider>`, a component used by the
+`<DashboardItems>` component.
+The `<DashboardItems>` component has a dynamic list of children.
+
+I guess that the warning means "When you start a polyfill request in
+componentDidMount(), then you should make sure to cancel it before the component
+gets unmounted."
+
+So how to cancel a polyfill request? The `whatwg-fetch docs
+<https://www.npmjs.com/package/whatwg-fetch>`_ has a section "Aborting
+requests". Wow:  "aborting a fetch requires use of two additional DOM APIs:
+AbortController and AbortSignal. ... Consequently, you will need to include an
+additional polyfill for these APIs to abort fetches". But the example seems to
+do what I want, so I integrated it in `DataProvider.js`  (unlike the example I
+must create the abort controller during the component's construct method, i.e.
+we have one such controller for every data provider...)
+
+Funny: I got the warning "DataProvider has a method called
+componentDidUnmount(). But there is no such lifecycle method. Did you mean
+componentWillUnmount()?", and the warning was right...
+
+So this added a new dependency::
+
+  $ npm install yet-another-abortcontroller-polyfill --save
+
+Yes, one warning less! So I understood the reason for a problem and managed to
+fix it. I guess that it wasn't a huge problem, and my actual problem
+(:ticket:`3981`) is still there, but an encouraging experience nevertheless.
+
+I discovered that the problem starts somewhere in :meth:`LinoGrid.onEditorInit`.
