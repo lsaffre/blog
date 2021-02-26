@@ -1,0 +1,37 @@
+:date: 2021-02-26
+
+=========================
+Friday, February 26, 2021
+=========================
+
+.. include:: /shared/include/defs.rst
+
+Mehedi is discovering :ref:`noi` and caused the following server traceback::
+
+  Internal Server Error: /api/working/MySessions/-99999
+  RelatedObjectDoesNotExist at /api/working/MySessions/-99999
+  Session has no ticket.
+
+Yes, he probably tried to click the |insert| button in
+:class:`lino_xl.lib.working.MySessions`.
+To create a session, you must click on the
+:guilabel:`▶` button in the :guilabel:`Workflow` field (which runs the
+:class:`lino_xl.lib.working.StartTicketSession` action).
+
+In the tables of :term:`work sessions <work session>` we don't want users to
+manually create a session. There should be no insert button (|insert|) So for
+:class:`lino_xl.lib.working.Sessions` I removed the :attr:`insert_layout
+<lino.core.actors.Actor.insert_layout>`.
+
+Having no :attr:`insert_layout <lino.core.actors.Actor.insert_layout>` doesn't
+yet disable the phantom row in grid views.  For this I must also set
+:attr:`can_create <lino.core.actors.Actor.can_create>` to `False`.
+
+I committed above work in two repositories:
+
+- 2021-02-26 06:21 in *xl*:
+  `a0cb403 <https://github.com/lino-framework/xl/commit/1e5764279c5661f265d3c42de93ffceb8a0cb403>`__
+  (fix #3993 (session has no ticket))
+- 2021-02-26 06:23 in *book*:
+  `0b4591d <https://github.com/lino-framework/book/commit/d486e0dffb07d721659f8e252e6d48b3b0b4591d>`__
+  (changelog. review docs about work time.)
