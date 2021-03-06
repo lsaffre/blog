@@ -13,12 +13,14 @@ Mehedi is discovering :ref:`noi` and caused the following server traceback::
   Session has no ticket.
 
 Yes, he probably tried to click the |insert| button in
-:class:`lino_xl.lib.working.MySessions`.
+:class:`lino_xl.lib.working.MySessions`
+or some other table of :term:`work sessions <work session>`.
+
 To create a session, you must click on the
 :guilabel:`▶` button in the :guilabel:`Workflow` field (which runs the
 :class:`lino_xl.lib.working.StartTicketSession` action).
 
-In the tables of :term:`work sessions <work session>` we don't want users to
+In tables of :term:`work sessions <work session>` we don't want users to
 manually create a session. There should be no insert button (|insert|) So for
 :class:`lino_xl.lib.working.Sessions` I removed the :attr:`insert_layout
 <lino.core.actors.Actor.insert_layout>`.
@@ -35,3 +37,131 @@ I committed above work in two repositories:
 - 2021-02-26 06:23 in *book*:
   `0b4591d <https://github.com/lino-framework/book/commit/d486e0dffb07d721659f8e252e6d48b3b0b4591d>`__
   (changelog. review docs about work time.)
+
+
+Inserting primeicon icons into the sphinx docs
+==============================================
+
+How to include icons from `primeicons <https://github.com/primefaces/primeicons>`__
+into a docs page? For example the |filter| button?
+
+I downloaded the source file to a folder :file:`/shared/images/pi` (under :xfile:`docs`)::
+
+  $ curl https://raw.githubusercontent.com/primefaces/primeicons/master/raw-svg/filter.svg > filter.svg
+
+I added docutils `substitution definitions
+<https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#substitution-definitions>`__
+to my :file:`/shared/include/defs.rst` file::
+
+  .. |filter|  image:: /../docs/shared/images/pi/filter.svg
+    :class: svg
+
+And in the :file:`linodocs.css` file of :mod:`lino.sphinxcontrib.logo` I added
+the css descriptor::
+
+  img.pi-button {
+      width: 1.1em;
+      height: 1.1em;
+      background-color: LightSkyBlue;
+      border: 3px solid LightSkyBlue;
+  }
+
+I later automated the download task by writing a :file:`download.py` script in
+the :file:`/shared/images/pi` folder.
+
+TODO: find a way so that we don't need to copy the :file:`defs.rst` and the
+:file:`.svg` files to each repository. I agree that there are more urgent issues
+in Lino.
+
+
+Cannot edit grid cells
+======================
+
+I continued to dive around in :ticket:`3981`.
+
+During a debugger tour I saw that the grid calls a method
+:meth:`primereact.datatable.BodyCell.bindDocumentEditListener`, which adds the
+following documentEditListener::
+
+  if (!this.documentEditListener) {
+        this.documentEditListener = function (e) {
+          if (_this3.isOutsideClicked(e)) {
+            _this3.switchCellToViewMode(e, true);
+          }
+        };
+      document.addEventListener('click', this.documentEditListener);
+      }
+
+And the :meth:`isOutsideClicked` returns true. Which is obviously wrong here.
+But why? First of all, which version of PrimeReact do I have? 6.0.1. And they
+released 6.0.2 some weeks ago. So let's upgrade::
+
+  $ ncu -u
+  Upgrading /home/luc/work/react/package.json
+  [====================] 34/34 100%
+
+   primereact             ^6.0.1  →    ^6.0.2
+   @babel/core          ^7.12.10  →   ^7.13.1
+   @babel/preset-env    ^7.12.11  →   ^7.13.5
+   @babel/preset-react  ^7.12.10  →  ^7.12.13
+   css-loader             ^5.0.1  →    ^5.1.0
+   cypress                ^6.3.0  →    ^6.5.0
+   postcss-loader         ^4.2.0  →    ^5.0.0
+   query-string          ^6.13.8  →   ^6.14.0
+   webpack                    ^4  →        ^5
+   whatwg-fetch           ^3.5.0  →    ^3.6.1
+
+  Run npm install to install new versions.
+
+However before running `npm install` I changed webpack back from 5 to 4 in my
+:xfile:`package.json` file because switching from webpack 4 to 5 is another
+topic.
+
+But the issue remains also with PR 6.0.2.
+
+I looked at the git history of :file:`datatable/BodyCell.js` and saw that it has
+an  `interesting change
+<https://github.com/primefaces/primereact/commit/4972403cf188eaabf9e9ca0c6ac11d54e983210f#diff-a66ee740975e449b18b568773cc050f79cd564a058e4cf4d2b3246af0d974a03>`__
+only some hours ago. And the commit message says it fixes an issue  `#1828
+<https://github.com/primefaces/primereact/issues/1828>`_, which looks
+interesting.
+
+I have a git clone of primereact on my machine. How can I "install this as the
+development version", similar to :cmd:`pip install -e`?
+
+In my :xfile:`package.json` I changed the version spec for primereact dependency
+from `"^6.0.2"` to  `"git+https://github.com/primefaces/primereact.git"` and ran
+:cmd:`npm install`.
+
+Then I read `this thread
+<https://stackoverflow.com/questions/14381898/local-dependency-in-package-json>`__
+and tried `"file:../primereact"`.
+
+
+Module not found: Error: Can't resolve 'primereact/column' in '/home/luc/work/react/lino_react/react/components'
+
+::
+
+  $ rm -rf node_modules
+  $ npm install
+
+
+  npm WARN deprecated urix@0.1.0: Please see https://github.com/lydell/urix#deprecated
+  npm WARN deprecated har-validator@5.1.5: this library is no longer supported
+  npm WARN deprecated resolve-url@0.2.1: https://github.com/lydell/resolve-url#deprecated
+  npm WARN deprecated chokidar@2.1.8: Chokidar 2 will break on node v14+. Upgrade to chokidar 3 with 15x less dependencies.
+  npm WARN deprecated request@2.88.2: request has been deprecated, see https://github.com/request/request/issues/3142
+  npm WARN deprecated core-js@2.6.12: core-js@<3 is no longer maintained and not recommended for usage due to the number of issues. Please, upgrade your dependencies to the actual version of core-js@3.
+  npm ERR! code 1
+  npm ERR! git dep preparation failed
+  npm ERR! command /usr/local/bin/node /usr/local/lib/node_modules/npm/bin/npm-cli.js install --force --cache=/home/luc/.npm --prefer-offline=false --prefer-online=false --offline=false --no-progress --no-save --no-audit
+  npm ERR! npm WARN using --force Recommended protections disabled.
+  npm ERR! npm ERR! code ERR_SOCKET_TIMEOUT
+  npm ERR! npm ERR! errno ERR_SOCKET_TIMEOUT
+  npm ERR! npm ERR! request to http://repo.internal.cleartax.co:4873/yargs-parser/-/yargs-parser-7.0.0.tgz failed, reason: Socket timeout
+  npm ERR!
+  npm ERR! npm ERR! A complete log of this run can be found in:
+  npm ERR! npm ERR!     /home/luc/.npm/_logs/2021-02-26T15_26_34_708Z-debug.log
+
+  npm ERR! A complete log of this run can be found in:
+  npm ERR!     /home/luc/.npm/_logs/2021-02-26T15_26_36_453Z-debug.log

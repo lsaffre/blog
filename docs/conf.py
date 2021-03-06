@@ -59,7 +59,7 @@ master_doc = 'index'
 
 # General substitutions.
 project = "Luc's developer blog"
-copyright = '2001-2020 Luc Saffre'
+copyright = '2001-2021 Luc Saffre'
 
 
 # The version info for the project you're documenting, acts as replacement for
@@ -185,7 +185,7 @@ html_use_opensearch = lino.SETUP_INFO['url']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'saffre-rumma'
+htmlhelp_basename = 'lucsblog'
 
 
 # Options for LaTeX output
@@ -200,8 +200,8 @@ htmlhelp_basename = 'saffre-rumma'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, document class [howto/manual]).
 latex_documents = [
-  ('index', 'saffre-rumma.tex', u'saffre-rumma',
-   u'saffre-rumma', 'manual'),
+  ('index', 'lucsblog.tex', 'lucsblog',
+   'lucsblog', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -224,7 +224,7 @@ latex_documents = [
 # extlinks.update(ticket=('http://trac.lino-framework.org/ticket/%s', '#'))
 # extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
 # extlinks.update(ticket=('http://bugs.saffre-rumma.net/tickets/Ticket/%s', '#'))
-extlinks.update(ticket=('https://hobbit.saffre-rumma.net/#/api/tickets/AllTickets/%s', '#'))
+extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
 extlinks.update({
     'issue': (
         'http://code.google.com/p/lino/issues/detail?id=%s', '# '),
@@ -342,7 +342,6 @@ feed_description = "Luc's developer blog"
 
 import os
 os.environ['LC_TIME'] = 'en_GB.UTF-8'
-
 
 
 # from pprint import pprint
