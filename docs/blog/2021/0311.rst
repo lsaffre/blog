@@ -1,0 +1,125 @@
+:date: 2021-03-11
+
+========================
+Thursday, March 11, 2021
+========================
+
+Getting the book to build on readthedocs
+========================================
+
+Yesterday I had a Skype chat with Charles from China. It turned out that he had
+been reading the docs on `lino.readthedocs.io
+<https://lino.readthedocs.io/en/master/>`__! The last successful build there was
+a year and 4 months ago!  I vaguely remember that last time it failed because
+they have some quota and the book was too big. Now I tried again and saw that
+they have (of course!) evolved since then and that I had a
+:file:`.readthedocs.yml`, but maybe they require it to be named
+:file:`.readthedocs.yaml`. I renamed it and updated the requirements setting to
+use our central :file:`requirements.dev.txt` file. Nice. That was one of the
+disturbing things, that you needed an extra :file:`requirements.txt` file in the
+docs subdirectory. But it still fails (`build 13215043
+<https://readthedocs.org/projects/lino/builds/13215043/>`__::
+
+  running build_ext
+      building '_ldap' extension
+      creating build/temp.linux-x86_64-3.7
+      creating build/temp.linux-x86_64-3.7/Modules
+      gcc -pthread -Wno-unused-result -Wsign-compare -DNDEBUG -g -fwrapv -O3 -Wall -fPIC -DHAVE_SASL -DHAVE_TLS -DHAVE_LIBLDAP_R -DHAVE_LIBLDAP_R -DLDAPMODULE_VERSION=3.3.1 -DLDAPMODULE_AUTHOR=python-ldap project -DLDAPMODULE_LICENSE=Python style -IModules -I/home/docs/.pyenv/versions/3.7.9/include/python3.7m -c Modules/LDAPObject.c -o build/temp.linux-x86_64-3.7/Modules/LDAPObject.o
+      In file included from Modules/LDAPObject.c:3:0:
+      Modules/common.h:15:10: fatal error: lber.h: No such file or directory
+       #include <lber.h>
+                ^~~~~~~~
+      compilation terminated.
+      error: command 'gcc' failed with exit status 1
+      ----------------------------------------
+  ERROR: Command errored out with exit status 1: /home/docs/checkouts/readthedocs.org/user_builds/lino/envs/master/bin/python -u -c 'import sys, setuptools, tokenize; sys.argv[0] = '"'"'/tmp/pip-install-ykcugga8/python-ldap_83a5250d16a044fa869a8c46aa4c0922/setup.py'"'"'; __file__='"'"'/tmp/pip-install-ykcugga8/python-ldap_83a5250d16a044fa869a8c46aa4c0922/setup.py'"'"';f=getattr(tokenize, '"'"'open'"'"', open)(__file__);code=f.read().replace('"'"'\r\n'"'"', '"'"'\n'"'"');f.close();exec(compile(code, __file__, '"'"'exec'"'"'))' install --record /tmp/pip-record-exm7_nyl/install-record.txt --single-version-externally-managed --compile --install-headers /home/docs/checkouts/readthedocs.org/user_builds/lino/envs/master/include/site/python3.7/python-ldap Check the logs for full command output.
+
+So the `pip install python_ldap` doesn't work. Yes, python_ldap has some  `build
+prerequisites
+<https://www.python-ldap.org/en/python-ldap-3.3.0/installing.html#build-prerequisites>`__,
+but readthedocs doesn't seem to have an option where I can tell it to install
+them. I read `their docs page
+<https://docs.readthedocs.io/en/latest/config-file/v2.html>`__ but couldn't find
+any such option.  So I abandoned once more.
+
+Publish the Lino Book on GitLab
+===============================
+
+Before deleting the project on RTD, I should publish the docs somewhere else. On
+GitHub pages? Last time I tried this, it was a bit twisted because GitHub
+doesn't care much about Sphinx. And anyway I want to move to GitLab.
+
+Current situation::
+
+  $ go book
+  $ git remote -v show
+  origin	git@github.com:lino-framework/book.git (fetch)
+  origin	git@github.com:lino-framework/book.git (push)
+
+Let's try to change this (as instructed `here
+<https://docs.gitlab.com/ee/user/project/working_with_projects.html#push-to-create-a-new-project>`__)::
+
+  $ go book
+  $ git push --set-upstream git@gitlab.com:lino-framework/book.git master
+  Counting objects: 23898, done.
+  Delta compression using up to 2 threads.
+  Compressing objects: 100% (7741/7741), done.
+  Writing objects: 100% (23898/23898), 34.35 MiB | 622.00 KiB/s, done.
+  Total 23898 (delta 17150), reused 22397 (delta 15930)
+  remote: Resolving deltas: 100% (17150/17150), done.
+  remote:
+  remote:
+  remote: The private project lino-framework/book was successfully created.
+  remote:
+  remote: To configure the remote, run:
+  remote:   git remote add origin git@gitlab.com:lino-framework/book.git
+  remote:
+  remote: To view the project, visit:
+  remote:   https://gitlab.com/lino-framework/book
+  remote:
+  remote:
+  remote:
+  To gitlab.com:lino-framework/book.git
+   * [new branch]        master -> master
+  Branch 'master' set up to track remote branch 'master' from 'git@gitlab.com:lino-framework/book.git'.
+
+Before I can add a remote, I must remove the existing remote::
+
+  $ git remote rm origin
+  $ git remote add origin git@gitlab.com:lino-framework/book.git
+
+Yes, seems that it worked::
+
+  $ git remote -v show
+  origin	git@gitlab.com:lino-framework/book.git (fetch)
+  origin	git@gitlab.com:lino-framework/book.git (push)
+
+Next step is to add a :xfile:`.gitlab-ci.yml` file.  I just copied that of
+the :ref:`mentori` project, which is already on GitLab.
+
+Evening session
+===============
+
+Yes, I moved the :ref:`Community Guide <cg>` from GitHub to GitLab.
+This was easier because there is no test suite, just a Sphinx build.
+
+And then :ref:`atelier`, which I also released to PyPI because :ref:`book`
+has intersphinx dependencies to it.
+
+So instead of saying
+
+- https://www.lino-framework.org
+- https://community.lino-framework.org
+- https://atelier.lino-framework.org
+
+we will now get used to say
+
+- https://lino-framework.gitlab.io/book
+- https://lino-framework.gitlab.io/cg
+- https://lino-framework.gitlab.io/atelier
+
+Yes, it's less easy to remember, but we would install redirects on LF when it is
+back.
+
+Next time I will continue to move repositories from GH to GL. It will take some
+time until all links in all docs are updated.

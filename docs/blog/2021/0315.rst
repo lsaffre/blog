@@ -1,0 +1,117 @@
+:date: 2021-03-15
+
+==========================================
+Still digesting the OVH fire in Strasbourg
+==========================================
+
+Monday, March 15, 2021
+
+Hannes is working to get the mail servers at `lino-framework.org` and
+`saffre-rumma.net` up and running again.  Yes, we didn't have a backup plan for
+these servers because they don't hold any vital data, all knowledge on them is
+documented under :ref:`admin.mail`. But it is still quite some work to actually
+apply it again.  I don't complain. It is a challenge that will help us to become
+better.
+
+We need a better nickname for our new backup server because its current nickname
+"hetzner2" is not a name we can show to external partners. It must bomething
+neutral and easy to remember. It won't be "famous", because only team members
+and business partners will talk about it. I choose ``bombur``. Here is my speech
+at the naming ceremony:
+
+  Bombur is one of the dwarves who were companions to Bilbo Baggins on the quest
+  to reclaim Lonely Mountain from the dragon Smaug, along with his brother Bofur
+  and cousin Bifur. These three were to become something like an honour-guard to
+  Thorin. (`source <https://lotr.fandom.com/wiki/Bofur>`__).
+  They were not descended from the Line of Durin, but rather the line of Moria.
+  Considered working class, Bofur was a miner like his parents before him.
+  Bombur eventually does prove to be a loyal person (`source
+  <https://heroes-and-villain.fandom.com/wiki/Bofur>`__).
+
+I restored my developer blog (https://luc.lino-framework.org) and the Community
+Guide (https://community.lino-framework.org/).
+Here is my cheat sheet for adding a new static site::
+
+  cd /etc/nginx/sites-available
+  sudo cp lino-framework.org.conf luc.lino-framework.org.conf
+  sudo nano luc.lino-framework.org.conf
+  sudo ln -s /etc/nginx/sites-available/luc.lino-framework.org.conf ../sites-enabled/
+  sudo service nginx restart
+  sudo certbot --nginx -d luc.lino-framework.org
+
+
+I am still hesitating whether we should restore the pre-Strasbourg URL system
+where we had a separate subdomain for every little doctree.  We might have a
+single subdomain `docs.lino-framework.org` where all these "minor" doctrees
+(atelier, etgen, getlino, cosi, tera, noi, ...) would be. One disadvantage is
+that we probably need to add yet another doctree: the one that will be served at
+the subdomain `docs.lino-framework.org` itself. Why not. The "Lino Documentation
+Centre", nickname `dc`.
+
+But the first precedent *against* the idea in the previous paragraph  was quick
+to come: it was https://eidreader.lino-framework.org, for which I
+"inadvertently" added a subdomain and a certbot certificate.  I guess that this
+will continue with the other minor doctrees (algus, cosi, noi, avanti, tera,
+presto, welfare, ...)
+
+What about links like
+`http://de.welfare.lino-framework.org` and
+`http://fr.welfare.lino-framework.org`,
+which have been published in miscellaneous channels and will probably
+hang around forever?
+AFAIK this can be fixed by configuring permanent redirects.
+
+I made another --probably last-- commit to the GitHub repository of the Book
+(https://github.com/lino-framework/book). This repository is a bit dangerous now
+because people may not realize that it's no longer being used. So I added the
+following sentence to the beginning of the :xfile:`README.rst` file:
+
+  Warning: this copy of the Lino Book is obsolete. New project homepage is
+  https://gitlab.com/lino-framework/book. See
+  https://www.lino-framework.org/team/gh2gl.html for details.
+
+I discovered a gaping hole in the documentation (it seems difficult to find
+contact information), and that we need a "Lino Contributor License Agreement" to
+be signed by every contributor. I opened :ticket:`4022` for this. What a
+Pandora's box!  It feels like an absurd waste of time that I need to care about
+legal issues, and that I must ask a signature from a volunteer who wants to
+contributes a code change.  But yes, I know that the current copyright
+legislation requires it, I even knew it before. The incident in Strasbourg
+reminded me that shit happens. So I need to get my hands dirty and start to care
+about these things.
+
+Two standard files :xfile:`CHANGELOG.rst` and :xfile:`CONTRIBUTING.rst` should
+be in every repository.  For the Lino framework we will use :xfile:`.rst`
+suffix. Other projects, as it seems, use either :xfile:`.md` or no suffix at
+all.
+
+As a personal side effect of the fire in Strasbourg, I didn't have enough sleep
+for several days, and I try to slow down until my sleep is back to normal.
+Better a few slow days than a burnout!
+
+
+The :command:`doctest docs/specs/noi/db.rst` reports
+:class:`social_django.UserSocialAuth` to have 5 database fields when running on
+GitLab, but 7 fields when running on my computer.
+
+Here is the model definition on my computer::
+
+  class AbstractUserSocialAuth(models.Model, DjangoUserMixin):
+      """Abstract Social Auth association model"""
+      user = models.ForeignKey(USER_MODEL, related_name='social_auth',
+                               on_delete=models.CASCADE)
+      provider = models.CharField(max_length=32)
+      uid = models.CharField(max_length=UID_LENGTH, db_index=True)
+      extra_data = JSONField()
+      created = models.DateTimeField(auto_now_add=True)
+      modified = models.DateTimeField(auto_now=True)
+      ...
+
+That is, 6 fields, plus one for the primary key. 7 Fields. So what is happening
+on GitLab?  We use te latest development snapshot (in the book's
+:file:`requirements-include.txt` file)::
+
+  social-auth-app-django@git+https://github.com/python-social-auth/social-app-django
+
+Aha, but the :xfile:`setup_info.py` file of the book specified yet another
+dependency to ``social-auth-app-django==3.1.0``. 

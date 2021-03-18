@@ -1,0 +1,44 @@
+:date: 2021-03-16
+
+=======================
+Tuesday, March 16, 2021
+=======================
+
+Devon noted that the :ref:`public demo sites <demos>` aren't yet back after the
+OVH incident.  I started to reactivate them.
+En passant I
+optimized the docs about :ref:`getlino.install.demo`, which
+required a series of changes in getlino for this use case.
+Also some changes in :ref:`getlino.install.prod`.
+
+I had the following idea: We might update the .getlab-ci.yml file of book so
+that it uses getlino. This would be yet another coverage for getlino, and it
+would remove quite some duplicate code.
+
+
+I ran the first getlino startsite without having a `--web-server` (because the
+doc page was obsolete), so getlino created everything except the nginx and
+supervisor config files. After setting `--web-server` and other options (e.g.
+`--server-domain`) I created noi1r by copying (and adapting) the config files.
+Now for cosi1e, nginx still just returns a plain text message "Internal Server
+Error", no entry in :file:`error.log`, only the following line in
+:file:`access.log`::
+
+  12.34.56.78 - - [16/Mar/2021:08:32:15 +0000] "GET / HTTP/1.1" 500 32 "-" "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0"
+
+The reason was that I had forgotten to copy the :xfile:`wsgi.py` file. TIL:
+when your supervisor config file says::
+
+  command = /usr/bin/uwsgi --ini /path/to/uwsgi.ini --ignore-sigpipe
+
+and the :file:`uwsgi.ini` file says::
+
+  chdir           = /path/to/project
+  module          = wsgi
+
+then you get this situation of having a plain text error message without a log
+entry.
+
+TODO:
+
+- add test coverage of getlino usage as described in :ref:`getlino.install.demo`
