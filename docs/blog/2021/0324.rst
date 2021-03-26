@@ -1,0 +1,40 @@
+:date: 2021-03-24
+
+=========================
+Wednesday, March 24, 2021
+=========================
+
+Sharif and Luc are glad to announce that a new Lino is born: *Lino Shop*, an
+application for managing Webshops. Source code is hosted on GitLab:
+https://gitlab.com/lino-framework/shop
+
+The docs will be at https://lino-framework.gitlab.io/shop/
+
+It is of course a newcomer on a crowded battlefield.
+
+New plugin :mod:`lino_xl.lib.shopping`.
+Optimizations in :mod:`lino_xl.lib.products`.
+New database model :mod:`lino_xl.lib.ledger.PaymentMethod`.
+
+In :mod:`lino_xl.lib.products` I renamed `ProductCat` to `Category` (and its FK
+on Product from ``cat`` to ``category``)
+
+We now have a promising answer to the question "How to define many categories
+and product types".  The :mod:`lino_shop.lib.products` plugin extends
+:mod:`lino_xl.lib.products` and adds two new database models `Thing` and `Book`,
+which are MTI children of "simple" products. These are of course just some
+examples. TODO: show ways of customizing filter parameters.
+
+The next big piece I want to see is a meaningful content in the dashboard of a
+"normal" (or anonymous) user. The site admin must have a possibility to
+configure something like "dashboard cards", which would extend the default
+dashboard items.
+
+  class DashboardCard:
+
+    title = CharField (free text)
+    picture = ImageField ()
+    target = GenericForeignKey to a Publishable object (usually some category)
+    parameters = (optional filter parameters, e.g. "top ten")
+    layout options (e.g. width of the card)
+    card_type : choicelist (Link, Carousel, )

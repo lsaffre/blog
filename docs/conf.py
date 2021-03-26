@@ -23,6 +23,7 @@ configure(globals(), 'lino_book.projects.min9.settings')
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
 intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
+intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
 
 extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']

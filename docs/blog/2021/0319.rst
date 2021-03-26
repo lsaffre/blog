@@ -1,0 +1,64 @@
+:date: 2021-03-19
+
+======================
+Friday, March 19, 2021
+======================
+
+I started the :mod:`lino_xl.lib.webshop` plugin, with Sharif watching me. It
+(currently) has four database models Cart, CartItem, Address and PaymentMethod.
+It needs and uses the existing plugins vat, sales, contacts, products,
+ledger,... I also added a demo project of same name "webshop".
+
+We discovered and fixed :ticket:`4036`.
+We had (simplified) the following construct::
+
+  class UserPlan(dd.Model):
+      class Meta:
+          abstract = True
+
+      start_plan = StartPlan()
+
+  class StartPlan(dd.Action):
+    ...
+    def run_from_ui(self, ar, **kw):
+        options = self.get_options(ar)
+        pm = self.get_plan_model(ar)
+        ...
+
+    def get_plan_model(self, ar):
+        return self.defining_actor.model
+
+Explanation: When the application has more than one concrete model that inherits
+from :class:`lino.modlib.users.UserPlan`,  Lino's behaviour was wrong. Calling
+:class:`webshop.Cart.start_plan <lino.modlib.users.UserPlan.start_plan>` created
+an instance of :class:`lino_xl.lib.sheets.Report`, the concrete model that
+happens to be the first to use it.
+
+I fixed this by saying::
+
+  class StartPlan(dd.Action):
+
+    def get_plan_model(self, ar):
+        return ar.actor.model
+
+
+I stumbled into a similar pitfall: The quick link 'webshop.MyCart.start_plan'
+was getting bound to the start_plan action on `lino_xl.lib.sheets.Report`. This
+was caused by the :func:`lino.core.actors.resolve_action`. I optimized the
+behaviour of this function and added test coverage in :ref:`dev.xlmenu`.
+
+How to link user and partner? A normal webshop user fills in their postal
+address or other contact data. Webshop adds the possibility to define multiple
+invoicing and delivery addresses.
+The partners of the users are not our partners. The partner of the generated invoices is always a same partner, stored in
+the User.partner field and leading to a given sales.SalesRule.
+
+The ar.success "x items have been placed to your shopping cart!" didn't not
+show up because I must say `alert=True`.
+
+The :class:`lino_xl.lib.webshop.AddToCart` action made us stumble into another
+pitfall: when an action uses :meth:`ar.confirm
+<lino.core.requests.BaseRequest.confirm>`, then the implementing code is being
+called several times, once for each call to :meth:`ar.confirm
+<lino.core.requests.BaseRequest.confirm>`. And each time the full text of the
+confirmation message must remain the same.

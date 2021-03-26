@@ -7,7 +7,7 @@ about my software projects, especially the `Lino framework
 <http://www.lino-framework.org/>`_.
 
 .. blogger_latest::
-
+  
 Sitemap
 -------
 

@@ -14,7 +14,7 @@ This revealed a subtle problem and inspired me to find a nice solution
 to it.
 
 The :mod:`lino.modlib.languages` is a small plugin which defines only
-one menu item into the :ref:`Configuration <config_menu>` menu.
+one menu item into the :menuselection:`Configuration` menu.
 
 The subtle problem is: into which menu group should the `languages`
 plugin integrate?  It makes no sense (and is irritating for the user)
@@ -29,16 +29,16 @@ is who I wrote this::
     def setup_config_menu(site, ui, profile, m):
         m = m.add_menu('contacts', _("Contacts"))
         m.add_action(Languages)
-    
+
 A bit later (when Lino's plugin system was ready), I changed this to::
 
     def setup_config_menu(site, ui, profile, m):
         p = dd.plugins.contacts
         m = m.add_menu(p.app_label, p.verbose_name)
         m.add_action(Languages)
-    
+
 Now I discovered that this caused a problem in :ref:`logos`, because
-:ref:`logos` has no :mod:`lino.modlib.contacts` installed.  
+:ref:`logos` has no :mod:`lino.modlib.contacts` installed.
 
 The actual question is: How can the `languages` plugin know where I
 want it to be in the menu tree?
@@ -60,7 +60,7 @@ Firstly its :xfile:`models.py` specifies::
         p = dd.plugins.languages.get_menu_group()
         m = m.add_menu(p.app_label, p.verbose_name)
         m.add_action('languages.Languages')
-    
+
 And secondly, I no longer explicitly yield this plugin in the
 :meth:`get_installed_apps
 <lino.core.site.Site.get_installed_apps>` method of
@@ -68,5 +68,5 @@ And secondly, I no longer explicitly yield this plugin in the
 :attr:`needs_plugins <lino.core.plugin.Plugin.needs_plugins>` attribute
 of :mod:`lino.modlib.cv` and :mod:`lino_logos.apps.bibles`.
 
-Cool! 
+Cool!
 Updated :ref:`demos` at :ref:`lf`.
