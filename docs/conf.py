@@ -237,7 +237,7 @@ extlinks.update({
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
     'djangoticket': (
         'http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
-    'welfare': ('https://welfare.lino-framework.org%s.html', ''),
+    'welfare': ('http://welfare.lino-framework.org%s.html', ''),
     'lino': ('https://www.lino-framework.org%s.html', ''),
     # 'welfareticket': (
     #     'http://welfare.lino-framework.org/tickets/%s.html', ''),
