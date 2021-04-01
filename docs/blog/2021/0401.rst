@@ -1,0 +1,45 @@
+:date: 2021-04-01
+
+=======================
+Thursday, April 1, 2021
+=======================
+
+Importing contact data
+======================
+
+New action :attr:`lino_xl.lib.contacts.Partner.import_text`. For testing I
+switched to default_ui extjs because this action is also affected by
+:ticket:`4066`. Got a first case to work.  I publish this, but this is
+definitively not fool-proof. Maybe somebody else wants to continue on this?
+
+Customizing the toolbar
+=======================
+
+I updated some pages of the Developer Guide: :ref:`layouts`. And one new page
+:ref:`dev.layouts.more`.
+
+The :attr:`Actor.hide_top_toolbar` attribute is conceptually the same as
+:attr:`Action.hide_navigator`. React mixed them up until now, but from now on now knows
+only at the :attr:`hide_navigator` attribute.
+
+Both attributes existed also on :class:`Action`, but I removed them.
+
+The :attr:`hide_top_toolbar` attribute, in ExtJS, causes  the top toolbar to
+become a bottom toolbar. And that bottom toolbar never has navigation widgets.
+React does not use it any more, and I think that we will deprecate it in some
+future. So when application code says ``hide_top_toolbar = True``, then you
+should change this to ``hide_navigator = True``.
+
+Sharif watched how I manually tested the following actors:
+
+- :class:`lino_xl.lib.calview.DaySlave`
+- calendar WeeklySlave in presto
+- User preferences
+- SiteConfig
+- Shopping Cart
+- Accounting Report
+- polls.AnswerRemarksByAnswer
+
+Together we added a `:attr:lino.core.layouts.Layout.window_size` to the site
+parameters window of most applications (except for welfare where its a tabbed
+detail window).

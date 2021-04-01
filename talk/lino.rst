@@ -58,7 +58,7 @@ Existing Lino applications
 
 Examples of Lino applications are
 
-- `Lino Welfare <http://welfare.lino-framework.org>`__
+- `Lino Welfare <https://welfare.lino-framework.org>`__
 
 - `Lino Così <http://cosi.lino-framework.org>`__
 
@@ -71,7 +71,7 @@ Examples of Lino applications are
 Lino Welfare
 ------------
 
-- `Lino Welfare <http://welfare.lino-framework.org>`__
+- `Lino Welfare <https://welfare.lino-framework.org>`__
 
 ----
 

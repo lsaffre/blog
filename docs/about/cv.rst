@@ -14,7 +14,7 @@ software philosophy <https://hw.saffre-rumma.net/fs/>`_.
 
 Other projects:
 
-- `Lino Welfare <http://welfare.lino-framework.org>`__,
+- `Lino Welfare <https://welfare.lino-framework.org>`__,
   `Noi <http://noi.lino-framework.org>`__,
   `Amici <http://amici.lino-framework.org>`__,
   `Voga <http://voga.lino-framework.org>`__

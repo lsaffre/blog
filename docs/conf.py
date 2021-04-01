@@ -237,14 +237,14 @@ extlinks.update({
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
     'djangoticket': (
         'http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
-    'welfare': ('http://welfare.lino-framework.org%s.html', ''),
+    'welfare': ('https://welfare.lino-framework.org%s.html', ''),
     'lino': ('https://www.lino-framework.org%s.html', ''),
     # 'welfareticket': (
-    #     'http://welfare.lino-framework.org/tickets/%s.html', ''),
+    #     'https://welfare.lino-framework.org/tickets/%s.html', ''),
     # 'welfareusermande': (
-    #     'http://welfare-userman.lino-framework.org/de%s.html', ''),
+    #     'https://welfare-userman.lino-framework.org/de%s.html', ''),
     # 'welfareusermanfr': (
-    #     'http://welfare-userman.lino-framework.org/fr%s.html', ''),
+    #     'https://welfare-userman.lino-framework.org/fr%s.html', ''),
 })
 
 

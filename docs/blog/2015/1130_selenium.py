@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 driver = webdriver.Firefox()
-driver.get("http://welfare-demo.lino-framework.org/")
+driver.get("https://welfare-demo.lino-framework.org/")
 print driver.title
 print driver.get_cookies()
 
