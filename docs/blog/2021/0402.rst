@@ -1,0 +1,67 @@
+:date: 2021-04-02
+
+=====================
+Friday, April 2, 2021
+=====================
+
+Charles is bombing us with questions that help me to see what is missing in the
+docs. When working at the :ref:`dev.layouts.more` page I realized how
+complicated  it is when you want a :term:`table view` that opens directly into
+the detail window instead of a list window.  You need to say::
+
+      @classmethod
+      def get_default_action(cls):
+          return actions.ShowDetail(cls.detail_layout)
+
+
+.. currentmodule:: lino.core.actors
+
+The :attr:`Actor.get_default_action` method is now being called when all other
+standard actions have been bound. As a result, an application developer can now
+simplify the code for saying that a :term:`table view` should not have any
+:term:`list window`::
+
+      @classmethod
+      def get_default_action(cls):
+          return cls.detail_action
+
+This apparently minor change caused an avalanche of changes in the deepest inner
+parts of Lino.  Hic sunt dracones. There is danger of having introduced bugs
+that slip through the test suite.
+
+I removed the mysterious :attr:`Actor.default_elem_action_name` attribute
+because (1) I don't understand its purpose (it's obviously used to customize the
+action_name for the detail_action but I can't remember why we want this) and (2)
+because I suspected it to be the reason why React doesn't show the
+`system.About` dialog.  At the moment I do not yet remove the
+:attr:`default_list_action_name`, this might come later.
+
+Side effects:
+I discovered that :class:`lino_xl.lib.ledger.Situation` table was
+no longer used, so I removed it.
+I formulated and then fixed :ticket:`4075`, which required me to
+extend the API for :meth:`lino.core.plugins.Plugin.get_quicklinks`: it can
+now return a `dict`.
+
+
+
+I had the following warning when I pushed to react::
+
+  OK to checkin react https://luc.lino-framework.org/blog/2021/0402.html? [Y,n]?
+  [master 9705822] https://luc.lino-framework.org/blog/2021/0402.html
+   2 files changed, 12 insertions(+), 14 deletions(-)
+  Counting objects: 6, done.
+  Delta compression using up to 2 threads.
+  Compressing objects: 100% (6/6), done.
+  Writing objects: 100% (6/6), 764 bytes | 764.00 KiB/s, done.
+  Total 6 (delta 4), reused 0 (delta 0)
+  remote: Resolving deltas: 100% (4/4), completed with 4 local objects.
+  To github.com:lino-framework/react.git
+     2cfdc2f..9705822  master -> master
+   ! [rejected]        blurry -> blurry (non-fast-forward)
+  error: failed to push some refs to 'git@github.com:lino-framework/react.git'
+  hint: Updates were rejected because a pushed branch tip is behind its remote
+  hint: counterpart. Check out this branch and integrate the remote changes
+  hint: (e.g. 'git pull ...') before pushing again.
+  hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+  CommandError: inv ci -t 20210402 ended with error 1 in project react

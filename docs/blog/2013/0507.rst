@@ -5,37 +5,37 @@
 
 - Worked on the docstring of :mod:`lino.modlib.accounts.utils`.
 
-- Adapted the test suite to yesterdays's changes (new column `bailiff` 
+- Adapted the test suite to yesterdays's changes (new column `bailiff`
   in in :class:`welfare.debts.Entries`.
-  
-  
-Cannot resolve keyword 'watched_user' into field  
+
+
+Cannot resolve keyword 'watched_user' into field
 ------------------------------------------------
 
-A request to 
+A request to
 `/restful/cal/PanelEvents?sd=05.05.2013&ed=11.05.2013&tv=true`
 (i.e. clicking the "Team View" button in the calendar panel)
-caused a FieldError 
-"Cannot resolve keyword 'watched_user' into field. 
+caused a FieldError
+"Cannot resolve keyword 'watched_user' into field.
 Choices are: id, team, user".
 
 The bug was there since :blogref:`20130320`.
 
 Fixing the bug is easy, but how to write a testcase for this?
 
-This is the occasion for a new style of test cases: 
-test cases that use a `django.test.Client`, 
-but *on the project demo database* 
+This is the occasion for a new style of test cases:
+test cases that use a `django.test.Client`,
+but *on the project demo database*
 (and *not* on a test database as the Django test runner creates it).
 The advantage is that they access the existing demo database
-and thus don't need to populate it (load the demo fixtures) 
+and thus don't need to populate it (load the demo fixtures)
 for each test run.
 
-One limitation of these cases is of course that they may 
+One limitation of these cases is of course that they may
 not modify the database.
 
-It took me some time to understand how easy it actually is: 
-I just wrote a module `lino.projects.presto.settings.doctest`, 
+It took me some time to understand how easy it actually is:
+I just wrote a module `lino.projects.presto.settings.doctest`,
 then wrote the following code snippet directly into my blog entry:
 
 >>> import os
@@ -48,37 +48,37 @@ then wrote the following code snippet directly into my blog entry:
 >>> print res.status_code
 200
 
-To run this test, I added the following to the 
+To run this test, I added the following to the
 project test suite::
 
     class BlogTests(LinoTestCase):
-        def test_20130507(self): 
+        def test_20130507(self):
             self.run_simple_doctests('docs/blog/2013/0507.rst')
 
-The effect is that 
+The effect is that
 `python setup.py test`
-or 
+or
 `python setup.py test -s tests.BlogTests.test_20130507`
 will test the above code.
 
-Writing this test case took me several hours 
+Writing this test case took me several hours
 (because as i said this was a new system),
 but then I fixed the bug in a few minutes.
 
-Because the :meth:`run_simple_doctests 
-<lino.utils.pythontest.run_simple_doctests>`  
-is run in a separate subprocess, it has its own 
-Python interpreter and thus I can use it for as many Django projects 
+Because the :meth:`run_simple_doctests
+<lino.utils.pythontest.run_simple_doctests>`
+is run in a separate subprocess, it has its own
+Python interpreter and thus I can use it for as many Django projects
 as I want (one project per .rst file).
 
 Now I can remove the following item from my todo list...
 
-- write unit tests to test the bootstrap ui. 
+- write unit tests to test the bootstrap ui.
   The best place would be a tested document with a Django test client.
-  But how to instantiate a Django test client from a testcase which 
+  But how to instantiate a Django test client from a testcase which
   does *not* use a test database but the project's demo database?
-  
-... by writing a few lines of code:  
+
+... by writing a few lines of code:
 
 >>> url = '/bs3/products/Products'
 >>> res = client.get(url, REMOTE_USER='robin')
@@ -87,11 +87,11 @@ Now I can remove the following item from my todo list...
 
 (Above test is now covered in `lino.tested.presto`)
 
-  
+
 New version numbers
 -------------------
 
-The release of :blogref:`20130505` is now a few days in production, 
+The release of :blogref:`20130505` is now a few days in production,
 time to increase the version numbers.
 
 +------------------------------------------+-------------+-------------+
@@ -113,7 +113,7 @@ time to increase the version numbers.
 | -- A framework for writing desktop-like  |             |             |
 | web applications using Django and ExtJS  |             |             |
 +------------------------------------------+-------------+-------------+
-| `lino_welfare <https://welfare.lino-      | 1.1.3       | 1.1.4       |
+| `lino_welfare <http://welfare.lino-      | 1.1.3       | 1.1.4       |
 | framework.org>`__ -- A Lino application  |             |             |
 | for Belgian Public Welfare Centres       |             |             |
 +------------------------------------------+-------------+-------------+
@@ -126,18 +126,17 @@ time to increase the version numbers.
 VirtualBox Windows guest cannot see shared folders
 --------------------------------------------------
 
-I discovered the solution for one problem: 
-I had the network adapter configured as "NAT", but what 
+I discovered the solution for one problem:
+I had the network adapter configured as "NAT", but what
 I wanted was "Bridged".
 
-The other problem remains: the Windows guest doesnt see any 
+The other problem remains: the Windows guest doesnt see any
 host named "vboxsrv".
 
 Observation: The services manager says that "VirtualBox Guest Additions Service" ist not started.
-And when I start it, it says "Could not start the VirtualBox Guest Additions Service service on Local Computer. 
+And when I start it, it says "Could not start the VirtualBox Guest Additions Service service on Local Computer.
 Error 1053: The service did not respond to the start or control request in a timely fashion."
 
-Edit 20130509 : the solution for this was to find two virtual devices 
-in Windows device manager which were disabled. Enable them, then 
+Edit 20130509 : the solution for this was to find two virtual devices
+in Windows device manager which were disabled. Enable them, then
 restart the VM.
-
