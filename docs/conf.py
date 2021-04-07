@@ -56,9 +56,6 @@ source_suffix = '.rst'
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
-# The master toctree document.
-master_doc = 'index'
-
 # General substitutions.
 project = "Luc's developer blog"
 copyright = '2001-2021 Luc Saffre'
