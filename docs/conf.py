@@ -23,6 +23,7 @@ configure(globals(), 'lino_book.projects.min9.settings')
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
 intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
+intersphinx_mapping['hg'] = ('https://hosting.lino-framework.org/', None)
 intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
 
 extensions += ['atelier.sphinxconf.blog']
@@ -224,7 +225,7 @@ latex_documents = [
 
 # extlinks.update(ticket=('http://trac.lino-framework.org/ticket/%s', '#'))
 # extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
-# extlinks.update(ticket=('http://bugs.saffre-rumma.net/tickets/Ticket/%s', '#'))
+# extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
 extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
 extlinks.update({
     'issue': (

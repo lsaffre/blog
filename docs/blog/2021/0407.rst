@@ -1,0 +1,18 @@
+:date: 2021-04-07
+
+========================
+Wednesday, April 7, 2021
+========================
+
+I did a series of changes in the whole documentation system. We are moving
+towards a new feature I'd call "Shared Sphinx configurations".  The idea was
+triggered by :ticket:`4085` (A common Sphinx config for non-tech docs like cg,
+hg and sr), which was triggered by :ticket:`4079` (Move Hosting Guide section
+from book to a separate doctree).  The basic problem is that we have a lot of
+Sphinx :xfile:`conf.py` files and most of them contain redundant information.
+And because things evolve over the years, they are quite a mess. For example the
+:rst:role:`ticket` role (used to render for example :ticket:`4085`) was pointing
+to a wrong URL in most doctrees. :func:`atelier.sphinxconf.configure` or its
+child :func:`lino.sphinxcontrib.configure` now set reasonable default values for
+`intersphinx_mapping` and `extlinks`. It is now a bit less messy and works for
+me, but before writing documentation about it, it needs more work. 
