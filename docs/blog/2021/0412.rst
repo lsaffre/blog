@@ -1,0 +1,46 @@
+:date: 2021-04-12
+
+======================
+Monday, April 12, 2021
+======================
+
+Unified Sphinx theme for all websites of the Lino framework
+===========================================================
+
+I continued to work on :ticket:`4101`, which is actually just a part of
+:ticket:`4085`. Calling :func:`lino.sphinxcontrib.configure` in a Sphinx
+:xfile:`conf.py` file now uses the `insipid
+<https://insipid-sphinx-theme.readthedocs.io>`__ theme instead of the
+`pydata_sphinx_theme <https://pydata-sphinx-theme.readthedocs.io>`__.
+
+
+Move from GitHub to GitLab
+==========================
+
+Here is a cheat sheet for moving the next repositories from GH to GL.
+
+Change the remote and push to the new upstream::
+
+  $ git remote rm origin
+  $ git remote add origin git@gitlab.com:lino-framework/XXX.git
+  $ git push --set-upstream git@gitlab.com:lino-framework/XXX.git master
+
+Add a :xfile:`.gitlab-ci.yml` file (copy from a repo that is already on GL)::
+
+  $ cp ../atelier/.gitlab-ci.yml .
+  $ git add .gitlab-ci.yml
+  $ git ci -m "moved from GitHub to GitLab"
+  $ git push
+
+Check whether the new project is now visible on https://gitlab.com/lino-framework
+
+Update URLs in the :xfile:`setup_info.py`.
+
+Run :cmd:`inv bd` to update the :xfile:`README.rst` file.
+
+Go to https://gitlab.com/lino/-framework/XXX and use the GitLab web UI to  add a
+warnnng to the README.rst file::
+
+  Warning: This repository is no longer maintained. Development has moved to https://gitlab.com/lino/-framework/lino
+
+And then tell GitLab to archive the repository

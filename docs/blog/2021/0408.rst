@@ -1,0 +1,77 @@
+:date: 2021-04-08
+
+=======================
+Thursday, April 8, 2021
+=======================
+
+Teaching French
+===============
+
+Is there any free vocabulary trainer software that can be used by my students
+without installing anything, and where I can enter our set of 45 words, which
+they must train?
+
+Wow, this is quite close! https://docs.ankiweb.net/#/getting-started
+
+sudo apt install anki
+
+
+https://apps.ankiweb.net/
+
+
+Make Lino work with Django 3.2
+==============================
+
+The first issue was easy, :cmd:`pm prep` in :mod:`lino_book.projects.min1` caused a series of warnings::
+
+  contacts.CompanyType: (models.W042) Auto-created primary key used when not defining a primary key type, by default 'django.db.models.AutoField'.
+  	HINT: Configure the DEFAULT_AUTO_FIELD setting or the AppConfig.default_auto_field attribute to point to a subclass of AutoField, e.g. 'django.db.models.BigAutoField'.
+
+Lino now sets the :setting:`DEFAULT_AUTO_FIELD` setting and puts it to
+:class:`django.db.models.BigAutoField`.
+
+Second issue :cmd:`pm prep` in :mod:`lino_book.projects.voga1`::
+
+  AttributeError: 'DurationField' object has no attribute 'db_collation'
+
+This was because the :meth:`__init__` of :class:`lino.core.fields.QuantityField`
+was calling :meth:`models.Field.__init__`. Now it uses :func:`super`.
+
+The third issue was the most interesting one::
+
+  TypeError: Problem installing fixture '.../lino_voga/lib/cal/fixtures/std.py':
+  object of type 'Duration' has no len()
+
+Here is the source code::
+
+    meeting = event_type(
+        is_appointment=True,
+        fill_presences=True,
+        planner_column=PlannerColumns.external,
+        default_duration="1:00", **dd.str2kw('name', _("Meeting")))
+
+.. currentmodule:: lino.utils.quantities
+
+It's about quantity fields (:ref:`book.dev.quantities`).
+Has to do with the fact that :class:`DurationField` inherits from
+`CharField`, but its values aren't `str`.
+
+I added a :meth:`__len__` method to :class:`Quantity`::
+
+    def __len__(self):
+        return len(str(self))
+
+Until now the value of a QuantityField was a Decimal, not a Quantity. The
+Quantity class refused to get instantiated, it was just the base class for
+Duration and Percentage.  But now the value of a QuantityField is no longer a
+Decimal but a Quantity. The only difference between a Quantity and a Decimal is
+that a Quantity has a len() in order to satisfy Django when calling
+:meth:`Field.clean`.
+
+The next issue made me discover a piece of code that I wrote more than 11 years
+ago::
+
+  django.core.exceptions.ImproperlyConfigured: The app label '20100212' is not a
+  valid Python identifier.
+
+There was indeed a demo project named :mod:`lino_book.projects.20100212`.

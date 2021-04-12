@@ -1,0 +1,34 @@
+:date: 2021-04-10
+
+========================
+Saturday, April 10, 2021
+========================
+
+The Mystery of the failing Welfare test suite (continued)
+=========================================================
+
+Continued from :doc:`0409`.
+
+This morning I discovered that my observations yesterday about wrong ordering
+came because I had a bug in my new version of the
+:func:`lino_welfare.modlib.welfare.models.customize_sqlite` function: it mixed
+up -1 and 1.  That's the explanation for the mysterious observations I saw
+yesterday.
+
+I wrote a new doctest :file:`docs/specs/topics/sorting.rst` (rendered
+:ref:`welfare.specs.topics.sorting`) in order to verify my theory that the
+issues are caused by demo data being generated differently because sorting
+behaviour has changed.  And the result is *negative*, i.e. my theory seems
+wrong. This file passes always, even with the pypi versions of lino, xl, welfare
+and weleup.
+
+Right now I have no idea what else might be the reason.
+https://docs.djangoproject.com/en/3.2/releases/3.2/
+
+When run with Django 3.1.8 and Lino master, :cmd:`inv prep test` in welfare
+yields 2 failures, one being caused because django.db.models.fields.AutoField
+changed to django.db.models.fields.BigAutoField, the other is the total number
+of cal.Event objects, where the :file:`docs/specs/weleup/eupen.rst` expects 311
+but gets 588.  This failure might have been there for some time, there is indeed
+
+I now added :func:`show_db_overview` to :file:`docs/specs/weleup/eupen.rst`.
