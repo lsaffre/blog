@@ -17,7 +17,7 @@ I continued to work on :ticket:`4101`, which is actually just a part of
 Move from GitHub to GitLab
 ==========================
 
-Here is a cheat sheet for moving the next repositories from GH to GL.
+Here is my cheat sheet for moving the next repositories from GH to GL.
 
 Change the remote and push to the new upstream::
 
@@ -27,20 +27,33 @@ Change the remote and push to the new upstream::
 
 Add a :xfile:`.gitlab-ci.yml` file (copy from a repo that is already on GL)::
 
-  $ cp ../atelier/.gitlab-ci.yml .
+  $ cp ../lino/.gitlab-ci.yml .
   $ git add .gitlab-ci.yml
-  $ git ci -m "moved from GitHub to GitLab"
+
+Update URLs in the :xfile:`setup_info.py`. Run :cmd:`inv bd` to update the
+:xfile:`README.rst` file. Then push your first changes on GitLab::
+
+  $ git ci -am "moved from GitHub to GitLab"
   $ git push
 
-Check whether the new project is now visible on https://gitlab.com/lino-framework
+Visit the GitLab project page on https://gitlab.com/lino-framework and change
+visibility from "private" to "public". (This can't be done using the CLI:
+https://stackoverflow.com/questions/57395399/gitlab-default-project-visibility-when-creating-projects-from-terminal)
 
-Update URLs in the :xfile:`setup_info.py`.
 
-Run :cmd:`inv bd` to update the :xfile:`README.rst` file.
 
-Go to https://gitlab.com/lino/-framework/XXX and use the GitLab web UI to  add a
-warnnng to the README.rst file::
+Go to https://gitlab.com/lino/-framework/XXX and use the GitHub web UI to  add a
+warning to the README.rst file::
 
-  Warning: This repository is no longer maintained. Development has moved to https://gitlab.com/lino/-framework/lino
+  Warning: This repository is no longer maintained. Development has moved to https://gitlab.com/lino-framework/XXX
 
-And then tell GitLab to archive the repository
+And then tell GitLab to archive the repository.
+
+Finally:
+
+- Update the known repositories in :mod:`getlino.utils`.
+- Run :cmd:`pp -l` and check the project urls.
+- Release to PyPI.
+
+
+Done for the following repositories: lino, xl, noi, cosi, voga, avanti, welfare, weleup, welcht

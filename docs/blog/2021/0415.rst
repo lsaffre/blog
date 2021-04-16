@@ -1,0 +1,1038 @@
+:date: 2021-04-15
+
+The mystery of the failing welfare test suite
+=============================================
+
+Thursday, April 15, 2021. Continued from :doc:`0410`.
+
+Ticket :ticket:`4096` (The mystery of the failing welfare test suite) is like
+finding a function when you are given only its derivative. Or like a detective
+novel where miss Marple or inspector Maigret try to find out what happened and
+who is the culprit.
+
+Why does this take so long? Because it's complex and because every little change
+needs an :cmd:`pm prep` before you can test its effect.
+
+Should I explain the problem to Tonis or Sharif or Hamza? I start to consider
+asking them. But I am afraid that the mere introduction would take an hour.  I'd
+need to explain terms like :term:`aid granting` and :term:`ISIP`. And then the
+difference between :ref:`welcht` and :ref:`weleup`.   Hamza has the best chances
+to get into it because he has been working on :ref:`welfare`. Look at the code
+of :mod:`lino_welfare.modlib.welfare.fixtures.demo` or
+:mod:`lino_welcht.lib.courses.fixtures.demo`.  There are quite some places where
+we loop over some existing data and generate another set of data.  We use a lot
+of cyclers.  Now imagine what happened with Django 3.2 where the default
+ordering of :class:`lino_welfare.modlib.pcsw.Client` changed from ``id`` to
+``name``.
+
+Is it required to maintain these tests? Can't we simply throw them away?
+-- Of course it's required!  These tests are the main reason why our customers want Lino and not
+some industry solution.  These tests are the only way to make sure that things
+don't change in an unexpected way.
+
+Can't we reduce the complexity of demo data?
+--
+I don't see how we could do this.
+We need demo data to test the miscellaneous functions.
+
+I inspected the following fixtures for code that might have changed:
+
+- :mod:`lino_xl.lib.statbel.countries.fixtures.demo`
+- :mod:`lino_welfare.modlib.contacts.fixtures.demo`
+- :mod:`lino_welfare.modlib.users.fixtures.demo`
+- :mod:`lino_welfare.modlib.cal.fixtures.demo` : nothing new
+- :mod:`lino_welfare.modlib.welfare.fixtures.demo`
+- :mod:`lino_welcht.lib.cv.fixtures.demo` : nothing new
+- :mod:`lino_welfare.modlib.integ.fixtures.demo` : immersion
+- :mod:`lino_welfare.modlib.active_job_search.fixtures.demo` : nothing new
+- :mod:`lino_welcht.lib.courses.fixtures.demo`
+- :mod:`lino_welfare.modlib.newcomers.fixtures.demo`
+- :mod:`lino_welfare.modlib.households.fixtures.demo`
+- :mod:`lino_xl.lib.humanlinks.fixtures.demo`
+- :mod:`lino_welfare.modlib.debts.fixtures.demo`
+- :mod:`lino_welfare.modlib.notes.fixtures.demo`
+- :mod:`lino_welfare.modlib.aids.fixtures.demo`
+- :mod:`lino_welfare.modlib.polls.fixtures.demo` : some new models
+- :mod:`lino_welfare.modlib.esf.fixtures.demo`
+- :mod:`lino_welcht.lib.pcsw.fixtures.demo2`
+
+
+My general procedure:
+
+- Add code snippets to sorting2.rst
+- go mathieu
+- pip install -U Django==3.1.8
+- pm prep
+- doctest sorting2.rst
+- pip install -U Django
+- pm prep
+- doctest sorting2.rst
+
+
+I committed my work, which has only one tiny functional change, the
+`Meta.sorting` for Client.  All other changes are just code cleanup, a side
+effect of my research work.
+
+The welfare test suite now has 13 failures,  but --unlike last week-- they are
+now the same failures with Django 3.1.8 and with Django 3.2::
+
+  Loaded 153 doctests from docs
+  ...........................................................................................................F..............F......F......F....FFFFF.FFF...F.
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/esf.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/esf.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/esf.rst", line 309, in esf.rst
+  Failed example:
+      rt.show(esf.SummariesByClient, obj, language="en")
+  Expected:
+      ====== ======= ======= ======= ====== ====== ====== ====== ====== ====== ====== ====== ========
+       Year   S.Inf   E.Ind   E.For   SIS    Tst    Info   Mob    Rem    AN!    MSP    CyE    60§7
+      ------ ------- ------- ------- ------ ------ ------ ------ ------ ------ ------ ------ --------
+       2012   0:00    0:00    0:00    0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   478:48
+       2013   0:00    3:00    0:00    0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00
+       2014   0:00    0:00    0:00    1:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00
+      ====== ======= ======= ======= ====== ====== ====== ====== ====== ====== ====== ====== ========
+      <BLANKLINE>
+  Got:
+      ====== ======= ======= ======= ====== ====== ====== ====== ====== ====== ====== ====== ======
+       Year   S.Inf   E.Ind   E.For   SIS    Tst    Info   Mob    Rem    AN!    MSP    CyE    60§7
+      ------ ------- ------- ------- ------ ------ ------ ------ ------ ------ ------ ------ ------
+       2012   0:00    0:00    0:00    0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00
+       2013   0:00    9:00    0:00    0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00
+       2014   0:00    11:00   0:00    0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00   0:00
+      ====== ======= ======= ======= ====== ====== ====== ====== ====== ====== ====== ====== ======
+      <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     1 of  18 in esf.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/tasks.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/tasks.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/tasks.rst", line 39, in tasks.rst
+  Failed example:
+      rt.login('hubert').show(cal.MyTasks)
+  Expected:
+      ========== ============ ============================= ============================= ==========================
+       Priorité   Date début   Description brève             Workflow                      Bénéficiaire
+      ---------- ------------ ----------------------------- ----------------------------- --------------------------
+       Normale    12/06/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   RADERMACHER Hedi (161)
+       Normale    27/05/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   RADERMACHER Edgard (157)
+      ========== ============ ============================= ============================= ==========================
+      <BLANKLINE>
+  Got:
+      Aucun enregistrement
+  **********************************************************************
+  File "docs/specs/tasks.rst", line 51, in tasks.rst
+  Failed example:
+      rt.login('alicia').show(cal.MyTasks)
+  Expected:
+      ========== ============ ============================= ============================= ======================
+       Priorité   Date début   Description brève             Workflow                      Bénéficiaire
+      ---------- ------------ ----------------------------- ----------------------------- ----------------------
+       Normale    21/05/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   DA VINCI David (165)
+      ========== ============ ============================= ============================= ======================
+      <BLANKLINE>
+  Got:
+      Aucun enregistrement
+  **********************************************************************
+  File "docs/specs/tasks.rst", line 65, in tasks.rst
+  Failed example:
+      rt.login('alicia').show(cal.MyTasks, param_values=pv)
+  Expected:
+      ========== ============ ============================= ============================= ============================
+       Priorité   Date début   Description brève             Workflow                      Bénéficiaire
+      ---------- ------------ ----------------------------- ----------------------------- ----------------------------
+       Normale    30/03/2015   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   DA VINCI David (165)
+       Normale    05/01/2015   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   RADERMACHER Fritz (158)
+       Normale    16/12/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   MEESSEN Melissa (147)
+       Normale    22/11/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   KAIVERS Karl (141)
+       Normale    07/10/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   ENGELS Edgar (129)
+       Normale    24/09/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   DUBOIS Robin (179)
+       Normale    02/08/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   VAN VEEN Vincent (166)
+       Normale    30/06/2014   Permis de travail expire le   **☐ à faire** → [☑] [���] [⚠]   DOBBELSTEIN Dorothée (124)
+       Normale    21/05/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   DA VINCI David (165)
+      ========== ============ ============================= ============================= ============================
+      <BLANKLINE>
+  Got:
+      ========== ============ ============================= ============================= =============================
+       Priorité   Date début   Description brève             Workflow                      Bénéficiaire
+      ---------- ------------ ----------------------------- ----------------------------- -----------------------------
+       Normale    20/01/2015   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   KELLER Karl (178)
+       Normale    26/12/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   DA VINCI David (165)
+       Normale    15/12/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   HILGERS Hildegard (133)
+       Normale    01/12/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   RADERMACHER Christian (155)
+       Normale    12/11/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   MALMENDIER Marc (146)
+       Normale    23/09/2014   Projet termine dans un mois   **☐ à faire** → [☑] [☒] [⚠]   EMONTS Daniel (128)
+       Normale    30/06/2014   Permis de travail expire le   **☐ à faire** → [☑] [☒] [⚠]   DOBBELSTEIN Dorothée (124)
+      ========== ============ ============================= ============================= =============================
+      <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     3 of   9 in tasks.rst
+  ***Test Failed*** 3 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/reception/index.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/reception/index.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/reception/index.rst", line 379, in index.rst
+  Failed example:
+      pk
+  Expected:
+      <django.db.models.fields.BigAutoField: id>
+  Got:
+      <django.db.models.fields.AutoField: id>
+  **********************************************************************
+  1 items had failures:
+     1 of  93 in index.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/topics/sorting.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/topics/sorting.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/topics/sorting.rst", line 914, in sorting.rst
+  Failed example:
+      for o in jobs.Candidature.objects.all():
+         print("{o.id} {o}".format(o=o))  #doctest: +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -71,4 +71,4 @@
+       71 Kandidatur von Alfons AUSDEMWALD
+       72 Kandidatur von Laurent BASTIAENSEN
+      -73 Kandidatur von Charlotte COLLARD
+      +73 Kandidatur von Bernd BRECHT
+       74 Kandidatur von Marc CHANTRAINE
+  **********************************************************************
+  1 items had failures:
+     1 of  38 in sorting.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/chatelet.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/chatelet.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/chatelet.rst", line 145, in chatelet.rst
+  Failed example:
+      print(analyzer.show_db_overview()) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF -SKIP
+  Differences (unified diff with -expected +actual):
+      @@ -8,9 +8,9 @@
+        aids.AidType                   aids.AidTypes                   23        11
+        aids.Category                  aids.Categories                 5         3
+      - aids.Granting                  aids.Grantings                  12        55
+      - aids.IncomeConfirmation        aids.IncomeConfirmations        17        54
+      + aids.Granting                  aids.Grantings                  12        54
+      + aids.IncomeConfirmation        aids.IncomeConfirmations        17        52
+        aids.RefundConfirmation        aids.RefundConfirmations        18        12
+        aids.SimpleConfirmation        aids.SimpleConfirmations        15        19
+      - art61.Contract                 art61.Contracts                 32        7
+      + art61.Contract                 art61.Contracts                 32        6
+        art61.ContractType             art61.ContractTypes             10        1
+        badges.Award                   badges.Awards                   6         0
+      @@ -18,9 +18,9 @@
+        boards.Board                   boards.Boards                   7         3
+        boards.Member                  boards.Members                  4         0
+      - cal.Calendar                   cal.Calendars                   7         ...
+      - cal.Event                      cal.OneEvent                    24        548
+      + cal.Calendar                   cal.Calendars                   7         11
+      + cal.Event                      cal.OneEvent                    24        535
+        cal.EventPolicy                cal.EventPolicies               21        6
+        cal.EventType                  cal.EventTypes                  27        13
+      - cal.Guest                      cal.Guests                      9         588
+      + cal.Guest                      cal.Guests                      9         614
+        cal.GuestRole                  cal.GuestRoles                  6         4
+        cal.RecurrentEvent             cal.RecurrentEvents             23        15
+      @@ -28,5 +28,5 @@
+        cal.Room                       cal.Rooms                       10        0
+        cal.Subscription               cal.Subscriptions               4         9
+      - cal.Task                       cal.Tasks                       20        30
+      + cal.Task                       cal.Tasks                       20        26
+        calview.DailyPlannerRow        calview.DailyPlannerRows        8         2
+        cbss.IdentifyPersonRequest     cbss.IdentifyPersonRequests     21        5
+      @@ -60,5 +60,5 @@
+        cv.Experience                  cv.Experiences                  18        30
+        cv.Function                    cv.Functions                    7         4
+      - cv.LanguageKnowledge           cv.LanguageKnowledges           10        114
+      + cv.LanguageKnowledge           cv.LanguageKnowledges           10        112
+        cv.Obstacle                    cv.Obstacles                    6         20
+        cv.ObstacleType                cv.ObstacleTypes                5         4
+      @@ -80,5 +80,5 @@
+        debts.Group                    debts.Groups                    8         8
+        esf.ClientSummary              esf.Summaries                   24        189
+      - excerpts.Excerpt               excerpts.Excerpts               12        78
+      + excerpts.Excerpt               excerpts.Excerpts               12        79
+        excerpts.ExcerptType           excerpts.ExcerptTypes           18        19
+        gfks.HelpText                  gfks.HelpTexts                  4         5
+      @@ -87,14 +87,14 @@
+        households.Type                households.Types                5         6
+        humanlinks.Link                humanlinks.Links                4         59
+      - immersion.Contract             immersion.Contracts             25        6
+      + immersion.Contract             immersion.Contracts             25        8
+        immersion.ContractType         immersion.ContractTypes         9         3
+        immersion.Goal                 immersion.Goals                 5         4
+      - isip.Contract                  isip.Contracts                  24        30
+      + isip.Contract                  isip.Contracts                  24        29
+        isip.ContractEnding            isip.ContractEndings            6         4
+      - isip.ContractPartner           isip.ContractPartners           6         35
+      + isip.ContractPartner           isip.ContractPartners           6         33
+        isip.ContractType              isip.ContractTypes              11        5
+        isip.ExamPolicy                isip.ExamPolicies               21        6
+        jobs.Candidature               jobs.Candidatures               10        74
+      - jobs.Contract                  jobs.Contracts                  28        13
+      + jobs.Contract                  jobs.Contracts                  28        14
+        jobs.ContractType              jobs.ContractTypes              10        5
+        jobs.Job                       jobs.Jobs                       10        8
+      @@ -131,5 +131,5 @@
+        polls.Question                 polls.Questions                 9         38
+        polls.Response                 polls.Responses                 7         6
+      - sessions.Session               users.Sessions                  3         ...
+      + sessions.Session               users.Sessions                  3         1
+        system.SiteConfig              system.SiteConfigs              29        1
+        tinymce.TextFieldTemplate      tinymce.TextFieldTemplates      5         2
+  **********************************************************************
+  File "docs/specs/welcht/chatelet.rst", line 745, in chatelet.rst
+  Failed example:
+      rt.show(integ.UsersWithClients) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ====================== ============ =========== ======== ========= ========= =================== ====================== ========
+       Intervenant            Évaluation   Formation   Search   Travail   Standby   Dossiers complèts   Bénéficiaires actifs   Total
+      ---------------------- ------------ ----------- -------- --------- --------- ------------------- ---------------------- --------
+       Alicia Allmanns        **1**        **1**                          **1**     **3**               **3**                  **7**
+       Hubert Huppertz        **1**        **3**       **4**    **2**     **1**     **11**              **11**                 **19**
+       Mélanie Mélard         **2**                    **2**    **4**     **3**     **11**              **11**                 **18**
+       **Total (3 lignes)**   **4**        **4**       **6**    **6**     **5**     **25**              **25**                 **44**
+      ====================== ============ =========== ======== ========= ========= =================== ====================== ========
+      <BLANKLINE>
+  Got:
+      ====================== ============ =========== ======== ========= ========= =================== ====================== ========
+       Intervenant            Évaluation   Formation   Search   Travail   Standby   Dossiers complèts   Bénéficiaires actifs   Total
+      ---------------------- ------------ ----------- -------- --------- --------- ------------------- ---------------------- --------
+       Alicia Allmanns        **1**                             **1**     **1**     **3**               **3**                  **7**
+       Hubert Huppertz        **4**        **4**       **6**                        **14**              **14**                 **17**
+       Mélanie Mélard         **1**        **2**       **2**    **3**     **2**     **10**              **10**                 **19**
+       **Total (3 lignes)**   **6**        **6**       **8**    **4**     **3**     **27**              **27**                 **43**
+      ====================== ============ =========== ======== ========= ========= =================== ====================== ========
+      <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/chatelet.rst", line 857, in chatelet.rst
+  Failed example:
+      walk_menu_items('romain') #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -12,5 +12,5 @@
+       - Bureau --> Mes problèmes de données : 0
+       - Calendrier --> Mes rendez-vous : 7
+      -- Calendrier --> Rendez-vous dépassés : 62
+      +- Calendrier --> Rendez-vous dépassés : 58
+       - Calendrier --> Mes rendez-vous à confirmer : 4
+       - Calendrier --> Mes tâches : 1
+      @@ -19,5 +19,5 @@
+       - Calendrier --> Mes rendez-vous dépassés : 1
+       - Réception --> Bénéficiaires : 30
+      -- Réception --> Rendez-vous aujourd'hui : 4
+      +- Réception --> Rendez-vous aujourd'hui : 5
+       - Réception --> Salle d'attente : 8
+       - Réception --> Visiteurs occupés : 4
+      @@ -65,5 +65,5 @@
+       - Configuration --> Bureau --> Types d'événements : 11
+       - Configuration --> Bureau --> Mes Text Field Templates : 1
+      -- Configuration --> Calendrier --> Calendriers : ...
+      +- Configuration --> Calendrier --> Calendriers : 12
+       - Configuration --> Calendrier --> Locaux : 1
+       - Configuration --> Calendrier --> Évènements periodiques : 16
+      @@ -127,5 +127,5 @@
+       - Explorateur --> Système --> Tests de données : 15
+       - Explorateur --> Système --> Problèmes de données : 10
+      -- Explorateur --> Bureau --> Extraits : 78
+      +- Explorateur --> Bureau --> Extraits : 79
+       - Explorateur --> Bureau --> Fichiers téléchargés : 6
+       - Explorateur --> Bureau --> Domaines de téléchargement : 2
+      @@ -134,7 +134,7 @@
+       - Explorateur --> Bureau --> Observations : 112
+       - Explorateur --> Bureau --> Text Field Templates : 3
+      -- Explorateur --> Calendrier --> Entrées calendrier : 343
+      -- Explorateur --> Calendrier --> Tâches : 31
+      -- Explorateur --> Calendrier --> Présences : 589
+      +- Explorateur --> Calendrier --> Entrées calendrier : 338
+      +- Explorateur --> Calendrier --> Tâches : 27
+      +- Explorateur --> Calendrier --> Présences : 615
+       - Explorateur --> Calendrier --> Abonnements : 10
+       - Explorateur --> Calendrier --> Entry states : 5
+      @@ -156,6 +156,6 @@
+       - Explorateur --> CPAS --> Etats bénéficiaires : 4
+       - Explorateur --> CPAS --> Types de carte eID : 11
+      -- Explorateur --> CPAS --> Octrois d'aide : 56
+      -- Explorateur --> CPAS --> Certificats de revenu : 55
+      +- Explorateur --> CPAS --> Octrois d'aide : 55
+      +- Explorateur --> CPAS --> Certificats de revenu : 53
+       - Explorateur --> CPAS --> Refund confirmations : 13
+       - Explorateur --> CPAS --> Confirmations simple : 20
+      @@ -163,18 +163,18 @@
+       - Explorateur --> CPAS --> Types de contact connus : 2
+       - Explorateur --> CPAS --> Interventions : 91
+      -- Explorateur --> Parcours --> Connaissances de langue : 115
+      +- Explorateur --> Parcours --> Connaissances de langue : 113
+       - Explorateur --> Parcours --> Formations : 21
+       - Explorateur --> Parcours --> Études : 23
+       - Explorateur --> Parcours --> Expériences professionnelles : 31
+      -- Explorateur --> Parcours --> Connaissances de langue : 115
+      +- Explorateur --> Parcours --> Connaissances de langue : 113
+       - Explorateur --> Parcours --> Compétences professionnelles : 1
+       - Explorateur --> Parcours --> Compétences sociales : 1
+       - Explorateur --> Parcours --> Freins : 21
+      -- Explorateur --> Intégration --> PIISs : 31
+      -- Explorateur --> Intégration --> Mises à l'emploi art60§7 : 14
+      +- Explorateur --> Intégration --> PIISs : 30
+      +- Explorateur --> Intégration --> Mises à l'emploi art60§7 : 15
+       - Explorateur --> Intégration --> Candidatures : 75
+      -- Explorateur --> Intégration --> Services utilisateurs : 36
+      -- Explorateur --> Intégration --> Mises à l'emploi art61 : 8
+      -- Explorateur --> Intégration --> Stages d'immersion : 7
+      +- Explorateur --> Intégration --> Services utilisateurs : 34
+      +- Explorateur --> Intégration --> Mises à l'emploi art61 : 7
+      +- Explorateur --> Intégration --> Stages d'immersion : 9
+       - Explorateur --> Intégration --> Preuves de recherche : 11
+       - Explorateur --> Intégration --> Fiches FSE : 189
+      @@ -192,4 +192,4 @@
+       - Explorateur --> Questionnaires --> Choix de réponse : 89
+       - Explorateur --> Questionnaires --> Answer Remarks : 1
+      -- Site --> Sessions utilisateurs : ...
+      +- Site --> Sessions utilisateurs : 2
+       <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/chatelet.rst", line 1067, in chatelet.rst
+  Failed example:
+      for actor in debts.Actor.objects.all():
+          n = actor.get_first_meeting()
+          if n is not None:
+              print(msg.format(actor.budget.id, dd.fdl(n.date), n.user))
+  Expected:
+      Budget 4 : First meeting on 22 July 2013 with user nicolas
+  Got nothing
+  **********************************************************************
+  File "docs/specs/welcht/chatelet.rst", line 1081, in chatelet.rst
+  Failed example:
+      for actor in budget.get_actors():
+          print(actor.get_first_meeting_text())
+  Expected:
+      None
+      First meeting on 22 July 2013 with nicolas
+      None
+  Got:
+      None
+      None
+      None
+  **********************************************************************
+  1 items had failures:
+     5 of  23 in chatelet.rst
+  ***Test Failed*** 5 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/clients_chatelet.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/clients_chatelet.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/clients_chatelet.rst", line 142, in clients_chatelet.rst
+  Failed example:
+      ses.show(pcsw.CoachedClients, column_names="name_column", param_values=pv)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ==========================
+       Name
+      --------------------------
+       EVERS Eberhart (127)
+       KELLER Karl (178)
+       MALMENDIER Marc (146)
+       MEESSEN Melissa (147)
+       RADERMACHER Alfons (153)
+       DA VINCI David (165)
+       VAN VEEN Vincent (166)
+      ==========================
+      <BLANKLINE>
+  Got:
+      ==========================
+       Name
+      --------------------------
+       DUBOIS Robin (179)
+       JACOBS Jacqueline (137)
+       JONAS Josef (139)
+       RADERMACHER Alfons (153)
+       RADERMACHER Guido (159)
+       RADERMACHER Hedi (161)
+       DA VINCI David (165)
+      ==========================
+      <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/clients_chatelet.rst", line 161, in clients_chatelet.rst
+  Failed example:
+      ses.show(cv.TrainingsByPerson, obj, column_names="type start_date end_date")
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ================ ============ ============
+       Education Type   Start date   End date
+      ---------------- ------------ ------------
+       Alpha            13/03/2011   13/03/2012
+      ================ ============ ============
+      <BLANKLINE>
+  Got:
+      ================ ============ ============
+       Education Type   Start date   End date
+      ---------------- ------------ ------------
+       Alpha            01/03/2011   01/05/2011
+      ================ ============ ============
+      <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/clients_chatelet.rst", line 180, in clients_chatelet.rst
+  Failed example:
+      ses.show(cv.ExperiencesByPerson, obj, column_names="start_date end_date")
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ============ ============
+       Start date   End date
+      ------------ ------------
+       11/03/2011   11/03/2012
+      ============ ============
+      <BLANKLINE>
+  Got:
+      ============ ============
+       Start date   End date
+      ------------ ------------
+       27/02/2011   27/03/2011
+      ============ ============
+      <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     3 of  22 in clients_chatelet.rst
+  ***Test Failed*** 3 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/courses.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/courses.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/courses.rst", line 89, in courses.rst
+  Failed example:
+      rt.show(rt.models.cal.GuestsByEvent, event)
+  Expected:
+      ===================== ========= ============= ========
+       Partner               Role      Workflow      Remark
+      --------------------- --------- ------------- --------
+       Bastiaensen Laurent   Visitor   **Invited**
+       Denon Denis           Visitor   **Invited**
+       Dericum Daniel        Visitor   **Invited**
+       Emonts-Gast Erna      Visitor   **Invited**
+       Faymonville Luc       Visitor   **Invited**
+       Gernegroß Germaine    Visitor   **Invited**
+       Jacobs Jacqueline     Visitor   **Invited**
+       Jonas Josef           Visitor   **Invited**
+       Kaivers Karl          Visitor   **Invited**
+       Laschet Laura         Visitor   **Invited**
+       Radermacher Hedi      Visitor   **Invited**
+      ===================== ========= ============= ========
+      <BLANKLINE>
+  Got:
+      =================================== ========= ============= ========
+       Partner                             Role      Workflow      Remark
+      ----------------------------------- --------- ------------- --------
+       Bastiaensen Laurent                 Visitor   **Invited**
+       Dobbelstein Dorothée                Visitor   **Invited**
+       Dobbelstein-Demeulenaere Dorothée   Visitor   **Invited**
+       Emonts Erich                        Visitor   **Invited**
+       Gernegroß Germaine                  Visitor   **Invited**
+       Jacobs Jacqueline                   Visitor   **Invited**
+       Johnen Johann                       Visitor   **Invited**
+       Laschet Laura                       Visitor   **Invited**
+       Meessen Melissa                     Visitor   **Invited**
+       Radermacher Christian               Visitor   **Invited**
+       Vandenmeulenbos Marie-Louise        Visitor   **Invited**
+      =================================== ========= ============= ========
+      <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     1 of  23 in courses.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/cv2.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/cv2.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/cv2.rst", line 92, in cv2.rst
+  Failed example:
+      rt.show(cv.Obstacles)
+  Expected:
+      ==== ======================= ========== ===================== ============= ============
+       ID   Personne                Remarque   Type                  Détecté par   Date
+      ---- ----------------------- ---------- --------------------- ------------- ------------
+       1    M. Luc FAYMONVILLE                 Alcohol                             22/05/2014
+       2    M. Gregory GROTECLAES              Santé                               22/05/2014
+       3    Mme Hildegard HILGERS              Dettes                              22/05/2014
+       4    Mme Jacqueline JACOBS              Problèmes familiers                 22/05/2014
+       5    M. Jérôme JEANÉMART                Alcohol                             22/05/2014
+       6    M. Luc FAYMONVILLE                 Santé                               22/05/2014
+       7    M. Gregory GROTECLAES              Dettes                              22/05/2014
+       8    Mme Hildegard HILGERS              Problèmes familiers                 22/05/2014
+       9    Mme Jacqueline JACOBS              Alcohol                             22/05/2014
+       10   M. Jérôme JEANÉMART                Santé                               22/05/2014
+       11   M. Luc FAYMONVILLE                 Dettes                              22/05/2014
+       12   M. Gregory GROTECLAES              Problèmes familiers                 22/05/2014
+       13   Mme Hildegard HILGERS              Alcohol                             22/05/2014
+       14   Mme Jacqueline JACOBS              Santé                               22/05/2014
+       15   M. Jérôme JEANÉMART                Dettes                              22/05/2014
+       16   M. Luc FAYMONVILLE                 Problèmes familiers                 22/05/2014
+       17   M. Gregory GROTECLAES              Alcohol                             22/05/2014
+       18   Mme Hildegard HILGERS              Santé                               22/05/2014
+       19   Mme Jacqueline JACOBS              Dettes                              22/05/2014
+       20   M. Jérôme JEANÉMART                Problèmes familiers                 22/05/2014
+      ==== ======================= ========== ===================== ============= ============
+      <BLANKLINE>
+  Got:
+      ==== ==================== ========== ===================== ============= ============
+       ID   Personne             Remarque   Type                  Détecté par   Date
+      ---- -------------------- ---------- --------------------- ------------- ------------
+       1    M. Josef JONAS                  Alcohol                             22/05/2014
+       2    M. Karl KAIVERS                 Santé                               22/05/2014
+       3    M. Guido LAMBERTZ               Dettes                              22/05/2014
+       4    Mme Line LAZARUS                Problèmes familiers                 22/05/2014
+       5    M. Marc MALMENDIER              Alcohol                             22/05/2014
+       6    M. Josef JONAS                  Santé                               22/05/2014
+       7    M. Karl KAIVERS                 Dettes                              22/05/2014
+       8    M. Guido LAMBERTZ               Problèmes familiers                 22/05/2014
+       9    Mme Line LAZARUS                Alcohol                             22/05/2014
+       10   M. Marc MALMENDIER              Santé                               22/05/2014
+       11   M. Josef JONAS                  Dettes                              22/05/2014
+       12   M. Karl KAIVERS                 Problèmes familiers                 22/05/2014
+       13   M. Guido LAMBERTZ               Alcohol                             22/05/2014
+       14   Mme Line LAZARUS                Santé                               22/05/2014
+       15   M. Marc MALMENDIER              Dettes                              22/05/2014
+       16   M. Josef JONAS                  Problèmes familiers                 22/05/2014
+       17   M. Karl KAIVERS                 Alcohol                             22/05/2014
+       18   M. Guido LAMBERTZ               Santé                               22/05/2014
+       19   Mme Line LAZARUS                Dettes                              22/05/2014
+       20   M. Marc MALMENDIER              Problèmes familiers                 22/05/2014
+      ==== ==================== ========== ===================== ============= ============
+      <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/cv2.rst", line 120, in cv2.rst
+  Failed example:
+      rt.login('robin').show(cv.ObstaclesByPerson, hildegard)
+  Expected:
+      ===================== ============= ============ ==========
+       Type                  Détecté par   Date         Remarque
+      --------------------- ------------- ------------ ----------
+       Dettes                              22/05/2014
+       Problèmes familiers                 22/05/2014
+       Alcohol                             22/05/2014
+       Santé                               22/05/2014
+      ===================== ============= ============ ==========
+      <BLANKLINE>
+  Got:
+      Aucun enregistrement
+  **********************************************************************
+  1 items had failures:
+     2 of  22 in cv2.rst
+  ***Test Failed*** 2 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/immersion.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/immersion.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/immersion.rst", line 52, in immersion.rst
+  Failed example:
+      rt.show(immersion.Contracts)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -1,11 +1,13 @@
+      -==== ========================= ===================== ================== ============ ================= ===========================
+      - ID   Bénéficiaire              Organisation          Début de contrat   Fin prévue   Titulaire (ISP)   Type de stage d'immersion
+      ----- ------------------------- --------------------- ------------------ ------------ ----------------- ---------------------------
+      - 1    EMONTS Daniel (128)       Bäckerei Ausdemwald   29/10/2012         21/02/2014   Alicia Allmanns   MISIP
+      - 2    EMONTS Daniel (128)       Bäckerei Mießen       22/02/2014         31/12/2014   Caroline Carnol   Mise en situation interne
+      - 3    HILGERS Hildegard (133)   Rumma & Ko OÜ         03/12/2012         11/10/2013   Alicia Allmanns   Stage d'immersion
+      - 4    LAZARUS Line (144)        Bäckerei Schmitz      07/01/2013         06/02/2013   Alicia Allmanns   MISIP
+      - 5    RADERMACHER Guido (159)   Rumma & Ko OÜ         11/02/2013         06/06/2014   Alicia Allmanns   Mise en situation interne
+      - 6    RADERMACHER Guido (159)   Bäckerei Ausdemwald   07/06/2014         15/04/2015   Mélanie Mélard    Stage d'immersion
+      -==== ========================= ===================== ================== ============ ================= ===========================
+      +==== ========================== ======================== ================== ============ ================= ===========================
+      + ID   Bénéficiaire               Organisation             Début de contrat   Fin prévue   Titulaire (ISP)   Type de stage d'immersion
+      +---- -------------------------- ------------------------ ------------------ ------------ ----------------- ---------------------------
+      + 1    ENGELS Edgar (129)         Rumma & Ko OÜ            29/10/2012         21/02/2014   Alicia Allmanns   MISIP
+      + 2    ENGELS Edgar (129)         Bäckerei Ausdemwald      22/02/2014         31/12/2014   Mélanie Mélard    Mise en situation interne
+      + 3    LAMBERTZ Guido (142)       Belgisches Rotes Kreuz   03/12/2012         28/03/2014   Alicia Allmanns   Stage d'immersion
+      + 4    RADERMACHER Edgard (157)   Bäckerei Ausdemwald      07/01/2013         02/05/2014   Alicia Allmanns   MISIP
+      + 5    RADERMACHER Edgard (157)   Bäckerei Mießen          03/05/2014         02/06/2014   Mélanie Mélard    Mise en situation interne
+      + 6    RADERMACHER Edgard (157)   Bäckerei Schmitz         03/06/2014         11/04/2015   Mélanie Mélard    Stage d'immersion
+      + 7    RADERMECKER Rik (173)      Bäckerei Ausdemwald      11/02/2013         20/12/2013   Mélanie Mélard    MISIP
+      + 8    RADERMECKER Rik (173)      Bäckerei Mießen          21/12/2013         15/04/2015   Hubert Huppertz   Mise en situation interne
+      +==== ========================== ======================== ================== ============ ================= ===========================
+       <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/immersion.rst", line 74, in immersion.rst
+  Failed example:
+      print(str(obj.company))
+  Expected:
+      Rumma & Ko OÜ
+  Got:
+      Belgisches Rotes Kreuz
+  **********************************************************************
+  1 items had failures:
+     2 of  10 in immersion.rst
+  ***Test Failed*** 2 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/integ.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/integ.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/integ.rst", line 123, in integ.rst
+  Failed example:
+      ses.show(integ.UsersWithClients)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ==================== ============ =========== ======== ========= ========= ================= ================ ========
+       Coach                Évaluation   Formation   Search   Travail   Standby   Primary clients   Active clients   Total
+      -------------------- ------------ ----------- -------- --------- --------- ----------------- ---------------- --------
+       Alicia Allmanns      **1**        **1**                          **1**     **3**             **3**            **7**
+       Hubert Huppertz      **1**        **3**       **4**    **2**     **1**     **11**            **11**           **19**
+       Mélanie Mélard       **2**                    **2**    **4**     **3**     **11**            **11**           **18**
+       **Total (3 rows)**   **4**        **4**       **6**    **6**     **5**     **25**            **25**           **44**
+      ==================== ============ =========== ======== ========= ========= ================= ================ ========
+      <BLANKLINE>
+  Got:
+      ==================== ============ =========== ======== ========= ========= ================= ================ ========
+       Coach                Évaluation   Formation   Search   Travail   Standby   Primary clients   Active clients   Total
+      -------------------- ------------ ----------- -------- --------- --------- ----------------- ---------------- --------
+       Alicia Allmanns      **1**                             **1**     **1**     **3**             **3**            **7**
+       Hubert Huppertz      **4**        **4**       **6**                        **14**            **14**           **17**
+       Mélanie Mélard       **1**        **2**       **2**    **3**     **2**     **10**            **10**           **19**
+       **Total (3 rows)**   **6**        **6**       **8**    **4**     **3**     **27**            **27**           **43**
+      ==================== ============ =========== ======== ========= ========= ================= ================ ========
+      <BLANKLINE>
+  **********************************************************************
+  File "docs/specs/welcht/integ.rst", line 147, in integ.rst
+  Failed example:
+      ses.show(integ.ActivityReport, stripped=True)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -17,8 +17,8 @@
+        Coach                Évaluation   Formation   Search   Travail   Standby   Primary clients   Active clients   Total
+       -------------------- ------------ ----------- -------- --------- --------- ----------------- ---------------- --------
+      - Alicia Allmanns      **1**        **1**                          **1**     **3**             **3**            **7**
+      - Hubert Huppertz      **1**        **3**       **4**    **2**     **1**     **11**            **11**           **19**
+      - Mélanie Mélard       **2**                    **2**    **4**     **3**     **11**            **11**           **18**
+      - **Total (3 rows)**   **4**        **4**       **6**    **6**     **5**     **25**            **25**           **44**
+      + Alicia Allmanns      **1**                             **1**     **1**     **3**             **3**            **7**
+      + Hubert Huppertz      **4**        **4**       **6**                        **14**            **14**           **17**
+      + Mélanie Mélard       **1**        **2**       **2**    **3**     **2**     **10**            **10**           **19**
+      + **Total (3 rows)**   **6**        **6**       **8**    **4**     **3**     **27**            **27**           **43**
+       ==================== ============ =========== ======== ========= ========= ================= ================ ========
+       <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     2 of  30 in integ.rst
+  ***Test Failed*** 2 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/isip_chatelet.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/isip_chatelet.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/isip_chatelet.rst", line 23, in isip_chatelet.rst
+  Failed example:
+      rt.show(isip.Contracts)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE -REPORT_UDIFF
+  Expected:
+      ==== ============== ============ ============================ ================= =====================
+       ID   applies from   date ended   Client                       Author            Contract Type
+      ---- -------------- ------------ ---------------------------- ----------------- ---------------------
+       1    29/09/2012     07/08/2013   AUSDEMWALD Alfons (116)      Hubert Huppertz   VSE Ausbildung
+       2    08/08/2013     01/12/2014   AUSDEMWALD Alfons (116)      Mélanie Mélard    VSE Arbeitssuche
+       3    09/10/2012     17/08/2013   COLLARD Charlotte (118)      Alicia Allmanns   VSE Lehre
+       4    19/10/2012     11/02/2014   DOBBELSTEIN Dorothée (124)   Alicia Allmanns   VSE Vollzeitstudium
+       5    12/02/2014     14/03/2014   DOBBELSTEIN Dorothée (124)   Caroline Carnol   VSE Sprachkurs
+       6    15/03/2014     21/01/2015   DOBBELSTEIN Dorothée (124)   Caroline Carnol   VSE Ausbildung
+       7    03/11/2012     26/02/2014   EMONTS-GAST Erna (152)       Alicia Allmanns   VSE Arbeitssuche
+       8    13/11/2012     13/12/2012   EVERS Eberhart (127)         Alicia Allmanns   VSE Lehre
+       9    23/11/2012     01/10/2013   FAYMONVILLE Luc (130*)       Mélanie Mélard    VSE Vollzeitstudium
+       10   02/10/2013     25/01/2015   FAYMONVILLE Luc (130*)       Hubert Huppertz   VSE Sprachkurs
+       11   08/12/2012     02/04/2014   JACOBS Jacqueline (137)      Alicia Allmanns   VSE Ausbildung
+       12   03/04/2014     03/05/2014   JACOBS Jacqueline (137)      Mélanie Mélard    VSE Arbeitssuche
+       13   04/05/2014     12/03/2015   JACOBS Jacqueline (137)      Mélanie Mélard    VSE Lehre
+       14   18/12/2012     12/04/2014   JONAS Josef (139)            Hubert Huppertz   VSE Vollzeitstudium
+       15   13/04/2014     19/02/2015   JONAS Josef (139)            Hubert Huppertz   VSE Sprachkurs
+       16   28/12/2012     22/04/2014   KELLER Karl (178)            Alicia Allmanns   VSE Ausbildung
+       17   12/01/2013     20/11/2013   MALMENDIER Marc (146)        Mélanie Mélard    VSE Arbeitssuche
+       18   21/11/2013     16/03/2015   MALMENDIER Marc (146)        Hubert Huppertz   VSE Lehre
+       19   22/01/2013     30/11/2013   RADERMACHER Alfons (153)     Alicia Allmanns   VSE Vollzeitstudium
+       20   01/02/2013     27/05/2014   RADERMACHER Edgard (157)     Alicia Allmanns   VSE Sprachkurs
+       21   28/05/2014     27/06/2014   RADERMACHER Edgard (157)     Hubert Huppertz   VSE Ausbildung
+       22   28/06/2014     06/05/2015   RADERMACHER Edgard (157)     Hubert Huppertz   VSE Arbeitssuche
+       23   16/02/2013     11/06/2014   RADERMACHER Hedi (161)       Alicia Allmanns   VSE Lehre
+       24   12/06/2014     12/07/2014   RADERMACHER Hedi (161)       Hubert Huppertz   VSE Vollzeitstudium
+       25   13/07/2014     21/05/2015   RADERMACHER Hedi (161)       Hubert Huppertz   VSE Sprachkurs
+       26   26/02/2013     21/06/2014   DA VINCI David (165)         Alicia Allmanns   VSE Ausbildung
+       27   22/06/2014     30/04/2015   DA VINCI David (165)         Alicia Allmanns   VSE Arbeitssuche
+       28   08/03/2013     01/07/2014   ÖSTGES Otto (168)            Mélanie Mélard    VSE Lehre
+       29   02/07/2014     01/08/2014   ÖSTGES Otto (168)            Hubert Huppertz   VSE Vollzeitstudium
+       30   02/08/2014     10/06/2015   ÖSTGES Otto (168)            Hubert Huppertz   VSE Sprachkurs
+      ==== ============== ============ ============================ ================= =====================
+      <BLANKLINE>
+  Got:
+      ==== ============== ============ ============================ ================= =====================
+       ID   applies from   date ended   Client                       Author            Contract Type
+      ---- -------------- ------------ ---------------------------- ----------------- ---------------------
+       1    29/09/2012     07/08/2013   AUSDEMWALD Alfons (116)      Hubert Huppertz   VSE Ausbildung
+       2    08/08/2013     01/12/2014   AUSDEMWALD Alfons (116)      Mélanie Mélard    VSE Arbeitssuche
+       3    09/10/2012     17/08/2013   DOBBELSTEIN Dorothée (124)   Alicia Allmanns   VSE Lehre
+       4    19/10/2012     11/02/2014   EVERS Eberhart (127)         Alicia Allmanns   VSE Vollzeitstudium
+       5    12/02/2014     14/03/2014   EVERS Eberhart (127)         Caroline Carnol   VSE Sprachkurs
+       6    15/03/2014     21/01/2015   EVERS Eberhart (127)         Caroline Carnol   VSE Ausbildung
+       7    03/11/2012     26/02/2014   FAYMONVILLE Luc (130*)       Alicia Allmanns   VSE Arbeitssuche
+       8    27/02/2014     29/03/2014   FAYMONVILLE Luc (130*)       Hubert Huppertz   VSE Lehre
+       9    30/03/2014     05/02/2015   FAYMONVILLE Luc (130*)       Hubert Huppertz   VSE Vollzeitstudium
+       10   13/11/2012     08/03/2014   HILGERS Hildegard (133)      Alicia Allmanns   VSE Sprachkurs
+       11   09/03/2014     15/01/2015   HILGERS Hildegard (133)      Alicia Allmanns   VSE Ausbildung
+       12   23/11/2012     18/03/2014   JONAS Josef (139)            Mélanie Mélard    VSE Arbeitssuche
+       13   19/03/2014     18/04/2014   JONAS Josef (139)            Hubert Huppertz   VSE Lehre
+       14   19/04/2014     25/02/2015   JONAS Josef (139)            Hubert Huppertz   VSE Vollzeitstudium
+       15   08/12/2012     16/10/2013   LAZARUS Line (144)           Alicia Allmanns   VSE Sprachkurs
+       16   17/10/2013     09/02/2015   LAZARUS Line (144)           Mélanie Mélard    VSE Ausbildung
+       17   18/12/2012     17/01/2013   MEESSEN Melissa (147)        Mélanie Mélard    VSE Arbeitssuche
+       18   18/01/2013     26/11/2013   MEESSEN Melissa (147)        Mélanie Mélard    VSE Lehre
+       19   27/11/2013     22/03/2015   MEESSEN Melissa (147)        Mélanie Mélard    VSE Vollzeitstudium
+       20   28/12/2012     05/11/2013   RADERMACHER Alfons (153)     Alicia Allmanns   VSE Sprachkurs
+       21   12/01/2013     07/05/2014   RADERMACHER Fritz (158)      Alicia Allmanns   VSE Ausbildung
+       22   22/01/2013     30/11/2013   RADERMACHER Hedi (161)       Alicia Allmanns   VSE Arbeitssuche
+       23   01/12/2013     26/03/2015   RADERMACHER Hedi (161)       Mélanie Mélard    VSE Lehre
+       24   01/02/2013     03/03/2013   VAN VEEN Vincent (166)       Alicia Allmanns   VSE Vollzeitstudium
+       25   16/02/2013     25/12/2013   BRECHT Bernd (177)           Alicia Allmanns   VSE Sprachkurs
+       26   26/12/2013     20/04/2015   BRECHT Bernd (177)           Hubert Huppertz   VSE Ausbildung
+       27   26/02/2013     28/03/2013   DUBOIS Robin (179)           Alicia Allmanns   VSE Arbeitssuche
+       28   08/03/2013     14/01/2014   JEANÉMART Jérôme (181)       Mélanie Mélard    VSE Lehre
+       29   15/01/2014     10/05/2015   JEANÉMART Jérôme (181)       Hubert Huppertz   VSE Vollzeitstudium
+      ==== ============== ============ ============================ ================= =====================
+      <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     1 of   8 in isip_chatelet.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/welcht/misc.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/welcht/misc.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/welcht/misc.rst", line 129, in misc.rst
+  Failed example:
+      obj.owner
+  Expected:
+      Contract #2 ("Stage d'immersion#2 (Daniel EMONTS)")
+  Got:
+      Contract #2 ("Stage d'immersion#2 (Edgar ENGELS)")
+  **********************************************************************
+  File "docs/specs/welcht/misc.rst", line 181, in misc.rst
+  Failed example:
+      demo_get('hubert', 'api/integ/Clients', json_fields, 19, **kw)
+  Exception raised:
+      Traceback (most recent call last):
+        File "/usr/lib/python3.6/doctest.py", line 1330, in __run
+          compileflags, 1), test.globs)
+        File "<doctest misc.rst[39]>", line 1, in <module>
+          demo_get('hubert', 'api/integ/Clients', json_fields, 19, **kw)
+        File "/home/luc/work/lino/lino/api/doctest.py", line 157, in demo_get
+          raise Exception(msg)
+      Exception: /api/integ/Clients?fmt=json&limit=10&start=0 got 17 rows instead of [19]
+  **********************************************************************
+  1 items had failures:
+     2 of  58 in misc.rst
+  ***Test Failed*** 2 failures.
+
+  -----
+
+  ======================================================================
+  FAIL: atelier.test.DocTestCase (docs/specs/weleup/eupen.rst)
+  ----------------------------------------------------------------------
+  Traceback (most recent call last):
+    File "/home/luc/work/atelier/atelier/test.py", line 44, in func
+      self.run_subprocess(args)
+    File "/home/luc/work/rstgen/rstgen/utils.py", line 230, in run_subprocess
+      self.fail(msg)
+  AssertionError: /home/luc/virtualenvs/py3/bin/python -m doctest docs/specs/weleup/eupen.rst ({}) returned 1:
+  -----
+  **********************************************************************
+  File "docs/specs/weleup/eupen.rst", line 1181, in eupen.rst
+  Failed example:
+      walk_menu_items('rolf', severe=False)
+      #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REPORT_UDIFF
+  Differences (unified diff with -expected +actual):
+      @@ -12,5 +12,5 @@
+       - Büro --> Meine Datenkontrollliste : 0
+       - Kalender --> Meine Termine : 6
+      -- Kalender --> Überfällige Termine : 25
+      +- Kalender --> Überfällige Termine : 284
+       - Kalender --> Meine unbestätigten Termine : 4
+       - Kalender --> Meine Aufgaben : 1
+      @@ -70,5 +70,5 @@
+       - Konfigurierung --> Büro --> Ereignisarten : 11
+       - Konfigurierung --> Büro --> Meine Einfügetexte : 1
+      -- Konfigurierung --> Kalender --> Kalenderliste : ...
+      +- Konfigurierung --> Kalender --> Kalenderliste : 12
+       - Konfigurierung --> Kalender --> Räume : 1
+       - Konfigurierung --> Kalender --> Regelmäßige Ereignisse : 16
+      @@ -140,5 +140,5 @@
+       - Explorer --> Büro --> Ereignisse/Notizen : 112
+       - Explorer --> Büro --> Einfügetexte : 3
+      -- Explorer --> Kalender --> Kalendereinträge : 311
+      +- Explorer --> Kalender --> Kalendereinträge : 588
+       - Explorer --> Kalender --> Aufgaben : 37
+       - Explorer --> Kalender --> Anwesenheiten : 629
+      @@ -198,4 +198,4 @@
+       - Explorer --> Schuldnerberatung --> Budgets : 15
+       - Explorer --> Schuldnerberatung --> Einträge : 717
+      -- Site --> Benutzersitzungen : ...
+      +- Site --> Benutzersitzungen : 21
+       <BLANKLINE>
+  **********************************************************************
+  1 items had failures:
+     1 of  37 in eupen.rst
+  ***Test Failed*** 1 failures.
+
+  -----
+
+  ----------------------------------------------------------------------
+  Ran 155 tests in 799.894s
+
+  FAILED (failures=13)
+
+
+My next step will be to adapt those doctests and accept the fact that demo data
+has changed because "some fixture(s) somewhere" had been generating data using
+the pcsw.Client rows with undefined ordering, and that ordering was *not*
+exactly the same as now (which is by `id`).
+
+The demo fixture for `lino_welfare.modlib.integ` was doing the following
+
+        af = settings.SITE.demo_date(-600 + i * 5)
+
+I changed this to::
+
+        af = settings.SITE.demo_date(-600 + i * 7)
+
+because otherwise we were having no tasks to see in the MyTasks table
+in :ref:`welfare.specs.tasks`.
+
+Yes, it was so difficult to find the reason because the doctests aren't
+*granular*. The demo database covers many things at once.
+One little change can cause an avalanche of doctest snippets that need to get adapted.
+That can be frustrating.
+But it's part of the game with doctests, and it often brings interesting new insights.
+
+For example the demo fixture for :mod:`lino_welfare.modlib.debts`
+now adds a :attr:`Notes.first_meeting` note and a calendar entry for the meeting
+of the :term:`social agent` and the :term:`beneficiary`. Because the snippet in
+:ref:`welfare.specs.debts.first_meeting` was failing.  Until now it had happened
+to find a budget with an actor for whom there happened to be a
+:meth:`get_first_meeting <lino_welfare.modlib.debts.Actor.get_first_meeting>`,
+but this was actually a pure coincidence.
