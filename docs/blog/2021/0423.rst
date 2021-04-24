@@ -1,0 +1,69 @@
+:date: 2021-04-23
+
+======================
+Friday, April 23, 2021
+======================
+
+
+The new ``BabelPreviewable`` model mixin
+========================================
+
+For the :ref:`shop` project we realized that the description fields of
+categories and products should be previewable. Since they are also babel fields,
+I wrote a new mixin :class:`lino.modlib.memo.BabelPreviewable`.
+
+First use case is :mod:`lino_xl.lib.products`,  where :class:`Product` and
+:class:`Category` now inherit from it.
+
+In :class:`lino.modlib.memo.Previewable` I renamed the fields `short_preview` to
+`body_short_preview` and `long_preview` to `body_long_preview`, and started to
+prepare the case that we want to use this mixin for models where the
+`previewable_field` is not ``'body'``.
+
+But I don't yet use this possibility here. I prefer to change the field name for
+the description of products and categories from "description" to "body". Making
+the name of the "source" field configurable would make things uselessly
+complicated.
+
+To test whether everything works, we should add, to the body of some product or
+category, some memo command that renders translatable text.
+
+How should a read-only RichTextField render its content? Should it "execute" the
+html tags (showing their result), or should it rather "show" them?
+
+I think I made up my mind about read-only RichText fields: let's remove the
+dangerouslySetInnerHTML option again.  A read-only RichTextField widget should
+show the "real" source text, not a preview.  When we want to see the preview, we
+have the body_short_preview and body_full_preview fields of the Previewable
+mixin.
+
+
+I started to play with the new feature in :ref:`shop`. There is now a third
+panel in the product detail.  One book now has a body with rich text.
+
+
+About quicklinks and the dashboard layout
+=========================================
+
+Another question is my little spontaneous change yesterday to have the products
+plugin automatically add quick links for every product type. It causes several
+unit tests to fail because --as expected-- other applications now also have
+these quick links. This makes me think again. It seems clear that not every
+application wants these quick links.  OTOH it's as with the :guilabel:`[My
+settings]` quick link, which is now a standard: a standard is nice to have, but
+we want to customize it in different ways. For example I am not sure whether the
+:ref:`welfare` users (or their system admins) will be happy with this new
+:guilabel:`[My settings]` quick link.  Anyway there should be a way to to
+customize the quick links.
+The default list should be customizable per application.
+And then they should --at least for some applications-- be customizable per user as well.
+Quick links become a bit like dashboard items.
+And the dashboard has some open tickets:
+
+- :ticket:`4046` (Configurable dashboard cards)
+- :ticket:`3337` (React-Grid-Layout)
+
+I currently imagine that we introduce a setting ``dashboard_layout``, or more
+precisely a choicelist ``DashboardLayouts`` where users can select from an list
+of dashboard layouts.  The dashboard would become like a detail view where the
+Site object itself acts as the table row.
