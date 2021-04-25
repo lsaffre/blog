@@ -63,7 +63,7 @@ in fact Appy Pod is right!
 A `<div>` inside a `<span>` is no valid XHTML.
 A `<li>` inside a `<strong>` is no valid XHTML.
 According to 
-`Mac on stackoverflo <http://stackoverflow.com/questions/2919909/nesting-div-within-span-problem>`_
+`Mac on stackoverflo <https://stackoverflow.com/questions/2919909/nesting-div-within-span-problem>`_
 "several websites use this method for styling",
 but the bug is not in Gaëtan's `renderXhtml` method, 
 it is in my own code: in :mod:`lino.utils.html2xhtml`.

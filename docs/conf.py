@@ -91,5 +91,7 @@ feed_description = "Luc's developer blog"
 import os
 os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
-
 html_context.update(public_url='https://luc.lino-framework.org')
+
+linkcheck_anchors = False
+linkcheck_ignore = [r'http://localhost:\d+/']
