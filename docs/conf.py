@@ -2,9 +2,9 @@
 import lino
 from lino.sphinxcontrib import configure
 
-extlinks = {}
-extensions = []
-templates_path = []
+# extlinks = {}
+# extensions = []
+# templates_path = []
 
 configure(globals(), 'lino_book.projects.min9.settings')
 
@@ -91,7 +91,7 @@ feed_description = "Luc's developer blog"
 import os
 os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
-html_context.update(public_url='https://luc.lino-framework.org')
+# html_context.update(public_url='https://luc.lino-framework.org')
 
 linkcheck_anchors = False
 linkcheck_ignore = [r'http://localhost:\d+/']
