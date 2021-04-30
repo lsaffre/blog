@@ -26,14 +26,14 @@ I had my inbox bombed every 30 seconds with the following message::
     PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/lib/php5/20131226/json.so' - /usr/lib/php5/20131226/json.so: undefined symbol:
     +json_c_version in Unknown on line 0
 
-It started after our dist-upgrade on that server.  
+It started after our dist-upgrade on that server.
 Yes, it seems that the PHP is broken::
 
     $ php5
     PHP Warning:  PHP Startup: Unable to load dynamic library '/usr/lib/php5/20131226/json.so' - /usr/lib/php5/20131226/json.so: undefined symbol: json_c_version in Unknown on line 0
 
 I had the folllowing in :file:`/etc/cron.d/php5`::
-  
+
     # Look for and purge old sessions every 30 minutes
     09,39 *     * * *     root   [ -x /usr/lib/php5/sessionclean ] && /usr/lib/php5/sessionclean
 
@@ -58,11 +58,11 @@ I am still having another series of warnings::
     dpkg: warning: files list file for package 'librtmp0:amd64' missing; assuming package has no files currently installed
     dpkg: warning: files list file for package 'libjpeg8:amd64' missing; assuming package has no files currently installed
 
-When I try to reinstall them, I get::  
+When I try to reinstall them, I get::
 
     $ sudo apt-get install --reinstall libffi5
     Reading package lists... Done
-    Building dependency tree       
+    Building dependency tree
     Reading state information... Done
     Reinstallation of libffi5 is not possible, it cannot be downloaded.
     0 upgraded, 0 newly installed, 0 to remove and 23 not upgraded.
@@ -73,7 +73,7 @@ so I removed them as well::
 
     $ sudo apt-get remove ... libdb5.1 libtiff4 librtmp0 libjpeg8
     Reading package lists... Done
-    Building dependency tree       
+    Building dependency tree
     Reading state information... Done
     The following package was automatically installed and is no longer required:
       liblcms1
@@ -83,7 +83,7 @@ so I removed them as well::
       openjdk-6-jre-headless openjdk-6-jre-lib python2.6 python2.6-dev
     0 upgraded, 0 newly installed, 15 to remove and 23 not upgraded.
     After this operation, 92.7 MB disk space will be freed.
-    Do you want to continue? [Y/n] 
+    Do you want to continue? [Y/n]
     dpkg: warning: files list file for package 'libdb5.1:amd64' missing; assuming package has no files currently installed
     dpkg: warning: files list file for package 'libtiff4:amd64' missing; assuming package has no files currently installed
     dpkg: warning: files list file for package 'librtmp0:amd64' missing; assuming package has no files currently installed
@@ -112,7 +112,7 @@ so I removed them as well::
     Processing triggers for mime-support (3.58) ...
     Processing triggers for man-db (2.7.0.2-5) ...
     Processing triggers for hicolor-icon-theme (0.13-1) ...
-    
+
 I then stopped at 6:05 after rebooting the server.  At 10:28 I noticed
 that the server still hadn't restarted.  :ref:`andi` got it up and
 running again. He said that `systemd
@@ -126,12 +126,12 @@ problems like this!
 
 
 :ref:`noi` now requires `rest_framework`
-======================================== 
+========================================
 
 :ref:`grigorij` reported that :ref:`noi` now (after
 :blogref:`20161229`) needs `rest_framework
 <http://www.django-rest-framework.org/>`__. I added it to the
-project's :ref:`install_requires`: `acd718b <https://github.com/lino-framework/noi/commit/f67097c5b3dd8bdee6c0bc579b33851e1acd718b>`__ remove usage of restframework
+project's :term:`install_requires`: `acd718b <https://github.com/lino-framework/noi/commit/f67097c5b3dd8bdee6c0bc579b33851e1acd718b>`__ remove usage of restframework
 
 
 It's of course a shame that newbies must stumble over such

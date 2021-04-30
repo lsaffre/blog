@@ -1,0 +1,60 @@
+:date: 2021-04-29
+
+========================
+Thursday, April 29, 2021
+========================
+
+Improving the documentation about Lino
+======================================
+
+I continued my dive into the documentation framework.
+
+My next avalanche of changes is rather in the docs themselves. That's a good
+sign: the documentation framework starts to meet my expectations, I can start to
+care about the content.
+
+We need a common standard for structuring the docs and reduce redundant
+explanations.
+
+For example when I write application-specific end-user docs, I often use words
+like :term:`detail window` or :term:`list window`. And I don't want to explain
+these words over and over again.
+
+I moved the "User Guide" section from `book/docs` to `cg/docs` where they are
+called "Using Lino". That was needed because ``cg`` is for
+non-technical end-user documentation that will be translated.
+EDIT: the next morning I continued this move, see :doc:`0430`.
+
+I have a feeling that the title of the ``book`` doctree will change from "The
+Lino Book" to "Lino developer docs", and the ``cg`` will rather get a title like
+"The Lino Book".
+
+Isn't it a pity that we cannot use the demo projects of the book for running
+doctests in other repositories as well? Answer after some trying: no.  For
+example in :ref:`ug.specs.users` it seems to me that it would make sense to add
+tested code snippets.
+
+The fundamental difference between ``book`` and ``cg`` is their audience. book
+is meant for developers. We do not want to maintain translations for it.
+
+About intersphinx dependencies. The book (quite often) refers to something that
+is explained in the cg. But at the moment we still have references in the other
+direction as well (cg referring to book). This is not good because it can cause
+a deadlock.  The end-user docs should indeed really be implementation-agnostic.
+But Lino should have Help buttons that open links to the technical reference.
+
+Testing whether references work:
+:attr:`lino.modlib.printing.PrintableContext.this`.
+
+
+Release to Jane
+===============
+
+Sharif and I did an upgrade on :ref:`jane`.
+
+We found and fixed a little bug: :mod:`lino_react` did not yet automatically get
+installed via :manage:`install`.
+
+Note that mysqlclient is not yet being automatically installed by
+:manage:`install`. Only :mod:`getlino` knows the python package to be used for a
+given Django dbengine.
