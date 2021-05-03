@@ -1,0 +1,25 @@
+:date: 2021-05-01
+
+=====================
+Saturday, May 1, 2021
+=====================
+
+More optimizations in the documentation framework
+=================================================
+
+:ticket:`4139` (Remove need to define srcref_url) --
+The ``srcref_url`` setting is no longer needed. The :func:`rstgen.srcref`
+function (the only function that was readit it) now looks whether
+``SETUP_INFO['url']`` exists and assumes that it contains the URL of the source
+code repository.
+
+:func:`rstgen.srcref` is used e.g. in :mod:`atelier.sphinxconf.base` to add a
+link to the source code in the autodoc API docs.  Or by the :rst:role:`srcref`
+role (which is implemented using :mod:`sphinx.ext.extlinks`). Or by the
+:ref:`memo.py` memo command.
+
+Fixed a bug: :func:`get_lang_selector` didn't work when :envvar:`use_dirhtml`
+was `False`.
+
+The :xfile:`setup_info.py` file can now contain another dict ``ATELIER_INFO`` to
+contain the project configuration settings. Experimental. Used in :ref:`cosi`.

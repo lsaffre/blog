@@ -1,0 +1,160 @@
+:date: 2021-05-03
+
+===================
+Monday, May 3, 2021
+===================
+
+Online registration for Lino Shop
+=================================
+
+This week-end I worked, partly with Sharif, on :ticket:`4143` (Review handling
+of the User.partner field), which was triggered by :ticket:`4121`, which we need
+for :ref:`shop`. But it is about :term:`online registration`, a general feature
+on which we had previously done some work, which went to sleep with the
+:ref:`care` project. Now is the moment to wake it up. I also did :ticket:`2049`
+(Users don't need to be partners in Noi) because it is part of the problem. I am
+now sure that we want to get rid of :mod:`lino_xl.lib.online.users`.
+
+.. currentmodule:: lino.modlib.users
+
+I moved some functionality from :mod:`lino_xl.lib.online.users` to
+:mod:`lino.modlib.users`:
+
+- New plugin option :data:`use_verify` and :attr:`User.verify` action.
+- The `submit_insert` action now always does a nice warning when a username is already taken.
+- The :attr:`User.send_welcome_email` action is no longer a window action. We
+  don't want any question about recipient or subject of the mail.
+
+When the :attr:`User.partner` field is empty, and all three fields first_name,
+last_name and email are non-empty, (and if the user is verified on a site with
+:data:`use_verify` set to True), then Lino now automatically creates a
+`contacts.Person` based on this data. This automatism does not apply to
+SiteAdmin users who can edit the partner field manually.
+
+As a side effect I had to review :class:`lino_noi.lib.users.UserDetail`.
+
+One advantage of not using  :mod:`lino_xl.lib.online.users` any more: In
+:ref:`shop` we can have a same :term:`person` with two user accounts: one as a
+:attr:`lino_shop.lib.shop.UserTypes.customer` and one as a
+:attr:`lino_shop.lib.shop.UserTypes.vendor`.
+
+These changes caused (trivial) failures in quite some doctest suites because we
+have now one more view (about.DateFormats), one window action less and one more field in User.
+
+Data migration will be funny: In noi we no longer use online.users: User is no
+longer a subclass of Person. Might require some magic when migrating production
+data.
+
+New user role :class:`LedgerPartner`
+====================================
+
+.. currentmodule:: lino_xl.lib.ledger
+
+In :mod:`lino_xl.lib.ledger` I added a new role :class:`LedgerPartner`, and
+:attr:`lino_shop.lib.shop.UserTypes.customer` and
+:attr:`lino_shop.lib.shop.UserTypes.vendor` already inherit from it. Next step
+is to add :term:`table views <table view>` like  :class:`MyInvoices` and
+:class:`MyPayments`
+
+
+Configuring how to represent dates
+==================================
+
+I added a new field :attr:`User.date_format`. It is there for all applications.
+It is not yet being used, but :mod:`lino_react` is ready to implement it. And
+:mod:`lino.modlib.extjs` might follow one day.
+
+The Hydra effect
+================
+
+Note: The Hydra effect is when you have the impression of not advancing. You cut
+down one head of the monster and it grows seven new ones. But Lino is like a
+Hydra, except that it gets more *beautiful* (not more dangerous) each time you
+fix a bug.  Working on a beast like Lino makes sense only because it is free
+software.
+
+The documentation framework, even taken on its own, is a full-featured Hydra.
+But is getting better with each iteration.  Now we have a page about it:
+:ref:`lino.doctrees`.
+
+Some bug in the React text editor
+=================================
+
+I created a comment and then pasted some text into it. This caused my browser
+page to lock up. Firefox asked me "This page is slowing down your browser. Do
+you want to stop it?"  After stopping it, I had the following messages in the JS console::
+
+  NWS App.js:1097:15
+  request aborted DOMException: The operation was aborted. DataProvider.js:117:19
+  Use of Mutation Events is deprecated. Use MutationObserver instead. main.js line 3530 > eval:5511:24
+  Script terminated by timeout at:
+  commitMutationEffects@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:3945:214
+  callCallback@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:657:119
+  invokeGuardedCallbackDev@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:677:45
+  invokeGuardedCallback@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:696:126
+  commitRootImpl@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:3908:49
+  unstable_runWithPriority@webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465:16
+  runWithPriority$1@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2063:1059
+  commitRoot@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:3877:526
+  performSyncWorkOnRoot@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:3753:107
+  flushSyncCallbackQueueImpl/<@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2069:188
+  unstable_runWithPriority@webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465:16
+  runWithPriority$1@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2063:1059
+  flushSyncCallbackQueueImpl@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2069:95
+  flushSyncCallbackQueue@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2068:339
+  scheduleUpdateOnFiber@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:3631:20
+  enqueueSetState@webpack:///./node_modules/react-dom/cjs/react-dom.development.js?:2195:489
+  Component.prototype.setState@webpack:///./node_modules/react/cjs/react.development.js?:358:20
+  onTextChange@webpack:///./lino_react/react/components/TextFieldElement.js?:120:12
+  componentDidMount/</<@webpack:///./node_modules/primereact/components/editor/Editor.js?:282:27
+  emit@webpack:///./node_modules/quill/dist/quill.js?:11207:33
+  emit@webpack:///./node_modules/quill/dist/quill.js?:2526:105
+  modify@webpack:///./node_modules/quill/dist/quill.js?:2089:45
+  updateContents@webpack:///./node_modules/quill/dist/quill.js?:1959:27
+  onPaste/<@webpack:///./node_modules/quill/dist/quill.js?:11622:28
+  main.js line 3818 > eval:3945:214
+  The above error occurred in the <Tooltip> component:
+
+  Tooltip@webpack:///./node_modules/primereact/components/tooltip/Tooltip.js?:291:20
+
+  Consider adding an error boundary to your tree to customize error handling behavior.
+  Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. react-dom.development.js:3308:9
+      React 10
+      unstable_runWithPriority webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465
+      React 4
+      unstable_runWithPriority webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465
+      React 6
+      onTextChange webpack:///./lino_react/react/components/TextFieldElement.js?:120
+      componentDidMount webpack:///./node_modules/primereact/components/editor/Editor.js?:282
+      emit webpack:///./node_modules/quill/dist/quill.js?:11207
+      emit webpack:///./node_modules/quill/dist/quill.js?:2526
+      modify webpack:///./node_modules/quill/dist/quill.js?:2089
+      updateContents webpack:///./node_modules/quill/dist/quill.js?:1959
+      onPaste webpack:///./node_modules/quill/dist/quill.js?:11622
+  Uncaught Error: An error was thrown inside one of your components, but React doesn't know what it was. This is likely due to browser flakiness. React does its best to preserve the "Pause on exceptions" behavior of the DevTools, which requires some DEV-mode only tricks. It's possible that these don't work in your browser. Try triggering the error in production mode, or switching to a modern browser. If you suspect that this is actually an issue with React, please file an issue.
+      React 3
+      unstable_runWithPriority webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465
+      React 4
+      unstable_runWithPriority webpack:///./node_modules/scheduler/cjs/scheduler.development.js?:465
+      React 6
+      onTextChange webpack:///./lino_react/react/components/TextFieldElement.js?:120
+      componentDidMount webpack:///./node_modules/primereact/components/editor/Editor.js?:282
+      emit webpack:///./node_modules/quill/dist/quill.js?:11207
+      emit webpack:///./node_modules/quill/dist/quill.js?:2526
+      modify webpack:///./node_modules/quill/dist/quill.js?:2089
+      updateContents webpack:///./node_modules/quill/dist/quill.js?:1959
+      onPaste webpack:///./node_modules/quill/dist/quill.js?:11622
+  main.js line 3818 > eval:678:7
+
+But I was not yet able to systematically reproduce this problem. ​
+
+Testing :term:`online registration`
+===================================
+
+For testing :term:`online registration` feature,  we now have a new function
+:func:`lino.core.auth.utils.activate_social_auth_testing`. These "public
+secrets" are used for testing social authentication on a localhost. Until now
+they were available only in noi1e (and noi1r which imports the settings from
+noi1e). But now they are used also for :mod:`lino_shop.projects.shop1`
+
+I started to write some content for :ref:`shop.guide`.
