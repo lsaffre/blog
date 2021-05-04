@@ -158,3 +158,97 @@ they were available only in noi1e (and noi1r which imports the settings from
 noi1e). But now they are used also for :mod:`lino_shop.projects.shop1`
 
 I started to write some content for :ref:`shop.guide`.
+
+
+
+Database migration on Jane
+==========================
+
+Today I did two releases to Jane.  The first went very smoothly, despite my
+expectations. I commented:
+
+  Wow, despite the fact that I wrote it myself, Lino will always surprise me. It
+  did the data migration without any need to manually change anything in the
+  restore.py file. I am surprised.
+
+And this was only the first surprise. It got even more surprising. I then
+noticed that the :attr:`lino.mixins.polymorphic.Polymorphic.mti_navigator` field
+was still there on the Person detail.  Explanation: for some reason my :cmd:`inv
+sdist release` in :ref:`noi` hadn't worked.  PyPI still returned the old version
+of noi. And only for noi, not for lino, xl and react.
+
+It is interesting to see that the old noi version had been working well together
+with the new lino and xl.
+
+After releasing noi to pypi for good and running the :xfile:`pull.sh` script
+again, my :xfile:`restore.py` finally gave the expected problem::
+
+  django.core.exceptions.ValidationError: ['A Person cannot be parent for a User']
+
+My first guess is to simply *not* create any Partner row for the existing users.
+Because this probably reflects
+
+::
+
+  def create_users_user(person_ptr_id, modified, created, start_date, end_date, password, last_login, username, user_typ$
+      kw = dict()
+      kw.update(modified=modified)
+      kw.update(created=created)
+      kw.update(start_date=start_date)
+      kw.update(end_date=end_date)
+      kw.update(password=password)
+      kw.update(last_login=last_login)
+      kw.update(username=username)
+      kw.update(user_type=user_type)
+      kw.update(initials=initials)
+      kw.update(id=person_ptr_id)  # ADDED
+      # REMOVED kw.update(partner_id=partner_id)
+      kw.update(verification_code=verification_code)
+      kw.update(time_zone=time_zone)
+      kw.update(date_format=date_format)
+      # REMOVED kw.update(callme_mode=callme_mode)
+      # REMOVED kw.update(user_state=user_state)
+      kw.update(access_class=access_class)
+      kw.update(event_type_id=event_type_id)
+      kw.update(open_session_on_new_ticket=open_session_on_new_ticket)
+      kw.update(notify_myself=notify_myself)
+      kw.update(mail_mode=mail_mode)
+      kw.update(github_username=github_username)
+      # REMOVED return create_mti_child(contacts_Person, person_ptr_id, users_User, **kw)
+      return users_User(**kw)  # ADDED
+
+::
+
+  Loading 23880 objects to table changes_change...
+  Deferred Change #11704 ('#11704') : {'user': ['User instance with id 324 does not exist.']}
+  {'user': ['User instance with id 324 does not exist.']}
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/utils/dpy.py", line 159, in try_save
+      obj.full_clean()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/base.py", line 1238, in full_clean
+      raise ValidationError(errors)
+  django.core.exceptions.ValidationError: {'user': ['User instance with id 324 does not exist.']}
+  Deferred Change #14221 ('#14221') : {'user': ['User instance with id 328 does not exist.']}
+  Deferred Change #15241 ('#15241') : {'user': ['User instance with id 333 does not exist.']}
+
+::
+
+  Deferred Comment #1446 ('Comment #1446') : {'user': ['User instance with id 324 does not exist.']}
+  {'user': ['User instance with id 324 does not exist.']}
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/utils/dpy.py", line 159, in try_save
+      obj.full_clean()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/base.py", line 1238, in full_clean
+      raise ValidationError(errors)
+  django.core.exceptions.ValidationError: {'user': ['User instance with id 324 does not exist.']}
+
+
+::
+  Trying to save 2773 deferred objects.
+
+
+    kw.update(id=person_ptr_id)  # new
+
+
+324 : kader
+328 : thierry
