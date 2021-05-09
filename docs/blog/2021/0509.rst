@@ -5,4 +5,71 @@ Sunday, May 9, 2021
 ===================
 
 I started the :ref:`ug.howto` section of the User Guide. That made me discover
-:ticket:`4148`, which I fixed.
+:ticket:`4148`, which I fixed. Later I wrote new content (or moved it  from the
+`book` docs) in :ref:`ug.specs.ledger`, :ref:`ug.specs.vat` and :ref:`ug.howto`.
+
+The :file:`docs/shared/include/defs.rst` still contained a series of URLs that
+referred to github instead of gitlab.
+
+Sharif asked a good question. Example: in :ref:`shop` a customer can *see*
+(view) the tables of products and use the filter parameters (which will be very
+complex) and the feature of sorting product lists by price or something else, so
+we clearly want a customer to see the products.Products table and its children,
+but this shouldn't mean that a customer is also allowed to *edit* anything in
+these products.  To make this possible, we changed the API: Actors no longer
+have an attribute :attr:`editable`, but a method :meth:`is_row_editable` (which
+is a class method on the actor, and the default implementation calls an instance
+method of same name on the model). The application developer can now specify
+that some model or actor generally refuses editing for a whole row based on the
+user's role(s).
+
+Note that even when :meth:`is_row_editable
+<lino.core.fields.TableRow.is_row_editable>` returns `False`, we need to loop
+over the names in `disabled_fields` because they also contain the actions. For
+example we don't want the :attr:`add_to_cart` action to be disabled for
+customers. IOW when :meth:`is_row_editable` return False,
+:class:`lino.core.store.DisabledFieldsStoreField` should simply add all fields
+to the set returned by the actor's :meth:`get_disabled_fields`.
+
+
+TODO::
+
+    # core.fields.TableRow
+    def is_row_editable(self, ar):
+        return True
+
+    # Actor
+    @classmethod
+    def is_row_editable(cls, obj, ar):
+        return obj.is_row_editable(ar)
+
+    # products.Product
+    def is_row_editable(self, ar):
+        if not ar.get_user().user_type.has_required_roles([ProductsStaff]):
+            return False
+        return True
+
+As a side effect of planning above changes, we renamed
+:func:`make_view_permission_handler` to :func:`make_static_permission_handler`
+because this expresses more clearly what it does. It is static, not necessarily
+only for views. Though we use it only for getting the view permission.  All
+other permissions are "dynamic". i.e. they get a table row for deciding whether
+permission is given or not.
+
+We investigated into :ticket:`4150` (When creating a Furniture, Lino shows also
+Thriller as category)
+
+I created :ticket:`4151` (Cannot upload new image from product detail).
+
+I fixed two "trivial" failures in the book, both were caused by minor "quick
+wins" I had done recently:
+
+The :cmd:`doctest docs/specs/avanti/uploads.rst` failed because
+`MyExpiringUploads.description_link` now uses the :meth:`__str__` method instead
+of doing almost exactly the same. There was a subtle difference, though.
+Probably not important.  I just adapted the expected result.
+
+The roger project, which installs the publisher plugin, now has one pluing more
+because publisher now automatically installs bootstrap3 as well. This
+combination is not yet used in production, and it might go away again in case we
+decide to deprecate publisher.  Until then I just adapted the expected result.
