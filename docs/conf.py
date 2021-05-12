@@ -10,6 +10,8 @@ configure(globals(), 'lino_book.projects.min9.settings')
 
 from atelier.sphinxconf import interproject
 interproject.configure(globals())
+intersphinx_mapping['book'] = ('https://dev.lino-framework.org/', None)
+intersphinx_mapping['lf'] = ('https://www.lino-framework.org/', None)
 intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
 intersphinx_mapping['hg'] = ('https://hosting.lino-framework.org/', None)
 intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
