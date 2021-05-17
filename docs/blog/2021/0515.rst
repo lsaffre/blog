@@ -1,0 +1,81 @@
+:date: 2021-05-15
+
+======================
+Saturday, May 15, 2021
+======================
+
+Sharif and I had another video brainstorming meeting.
+
+TODO:
+
+- Accept all kinds of media files, not only images.
+
+- Selecting a Media file in Uploads.insert should show thumbnails of the images-
+  Define a custom chooser for FileUsage.file (the FK field pointing to existing
+  File). Maybe add a new method :meth:`Model.get_text_for_value`
+
+  Model.choice_layout = """name thumbnail"""
+
+- A method :meth:`FileUsage.get_file_display` would not be optimal. This feature is
+  not tested and not used anywhere so far. But it is standard Django behaviour.
+
+- Define a :meth:`__str__` method for FileUsage (which is used in different places,
+  e.g. when setting display_mode of UsagesByController to summary.
+
+
+- The buttons to toggle between display modes should have a tooltip.
+
+- Tooltips (and other texts in the react js code) should be translatable.
+
+- The :attr:`file__thumbnail` in :attr:`FileUsage.detail_layout` doesn't seem to
+  work. Why?
+
+- Reactivate :attr:`lino.core.site.Site.use_websockets` : the basic feature is
+  that Lino would ask the client's browser permission for notifications. And
+  then the user would get notified as a desktop notification. notify with
+  :attr:`use_websockets` is not used anywhere, and would require a revision Note
+  that the current use_websockets was written before Django 3. See
+  https://docs.djangoproject.com/en/3.2/topics/async/
+
+- In :ref:`shop` unverified users should not have permission
+  to place an order. But they can collect products into their basket.
+
+- When :data:`lino.modlib.users.use_verify` is True and the user is not verified,
+  then Lino should give a welcome message "You are not yet verified. Check your
+  inbox. Or click here to re-sent a verification code."
+
+- Add phone verification. Testing this requires a SMS sending service.
+
+
+DONE:
+
+- Added a new plugin option `notify.mark_seen_when_sent` When this is True, Lino
+  now marks notification messages as `seen` when they have been sent via email.
+
+- The default implementation of Actor.get_table_summary() now also uses
+  Request.plain_toolbar_buttons(). The difference is that if an actor has some
+  custom action that has show_in_plain = True, this action would also be
+  rendered now below a summary. The currently only use case of this is the "Mark
+  all as seen" action of lino.modlib.notify.Message
+
+- About method :meth:`Model.as_list_item` : this approach has the disadvantage
+  that HTML is being rendered on the server, not on  the client. More data flow,
+  and more server resources.
+
+- Use cases for list_layout: products
+
+- We added a detail layout to :class:`lino_xl.lib.albums.FileUsages`.
+
+- We changed the :xfile:`settings.py` on jane::
+
+    def get_plugin_configs(self):
+        yield super(Site, self).get_plugin_configs()
+        # example of local plugin settings:
+        yield ('users', 'use_verify', True)
+        yield ('notify', 'keep_unseen', False)
+        yield ('notify', 'remove_after', 24*7)
+
+
+
+How to restore a Borg backup to my computer
+===========================================

@@ -1,0 +1,46 @@
+:date: 2021-05-16
+
+====================
+Sunday, May 16, 2021
+====================
+
+The :attr:`file__thumbnail` in :attr:`FileUsage.detail_layout` doesn't seem to
+work. Why?
+
+Sharif submitted a solution, and this solution didn't cause any test cases to
+break. But it would have caused a problem with a remote field to a virtual
+ForeignKey.  I was afraid that there are uncovered cases where his change would
+break things.  So I started to dig into it: :ref:`shop.case20210516`. Result:
+yes, we do have remote fields to virtual ForeignKey fields, but until now we did
+never use them in any :term:`detail window`. And the issue occurred only there.
+I verified also for :ref:`welfare` (added a list of all :term:`remote virtual
+fields <remote virtual field>` in :ref:`welfare.specs.eupen`)
+
+
+
+Minor internal changes:
+
+:meth:`lino.core.store.StoreField.value2dict` now takes the field name as an
+argument.  The reason for this is a hack in
+:func:`lino.core.store.create_atomizer` where we create a StoreField instance
+based on the :term:`leaf field` and then patch some methods of it.  A StoreField
+actually doesn't know its name. (TODO: shouldn't we remove the `StoreField.name`
+attribute altogether?)
+
+I wrote a new utility function :func:`lino.api.doctest.walk_store_fields`.
+
+.. currentmodule:: lino_xl.lib
+
+I thought "Oops, the actors  :class:`users.My`, :class:`ledger.ItemsByVoucher`,
+:class:`ledger.ByJournal`, :class:`ledger.PrintableByJournal` and
+:class:`sheets.EntriesByReport` were not declared as abstract".
+
+.. currentmodule:: lino.core.actors
+
+But that was a pitfall. They don't need to be explicitly declared abstract
+because Lino knows it: They are subclasses of DbTable having their :attr:`model`
+at `None`. I had forgotten the :meth:`Actor.is_abstract` method.  The problem
+was that :func:`lino.api.doctest.walk_store_fields`  filtered on
+:attr:`Actor.abstract` instead of calling :meth:`Actor.is_abstract`.
+:meth:`lino.utils.diag.Analyzer.get_complexity_factors` now uses
+:meth:`Actor.is_abstract`
