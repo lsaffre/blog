@@ -1,4 +1,8 @@
 .. see also /docs/dev/shared.rst
+.. |external-link|  image:: /../docs/shared/images/pi/external-link.svg
+  :class: pi-button
+  :alt: external link
+
 .. |filter|  image:: /../docs/shared/images/pi/filter.svg
   :class: pi-button
   :alt: filter button

@@ -5,7 +5,7 @@ See https://github.com/primefaces/primeicons/blob/master/LICENSE
 """
 import requests
 from pathlib import Path
-ICON_NAMES = "filter plus plus-circle user refresh trash".split()
+ICON_NAMES = "external-link filter plus plus-circle user refresh trash".split()
 
 dest = Path(__file__).parent.absolute()
 root = "https://raw.githubusercontent.com/primefaces/primeicons/master/raw-svg"

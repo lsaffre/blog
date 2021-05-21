@@ -1,0 +1,69 @@
+:date: 2021-05-21
+
+.. include:: /../docs/shared/include/defs.rst
+
+====================
+Friday, May 21, 2021
+====================
+
+After several weeks of heavily reviewing the Lino documentation in general, I am
+trying to calm down. The job is not finished, but I am tired of writing *about*
+Lino.  I prefer to *write* free software than to write *about* it. But before
+focussing back to the real things, I want to get the CI pipelines on GitLab
+green again.
+
+The documentation about Lino is currently stored in at least five repositories,
+and their URLs are automatically added as intersphinx targets to every doctree
+that uses :func:`lino.sphinxcontrib.configure`::
+
+    im['lf'] = ('https://www.lino-framework.org/', None)
+    im['cg'] = ('https://community.lino-framework.org/', None)
+    im['ug'] = ('https://using.lino-framework.org/', None)
+    im['hg'] = ('https://hosting.lino-framework.org/', None)
+    im['book'] = ('https://dev.lino-framework.org/', None)
+
+These URLs are duplicated in another file,
+:xfile:`docs/shared/include/part_of_lino.rst`, which adds my blog.
+
+The Rumma & Ko company website is *not* part of the Lino docs because our
+long-term vision is to create a :ref:`lsf` who governs Lino while :ref:`rumma`
+would just be one :term:`development provider` among many others.
+
+I added a substitution definition for the |external-link| button, which  the
+:term:`React front end` uses for the action that "liberates a slave", i.e. opens
+a :term:`slave panel` in its own :term:`data window`.
+
+Oops, the :class:`pi-button` class used by the |external-link| button (and all
+other icons from PrimeIcons) was in the :xfile:`linodocs.css` file, which I
+removed some days ago. I resurrected it in a new :xfile:`atelier.css`, which
+comes automatically with atelier.
+
+
+voga1r demo : cannot enroll existing client in existing activity
+================================================================
+
+Main problem is that it doesn't work in the online demo. Not reproducible in
+current roger demo.
+
+Another problem is usability: users must guess that they need to go to the
+*Activities* tab and then click the [external-link] button of the "Enrolments in
+Activities of Hans Altenberg (MEL) (Also Cancelled)" panel where they have an
+"Insert" button. The fix to this problem is probably straightforward: just say
+"summary" or "html" instead of "grid" for the courses.EnrolmentsByPupil slave
+table.
+
+display_mode "html" is good, "summary" isn't what they want. But the html
+display mode is not beautiful in React. I will create another ticket for that.
+
+Another thing to do : Voga needs a user type "Participant", and a participant
+should see the courses to which they are enrolled, should be able to apply for
+enrolment in a course, stop an enrolment, manage their presences, ...
+
+About pronto, mercato and ciao
+==============================
+
+I moved pronto from GitHub to GitLab.  :ref:`gh2gl` The pronto project doesn't
+contain much work, but it might wake up one day and it is part of the known
+contributor repositories installed by getlino. But the mercato and ciao projects
+didn't contain any significant work and I started to forget them: getlino
+actually never knew them. I deleted them on GitHub.

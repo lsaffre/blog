@@ -16,6 +16,7 @@ configure(globals(), 'lino_book.projects.min9.settings')
 # intersphinx_mapping['hg'] = ('https://hosting.lino-framework.org/', None)
 
 intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
+intersphinx_mapping['www'] = ('https://www.saffre-rumma.net/', None)
 
 extensions += ['atelier.sphinxconf.blog']
 extensions += ['atelier.sphinxconf.complex_tables']
