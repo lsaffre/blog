@@ -51,13 +51,6 @@ Gerd
 
 Gerd is system administrator at :ref:`cpaseupen`.
 
-.. _hamza:
-
-Hamza
------
-
-Is my assistant since September 2015.  He has his own (but not yet
-very active) blog at http://hamza.lino-framework.org/
 
 .. _james:
 
@@ -72,8 +65,8 @@ Is a Lino fan living in Japan.
 Leena
 -----
 
-Is the first woman in the world who managed to follow the
-:ref:`lino.dev`. She lives in California.
+Is the first woman in the world who followed the :ref:`lino.dev`. She lives in
+California.
 
 
 .. _grigorij:
@@ -203,13 +196,6 @@ Subha (pronounced *suvo*) is a volunteer contributor and potential
 core team member living in `Kolkata
 <https://en.wikipedia.org/wiki/Kolkata>`_ (India).
 
-.. _tonis:
-
-Tonis
--------
-
-Tonis is a Lino contributor living in Tallinn.
-
 
 .. _tim:
 
@@ -227,15 +213,6 @@ EVEA
 `EVEA <http://evea.ee>`__
 (Eesti Väike- ja Keskmiste Ettevõtjate Assotsiatsioon)
 is the Estonian Association of SME.
-
-.. _rumma:
-
-Rumma & Ko
-==========
-
-`Rumma & Ko OÜ <http://saffre-rumma.net>`_ is my employer, owned by my
-father-in-law, my wife and myself.  Rumma & Ko lives from offering
-professional consultance for TIM and Lino applications.
 
 
 .. _active:
@@ -341,4 +318,3 @@ Other
 - `wpj s.r.o <http://www.wpj.cz/>`_ (:ref:`joe`)
 - `APC <http://www.apc.be>`_ (:ref:`ap`)
 - `ExcellentServ <http://www.xservx.com/>`__  (:ref:`mma`)
-

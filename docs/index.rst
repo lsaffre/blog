@@ -3,11 +3,13 @@ Luc's developer blog
 ====================
 
 Welcome to my developer blog.  This is where I write almost daily
-about my software projects, especially the `Lino framework
-<http://www.lino-framework.org/>`_.
+about my software projects, especially the :term:`Lino framework`.
+
+.. include:: /shared/include/part_of_lino.rst
+
 
 .. blogger_latest::
-  
+
 Sitemap
 -------
 
@@ -25,3 +27,4 @@ Sitemap
    tickets/index
    glossary
    ref/index
+   copyright

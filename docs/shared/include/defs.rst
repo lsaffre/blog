@@ -24,6 +24,7 @@
 .. |insert_old|  image:: /../docs/shared/images/buttons/insert.png
 .. |eject|  image:: /../docs/shared/images/buttons/eject.png
 .. |search|  image:: /../docs/shared/images/buttons/search.png
+.. |merge|  image:: /../docs/shared/images/buttons/arrow_join.png
 .. |lightning|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/lightning.png?raw=true
 .. |delete|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/delete.png?raw=true
 .. |insert|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/add.png?raw=true
