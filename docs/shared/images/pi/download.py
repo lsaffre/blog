@@ -1,7 +1,10 @@
 """
-Note that the icons downloaded by this script are
-Copyright (c) 2018 PrimeTek
+The icons downloaded by this script are Copyright (c) 2018 PrimeTek
 See https://github.com/primefaces/primeicons/blob/master/LICENSE
+
+The master copy of this file is in the book repository. Don't edit its copy in a
+slave repository.  See https://dev.lino-framework.org/writedocs/shared.html
+
 """
 import requests
 from pathlib import Path

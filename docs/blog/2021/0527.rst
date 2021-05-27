@@ -1,0 +1,71 @@
+:date: 2021-05-27
+
+======================
+Thursday, May 27, 2021
+======================
+
+End-user help pages
+===================
+
+I added a documentation entry about :manage:`makedocs`.   The generation process
+itself seems now good, but the next step and the most exciting work here is
+still to do: have it generate some useful content into help pages.  I am full of
+ideas, but find no time to realize them.
+
+
+Review the notification framework
+=================================
+
+Sharif and I continued to work on :mod:`lino.modlib.notify` and :ticket:`4174`
+(Improve serviceWorker).
+
+I pushed my changes in lino, xl, ug and book.
+
+This sprint on the notification framework seems to come to its end. The biggest
+change is that we now use the Push API instead of websockets (django-channels
+and awsgi) for implementing :term:`desktop notifications`.  The
+:attr:`lino.modlib.notify.use_websockets` plugin parameter is still there but
+setting it to `True` means that you enter unmaintained areas.
+:attr:`lino.modlib.notify.use_websockets`
+
+.. currentmodule:: lino.modlib.notify
+
+The notification messages are now being created in a subprocess. Thanks to
+Sharif who did this fully alone.  It's only a few lines of code thanks to
+Python's `multiprocessing` module, but you stilled need to find out how to use
+it.
+
+The :class:`Subscription` model now has :attr:`allow_cascaded_delete` for its
+:attr:`user` field.
+
+In order to test whether :class:`ChangeNotifier` works, the :fixture:`demo2`
+fixture for :mod:`lino.modlib.comments` now also calls :meth:`after_ui_save
+<lino.core.model.Model.after_ui_save>`.
+
+In :ref:`book.specs.notify` we added a snippet that shows these messages.
+
+:func:`send_notification` now logs what it does. The
+subject of a push notification must be the title of the :term:`Lino site`.
+
+The :mod:`lino_xl.lib.groups` plugin was saying that it wants to install
+:mod:`lino.modlib.comments`, which was nonsense.
+
+New Site parameter :attr:`lino.core.site.Site.use_multiprocessing` because the
+demo fixtures now also create notifications for the demo comments. And
+the subprocess didn't execute correctly during :manage:`prep`.
+
+TODO: Is there some way to say in :manage:`prep` that it should wait for all
+subprocess to finish?
+
+TODO: After releasing to Jane, observe whether notifications are correctly done.
+
+
+Using Docker
+=============
+
+How to build a Docker image that allows you to ssh into it::
+
+  $ go hg
+  $ cd projects/ansible
+  $ docker build -t newserver -f Newserver ~/.ssh
+  $ docker run -it newserver /bin/bash

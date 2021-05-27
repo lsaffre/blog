@@ -1,0 +1,64 @@
+:date: 2021-05-23
+
+====================
+Sunday, May 23, 2021
+====================
+
+
+Sharif and I had a three-hours session for :ticket:`3049` (Websocket connection
+in React for notifications).  Before this, Saturday, we had a historic meeting
+where Hamza joined us and presented what he had done on :data:`use_websockets`
+two years ago.
+
+.. currentmodule:: lino.modlib.notify
+
+Now Sharif and I moved :data:`use_websockets` and :data:`enable_push` from
+:class:`Site` to the :mod:`lino.modlib.notify` plugin. They are no longer site
+attributes but plugin options.  The :mod:`lino_book.projects.chatter` demo
+project will be the only place where
+
+The :data:`enable_push` option means that Lino uses the  `Push API
+<https://www.w3.org/TR/push-api/>`__ for sending notifications.
+
+I installed pywebpush and ngrok (pronounced [en-grok]) on my machine.
+https://ngrok.com/docs#name
+
+
+We had some fiddling with git because I still don't fully understand how to work
+with remote branches.  Some excerpts to be integrated into :ref:`dev.git`::
+
+  $ git branch --track remote_branch
+
+  $ git stash save
+  Saved working directory and index state WIP on master: 0d9947c2 fix 2 warnings term not in glossary
+  $ git stash pop
+
+  $ git branch -u origin/blurry blurry
+  Branch 'blurry' set up to track remote branch 'blurry' from 'origin'.
+
+
+  $ git branch -u origin/blurry blurry
+  error: the requested upstream branch 'origin/blurry' does not exist
+  hint:
+  hint: If you are planning on basing your work on an upstream
+  hint: branch that already exists at the remote, you may need to
+  hint: run "git fetch" to retrieve it.
+  hint:
+  hint: If you are planning to push out a new local branch that
+  hint: will track its remote counterpart, you may want to use
+  hint: "git push -u" to set the upstream config as you push.
+
+How to fetch a remote branch and start tracking it::
+
+  git fetch git@gitlab.com:lino-framework/lino blurry:blurry
+
+How to see whether my branches are remote::
+
+  git branch -vv
+
+Situation: I am on master. Sharif created and pushed a new remote branch blurry.
+To see his work, I do::
+
+  git checkout -b blurry origin/blurry
+
+See `man git checkout`.
