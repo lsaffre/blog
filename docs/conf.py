@@ -38,7 +38,7 @@ project = "Luc's developer blog"
 copyright = '2001-2021 Luc Saffre'
 
 
-html_title = "Luc's dblog"
+# html_title = "Luc's dblog"
 html_short_title = "Home"
 html_logo = "logo2.jpg"
 

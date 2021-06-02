@@ -39,9 +39,9 @@ VCF                `Import into your address book <../dl/luc.vcf>`_
 
 .. Confidential mails `GPG Public key <../dl/pubkey.gpg>`_ |br|
 
-
 .. toctree::
 
+   hire
    cv
    historic
    songbook
