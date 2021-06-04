@@ -7,3 +7,48 @@ Wednesday, June 2, 2021
 As a side effect of my work as a Python developer for Lino I often receive job
 offers. I generalized the statement I wrote :doc:`0520` and  used those thoughts
 in my new :doc:`/about/hire` page.
+
+
+The :cmd:`inv bd` for getlino is  `failing on GitLab
+<https://gitlab.com/lino-framework/getlino/-/jobs/1307346960#L220>`__. I can
+reproduce the problem on my computer as follows.
+
+- Deactivate my :file:`~/.atelier/config.py`.
+
+- In my terminal::
+
+    go getlino
+    pip uninstall atelier
+    pip install atelier
+    inv clean -b bd
+
+
+The :xfile:`conf.py` file of the getlino docs is not yet converted to the "new
+style". But that shouldn't be the problem.
+
+If calls :func:`atelier.sphinxconf.interproject` as follows::
+
+  from atelier.sphinxconf import interproject
+  interproject.configure(globals(), 'atelier')
+
+
+The problem was caused by a bug in :meth:`atelier.projects.Project.get_xconfig`.
+For projects that were loaded from a python module installed from pypi (i.e.
+without a :xfile:`tasks.py` file) it ignored the hard-coded default values.
+
+The problem appeared only now because I had recently removed the  line
+``doc_trees = ['docs']`` from the :xfile:`__init__.py` file of several main
+modules.  I removed it because it caused useless complexity: everybody knows
+that the default value for :envvar:`doc_trees` is `['docs']` and we shouldn't
+repeat this.
+
+I released atelier 1.1.39 to PyPI
+
+Note that the ``test`` job for getlino still fails on GitLab. This is another
+story. It says::
+
+  ./prep.sh: line 11: docker: command not found
+
+We simply need to also install the docker system package. We can use their
+`convenience script
+<https://docs.docker.com/engine/install/debian/#install-using-the-convenience-script>`.
