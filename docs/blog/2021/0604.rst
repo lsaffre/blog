@@ -45,3 +45,33 @@ List of the touched repositories:
  algus     master!   https://gitlab.com/lino-framework/algus
  blog      master!   https://github.com/lsaffre/blog
 ========= ========= ===========================================
+
+
+
+Upgrade to Sphinx 4
+===================
+
+In `eid` I had the following problem::
+
+  Extension error (sphinx.ext.extlinks):
+  Handler <function setup_link_roles at 0x7f381b1c1048> for event 'builder-inited' threw an exception (exception: 'NoneType' object has no attribute 'replace')
+
+This was because :mod:`atelier.sphinxconf.default_conf` didn't test for an empty
+:func:`srcref_url_template`. Now it does::
+
+  if prj.main_package:
+      root_mod, tpl = srcref_url_template(prj.main_package)
+      if tpl:
+          extlinks.update(srcref=(tpl, ''))
+
+A second problem was this::
+
+  from sphinx.roles import menusel_role
+  ImportError: cannot import name 'menusel_role'
+
+  from sphinx.roles import MenuSelection as menusel_role
+  ImportError: cannot import name 'menusel_role'
+
+A third problem was in :ref:`welfare`::
+
+  docs/specs/plugins.rst:5: WARNING: duplicated entry found in toctree: specs/clients
