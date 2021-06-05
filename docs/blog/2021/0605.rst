@@ -1,0 +1,78 @@
+:date: 2021-06-05
+
+======================
+Saturday, June 5, 2021
+======================
+
+Fixing #4185
+============
+
+Yesterday Sharif and I had a session where we discovered issue :ticket:`4185`.
+I had no idea at this moment and gave this to Sharif. Later he commented:
+
+ Basically they all have the same: "type": "Father(Mother)" in the href. Even if
+ the type were correct, it wouldn't still work because react weren't
+ acknowledging these values. ...
+
+That comment made me tilt. I commented:
+
+  Ha! I understood (maybe !) : we need to call BaseRequest.clear_cached_status()
+  before rendering each button. Read the docs and explore. Maybe you understand.
+  Ask questions if it isn't clear.
+
+Now I found time to verify it myself.  Indeed this was the explanation of the
+issue.  Fixing the issue itself was less than two minutes of work.
+
+But this little bug has been living there for more than a year. And the test
+suite didn't complain.  That's the real problem. And another problem is that
+Sharif had no chance to understand what I was talking about, at least not in
+reasonable time.
+
+So before changing any code, I wrote a test case that reproduces the problem:
+:ref:`reproduce.4185`.
+
+En passant I converted the developer docs about :mod:`lino_xl.lib.humanlinks`
+from autodoc to prosa. And I fixed a cosmetic bug, a missing space: Lino said
+"Father(Mother)" instead of "Father (Mother)".
+
+TODO: write end-user documentation.
+
+Here are my code changes:
+
+- 2021-06-05 05:36 in *book*:
+  `5ad1ece <git@gitlab.com:lino-framework/book.git>`__
+  (fixing #4185 (reproduce the issue))
+
+- 2021-06-05 05:42 in *xl*:
+  `cd03f93 <git@gitlab.com:lino-framework/xl.git>`__
+  (fix #4185)
+
+- 2021-06-05 05:42 in *book*:
+  `4594e20 <git@gitlab.com:lino-framework/book.git>`__
+  (fixing #4185 (reproduce the issue))
+
+- 2021-06-05 06:35 in *xl*:
+  `8a9dd7a <git@gitlab.com:lino-framework/xl.git>`__
+  (convert humanlinks docs to prosa)
+
+- 2021-06-05 06:36 in *book*:
+  `d0d387d <git@gitlab.com:lino-framework/book.git>`__
+  (convert humanlinks docs to prosa)
+
+Here is how this test was failing before I fixed the
+issue::
+
+  $ doctest docs/specs/humanlinks.rst
+  **********************************************************************
+  File "docs/specs/humanlinks.rst", line 88, in humanlinks.rst
+  Failed example:
+      print(links[8])  #doctest: +NORMALIZE_WHITESPACE +ELLIPSIS
+  Expected:
+      <a href='javascript:Lino.humanlinks.LinksByHuman.insert.run(...
+      "type": "Adopted son(Adopted daughter)"...">Adopted son</a>
+  Got:
+      <a href='javascript:Lino.humanlinks.LinksByHuman.insert.run(null,{ "base_params": { "parent": 218, "type": "01" }, "data_record": { "data": { "child": null, "childHidden": null, "disabled_fields": {  }, "parent": "Mr Lars Braun", "parentHidden": 218, "type": "Father(Mother)", "typeHidden": "01" }, "phantom": true, "title": "New Personal Link" }, "record_id": null })' style="text-decoration:none" title="Open a dialog window to insert a new Personal Link.">Adopted son</a>
+  **********************************************************************
+  1 items had failures:
+     1 of  18 in humanlinks.rst
+  ***Test Failed*** 1 failures.
