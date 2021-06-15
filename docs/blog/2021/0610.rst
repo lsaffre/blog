@@ -1,0 +1,45 @@
+:date: 2021-06-10
+
+=======================
+Thursday, June 10, 2021
+=======================
+
+Sharif and I had a brainstorming about what we can do to improve Lino's calendar
+functionality.
+
+TODO:
+
+The :mod:`lino_xl.lib.calview` plugin still has some quite visible issues :
+
+- Fix the minimum column width: when rendering the columns for the weekdays,
+  the calendar view switches to quickly into the mode "There is not enough width
+  to display all columns, so I must add a horizontal wrapper"
+
+- The :attr:`navigation_panel <lino.core.model.Model.navigation_panel>` should
+  be collapsible.
+
+- The navigation buttons are kind of duplicated. But which one to remove?
+  User can skip by day and by month, but not by year.
+
+
+Google API:
+
+- rename ``googleapi_people`` to ``google`` and have it collaborate also
+  with cal and albums.
+
+- Have :class:`lino_xl.lib.contacts.Person` and :class:`lino_xl.lib.cal.Event`
+  inherit from
+  :class:`GooglePeopleSynchronized`.
+
+- :class:`GooglePeopleSynchronized` to a separate :file:`mixins.py` module and
+  add a test ``if dd.is_installed('google'):`` so that the mixin can be used
+  also when the plugin is not installed (and doesn't add anything in that case).
+
+
+DONE:
+
+- Rename GooglePeople to GoogleSynchronized :attr:`google_resourceName` becomes a class
+  attribute. For each ``resource`` we will have a subclass:
+  GooglePeopleSynchronized
+  GoogleCalendarSynchronized
+  GoogleImagesSynchronized

@@ -1,0 +1,184 @@
+:date: 2021-06-09
+
+=======================
+Wednesday, June 9, 2021
+=======================
+
+"Commands out of sync; you can't run this command now"
+======================================================
+
+In the detail view of a ticket, after clicking on the mark_ready icon, I
+saw a red notification, and the :xfile:`lino.log` says::
+
+  202106-09 12:14:19 INFO [kernel 23479 140427458520960] :
+    run_action luc tickets.ActiveTickets.mark_ready None [Ticket #4194 ("#4194 (⚒ on jane The insert window doesn't close after submitting)")]
+  202106-09 12:14:19 WARNING [log 23479 140427458520960] :
+    The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.: /api/tickets/ActiveTickets/4194
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 272, in _set_autocommit
+      self.connection.autocommit(autocommit)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/MySQLdb/connections.py", line 244, in autocommit_mysql.connection.autocommit(self, on)
+  MySQLdb._exceptions.ProgrammingError: (2014, "Commands out of sync; you can't run this command now")
+
+  The above exception was the direct cause of the following exception:
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/sessions/backends/db.py", line 87, in save
+      obj.save(force_insert=must_create, force_update=not must_create, using=using)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/transaction.py", line 290, in __exit__
+      connection.set_autocommit(True)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/base/base.py", line 415, in set_autocommit
+      self._set_autocommit(autocommit)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 272, in _set_autocommit
+      self.connection.autocommit(autocommit)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/utils.py", line 90, in __exit__
+      raise dj_exc_value.with_traceback(traceback) from exc_value
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/mysql/base.py", line 272, in _set_autocommit
+      self.connection.autocommit(autocommit)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/MySQLdb/connections.py", line 244, in autocommit
+      _mysql.connection.autocommit(self, on)
+  django.db.utils.ProgrammingError: (2014, "Commands out of sync; you can't run this command now")
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/sessions/middleware.py", line 61, in process_response
+      request.session.save()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/sessions/backends/db.py", line 94, in save
+      raise UpdateError
+  django.contrib.sessions.backends.base.UpdateError
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+      response = get_response(request)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/utils/deprecation.py", line 119, in __call__
+      response = self.process_response(request, response)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/sessions/middleware.py", line 64, in process_response
+      "The request's session was deleted before the "
+  django.contrib.sessions.exceptions.SessionInterrupted: The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.
+
+
+I guess that this is another symptom of :ticket:`4195`. And I have now idea what
+might be the reason.  And it is not reproducible. We can only collect such
+tracebacks when they occur and try to get it in a reproducible way.
+
+I did pip install -U for Django and mysqlclient:
+
+- Django upgrades from 3.2 to 3.2.4
+- mysqlclient remains 2.0.3
+
+
+AttributeError: 'str' object has no attribute 'tzinfo'
+======================================================
+
+And after submitting a comment about this, I encountered another problem::
+
+  202106-09 12:49:46 INFO [kernel 23993 140541549119360] : run_action luc comments.CommentsByRFC.submit_insert Ticket #4195 ('#4195 (☎ Lost connection to MySQL server during query)') []
+  202106-09 12:49:46 ERROR [ajax 23993 140541549119360] : AjaxExceptionResponse AttributeError: 'str' object has no attribute 'tzinfo'
+  in request POST /api/comments/CommentsByRFC (data: <QueryDict: {
+    'an': ['submit_insert'],
+    'body': ['<p>Jane is back now, with Django upgraded from 3.2 to 3.2.4. mysqlclient was already at the newest version.</p>'],
+    'disabled_fields': ['[object Object]'...)
+  TRACEBACK:
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+      response = wrapped_callback(request, *callback_args, **callback_kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/views/generic/base.py", line 70, in view
+      return self.dispatch(request, *args, **kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/views/generic/base.py", line 98, in dispatch
+      return handler(request, *args, **kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_react/react/views.py", line 109, in post
+      return settings.SITE.kernel.run_action(ar)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/kernel.py", line 797, in run_action
+      a.run_from_ui(ar)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/actions.py", line 1115, in run_from_ui
+      self.save_new_instance(ar, elem)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/actions.py", line 1045, in save_new_instance
+      ar.set_response(rows=[ar.ah.store.row2list(ar, elem)])
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 1303, in row2list
+      fld.value2list(ar, v, l, row)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 254, in value2list
+      value, text = self.get_value_text(ar, v, row)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 270, in get_value_text
+      return (v, ch.get_text_for_value(v, obj))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/utils/choosers.py", line 424, in get_text_for_value
+      return m(value)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/modlib/gfks/fields.py", line 54, in fk_display
+      return str(ct.get_object_for_this_type(pk=value))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/contenttypes/models.py", line 175, in get_object_for_this_type
+      return self.model_class()._base_manager.using(self._state.db).get(**kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 431, in get
+      num = len(clone)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 262, in __len__
+      self._fetch_all()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 1324, in _fetch_all
+      self._result_cache = list(self._iterable_class(self))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 68, in __iter__
+      for row in compiler.results_iter(results):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/sql/compiler.py", line 1122, in apply_converters
+      value = converter(value, expression, connection)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/mysql/operations.py", line 313, in convert_datetimefield_value
+      value = timezone.make_aware(value, self.connection.timezone)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/utils/timezone.py", line 239, in make_aware
+      return timezone.localize(value, is_dst=is_dst)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/pytz/__init__.py", line 244, in localize
+      if dt.tzinfo is not None:
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/handlers/base.py", line 181, in _get_response
+      response = wrapped_callback(request, *callback_args, **callback_kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/views/generic/base.py", line 70, in view
+      return self.dispatch(request, *args, **kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/views/generic/base.py", line 98, in dispatch
+      return handler(request, *args, **kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_react/react/views.py", line 109, in post
+      return settings.SITE.kernel.run_action(ar)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/kernel.py", line 797, in run_action
+      a.run_from_ui(ar)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/actions.py", line 1115, in run_from_ui
+      self.save_new_instance(ar, elem)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/actions.py", line 1045, in save_new_instance
+      ar.set_response(rows=[ar.ah.store.row2list(ar, elem)])
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 1303, in row2list
+      fld.value2list(ar, v, l, row)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 254, in value2list
+      value, text = self.get_value_text(ar, v, row)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/core/store.py", line 270, in get_value_text
+      return (v, ch.get_text_for_value(v, obj))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/utils/choosers.py", line 424, in get_text_for_value
+      return m(value)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/modlib/gfks/fields.py", line 54, in fk_display
+      return str(ct.get_object_for_this_type(pk=value))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/contrib/contenttypes/models.py", line 175, in get_object_for_this_type
+      return self.model_class()._base_manager.using(self._state.db).get(**kwargs)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 431, in get
+      num = len(clone)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 262, in __len__
+      self._fetch_all()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 1324, in _fetch_all
+      self._result_cache = list(self._iterable_class(self))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/query.py", line 68, in __iter__
+      for row in compiler.results_iter(results):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/models/sql/compiler.py", line 1122, in apply_converters
+      value = converter(value, expression, connection)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/db/backends/mysql/operations.py", line 313, in convert_datetimefield_value
+      value = timezone.make_aware(value, self.connection.timezone)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/utils/timezone.py", line 239, in make_aware
+      return timezone.localize(value, is_dst=is_dst)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/pytz/__init__.py", line 244, in localize
+      if dt.tzinfo is not None:
+  AttributeError: 'str' object has no attribute 'tzinfo'
+
+I saw that we have some broken GFKs in Jane: :cmd:`pm show gfks.BrokenGFKs`
+produces a list of them.
+
+Lino automatically adds :class:`lino.utils.ajax.AjaxExceptionResponse` to the
+:setting:`MIDDLEWARE_CLASSES` setting. On a production site this caused error
+notification emails with a huge subject because the traceback was also printed
+in the subject of the message. I locally disabled this middleware on Jane
+because I don't remember why it's needed at all.
+
+I also met again with the issue that after submitting an insert window, Lino had
+a 504 Gateway Time-out and therefore returned an empty response to a perfectly
+reasonable POST request. The client then complains `SyntaxError: JSON.parse:
+unexpected character at line 1 column 1 of the JSON data`.

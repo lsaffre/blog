@@ -76,3 +76,48 @@ issue::
   1 items had failures:
      1 of  18 in humanlinks.rst
   ***Test Failed*** 1 failures.
+
+
+Dockerizing Lino
+=================
+
+Hannes and I had a session about dockerizing Lino.
+
+
+We wrote a new dockerfile to deploy a running Lino noi server::
+
+  $ docker build -t lino -f Dockerfiles/deploy .
+
+debian_updated : this is to avoid installing lots of debian packages again and
+again when testing.  If I haven't working getlino for a while it can make sense
+to build a fresh image::
+
+  $ go getlino
+  $ docker build --no-cache -t debian_updated -f Dockerfiles/debian_updated .
+  ...
+  Successfully tagged debian_updated:latest
+
+
+Here is where we stopped::
+
+  $ docker build -t lino -f Dockerfiles/deploy .
+  ...
+  Successfully installed BTrees-4.9.1 ZConfig-3.6.0 appy-1.0.7 bleach-3.3.0 docopt-0.6.2 num2words-0.5.10 persistent-4.7.0 transaction-3.0.1 zc.lockfile-2.0 zodb-5.6.0 zodbpickle-2.0.0
+  mysql -u root  -e "create user 'mysite1'@'localhost' identified by '4zz4o1ga5xA';"
+  ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
+  Error: mysql -u root  -e "create user 'mysite1'@'localhost' identified by '4zz4o1ga5xA';" ended with return code 1
+  The command '/bin/sh -c getlino startsite --batch noi mysite1' returned a non-zero code: 1
+
+
+
+Upgrade on Jane
+===============
+
+We had a strange issue after upgrading Jane:
+
+  TypeError: t.state.site_data.choicelists['system.DashboardLayouts'] is undefined
+
+The issue vanished after replacing one ``this`` by ``window.App``.
+
+makedocs failed because one template (:file:`conf.tpl.py`) is not included in
+the sdist.

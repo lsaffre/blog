@@ -1,0 +1,146 @@
+:date: 2021-06-13
+
+=====================
+Sunday, June 13, 2021
+=====================
+
+The new dashboard in Jane is still slow,
+and if often goes into "502 Bad Gateway" mode.
+This time I triggered 502 by deleting a ticket.
+
+I consult :ref:`admin.ram` and then compare Jane with another production site
+that is not slow.
+
+
+Output of `ps -e -orss=,args= |awk '{print $1 " " $2 }'| awk
+'{tot[$2]+=$1;count[$2]++} END {for (i in tot) {print tot[i],i,count[i]}}' |
+sort -n`
+
+On Jane::
+
+  ...
+  22784 postgres: 6
+  24336 /usr/lib/libreoffice/program/soffice.bin 1
+  29204 smtpd 3
+  37668 /lib/systemd/systemd-journald 1
+  114352 /usr/sbin/mysqld 1
+  130680 python 1
+  964544 /usr/bin/uwsgi 7
+
+On the other production site::
+
+  ...
+  71908 /usr/lib/libreoffice/program/soffice.bin 1
+  121340 /usr/sbin/mysqld 1
+  136868 python 1
+  1289172 /usr/bin/uwsgi 11
+
+
+Output of :cmd:`top` (and then :kbd:`M`) on Jane::
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+  26071 www-data  20   0  342784 149880   5144 S   0,0   7,5   1:07.29 uwsgi
+  26070 www-data  20   0  339304 145692   4488 S   0,0   7,3   1:41.30 uwsgi
+  26109 www-data  20   0  332804 138796   3872 S   0,0   7,0   0:00.46 uwsgi
+  25598 www-data  20   0  330812 137752   4820 S   0,0   6,9   0:15.93 uwsgi
+  26110 www-data  20   0  329576 135692   3872 S   0,0   6,8   0:00.56 uwsgi
+  25593 www-data  20   0  327696 134952   5000 S   0,0   6,8   0:16.70 uwsgi
+  32482 www-data  20   0  284960 130680   7872 S   0,0   6,6   0:29.15 python
+  25596 www-data  20   0  315052 121780   4868 S   0,0   6,1   0:11.89 uwsgi
+  25283 mysql     20   0 1727408 114352   1960 S   0,0   5,7   2:34.27 mysqld
+  ...
+
+Nothing suspicious there.
+
+But here. The :file:`/var/log/mysql/error.log` says::
+
+  2021-06-13  2:58:27 613 [Warning] Aborted connection 613 to db: 'xyz' user:
+  'abcd' host: 'cdef' (Got timeout reading communication packets)
+
+Whenever a communication error occurs, MySQL increments the status counter for
+either Aborted_clients or Aborted_connects. `Muhammad Irfan
+<https://www.percona.com/blog/2016/05/16/mysql-got-an-error-reading-communication-packet-errors/>`__
+
+My feeling says that we can exclude  `Aborted_connects
+<https://dev.mysql.com/doc/refman/5.6/en/server-status-variables.html#statvar_Aborted_connects>`__
+(failed attempts to connect to the MySQL server), so this log entry informs
+about a case of `Aborted_clients
+<https://dev.mysql.com/doc/refman/5.6/en/server-status-variables.html#statvar_Aborted_clients>`__,
+IOW a connection that was aborted because the client died without closing the
+connection properly.
+
+The client died without closing the connection properly?
+
+Irfan: "To be honest, aborted connection errors are not easy to diagnose."
+
+
+I should now enable the general query log of the MySQL server
+
+https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_general_log
+
+https://dev.mysql.com/doc/refman/5.6/en/query-log.html
+
+As it seems I can activate the general MySQL query log simply by adding a SET to
+the OPTIONS of my :setting:`DATABASES` setting.
+
+Something like this::
+
+  DATABASES = {
+      'default': {
+          'ENGINE': 'django.db.backends.mysql',
+          ...
+          'OPTIONS': {
+             "init_command": "SET default_storage_engine=MyISAM; SET log_output=FILE; SET general_log=ON; SET general_log_file=xyz-general.log"
+          }
+  }
+
+     "init_command": "SET default_storage_engine=MyISAM;
+     SET log_output=FILE;
+     SET general_log=ON;
+     SET general_log_file=jane-general.log"
+
+If you specify no name for the general query log file, the default name is
+`host_name.log`. The server creates the file in the data directory unless an
+absolute path name is given to specify a different directory.
+
+What is the "data directory" in MySQL?
+
+https://dev.mysql.com/doc/refman/5.7/en/data-directory.html
+
+Short answer: For a database named "xyz" it is
+:file:`/var/lib/mysql/xyz`.
+
+So after restarting Lino, my log file should be in :file:`/var/lib/mysql/xyz/xyz-general.log`
+
+Only problem is that it doesn't work.   After almost an hour of trying, I still
+didn't manage to activate the MySQL general query log (at runtime, i.e. without
+changing the server config).
+
+The :file:`/etc/mysql/mariadb.conf.d/50-server.cnf` config file says this::
+
+  # Both location gets rotated by the cronjob.
+  # Be aware that this log type is a performance killer.
+  # As of 5.1 you can enable the log at runtime!
+  #general_log_file       = /var/log/mysql/mysql.log
+  #general_log            = 1
+
+So I finally uncommented these two lines in the
+:file:`/etc/mysql/mariadb.conf.d/50-server.cnf` and said :cmd:`sudo service
+mysql restart`.
+
+Now I have a :file:`/var/log/mysql/mysql.log` file.
+
+Every ten seconds it says::
+
+  210613 19:55:12	   467 Query	SELECT COUNT(*) AS `__count` FROM `notify_message` LEFT OUTER JOIN `users_user` ON (`notify_message`.`user_id` = `users_user`.`id`) WHERE (`notify_message`.`sent` IS NULL AND NOT (`users_user`.`email` = '' AND `users_user`.`email` IS NOT NULL) AND `notify_message`.`mail_mode` = 'often')
+  210613 19:55:14	   467 Query	SELECT `django_mailbox_mailbox`.`id`, `django_mailbox_mailbox`.`name`, `django_mailbox_mailbox`.`uri`, `django_mailbox_mailbox`.`from_email`, `django_mailbox_mailbox`.`active`, `django_mailbox_mailbox`.`last_polling` FROM `django_mailbox_mailbox` WHERE `django_mailbox_mailbox`.`active`
+  	                 467 Query	UPDATE `django_mailbox_mailbox` SET `last_polling` = '2021-06-13 17:55:14.871730' WHERE `django_mailbox_mailbox`.`id` = 1
+  210613 19:55:22	   467 Query	SELECT COUNT(*) AS `__count` FROM `notify_message` LEFT OUTER JOIN `users_user` ON (`notify_message`.`user_id` = `users_user`.`id`) WHERE (`notify_message`.`sent` IS NULL AND NOT (`users_user`.`email` = '' AND `users_user`.`email` IS NOT NULL) AND `notify_message`.`mail_mode` = 'often')
+  210613 19:55:24	   467 Query	SELECT `django_mailbox_mailbox`.`id`, `django_mailbox_mailbox`.`name`, `django_mailbox_mailbox`.`uri`, `django_mailbox_mailbox`.`from_email`, `django_mailbox_mailbox`.`active`, `django_mailbox_mailbox`.`last_polling` FROM `django_mailbox_mailbox` WHERE `django_mailbox_mailbox`.`active`
+  		               467 Query	UPDATE `django_mailbox_mailbox` SET `last_polling` = '2021-06-13 17:55:24.889516' WHERE `django_mailbox_mailbox`.`id` = 1
+
+
+Yes, okay, that's how to have MySQL log everything. But it's not useful for our
+problem. Because people are working on other Lino sites on the same server.
+
+I will rather try :ref:`specs.noi.sql`.

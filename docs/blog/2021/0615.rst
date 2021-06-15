@@ -1,0 +1,32 @@
+:date: 2021-06-15
+
+=====================================
+New DashboardLayouts make things slow
+=====================================
+
+Tuesday, June 15, 2021
+
+In order to understand the cause of :ticket:`4207`,  I wrote a
+testing page :ref:`book.tested.dashboard_sql`
+:file:`book/docs/specs/noi/sql_dashboard.rst`, which activates SQL logging, then renders
+the dashboard, and then shows the number of database queries that were executed.
+
+New feature for :term:`tested documents <tested document>``:
+:meth:`lino.core.requests.BaseRequest.show`
+now supports showing a :term:`detail window`.
+Side effects:
+:meth:`lino.core.site.Site.get_main_html` now takes an `ar` instead of a `request`.
+New method :meth:`lino.modlib.jinja.Plugin.render_from_ar`.
+New method :meth:`lino.core.renderer.HtmlRenderer.show_detail`.
+The output of :func:`lino.api.doctest.show_dashboard` now uses the tex renderer
+instead of the site's default renderer.
+
+
+Note that all this does not yet even try to fix the :ticket:`4207` issue. My
+plan is to use these new features on the production site where I plan to
+:manage:`run` the following script::
+
+  from lino.api.doctest import *
+  reset_sql_queries()
+  rt.login('robin').show('system.Dashboard')
+  show_sql_summary()
