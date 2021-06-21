@@ -1,0 +1,106 @@
+:date: 2021-06-16
+
+========================
+Wednesday, June 16, 2021
+========================
+
+insipid ticket #50
+==================
+
+With Matthias' help I fixed `insipid ticket #50
+<https://github.com/mgeier/insipid-sphinx-theme/issues/50>`__.
+
+
+The request's session was deleted before the request completed
+==============================================================
+
+After clicking the submit button of the insert window of a comment (POST
+https://jane.mylino.net/api/comments/CommentsByRFC) I got once more a red
+notification message (saying something I didn't manage to read).
+
+The Lino log says::
+
+  202106-16 06:26:24 INFO [kernel 7902 140385269999488] : run_action luc comments.CommentsByRFC.submit_insert Ticket #4213 ('#4213 (☐ Font size becomes bigger when I tap on link)') []
+  202106-16 06:26:25 WARNING [log 7902 140385269999488] : The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.: /api/comments/CommentsByRFC
+  Traceback (most recent call last):
+    File ".../env/lib/python3.7/site-packages/django/contrib/sessions/backends/db.py", line 87, in save
+      obj.save(force_insert=must_create, force_update=not must_create, using=using)
+    File ".../env/lib/python3.7/site-packages/django/db/models/base.py", line 727, in save
+      force_update=force_update, update_fields=update_fields)
+    File ".../env/lib/python3.7/site-packages/django/db/models/base.py", line 765, in save_base
+      force_update, using, update_fields,
+    File ".../env/lib/python3.7/site-packages/django/db/models/base.py", line 848, in _save_table
+      raise DatabaseError("Forced update did not affect any rows.")
+  django.db.utils.DatabaseError: Forced update did not affect any rows.
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File ".../env/lib/python3.7/site-packages/django/contrib/sessions/middleware.py", line 61, in process_response
+      request.session.save()
+    File ".../env/lib/python3.7/site-packages/django/contrib/sessions/backends/db.py", line 94, in save
+      raise UpdateError
+  django.contrib.sessions.backends.base.UpdateError
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File ".../env/lib/python3.7/site-packages/django/core/handlers/exception.py", line 47, in inner
+      response = get_response(request)
+    File ".../env/lib/python3.7/site-packages/django/utils/deprecation.py", line 119, in __call__
+      response = self.process_response(request, response)
+    File ".../env/lib/python3.7/site-packages/django/contrib/sessions/middleware.py", line 64, in process_response
+      "The request's session was deleted before the "
+  django.contrib.sessions.exceptions.SessionInterrupted: The request's session was deleted before the request completed. The user may have logged out in a concurrent request, for example.
+
+In `this thread on stackoverflow
+<https://stackoverflow.com/questions/46982576/the-requests-session-was-deleted-before-the-request-completed-the-user-may-hav>`__
+they suggest miscellaneous explanations, but none of them seems to apply here.
+Jane uses the database for storing sessions, and I am quite sure that I didn't
+log out in some other tab.
+
+>>> from django.conf import settings
+>>> settings.SESSION_ENGINE
+'django.contrib.sessions.backends.db'
+
+::
+  $ pip freeze | grep Django
+  Django==3.2.4
+
+  $ pip install -U mysqlclient Django
+  Requirement already satisfied: mysqlclient in ./env/lib/python3.7/site-packages (2.0.3)
+  Requirement already satisfied: Django in ./env/lib/python3.7/site-packages (3.2.4)
+  Requirement already satisfied: sqlparse>=0.2.2 in ./env/lib/python3.7/site-packages (from Django) (0.4.1)
+  Requirement already satisfied: pytz in ./env/lib/python3.7/site-packages (from Django) (2021.1)
+  Requirement already satisfied: asgiref<4,>=3.3.2 in ./env/lib/python3.7/site-packages (from Django) (3.3.4)
+  Requirement already satisfied: typing-extensions in ./env/lib/python3.7/site-packages (from asgiref<4,>=3.3.2->Django) (3.7.4.3)
+
+
+Actually the first problem in above traceback is `DatabaseError: Forced update
+did not affect any rows`, when something tries to save the current session.
+
+The following line of the traceback looks interesting::
+
+    File ".../python3.7/site-packages/django/utils/deprecation.py", line 119, in __call__
+      response = self.process_response(request, response)
+
+That code uses asyncio, so I wonder whether the problems might come because the
+notify plugin uses `asgiref.sync.async_to_sync`. But hasn't it been doing that
+already earlier? That question remains open for my next session.
+
+I create a new comment "new comment for testing" and click "Create". Sometimes
+it works and sometimes it doesn't work. When it doesn't work, then it actually
+did create the comment, but
+
+The problem seems to have disappeared after setting
+:attr:`lino.core.site.Site.use_multiprocessing` to `False`.
+
+
+Just as a reminder, here are the new features Lino on which we are working
+
+- push api
+- use multiprocessing when notifying others
+- dashboard layouts
+- delayed values
+- sync google api for calendar and contacts
+- optimizations of react front end
