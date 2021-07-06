@@ -1,0 +1,31 @@
+:date: 2021-07-04
+
+====================
+Sunday, July 4, 2021
+====================
+
+Today I upgraded my :ref:`amici` production site and then played around in order
+to manually test the new version on real data.
+
+I stumbled into an irritating behaviour of
+:class:`lino_xl.lib.cal.EventGenerator`. I have a long-running weekly activity
+that started years ago. Until now I didn't use my :ref:`amici` very much, most
+events are in state suggested only some of the events are actually confirmed
+(i.e. state is took_place). The weekday of the event recently changed from
+Tuesday to Monday. Now I'd like to start confirming these events more seriously.
+I'd like Lino to forget all the old suggestions and to keep only the confirmed
+old events. And to generate a new series. I change start_date to 2021-06-28,
+change the weekday from Tue to Mon, then hit the flash button. Events are now on
+Monday, yes, but they start already in December 2020. I said start_date
+2021-06-28.  Continued :doc:`0706`.
+
+And then a behaviour that is not only disturbing but destructive: I had manually
+entered the guests of an event (the activity of which had no enrolments).
+Editing the guests was possible only by setting the event state to took_place.
+That's okay as a limitation.  I then saw that these manually entered guests had
+the state "invited". I switched the state back to draft, believing that
+switching back to took_place will set them to present (because force_guests is
+True) But poof! Setting the event to draft *deleted* all my presences. Without
+warning. We must forgive Lino because there are situations where we actually
+want it to delete suggested guests. But this was not such a situation.  To be
+continued.

@@ -1,0 +1,26 @@
+:date: 2021-07-06
+
+=====================
+Tuesday, July 6, 2021
+=====================
+
+I fixed the first issue observed :doc:`0704`. Explanation: when the date of a
+suggested event gets modified by the user, Lino aligns all following events
+accordingly. Change: From now on Lino also verifies that such a date change
+remains within its limits. You cannot go back in time. When lesson 1 was on a
+given date, you cannot make lesson 2 happen before lesson 1.  I changed the
+algorithm and internal API for analyzing the existing events.
+
+I found and fixed another bug: create an activity without enrolments, let it
+generate some events, pick one of the events, manually add a guest, mark the
+event as took_place. Then try to delete the activity. Lino simply did this. Now
+it says "Cannot delete X because it has user-modified calendar entries."
+
+Internal change:
+I renamed :meth:`update_cal_rset` to :meth:`get_recurrence_set`.
+
+I extended the documentation about
+:ref:`ug.ref.plugins.cal.automatic_events`.
+
+I added more test cases in
+:file:`lino_book/projects/roger/tests/test_faggio.py`
