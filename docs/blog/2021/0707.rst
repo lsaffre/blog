@@ -1,0 +1,45 @@
+:date: 2021-07-07
+
+=======================
+Wednesday, July 7, 2021
+=======================
+
+I worked on :ticket:`4245` (Lino deleted the guests from my event) .
+
+The problem happens only when :meth:`can_edit_guests_manually` returns `False`.
+It seems that :meth:`can_edit_guests_manually` should not base its decision on
+the state of the event. But when then do we have :attr:`EntryState.fill_guests`
+
+In amici1, log in as robin, create an activity, check a weekday, hit
+update_events: Lino says "No automatic calendar entries because no entry type is
+configured."
+
+The :fixture:`std` fixture of :mod:`lino_xl.lib.cal` now sets the event type
+"Meeting" as :attr:`SiteConfig.default_event_type`.
+
+
+:meth:`lino_xl.lib.Course.update_cal_event_type` now returns
+:attr:`SiteConfig.default_event_type` if the activity has no line (or if the
+line has no event_type).
+
+
+I replaced the :meth:`can_edit_guests_manually` of
+:class:`lino_xl.lib.cal.Event` by a new database field
+:attr:`lino_xl.lib.cal.Event.guests_edited`. This is an invisible field, it is
+similar to :attr:`lino_xl.lib.vat.VatDocument.items_edited`
+
+
+Manual tests
+
+- In :ref:`amici`, try to make Lino "accidentally" delete my manually entered
+  guests.
+
+- In :ref:`avanti`: create a course with 2 enrolments. have it generate some
+  lessons. check that the enrolments have become guests. manually edit the guest
+  list in one event: add an extra guest. Add one new enrolment and remove one
+  enrolment from the course, then run update_guests on the course. Check whether
+  the guests of the first event have remained unchanged while the second event
+  has received the new guest.
+
+The manual tests pass. I run the test suite, which will need some changes
+because there is a new database field.

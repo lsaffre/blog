@@ -1,0 +1,42 @@
+:date: 2021-07-09
+
+====================
+Friday, July 9, 2021
+====================
+
+I committed my recent work on :manage:`makedocs` (:ticket:`4172`).  I started to
+understand a few things.  Time to write some documentation.
+
+:manage:`makedocs` now generates only the actor pages (and an index page), IOW a
+page per actor but no more pages per model and per plugin. That's because actor
+pages are the only ones to be opened by the help button. Each actor page should
+directly refer to the relevant places in the :term:`reference documentation` and
+the :term:`user guide`.
+
+Note that :term:`reference documentation` is a new glossary term. We should say
+:term:`reference documentation` instead of :term:`developer guide` because this
+kind of documentation is actually not only for developers, they are also for
+:term:`key users <key user>`. These "reference docs" are currently integrated
+into the :term:`developer guide`, but this might change.
+
+I moved the logic for loading help texts at startup into a separate class
+:class:`lino.core.help.HelpTextsLoader`. The HTL is instantiated temporarily by
+the :meth:`lino.core.kernel.Kernel.kernel_startup`. The makedocs command
+instantiates it another time because it also uses the first paragraph of actor
+class descriptions, which the kernel does not store. All this is still
+experimental.
+
+One day we should move all this help stuff into a separate plugin
+(:mod:`lino.modlib.help`) and make it an optional feature.
+
+To make my work more visible we should start to update the demo sites more
+often, and to run makedocs each time there. Here it gets related to the
+:ticket:`2480` ticket: it would be cool to have an impressive series of Lino
+demo sites on Heroku, each with a usable user guide....
+
+My goal for this time is that when clicking on the :guilabel:`?` button, Lino
+opens a page that is actually useful for an :term:`end user`.  Or more precisely
+a page that *has a chance* to be useful, when documentation is written
+accordingly.  Because that's another pair of shoes: defining the right
+conventions and habits of *where* to write *what*. This is currently still a big
+mess, and reviewing all docs is a big work. But I am advancing...
