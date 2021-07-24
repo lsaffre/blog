@@ -1,0 +1,29 @@
+:date: 2021-07-22
+
+=======================
+Thursday, July 22, 2021
+=======================
+
+Changes in the :mod:`lino_xl.lib.invoicing` model.
+
+.. currentmodule:: lino_xl.lib.invoicing
+
+To :attr:`Plan.today` field of an :term:`invoicing plan` is now read-only.
+That's because Lino needs it to make sure that the database never contains more
+than one :term:`invoicing plan` per user.
+
+New plugin attribute :attr:`Plugin.order_model` is "orders.Order" for
+:ref:`presto`.  Until now we had some special logic for orders in presto. But
+this special logic is actually generic (and optional): we need it in noi as
+well.
+
+I converted docs about :mod:`lino_voga.lib.courses` to prosa.
+
+I started to review the docs about :mod:`lino_xl.lib.invoicing`.  Until now we
+had no difference between :term:`invoice generator` and :term:`invoiceable`, but
+maybe we want to separate them.
+
+TODO:
+
+Extend the :mod:`lino_xl.lib.orders` plugin: an order is not only an
+EventGenerator but also an InvoiceGenerator.

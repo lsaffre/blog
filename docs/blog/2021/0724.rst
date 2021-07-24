@@ -1,0 +1,47 @@
+:date: 2021-07-24
+
+=======================
+Saturday, July 24, 2021
+=======================
+
+I worked on :ticket:`3301`. While generating service reports was almost done and
+is probably just a question of configuration, the new feature will be to have
+:ref:`noi` automatically generate yearly (or monthly) invoices for membership
+fees. Something very subtle is missing there, or just not well documented.  I
+will now commit a set of changes that are work in process. I kind of get
+prepared for the big coup.
+
+Changes for now:
+
+.. currentmodule:: lino_xl.lib.invoicing
+
+Changed the label for :class:`StartInvoicing` and subclasses :guilabel:`Create
+invoices` to :guilabel:`Generate invoices`.
+
+New plugin attribute :attr:`Plugin.order_model` to generalize what :ref:`tera`,
+:ref:`voga` and :ref:`presto` did until now in three :term:`plugin extensions
+<plugin extension>`, which were suspiciously similar.  The `invoicing` plugins
+in voga, tera and presto are no longer used.
+
+New plugin attribute :attr:`Plugin.three_demo_areas` to formulate the only
+difference between the :term:`plugin extensions <plugin extension>`: In Voga the
+:fixture:`demo` fixture creates only one invoicing area while other applications
+have three invoicing areas.
+
+I removed two unused method definitions :meth:`get_invoiceable_amount` in tera
+and voga.
+
+I renamed :meth:`get_invoiceable_product` to :meth:`get_invoicing_product`
+because this is not the product that will be invoiced, it is the product that
+knows the invoicing rule (tariff) to apply.
+
+I optimized some translations, which had an unexpected side effect: quite some
+time ago I moved the `roger` variant of voga from voga to book. And only now,
+after having done :cmd:`inv mm` in voga, the translations of the texts in this
+variant disappeared.
+
+TODO:
+
+- replace :meth:`get_invoicing_product` altogether by :meth:`get_invoicing_tariff`
+- rename "flatrate" (the verbose name for :class:`Tariff`) to "invoicing rule".
+- implement the new InvoiceGenerator methods on orders.Order
