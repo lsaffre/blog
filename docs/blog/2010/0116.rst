@@ -48,17 +48,23 @@ ber\xfccksichtigen die Gro\xdf-/Kleinschreibung.',)` auf der Konsole
 erscheinen.  Wie kriege ich die deutsche Meldung angezeigt? Was mach
 ich falsch?
 
-Erst mal ein `svn update` für Django: `Updated to revision 12231`. Immerhin ist Django in der Alpha von 1.2. Dann mal die [http://docs.djangoproject.com/en/1.1/topics/i18n/#topics-i18n Dokumentation über Djangos i18n] lesen. Hm... nützt alles nichts...
+Erst mal ein `svn update` für Django: `Updated to revision 12231`. Immerhin ist
+Django in der Alpha von 1.2. Dann mal die
+[http://docs.djangoproject.com/en/1.1/topics/i18n/#topics-i18n Dokumentation
+über Djangos i18n] lesen. Hm... nützt alles nichts...
 
-Also das ist eine Exception mit einer Meldung in Unicode. 
-Django-Ticket [http://code.djangoproject.com/ticket/6353 6353] 
+Also das ist eine Exception mit einer Meldung in Unicode.
+Django-Ticket [http://code.djangoproject.com/ticket/6353 6353]
 hatte da auch schon Probleme mit. Die haben das damals so gelöst:
 [http://code.djangoproject.com/attachment/ticket/6353/6353-2.diff].
 
-Tilt! Ich muss nicht `unicode()`, sondern Djangos `force_unicode()` benutzen. 
-Hier muss ich übrigens nicht `smart_unicode()` benutzen, weil mein JavaScript mit einem lazy translation string noch nichts anfangen könnte. Übersetzung findet momentan nur auf dem Server, nicht auf dem Client statt. 
+Tilt! Ich muss nicht `unicode()`, sondern Djangos `force_unicode()` benutzen.
+Hier muss ich übrigens nicht `smart_unicode()` benutzen, weil mein JavaScript
+mit einem lazy translation string noch nichts anfangen könnte. Übersetzung
+findet momentan nur auf dem Server, nicht auf dem Client statt.
 
-Voilà. Und dass man sich momentan noch nicht mit den TIM-Benutzernamen einloggen kann, weil die kein Passwort haben, das lass ich vorerst mal offen.
+Voilà. Und dass man sich momentan noch nicht mit den TIM-Benutzernamen einloggen
+kann, weil die kein Passwort haben, das lass ich vorerst mal offen.
 
 Habe `allowBlank=False` für das Feld Passwort gesetzt. Er umrahmt das
 Feld zwar jetzt in Rot, wenn es leer ist, aber trotzdem schickt er den
@@ -94,9 +100,9 @@ nur validierte Form data akzeptiert. Also ein neues Attribut
 `Action.needs_validation`, das in actions.OK auf True gesetzt wird.
 
 Schön wäre noch, wenn ich den defaultButton definieren könnte.
-Neues Attribut `Layout.default_element` ist (wenn nicht None) ein String mit dem Namen des Default-Buttons. Und `extjs.InputElement` muss dann nur den `id` ebenfalls setzen. 
+Neues Attribut `Layout.default_element` ist (wenn nicht None) ein String mit dem Namen des Default-Buttons. Und `extjs.InputElement` muss dann nur den `id` ebenfalls setzen.
 
-Das funktioniert jetzt so, aber Problem: ExtJS versteht unter defaultButton die Komponente, die beim Öffnen den Fokus bekommen soll ("Specifies a Component to receive focus when this Window is focussed."). Das ist ein irritierender Name. Unter "Default Button" verstehe ich was ganz anderes, nämlich den Button, der bei ENTER aktiviert werden soll. 
+Das funktioniert jetzt so, aber Problem: ExtJS versteht unter defaultButton die Komponente, die beim Öffnen den Fokus bekommen soll ("Specifies a Component to receive focus when this Window is focussed."). Das ist ein irritierender Name. Unter "Default Button" verstehe ich was ganz anderes, nämlich den Button, der bei ENTER aktiviert werden soll.
 Also Linos Layout.default_button soll gar nicht der `Ext.Window.defaultButton` werden.
 Zum Glück hat Stephen Friedrich eine Lösung dafür geschrieben:
 http://www.extjs.com/forum/showthread.php?t=87273

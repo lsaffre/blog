@@ -1,0 +1,61 @@
+:date: 2021-07-26
+
+=====================
+Monday, July 26, 2021
+=====================
+
+.. currentmodule:: lino_xl.lib.invoicing
+
+
+I reviewed my decision of two days ago to rename
+:meth:`InvoiceGenerator.get_invoiceable_product`  to
+:meth:`InvoiceGenerator.get_invoicing_product`  because this actually *is*
+supposed to return the product that will be invoiced.
+When the :meth:`InvoiceGenerator.get_invoiceable_product` method returns `None`,
+this generally means to not generate any invoice item.
+With the nuance that it
+may return `None` when the product is decided later by an overridden
+:meth:`InvoiceGenerator.get_invoice_items` method.
+
+The :meth:`InvoiceGenerator.get_invoice_items` method  has currently three
+implementations:
+
+- the standard implementation defines the default behaviour, which is that every
+  generator produces one invoice item.
+
+- :ref:`presto` overrides the default behaviour to add extra invoice items (one
+  per :term:`order item`). You can configure orders where the calendar entries
+  themselves are free (work time doesn't count) but only these order items are
+  being invoiced.
+
+- :ref:`tera` overrides it to introduce an even more customized approach. It
+  collects the individual invoicing events per :term:`calendar entry type` and
+  only then decides which products to actually invoice. Because the price of a
+  calendar entry in Tera depends on the partner's price factors and on the
+  :term:`calendar entry type`.
+
+  Besides having a customized approach of grouping and pricing, :ref:`tera` also
+  features a way where therapists may use a simplified cash book in which they
+  simply type received money per :term:`calendar entry`. (It might make sense to
+  generalize this feature by moving it from tera to xl)
+
+The :meth:`InvoiceGenerator.get_invoice_items` method is called from two places:
+
+- in :meth:`Plan.fill_plan` to create an :term:`invoicing suggestion`. The
+  invoice and its items are created in memory just to compute the sums and then
+  thrown away again.
+
+- in :meth:`Item.create_invoice`, i.e. to actually create the invoice for an
+  :term:`invoicing suggestion`.
+
+Seems that I now know how to name the :class:`Tariff` model: it is an
+:term:`event pass type`. When a product has an :term:`event pass type`,
+this means that buying one unit of the product gives you the right to consume a
+given number of invoicing events.
+
+So I rename  :meth:`InvoiceGenerator.get_invoiceable_tariff`  to
+:meth:`InvoiceGenerator.get_invoicing_pass_type`. If this returns `None`, Lino
+simply assumes that every invoicing event generates one invoice item.
+
+After rediscovering above things, I now turn back to :ref:`noi`: Something is
+missing for invoicing the yearly membership fees. But what?
