@@ -4,7 +4,7 @@
 Monday, August 2, 2021
 ======================
 
-I committed about 2 weeks of work on :ticket:`3031`. The main changes are in
+I committed about 2 weeks of work on :ticket:`3301`. The main changes are in
 :mod:`lino_xl.lib.invoicing` and :mod:`lino_xl.lib.orders` (both :ref:`xl`) and
 the first user is :ref:`noi` where we can now write service level agreements
 (periodic invoice generators), so that we can use Lino to write our yearly
@@ -12,3 +12,14 @@ invoices.
 
 TODO: :ref:`presto` is still broken. Manual tests in Noi. Make a template for
 printing an SLA. Write more docs.
+
+
+Intermezzo: Oops, there is a little `problem on GitLab
+<https://gitlab.com/lino-framework/book/-/jobs/1469319484>`___: already
+:cmd:`inv prep` fails with :message:`undefined symbol:
+pango_context_set_round_glyph_positions`. After doing :cmd:`pip install -U
+weasyprint cffi` on my machine, I have it also here. Other people have `reported
+and documented the issue <https://github.com/Kozea/WeasyPrint/issues/1384>`__:
+Weasyprint 53 needs a newer version of Pango, which is not yet available on
+stable debian. So as a works-for-me, I simply add "weasyprint<52" to Lino's
+:envvar:`install_requires`.
