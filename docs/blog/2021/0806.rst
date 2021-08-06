@@ -1,0 +1,30 @@
+:date: 2021-08-06
+
+======================
+Friday, August 6, 2021
+======================
+
+
+Link to other ticket in a comment doesn't work
+==============================================
+
+Observation about :ticket:`4278`: When a comment has a link to ticket (e.g.
+"#2614"), then that link *is broken* when shown on ticket detail, but *it works*
+when shown on the dashboard.
+
+It works in the dashboard (:class:`RecentComments`)::
+
+  href='javascript:window.App.runAction({ "actorId": "tickets.Tickets", "an":
+  "detail", "rp": "dashboard-1", "status": { "base_params": {  }, "param_values":
+  { "end_date": null, "observed_event": null, "observed_eventHidden": null,
+  "reply_to": null, "reply_toHidden": null, "start_date": null, "user": null,
+  "userHidden": null }, "record_id": 2614 } })'
+
+It's broken in the detail of a ticket (:class:`CommentsByRFC`)::
+
+  href='javascript:window.App.runAction({ "actorId": "tickets.Tickets", "an":
+  "detail", "rp": null, "status": { "base_params": { "mk": 2239, "mt": 37 },
+  "param_values": { "end_date": null, "observed_event": null,
+  "observed_eventHidden": null, "reply_to": "Blank", "reply_toHidden":
+  "&lt;BLANK&gt;", "start_date": null, "user": null, "userHidden": null },
+  "record_id": 2614 } })'
