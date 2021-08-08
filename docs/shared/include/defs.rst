@@ -29,13 +29,14 @@
 .. |eject|  image:: /../docs/shared/images/buttons/eject.png
 .. |search|  image:: /../docs/shared/images/buttons/search.png
 .. |merge|  image:: /../docs/shared/images/buttons/arrow_join.png
-.. |lightning|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/lightning.png?raw=true
-.. |delete|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/delete.png?raw=true
-.. |insert|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/add.png?raw=true
-.. |detail|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/application_form.png?raw=true
-.. |basket|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/basket.png?raw=true
-.. |money|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/money.png?raw=true
-.. |print|  image:: https://gitlab.com/lino-framework/lino/blob/master/lino/static/images/mjames/printer.png?raw=true
+
+.. |lightning|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/lightning.png?inline=false
+.. |delete|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/delete.png?inline=false
+.. |insert|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/add.png?inline=false
+.. |detail|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/application_form.png?inline=false
+.. |basket|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/basket.png?inline=false
+.. |money|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/money.png?inline=false
+.. |print|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/printer.png?inline=false
 
 
 .. .. |refresh|  image:: /../docs/shared/images/buttons/refresh.png
