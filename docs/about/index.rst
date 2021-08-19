@@ -18,9 +18,9 @@ moved to `Estonia <https://en.wikipedia.org/wiki/Estonia>`__ at the age of 30
 after having married an Estonian.  We have 2 daughters and live in a small
 village.
 
-I work as senior developer at `Rumma & Ko OÜ <http://www.saffre-rumma.net/>`_
+I work as senior developer at `Rumma & Ko OÜ <https://www.saffre-rumma.net/>`_
 where we provide development, hosting, maintenance and customer support of `free
-<http://www.saffre-rumma.net/free/>`__ customized database applications, mainly
+<https://www.saffre-rumma.net/free/>`__ customized database applications, mainly
 using the `Lino framework <http://www.lino-framework.org/>`__ and its older
 brother `TIM <http://tim.lino-framework.org/129.html>`__.
 

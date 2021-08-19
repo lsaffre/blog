@@ -18,7 +18,7 @@ domain of the Lino project.  It is hosted in collaboration with
 saffre-rumma.net
 ----------------
 
-Website: http://www.saffre-rumma.net
+Website: https://www.saffre-rumma.net
 
 
 .. _ml:
