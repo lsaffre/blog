@@ -22,18 +22,27 @@ DONE:
 - Show the VAT rate in the designations of VAT classes
 - intra-community sales invoice were not booked correctly in bevat
 
+- Enter and register a purchase invoice doesn't work when the accounting period
+  doesn't exist. (Not reproducible. I guess that this was a misdiagnosis)
+
+- The :meth:`__str__` of an unregistered invoice used to say "jnl.ref #id", but
+  that's irritating. Note the :attr:`hide_editable_number
+  <lino_xl.lib.ledger.RegistrableVoucher.hide_editable_number>` feature: We
+  usually don't want to see the number of a voucher in an editable state because
+  that number may change. Now the  :meth:`__str__` of an unregistered invoice
+  shows `(Sales invoice #1)` instead of `(VKR #1)`, which was indeed dangerously
+  similar to `VKR 1/2021`.  And it's true that not only the number might change
+  but also the journal.
 
 
 TODO:
 
-- Enter and register a purchase invoice doesn't work when the accounting period
-  doesn't exist.
 - Adapt the payment date when voucher_date changes. Waiting for
   :ticket:`4305`.
 
-- The :meth:`__str__` of an unregistered voucher currently says "jnl #id", but
-  that's irritating.
-- Export the list of intracom customers to XML
+- Export the list of intracom customers (:term:`intra-community statement`) to
+  XML (the well-known :ticket:`2406`)
+
 - Write a data checker to report duplicate or missing invoice numbers
 
 
@@ -42,4 +51,4 @@ For Sharif:
 - When hitting :kbd:`Insert` in a grid view of invoice items, the new item
   should get inserted before the currently selected row.
 
-- The icon of the toggle_state action is not rendered in ExtJS
+- The icon of the :attr:`toggle_state` action is not rendered in ExtJS
