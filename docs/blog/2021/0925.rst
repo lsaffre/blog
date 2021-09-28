@@ -1,0 +1,70 @@
+:date: 2021-09-25
+
+============================
+Saturday, September 25, 2021
+============================
+
+.. _corsa:
+
+Lino Corsa
+==========
+
+I started the :ref:`corsa` project, an application for managing races, i.e.
+sport events where people compete against each other in order to see who's the
+best.
+
+This was my first usage of the :cmd:`getlino startproject`.
+
+Go to your projects root directory::
+
+  $ cd ~/projects
+
+Run :cmd:`getlino startproject`::
+
+  $ getlino startproject -c corsa
+
+Install the new Python package::
+
+  $ pip install -e corsa/
+  Obtaining file:///home/luc/work/corsa
+  ...
+  Installing collected packages: lino-corsa
+    Running setup.py develop for lino-corsa
+  Successfully installed lino-corsa-0.2.0
+
+Add the project to your :xfile:`~/.atelier/config.py` file.
+
+Decide whether you want to copy functionality from existing projects.
+
+For example, we started :ref:`corsa` with a copy the ``courses`` plugin from
+:ref:`voga`::
+
+  $ cp -a ~/projects/voga/lino_voga/lib/courses lino_corsa/lib
+
+And then manually edited the copied source code.
+
+Edit the :xfile:`user_types.py` file of your new project.
+
+In our example we add the following to our :xfile:`user_types.py` file::
+
+  from lino_xl.lib.courses.roles import CoursesUser
+  from lino.modlib.office.roles import OfficeUser
+
+  class SiteUser(SiteUser, CoursesUser, OfficeUser):
+      pass
+
+  class SiteStaff(SiteStaff, CoursesUser, OfficeUser):
+      pass
+
+  class SiteAdmin(SiteAdmin, CoursesUser, OfficeUser):
+      pass
+
+Summary: we import the roles of the plugins, then tell Lino which user type
+inherits from which role.
+
+Go to the demo project::
+
+  $ cd ~/projects/corsa/lino_corsa/projects/corsa1
+  $ pm prep
+
+If you changed anything, you are likely to get error messages here.
