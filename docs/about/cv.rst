@@ -121,26 +121,6 @@ Hobbies
   honored my work by assigning me the `Wood Badge
   <https://en.wikipedia.org/wiki/Wood_Badge>`__ award.
 
-Personal views
---------------
-
-- I grew up in a catholic family, and after moving to Vigala engaged in the
-  local lutheran church community.  My faith has been influenced by the
-  spirituality of the `Taizé <http://taize.fr/>`_ community. I classify myself
-  as a Christian (but `that's a big label
-  <https://hw.saffre-rumma.net/me/christian>`__).
-
-- The
-  `politicalcompass.org` website classified me as `Economically rather
-  Left and Socially moderatedly Libertarian
-  <https://www.politicalcompass.org/analysis2?ec=-8.63&soc=-4.26>`__. I
-  believe that finding ways for global sustainable development is more
-  important than keeping the consumer society running.  If given the
-  choice between an economic crisis and a climate
-  catastrophe, I'd chose the former.  We need new sociological methods
-  in order to rule this world.
-  Since September 2021 I am member of the social-democrat party of Estonia.
-
 
 .. _AbAKUS: http://www.abakus.be
 .. _TIM: http://tim.lino-framework.org/129.html
