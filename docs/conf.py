@@ -103,3 +103,5 @@ os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
 linkcheck_anchors = False
 linkcheck_ignore = [r'http://localhost:\d+/']
+
+templates_path.append(".templates")
