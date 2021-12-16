@@ -1,0 +1,110 @@
+:date: 2021-12-16
+
+===========================
+Thursday, December 16, 2021
+===========================
+
+pyvat.exceptions.ServerError: ServerError: MS_MAX_CONCURRENT_REQ
+================================================================
+
+I fixed a sporadic error during :cmd:`cmd prep` in
+:mod:`lino_book.projects.pierre`, which occurred only when the pyvat server
+wasn't available::
+
+  pyvat.check_vat_number('BE0650238114', 'BE') failed:
+  Traceback (most recent call last):
+    File "~/work/xl/lino_xl/lib/vat/choicelists.py", line 736, in validate
+      result = pyvat.check_vat_number(self.vn, self.country_code)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/pyvat/__init__.py", line 211, in check_vat_number
+      return VAT_REGISTRIES[country_code].check_vat_number(vat_number,
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/pyvat/registries.py", line 133, in check_vat_number
+      raise ServerError(fault_code)
+  pyvat.exceptions.ServerError: ServerError: MS_MAX_CONCURRENT_REQ
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "manage.py", line 7, in <module>
+      execute_from_command_line(sys.argv)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/__init__.py", line 425, in execute_from_command_line
+      utility.execute()
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/__init__.py", line 419, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/base.py", line 373, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/base.py", line 417, in execute
+      output = self.handle(*args, **options)
+    File "~/work/lino/lino/management/commands/prep.py", line 36, in handle
+      super(Command, self).handle(**options)
+    File "~/work/lino/lino/management/commands/initdb.py", line 192, in handle
+      call_command('loaddata', *fixtures, **options)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/__init__.py", line 187, in call_command
+      return command.execute(*args, **defaults)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/base.py", line 417, in execute
+      output = self.handle(*args, **options)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/commands/loaddata.py", line 78, in handle
+      self.loaddata(fixture_labels)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/commands/loaddata.py", line 138, in loaddata
+      self.load_label(fixture_label)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/commands/loaddata.py", line 214, in load_label
+      for obj in objects:
+    File "~/work/lino/lino/utils/dpy.py", line 409, in deserialize
+      for o in self.deserialize_module(module, **options):
+    File "~/work/lino/lino/utils/dpy.py", line 423, in deserialize_module
+      for obj in objects():
+    File "~/work/lino/lino/modlib/checkdata/fixtures/checkdata.py", line 13, in objects
+      call_command('checkdata', fix=True)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/__init__.py", line 187, in call_command
+      return command.execute(*args, **defaults)
+    File "~/virtualenvs/py38/lib/python3.8/site-packages/django/core/management/base.py", line 417, in execute
+      output = self.handle(*args, **options)
+    File "~/work/lino/lino/modlib/checkdata/management/commands/checkdata.py", line 64, in handle
+      check_data(args=args, fix=options['fix'], prune=options['prune'])
+    File "~/work/lino/lino/modlib/checkdata/models.py", line 299, in check_data
+      todo, done = chk.update_problems(obj, False, fix)
+    File "~/work/lino/lino/modlib/checkdata/choicelists.py", line 96, in update_problems
+      for fixable, msg in self.get_checkdata_problems(obj, fix):
+    File "~/work/xl/lino_xl/lib/vat/choicelists.py", line 924, in get_checkdata_problems
+      obj.vid_manager.validate(online=True)
+    File "~/work/xl/lino_xl/lib/vat/choicelists.py", line 753, in validate
+      dd.logger.info("  " + ("\n  ".join(result.log_lines)))
+  AttributeError: Problem installing fixture '~/work/lino/lino/modlib/checkdata/fixtures/checkdata.py': 'NoneType' object has no attribute 'log_lines'
+
+A Lino for the Synodal Church?
+==============================
+
+I had a crazy idea: I will write a :term:`demo project` ``sct`` (for Synodal
+Church Teachings), which will be a prototype for a :term:`Lino site` to be used
+by the :term:`Synodal Church`.
+
+It will probably be a :ref:`noi` (but after having implemented :ticket:`2717`).
+It will also use a new plugin :mod:`lino_xl.lib.glossary` with the following
+models:
+
+
+.. currentmodule:: lino_xl.lib.glossary
+
+.. class:: Term
+
+  .. attribute:: designation
+
+    The designation of the term being described.
+
+    This is a translatable field.
+
+  .. attribute:: description
+
+    The generally accepted description of this term.
+
+    This is a translatable field.
+
+
+.. class:: UsageType
+
+  .. attribute:: designation
+
+
+
+I discovered that e.g. the documentation of the :setting:`languages` setting was
+quite broken.
+We now have a reference about the individual settings in :ref:`hg.ref.settings`.

@@ -1,0 +1,86 @@
+:date: 2021-12-03
+
+========================
+Friday, December 3, 2021
+========================
+
+The following traceback is for Sharif::
+
+  Traceback (most recent call last):
+    File "./wsgi.py", line 7, in <module>
+      application = get_wsgi_application()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+      django.setup(set_prefix=False)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/__init__.py", line 24, in setup
+      apps.populate(settings.INSTALLED_APPS)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/apps/registry.py", line 114, in populate
+      app_config.import_models()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/apps/config.py", line 301, in import_models
+      self.models_module = import_module(models_module_name)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/importlib/__init__.py", line 127, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/modlib/comments/models.py", line 18, in <module>
+      from lino.modlib.search.mixins import ElasticSearchable
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/modlib/search/mixins.py", line 26, in <module>
+      from elasticsearch_django.models import SearchDocumentMixin
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/elasticsearch_django/models.py", line 33, in <module>
+      UPDATE_STRATEGY = get_setting("update_strategy", UPDATE_STRATEGY_FULL)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/elasticsearch_django/settings.py", line 39, in get_setting
+      return get_settings().get(key, default[0])
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/elasticsearch_django/settings.py", line 33, in get_settings
+      return settings.SEARCH_SETTINGS["settings"]
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/conf/__init__.py", line 83, in __getattr__
+      val = getattr(self._wrapped, name)
+  AttributeError: 'Settings' object has no attribute 'SEARCH_SETTINGS'
+
+
+I ran :xfile:`pull.sh` on LF. First problem::
+
+  error: Your local changes to the following files would be overwritten by merge:
+  	lino/modlib/help/management/commands/makehelp.py
+  Please commit your changes or stash them before you merge.
+  Aborting
+
+(Solution: ``go lino`` and ``git st``, ``git checkout .``)
+
+Second problem::
+
+  /tmp/tmp0s_puzr0/frdocs/beid.BeIdCardTypes.rst:15: WARNING: undefined label: ug.plugins.beid
+  /tmp/tmp0s_puzr0/frdocs/beid.ResidenceTypes.rst:16: WARNING: undefined label: ug.plugins.beid
+  /tmp/tmp0s_puzr0/frdocs/notes.AllNotes.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.EventTypes.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.MyNotes.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NoteTypes.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.Notes.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NotesByCompany.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NotesByEventType.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NotesByOwner.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NotesByPerson.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.NotesByType.rst:17: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/notes.SpecialTypes.rst:15: WARNING: undefined label: ug.plugins.notes
+  /tmp/tmp0s_puzr0/frdocs/outbox.Attachments.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.AttachmentsByController.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.AttachmentsByMail.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.Mails.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.MailsByController.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.MailsByUser.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.MyOutbox.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.RecipientTypes.rst:16: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.Recipients.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.RecipientsByMail.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/outbox.SentByPartner.rst:17: WARNING: undefined label: ug.plugins.outbox
+  /tmp/tmp0s_puzr0/frdocs/rooms.BookingStates.rst:15: WARNING: undefined label: ug.plugins.rooms
+  /tmp/tmp0s_puzr0/frdocs/rooms.Bookings.rst:17: WARNING: undefined label: ug.plugins.rooms
+  /tmp/tmp0s_puzr0/frdocs/rooms.BookingsByCompany.rst:17: WARNING: undefined label: ug.plugins.rooms
+  generating indices... done
+  writing additional pages... search done
+  copying static files... done
+  copying extra files... done
+  dumping search index in French (code: fr)... done
+  dumping object inventory... done
+  build succeeded, 27 warnings.
+
+  The HTML pages are in ../../../usr/local/lino/lino_local/voga1e/media/cache/help/fr.
+  5 lino*.js files have been built in 12.596930027008057 seconds.
+
+Solution: add dummy headings for the missing refs to :ref:`ug.specs`.
