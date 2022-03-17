@@ -9,7 +9,7 @@ Projects
 I am author and maintainer of :ref:`Lino <cg.lino.framework>` and its
 predecessor TIM_, two frameworks for developing customized database
 applications. Our customers are mostly located in Belgium. All my work is
-released as free software, I am a fervent defender of the  `free open-source
+released as free software, I am a fervent defender of the `free open-source
 software philosophy <https://hw.saffre-rumma.net/fs/>`_.
 
 Other projects:
@@ -107,6 +107,10 @@ Hobbies
 
 - I enjoy singing alone and with others. I have a more than average
   musical education but did never consider becoming a professional.
+
+- In my spare time I happen to write on personal websites like
+  `Human World <https://hw.saffre-rumma.net/>`__ or
+  `Eesti Taizé Sõbrad <https://www.laudate.ee/>`__.
 
 - I sporadically work for Wikipedia, mostly in `Estonian
   <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`__ because I live

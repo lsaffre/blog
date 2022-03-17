@@ -1,0 +1,54 @@
+:date: 2022-03-17
+
+========================
+Thursday, March 17, 2022
+========================
+
+Brainstorming with Sharif for Lino Medico.
+
+A patient comes to a first meeting. This is just a :term:`calendar entry`.
+Bangladesh does not have the concept of family doctors (perearst, Hausarzt).
+During the meeting, the doctor may decide with the patient to start one or several treatments or therapies.
+A therapy is usually a course with one participant.
+
+For example:
+
+- Doctor: "I write you a prescription. Try it. And if your problem doesn't go away, come back."
+  Doctor creates a course from the calendar entry.
+  And this entry should automatically be linked to that course.
+  The course mainly mentions the original problem.
+  When the patient goes home, they should get their "case" number.
+
+  ::
+    courses.Course._meta.verbose_name = _("Case") # _("Dossier") _("File")
+
+  Lino should have a procedure for detecting cases that have timed out.
+  For example after two months we can assume that the problem is fixed if the patient didn't come back.
+  Lino should automatically set Course.state to "timed_out" for such cases.
+
+  Follow up:
+  Patient contacts the reception: "I need another consultation".
+  Reception clerk finds the patient contact and sees: yes, you have an open case.
+  Creates another calendar entry for that case.
+
+- Examples of course lines:
+  "general consultation" and
+  "urgent consultation"
+
+- The generalist is a doctor who receives patients for such first-time consultations.
+  A specialist receives cases when some generalist decides so.
+  Every case is like a ticket in Noi: the Course.user is the first doctor, Course.teacher is the "currently responsible" doctor.
+  The generalist can assign a case to a specialist.
+
+- The generalist can enrol the patient into a group therapy. "Every Monday they are doing gymnastics".
+
+- The generalist can create several cases at the same time when the patient has
+  two problems at once.
+
+- Example: emergency patient.
+  write an order for x-ray.
+  another doctor makes the diagnose: leg is broken. writes an order to plaster.
+
+  I will write a order for X-Ray and they will assign some doctor to continue with you.
+
+- Or "You need some therapy, I will put you to the waiting list." This will

@@ -32,7 +32,7 @@ brother `TIM <http://tim.lino-framework.org/129.html>`__.
 How to contact me:
 
 ================== ====================================================================
-Email              <luc *dot* saffre *at* gmail *dot* com>
+Email              **luc** (at) **saffre** (dash) **rumma** (dot) **net**
 Phone              +372/4824 548
 Mobile             +372/5667 2435
 Social networks    |me|, `Google <https://plus.google.com/104488487380470927379>`_ `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ `GitLab <https://gitlab.com/lsaffre>`_, `Facebook <https://www.facebook.com/luc.saffre>`__

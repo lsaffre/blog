@@ -10,10 +10,10 @@ I wanted to note a choir rehearsal into my calendar::
 
   1. veebruar 2014      Segakooride  proov  15.00-19.00, Raplas
 
-and observed that the Lightning calendar in in Thunderbird 
+and observed that the Lightning calendar in in Thunderbird
 no longer collaborates with my Google calendar...
 
-Since we'll need some groupware system, and we need to make some 
+Since we'll need some groupware system, and we need to make some
 decisions some day, so I surfed around and found an article
 `The Five Best Open Source Calendar Servers for Linux
 <https://www.linux.com/learn/tutorials/402382:the-five-best-open-source-calendar-servers-for-linux>`_
@@ -24,12 +24,12 @@ which enumerates:
 - `DAViCal <http://www.davical.org/>`_
   (written in PHP)
 - `Radicale <http://radicale.org>`_
-- `Bedework <http://www.jasig.org/bedework>`_ 
+- `Bedework <http://www.jasig.org/bedework>`_
   is written in Java.
 - `Cosmo <http://chandlerproject.org/Projects/CosmoHome>`_
   (part of `Chandler <http://chandlerproject.org/Developers/WebHome>`_)
-  
-It also enumerates more general "groupware systems" which 
+
+It also enumerates more general "groupware systems" which
 -among others- also include a calendar server:
 
 - `Zimbra Open Source Edition <http://www.zimbra.com/downloads/os-downloads.html>`_
@@ -46,19 +46,19 @@ It also enumerates more general "groupware systems" which
 Payment orders and debit/credit
 -------------------------------
 
-Uff! One might be tempted to believe that the direction of a finanical 
-movement is easy: either Debit or Credit. But it's not easy to decide 
-where to change it and where not. 
-The `dc` field of a 
-:class:`lino.modlib.ledger.models.DueMovement`
+Uff! One might be tempted to believe that the direction of a financial
+movement is easy: either Debit or Credit. But it's not easy to decide
+where to change it and where not.
+The `dc` field of a
+:class:`lino_xl.lib.ledger.DueMovement`
 (the volatile object used to express a "debt"
 by virtual tables like
-:class:`ExpectedMovements <lino.modlib.ledger.models.ExpectedMovements>`,
-:class:`SuggestionsByJournalEntry <lino.modlib.finan.models.SuggestionsByJournalEntry>`
+:class:`ExpectedMovements <lino_xl.lib.ledger.ExpectedMovements>`,
+:class:`SuggestionsByJournalEntry <lino_xl.lib.finan.SuggestionsByJournalEntry>`
 or
-:class:`SuggestionsByPaymentOrder <lino.modlib.finan.models.SuggestionsByPaymentOrder>`
+:class:`SuggestionsByPaymentOrder <lino_xl.lib.finan.SuggestionsByPaymentOrder>`
 in any case is very subtle. Here be dragons.
-I have 20 years of experience with TIM 
+I have 20 years of experience with TIM
 but still am sometimes struggling...
 
 `finan.FillToVoucher` needed something which also
@@ -66,16 +66,12 @@ but still am sometimes struggling...
 had been waiting for:
 
     One detail is missing: We should change the API to include `ar`.
-    But that's not so easy because we have for example 
+    But that's not so easy because we have for example
     lino.ui.extjs3.views.Templates.get
 
-Concretely :meth:`lino.core.actors.Actor.get_row_by_pk` now has 
+Concretely :meth:`lino.core.actors.Actor.get_row_by_pk` now has
 signature ``(self,ar,pk)`` instead of ``(self,pk)``.
 
-This again required some internal API changes: 
-Request.setup() now takes the pks and converts them herself to 
+This again required some internal API changes:
+Request.setup() now takes the pks and converts them herself to
 instances...
-
-
-
-

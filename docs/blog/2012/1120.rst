@@ -1,9 +1,8 @@
 20121120
 ========
 
-`Lino-Welfare 1.0.2
-<https://welfare.lino-framework.org/de/releases/1.0.2.html>`_
-ist seit heute im Versuchsbetrieb, also in der letzten Testphase 
+:welfare:`Lino-Welfare 1.0.2 </de/releases/1.0.2.html>`
+ist seit heute im Versuchsbetrieb, also in der letzten Testphase
 vor dem Release.
 
 
@@ -27,32 +26,32 @@ Testrunde 1 nach dem Upgrade
     AttributeError: 'ActionRequest' object has no attribute 'get_total_count'
 
 
-- :class:`lino_xl.lib.cal.CalendarPanel` 
-  offenbarte sich dem deutschsprachigen 
-  Benutzer als "CalendarPanel" statt "Kalender".  
+- :class:`lino_xl.lib.cal.CalendarPanel`
+  offenbarte sich dem deutschsprachigen
+  Benutzer als "CalendarPanel" statt "Kalender".
   Habe das `label` von der
-  :class:`CalendarAction <lino_xl.lib.cal.utils.CalendarAction>` 
+  :class:`CalendarAction <lino_xl.lib.cal.utils.CalendarAction>`
   ins
   :class:`CalendarPanel <lino_xl.lib.cal.models.CalendarPanel>` versetzt.
-  
-- Statt "Autor" eines Termins sagt Lino jetzt "Verantwortlicher". 
-  Wenn Alicia nicht da ist und Caroline mit einem Klienten einen Termin 
-  für Alicia vormerkt, dann steht dort Alicia und nicht Caroline. 
-  (Dass Caroline den Termin ursprünglich erstellt hat, sieht Alicia 
-  in der Mitteilung per E-Mail, ansonsten hält Lino diese Information 
+
+- Statt "Autor" eines Termins sagt Lino jetzt "Verantwortlicher".
+  Wenn Alicia nicht da ist und Caroline mit einem Klienten einen Termin
+  für Alicia vormerkt, dann steht dort Alicia und nicht Caroline.
+  (Dass Caroline den Termin ursprünglich erstellt hat, sieht Alicia
+  in der Mitteilung per E-Mail, ansonsten hält Lino diese Information
   für belanglos...)
-  
-  
-  
+
+
+
 The last function-based view
 ----------------------------
 
-Lino still caused a DeprecationWarning 
+Lino still caused a DeprecationWarning
 in Django 1.4.2 because :meth:`lino.ui.base.UI.get_patterns`
 still added a well-meant entry for ``favicon.ico``.
 No longer.
 
-Lino no longer configures any automagic 
+Lino no longer configures any automagic
 `favicon.ico` or `robots.txt`.
 
 A basic `favicon.ico` and `robots.txt`
@@ -63,8 +62,8 @@ configuration for Apache looks like::
 
 
 Where `favicon.ico` may or may not be a copy of
-:srcref:`/lino/media/favicon.ico`, 
-and the file `/var/www/robots.txt` may contain 
+:srcref:`/lino/media/favicon.ico`,
+and the file `/var/www/robots.txt` may contain
 for example::
 
   User-agent: *
@@ -77,28 +76,28 @@ Noch Bugs
 
 - Setting a column filter on a date column caused a server traceback
 
-    | NameError at /api/isip/MyContracts 
+    | NameError at /api/isip/MyContracts
     | global name 'datetime' is not defined
     | /usr/local/django/cpas_eupen/using/lino/lino/core/dbtables.py in add_gridfilters, line 245
-    
 
-- Clicking the "Home" button (the one of Lino's main menu) 
-  when at least one window was opened caused the viewport's loadmask 
+
+- Clicking the "Home" button (the one of Lino's main menu)
+  when at least one window was opened caused the viewport's loadmask
   to show up forever.
-  
+
   :meth:`lino.Lino.get_site_menu` made the Home button as follows::
-  
+
         url = "javascript:Lino.close_all_windows()"
         main.add_url_button(url,label=_("Home"))
-        
+
   Now it is better::
-  
+
     main.add_item('home',_("Home"),javascript="Lino.close_all_windows()")
-    
-- The message "Failed to delete %(record)s : %(error)s." never reached 
-  the user, they saw only "'dict' object has no attribute 'has_header'".    
-  
-  
+
+- The message "Failed to delete %(record)s : %(error)s." never reached
+  the user, they saw only "'dict' object has no attribute 'has_header'".
+
+
 Lino and Internet Explorer
 --------------------------
 
@@ -110,10 +109,10 @@ It says::
   Char: 17
   Code: 0
   URI: http://127.0.0.1:8000/media/extjs/ext-all-debug.js
-  
-To be honest I dicovered this already in February and didn't yet 
-find time to investigate it.   
-  
+
+To be honest I dicovered this already in February and didn't yet
+find time to investigate it.
+
 The Sencha forum describes a similar problem (but with another reason):
 http://www.sencha.com/forum/showthread.php?243915
 
@@ -121,8 +120,8 @@ My `ext-all-debug.js` says at line 2362::
 
                 style == 'opacity' ?
                     this.setOpacity(value) :
-                    this.dom.style[chkCache(style)] = value;             
-                    
+                    this.dom.style[chkCache(style)] = value;
+
 I modified that code in order to localize where IE stumbles::
 
                 var i = chkCache(style);
@@ -134,27 +133,27 @@ I modified that code in order to localize where IE stumbles::
                     window.alert('failed to this.dom.style['+i+'] = '+value)
                 }
 
-To find out that my following code in :class:`HtmlBoxElement 
+To find out that my following code in :class:`HtmlBoxElement
 <lino.ui.extjs3.ext_elems.HtmlBoxElement>` was guilty::
 
     def get_field_options(self,**kw):
-        # hide horizontal scrollbar      
-        # for this trick thanks to Vladimir 
+        # hide horizontal scrollbar
+        # for this trick thanks to Vladimir
         # <http://forums.ext.net/showthread.php?1513-CLOSED-Autoscroll-on-ext-panel>
         kw.update(bodyStyle="overflow-x:hidden !important;")
-        
+
 After removing the ``!important``, IE no longer stumbles.
 And we'll see whether this "!important" was important...
-        
+
 
 Belgian eID cards and the nationality
 -------------------------------------
 
-Question: The 'nationality' field of a Belgian eID card 
+Question: The 'nationality' field of a Belgian eID card
 contains the nationality in full text and in the language of the card.
 Maybe even depending on the person's gender.
 So for a Belgian it may contain "BELG", "BELGE", "BELGIER", "BELGIERIN" or "BELGIAN".
-Isn't there also a code? 
+Isn't there also a code?
 And is there somewhere an official list of all possible nationalities?
 
 Answer: no, there isn't.
@@ -175,43 +174,40 @@ nationality from an eid card". A PCSW can always do afterwards a
 :class:`Tx25 <lino_welfare.modlib.cbss.tx25.RetrieveTIGroupsRequest>`
 request to the national register to get this and other information.
 
-- Conclusion: 
+- Conclusion:
   remove the 'Country.nationalities' field & Co.
   We'll need a simple dump-load cycle:
-  :func:`lino_welfare.modlib.pcsw.migrate.migrate_from_1_0_2` does 
+  :func:`lino_welfare.modlib.pcsw.migrate.migrate_from_1_0_2` does
   nothing except to confirm the new version.
 
 
 Version 1.0.3
 -------------
 
-All this is be part of 
-`Lino-Welfare 1.0.3
-<https://welfare.lino-framework.org/de/releases/1.0.3.html>`_,
+All this is be part of
+:welfare:`Lino-Welfare 1.0.3 </de/releases/1.0.3.html>`,
 which went into production in Eupen today evening.
 
 
 Last minute changes:
 
-- :class:`lino.utils.dumpy.Serializer` converted the `list` of unsorted 
-  models to a `set` before building the list of sorted models. 
+- :class:`lino.utils.dumpy.Serializer` converted the `list` of unsorted
+  models to a `set` before building the list of sorted models.
   This caused the sort order to be random for models with same level of independency,
   making `double dump tests` more difficult::
-  
+
     #~ 20121120 unsorted = set(unsorted)
 
-- Setting a column filter for a *normal* date column now works... 
-  but Lino also allowed setting a filter on a virtual field. 
+- Setting a column filter for a *normal* date column now works...
+  but Lino also allowed setting a filter on a virtual field.
   Which then caused another traceback
   "FieldError at /api/pcsw/IntegClients / Cannot resolve keyword 'applies_from' into field."
-  Solved by on aditional test 
+  Solved by on aditional test
   `if isinstance(editor,FieldElement) and not isinstance(editor.field,fields.VirtualField)`
   in :mod:`lino.ui.extjs3.ext_elems`.
-  
+
 
 TODO:
 
-- Idea: implement the fields Client.applies_from and applies_until as 
+- Idea: implement the fields Client.applies_from and applies_until as
   "summary fields". This is a new concept: :lino:`/topics/summary_fields`
-  
-  

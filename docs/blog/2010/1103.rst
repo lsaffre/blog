@@ -3,8 +3,8 @@
 
 Weiter an :srcref:`docs/tickets/2`.
 
-Upps, da hatte ich mir `einen neueren Patch
-<http://code.djangoproject.com/ticket/7539#comment:58>`_ gefragt, und
+Upps, da hatte ich mir :djangoticket:`einen neueren Patch
+<7539#comment:58>` gefragt, und
 jetzt ist der auch schon wieder veraltet::
 
     L:\snapshots\django>patch --dry-run -p0 < 7539.on_delete.r14291.diff
@@ -31,11 +31,11 @@ jetzt ist der auch schon wieder veraltet::
     patching file `tests/regressiontests/admin_util/tests.py'
     patching file `tests/regressiontests/admin_util/models.py'
 
-Aber sowieso ist Carl Meyer inzwischen daran am arbeiten. 
+Aber sowieso ist Carl Meyer inzwischen daran am arbeiten.
 
 Ob ich seinen work in progress mal testen sollte?
 Dazu muss ich mir zunächst
-`Git installieren <http://help.github.com/win-git-installation/>`_ 
+`Git installieren <http://help.github.com/win-git-installation/>`_
 und Carls Version von Django runterladen::
 
   L:\snapshots\carljm>git clone git://github.com/carljm/django.git
@@ -50,22 +50,22 @@ In meiner sitecustomize.py::
 
   #~ site.addsitedir(r"l:\snapshots\django")
   site.addsitedir(r"l:\snapshots\carljm\django")
-        
-  
+
+
 Dann füge ich ein `on_delete=RESTRICT` in :attr:`notes.Note.type` hinzu::
 
     type = models.ForeignKey(NoteType,
         blank=True,null=True,
         verbose_name=_('Note type'),
         on_delete=RESTRICT)
-        
+
 Und... nichts funktioniert! Django verhält sich genau wie vorher.
-Ich schätze, dass ich mir aus Carls Git-Hub lediglich den Master runtergeladen habe, 
+Ich schätze, dass ich mir aus Carls Git-Hub lediglich den Master runtergeladen habe,
 statt den Code, an dem er eigentlich gearbeitet hat.
-Denn in meiner Kopie gibt es keine Datei, 
+Denn in meiner Kopie gibt es keine Datei,
 die den String `on_delete` enthält.
 
-Und die Dokumentation von `git pull und `git merge` hilft mir nicht. 
+Und die Dokumentation von `git pull und `git merge` hilft mir nicht.
 Versuche::
 
   L:\snapshots\carljm\django>git checkout t7539
@@ -92,14 +92,14 @@ Versuche::
 
   See git-config(1) for details.
 
-Also momentan bin ich einfach noch zu doof für Git, 
+Also momentan bin ich einfach noch zu doof für Git,
 und mein Ticket #2 muss warten, basta.
 
-Zwischendurch habe ich auch nochmal probiert, 
+Zwischendurch habe ich auch nochmal probiert,
 meine Django-Testsuite zu benutzen.
 Siehe auch :lino:`/admin/django_tests`.
 
-Ich habe mir in :file:`L:\\snapshots\\django\\tests` 
+Ich habe mir in :file:`L:\\snapshots\\django\\tests`
 eine :file:`runtests.bat` mit folgendem Inhalt gemacht::
 
   python runtests.py --settings=test_sqlite %*
@@ -120,7 +120,7 @@ Aber wenn ich damit meine Django-Kopie teste, dann sagt er mir hunderte Failures
     warnings.warn("A {% csrf_token %} was used in a template, but the context did not provide the value.  This is usually
   caused by not using RequestContext.")
   ................
-  
+
 Um irgendwann zu enden::
 
 
@@ -165,8 +165,8 @@ Variante::
 
 Okay, diese Log-Datei könnte ich mir bei Gelegenheit mal vornehmen.
 
-TODO: 
-Django Test-Suite ans Laufen kriegen und Git-Benutzung lernen, 
+TODO:
+Django Test-Suite ans Laufen kriegen und Git-Benutzung lernen,
 um bei Diskussionen zu Django-Tickets mitreden zu können.
 
 Eine erste Lösungsidee war, dass ich manuell in jedem Fall eine eigene delete-Methode schreibe::
@@ -175,36 +175,35 @@ Eine erste Lösungsidee war, dass ich manuell in jedem Fall eine eigene delete-M
     def delete(self):
         if self.note_set.count() > 0:
             raise IntegrityError("Must delete all Note objects before deleting NoteType")
-        super(NoteType, self).delete() 
-        
+        super(NoteType, self).delete()
 
-Also zumindest mit NoteType wird die Panne nicht mehr passieren. 
+
+Also zumindest mit NoteType wird die Panne nicht mehr passieren.
 Das Gleiche müsste ich noch für viele andere Fälle machen.
 Aber das ist natürlich viel Tipperei im Vergleich zu einem `on_delete=RESTRICT`.
 
 Another problem that must be addressed even if we had `on_delete=RESTRICT` already working:
 
-When a user clicks on the Delete button of a NoteType for which Notes exist, 
-Lino will still ask a Confirmation "Delete 1 rows. Are you sure?". 
+When a user clicks on the Delete button of a NoteType for which Notes exist,
+Lino will still ask a Confirmation "Delete 1 rows. Are you sure?".
 Only when the user confirms, Lino will say that it isn't allowed to delete this record.
 
-This is not optimal. 
+This is not optimal.
 Best would be to disable the Delete button, at least in Detail view.
-Which means that the server should return this information 
+Which means that the server should return this information
 together with the record.
-  
-The Delete button in a grid view cannot be disabled/enabled à priory since there may be 
-several rows selected. 
-The grid would need an URI request where it can ask whether *it is allowed* 
-to delete an object, without actually deleting it... 
-no: if the UI wants to handle this case, it can simply ask for the detailed 
+
+The Delete button in a grid view cannot be disabled/enabled à priory since there may be
+several rows selected.
+The grid would need an URI request where it can ask whether *it is allowed*
+to delete an object, without actually deleting it...
+no: if the UI wants to handle this case, it can simply ask for the detailed
 information of the record in question.
 
-Temporary solution: 
-:attr:`lino.reports.Report.disable_delete` and 
+Temporary solution:
+:attr:`lino.reports.Report.disable_delete` and
 for example :meth:`notes.NoteType.disable_delete`::
 
     def disable_delete(self,request):
         if self.note_set.count() > 0:
             return _("Must delete all Note objects before deleting NoteType")
-

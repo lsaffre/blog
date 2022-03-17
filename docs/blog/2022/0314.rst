@@ -1,0 +1,62 @@
+:date: 2022-03-14
+
+======================
+Monday, March 14, 2022
+======================
+
+The GitLab CI for laudate is failing with message
+:message:`rST localisation for language 'et' not found`.
+
+Where does it come from::
+
+  $ grep -R "rST localisation" /home/luc/virtualenvs/py38/lib/python3.8/site-packages/
+  .../site-packages/docutils/parsers/rst/languages/__init__.py:    warn_msg = 'rST localisation for language "%s" not found.'
+
+
+Yes, I remember that some time ago I fixed this locally by add a language file
+"et" to my local docutils installation as explained in
+http://docutils.sf.net/docs/howto/i18n.html
+
+But I am not going to do this on GitLab. How to add a language to docutils?
+
+The optimal way would be  `to contribute
+<https://docutils.sourceforge.io/docs/dev/repository.html>`__. But that would
+take a lot of time time, and I want a quick fix.
+
+I see that :class:`docutils.languages.LanguageImporter` has an  attribute
+:attr:`packages`, which is a tuple of prefixes::
+
+    packages = ('docutils.languages.', '')
+
+So I might add this :file:`et.py` to my project directory instead of adding it
+to the :file:`docutils/languages` directory. But if I manage to add
+``'atelier.sphinxconf'`` to that tuple, I might get my quick workaround.
+
+I made two PyPI releases in this direction before I realized that I would have
+to do the same patch for
+:class:`docutils.parsers.rst.languages.RstLanguageImporter`.
+
+Oh no. Enough hacking around! I will rather `start contributing to docutils
+<https://docutils.sourceforge.io/docs/dev/repository.html>`__!
+
+Get started::
+
+  $ cd ~/repositories
+  $ svn checkout https://svn.code.sf.net/p/docutils/code/trunk docutils-code
+  $ pip install -e docutils-code/docutils
+
+First problem: The :cmd:`pip install -e` says::
+
+  ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+  sphinx 4.4.0 requires docutils<0.18,>=0.14, but you have docutils 0.19b0.dev0 which is incompatible.
+  sphinx-rtd-theme 1.0.0 requires docutils<0.18, but you have docutils 0.19b0.dev0 which is incompatible.
+
+A stupid dependency bug: sphinx and sphinx-rtd-theme fail to work with the
+development version of docutils.  OMG! So I should ideally now contribute to
+these as well! First question is: why do they require "<0.18"? Shouldn't they
+simply remove this requirement?   Okay I can work around this by saying::
+
+  pip install -e --no-warn-conflicts .
+
+But I also submitted a ticket for it:
+https://github.com/sphinx-doc/sphinx/issues/10264
