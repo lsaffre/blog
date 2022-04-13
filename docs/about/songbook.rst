@@ -24,7 +24,7 @@ you would need to check with the copyright holders of the individual songs."
 
 But that wasn't enough, as it turned out. Four of these songs were written by a
 German songwriter.  The author discovered them, and he *did* care about
-copyright, and in august 2012 he asked me to pay a license fee of 630€. Even
+copyright, and in August 2012 he asked me to pay a license fee of 630€. Even
 though I removed the whole project immediately and convinced him that I was not
 doing any business with "his" "property".  Oh my god.
 
@@ -37,8 +37,8 @@ similar sins against copyright. So I removed it before getting more invoices for
 license fees.
 
 Later I restarted blogging, because this is my way of communicating, but 14
-years of content of the years 1998 to 2012) is visible only to me because I
-didn't yet have time to make it copyright-compliant.
+years of content (from 1998 to 2012) are visible only to me because I didn't yet
+have time to make it copyright-compliant.
 
 One can say that this was a key experience in my life and one of the reasons why
-I wrote the `Lutsu manifesto <https://hw.saffre-rumma.net/lutsu/>`__.
+I started the `Lutsu project <https://hw.saffre-rumma.net/lutsu/>`__.
