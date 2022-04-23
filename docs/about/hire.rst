@@ -5,11 +5,11 @@ Hire me
 I am patiently looking for my future boss and employer.
 Yes, I am a job seeker. A job seeker with special conditions.
 
-I am the author and maintainer of the :term:`Lino framework`. I have been
+I am the author and maintainer of the :ref:`Lino framework <lf>`. I have been
 working on this vision my whole life.
 My future employer needs to convince me that they will continue collaborating
 with our existing customers and employees. They will have to take over
-:ref:`rumma` and bring the :term:`Lino framework` to the next level.
+:ref:`rumma` and bring the :ref:`Lino framework <lf>` to the next level.
 
 It is possible that there is something better than Lino and that Lino can be
 replaced by some other product. I am open to consider this. And I would
@@ -19,7 +19,7 @@ product. I will rather grow potatoes than write non-free software.
 
 I guess that my future employer is unlikely to be a :term:`private corporation`.
 It will rather be a non-profit organization, a foundation, a cooperative or a
-public service. That's because the :term:`Lino framework` is published under the
+public service. That's because the :ref:`Lino framework <lf>` is published under the
 *GNU Affero General Public License* (AGPL), the most :term:`protective Free
 Software license` there is. You cannot write :term:`proprietary software` using
 Lino. (See :ref:`lino.copyright`).

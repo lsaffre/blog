@@ -3,7 +3,7 @@ Luc's developer blog
 ====================
 
 Welcome to my developer blog.  This is where I write about my software projects,
-especially the :term:`Lino framework`.
+especially the :ref:`Lino framework <lf>`.
 
 .. include:: /shared/include/part_of_lino.rst
 
