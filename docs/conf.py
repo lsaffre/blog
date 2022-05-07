@@ -39,7 +39,8 @@ sigal_base_url = 'https://sigal.saffre-rumma.net'
 
 # General substitutions.
 project = "Luc's developer blog"
-copyright = '2001-2021 Luc Saffre'
+import datetime
+copyright = '2001-{} Luc Saffre'.format(datetime.date.today().year)
 
 
 # html_title = "Luc's dblog"
