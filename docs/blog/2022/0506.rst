@@ -1,0 +1,28 @@
+:date: 2022-05-06
+
+===================
+Friday, May 6, 2022
+===================
+
+Yes, TIM was right. Lino will have something equivalent to the ``VNA.DBF`` in
+TIM.
+
+I plan to call it :mod:`Transfer`. This will be a concrete model. It is a bit
+similar to :class:`ledger.Movement` in that these transfers are generated
+when a voucher gets registered, and deleted when the voucher gets de-registered.
+And :class:`InvoiceGenerator` will have a :meth:`get_wanted_transfers`, which
+is similar to the :meth:`get_wanted_movements` and will be defined in
+:class:`RegistrableVoucher` as well. This :class:`RegistrableVoucher` mixin
+should maybe move to another place because it might be useful even in a Lino
+that has no ledger.
+
+
+An "invoiceable" represents a future row of a trade voucher.
+
+The invoicing plan will no longer need items because that information will be
+just the (filtered) list of invoiceables. The only interactive element of the
+invoicing plan's items were the checkboxes to select individual items. But they
+aren't really needed because the user can simply delete the rows of a generated
+invoice before closing it.
+
+The :meth:`get_generators_for_plan` method will be replaced by something else.

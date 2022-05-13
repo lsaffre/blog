@@ -1,0 +1,126 @@
+:date: 2022-05-03
+
+==========================
+The new ``trading`` plugin
+==========================
+
+Tuesday, May 3, 2022. Seems that Lino is going to have a new plugin,
+``trading``.
+
+Use case 1
+==========
+
+A small shop who sells electronic devices and related services.
+Some customers don't need to pay immediately, they receive a monthly invoice. In
+such cases the shop owner writes a :term:`delivery note`.
+
+.. glossary::
+
+  delivery note
+
+    A voucher with a series of rows, each of which means that a given quantity
+    of a given "product" has been "delivered".
+
+The same customer can come multiple times, each visit expressed by a
+:term:`delivery note`. At the end of the month we want Lino to generate all
+invoices. It can happen that a customer asks, at some arbitrary moment "Please
+make my invoice now". And of course these deliveries should not get invoiced
+again at the end of the month. Or it can happen that the :term:`site operator`
+decides to not write an invoice to a given customer and to wait another month
+before invoicing the delivered items.
+
+When looking at any given product, we want to see when it has been (1) delivered
+and (2) invoiced to a customer. Each "open" delivery note means that a
+corresponding invoice is waiting to be emitted.
+
+Use case 2
+==========
+
+The shop also offers the possibility to their customers to order
+some device. That's another operation, and the workflow becomes more complex:
+
+.. glossary::
+
+  order form
+
+    A voucher with a series of rows, each of which means that the business
+    partner "orders" a given quantity of a given "product".
+
+An :term:`order form` can include a deposit or pre-payment, which may be partly.
+
+When looking at any given product, we want to see who ordered it. Each "open"
+order means that a corresponding delivery note is waiting to be emitted.
+
+Use case 3
+==========
+
+Like case 2, but we add a feature that Lino also helps with filling our own
+orders towards our providers. At any moment we could say "Let's write an order
+form four our provider X". This order form may cover the orders of multiple
+customers. It adds "incoming delivery notes" and a feature to notify customers
+that their order has arrived.
+
+It can get even more complex. For example when you have serial numbers and
+warranty services.  In that case you need to assign each incoming item to the
+customer to whom it is to be delivered. Or the customer comes back one year
+after a purchase and has a warranty issue. In that case you want to track where
+you bought the device, and you will need at least one new journal of vouchers
+"warranty issues". Or your activity is not about electronic devices but about
+small objects, which you buy in big quantities and sell them after having them
+packed into smaller parcels.
+
+Use case 4
+==========
+
+And a last use case, e.g. in :ref:`amici` where you don't speak about money. But
+you have a collection of books and other things, which you happen to lend to
+some friend. And you might want to keep track of these. It's not about money,
+but about asking them back after some time.
+
+The plugin
+==========
+
+The ``trading`` plugin would be used in all these cases.
+
+It would define a choicelist :class:`TradingStates`, which describes all states
+of the workflow. In use case 1 this choicelist would have only one item,
+"delivered" or "to be invoiced". In use case 2 another state "ordered" or "to be
+delivered", etc.
+
+And then a model :class:`TradingRule` (or :class:`Transition`), which describes
+the possible ways of getting from one state to another state. It will have the
+following fields:
+
+- from_state
+- to_state
+- journal
+
+In use case 1 you would have a journal `SDN` ("Sales Delivery Notes") and two
+rows in your :class:`TradingRule` table:
+
+======= ========== =========
+journal from_state to_state
+======= ========== =========
+SDN     None       delivered
+SLS     delivered  None
+======= ========== =========
+
+But that's not all. Don't we also want a separate model for storing the
+individual items that are in one of these states? Each row of a delivery note
+would generate a row in that table. In TIM this table was called ``VNA``.  And
+e.g. when you de-register a delivery note that has already been invoiced, TIM
+had a special warning in that case, it said something like "This will mess up
+your invoicing workflow because the operations of this delivery note have
+already been invoiced". In Lino such a table seems not needed because we have
+the :attr:`invoiceable` field, a GFK on the `invoicing.item_model`.
+
+I also need to consider the other "philosophies" of generating invoices, as used
+in :ref:`voga` or :ref:`presto` where they have subscription-style orders, which
+are a completely different way of invoicing. They are related, though. For
+example when a customer orders 10 times a same product, you manage to order 6 of
+them from your provider, deliver them to the customer, maybe write an invoice.
+What about the four remaining ordered items? The customer may decide to cancel
+them. Or their price may change.
+
+Actually we don't need another plugin. We just add :class:`TradingStates` and
+:class:`TradingRule` to the ``invoicing`` plugin.

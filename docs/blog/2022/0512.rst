@@ -1,0 +1,100 @@
+:date: 2022-05-12
+
+======================
+Thursday, May 12, 2022
+======================
+
+Optimizations for points of sale
+================================
+
+Sharif and I had a brainstorming session about new optimizations to do in
+:ref:`cosi` for a friend who has a small shop.
+
+- Create a new data view "Sales note".
+  Move most of the fields in the General tab to the More tab.
+  Only the field "payment method" and one more field "received cash" and a virtual field "cash to return".
+
+- Possibility to quickly start a delivery note, even without specifying a
+  customer:
+  Configure a default partner "Miscellaneous" (to be created by the demo fixture) only when invoicing.delivery_notes_demo is True.
+  In SDN journal, set Journal.partner to this partner.
+
+- Add a quick link [start new sale] that creates an Invoice record and then shows the detail.
+
+- Every POS (point of sale) will have its own journal of delivery notes.
+
+- Add a new field "received cash" and a virtual field "cash to return". Used
+  when registering cash amounts.
+
+- Add a new toolbar button for registering.
+
+- About printing: we don't want to open a pdf document here. Each printer would
+  be declared as a network printer.
+
+- Solution for shop that is operated via a mobile device.
+
+Don't start these alone:
+
+- New action to register when cash money was taken from the cash box in order to
+  buy a coffee or to pay a provider (potentially clearing a purchase invoice)
+
+- Quick link "Daily report" prints cash in the morning, details of sales, total
+  amount of cash in the evening. Maybe this will be a new voucher type
+  "CashReport", with a field "How much money has been taken out of the cash box
+  to "
+
+
+How to update the total amount after each row? New concept of "master data" :
+when I submit some row of an invoice, Lino could return additional data in its
+response, which would be some changed values in the master instance.
+
+On the InvoiceItem model we would have the following application code::
+
+    master_data_fields = "total_incl total_base"
+
+    def get_master_data(self, ar):
+      self.voucher.compute_totals()
+      return super().get_master_data(ar)
+
+The default implementation in core.model.Model would be::
+
+    def get_master_data(self, ar):
+      rv = {}
+      for mdf in self.master_data_fields:
+        rv[mdf]  = getattr(ar.master_instance, mdf)
+      return rv
+
+When a model has master data fields, any submit to a ui change in a row of this
+model will also return an additional item "master_data"::
+
+    master_data: {"total_incl": "...", "total_base": ...}
+
+
+Code changes
+============
+
+I moved the table definitions in :mod:`lino_xl.lib.sales` to a separate
+:xfile:`ui.py` module. Because things were getting messy in a single
+:xfile:`models.py` module.
+
+I replaced the :attr:`print_items_table` class attribute on the
+:class:`VatProductInvoice` model by a new :term:`plugin setting`
+:setting:`sales.print_items_table`.
+This feature is used in :ref:`voga`.
+
+I thought that instead of specifying `invoicing.voucher_model` the app dev would
+now have to specify `invoicing.default_voucher_view`, but that idea caused
+complexity when resolving the name.
+
+I fixed a subtle double bug that became visible because now we a demo customer
+in Bangladesh, and because the sample IBANS in
+:mod:`lino_xl.lib.sepa.fixtures.sample_ibans` don't have any IBAN in Bangladesh.
+In that situation, Lino tried to create a sepa.ACcount row with an empty iban
+field. And in that case :meth:`sepa.Account.__str__` returned `None`. After
+fixing this bug, I had another problem during :manage:`prep`  ({'iban': ['This
+field cannot be null.']}) because Lino insisted on adding a demo SEPA account
+for every partner who has a `country`.
+
+For some reason I didn't investigate further,
+the sample IBANs in :mod:`lino_book.projects.cosi_ee` have changed, causing
+:cmd:`doctest` to fail on :file:`docs/plugins/eevat.rst`.
