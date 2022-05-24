@@ -26,7 +26,7 @@ we want.  We use autodoc to generate the API automatically and we
 don't want a half-automated API, we want it to always generate all
 members.
 
-The issue was in :func:`atelier.sphinxconf.configure` which sets
+The issue was in :func:`rstgen.sphinxconf.configure` which sets
 general default values.
 
 Old default value was::
@@ -77,7 +77,7 @@ But :attr:`state.document.current_source` is `None` when the code is
 run from within a :rst:dir:`py2rst` directive.
 
 The problem was in :class:`InsertInputDirective
-<atelier.sphinxconf.insert_input.InsertInputDirective>` where it
+<rstgen.sphinxconf.insert_input.InsertInputDirective>` where it
 created a new statemachine without specifying the source.  Before::
 
         content = statemachine.StringList(output.splitlines())
@@ -89,7 +89,7 @@ Now::
 
 
 Summary: Atelier now supports Sphinx version is 1.8 or later.
-:func:`atelier.sphinxconf.configure` now checks the Sphinx version and
+:func:`rstgen.sphinxconf.configure` now checks the Sphinx version and
 sets the new `autodoc_default_options
 <http://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options>`__
 configuration value instead of the deprecated `autodoc_default_flags
@@ -110,7 +110,7 @@ file with Emacs.  So basicaly it now full cleans the generated Python
 cache files.  Which makes the `--batch` option almost mandatory in
 practice.
 
-I moved :class:`DjangoTemplateBridge` from :mod:`atelier.sphinxconf`
+I moved :class:`DjangoTemplateBridge` from :mod:`rstgen.sphinxconf`
 to :mod:`lino.sphinxcontrib` and then removed it altogether.
 
 

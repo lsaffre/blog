@@ -11,7 +11,7 @@ configure(globals(), 'lino_book.projects.min9.settings')
 spec = """getlino eidreader atelier etgen lino_react lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
 lino_avanti"""
-from atelier.sphinxconf import interproject
+from rstgen.sphinxconf import interproject
 interproject.configure(globals(), spec)
 # intersphinx_mapping['book'] = ('https://dev.lino-framework.org/', None)
 # intersphinx_mapping['lf'] = ('https://www.lino-framework.org/', None)
@@ -22,15 +22,15 @@ intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
 intersphinx_mapping['www'] = ('https://www.saffre-rumma.net/', None)
 intersphinx_mapping['ttdocs'] = ('https://timtools.lino-framework.org/', None)
 
-extensions += ['atelier.sphinxconf.blog']
-extensions += ['atelier.sphinxconf.complex_tables']
+extensions += ['rstgen.sphinxconf.blog']
+extensions += ['rstgen.sphinxconf.complex_tables']
 extensions += ['lino.sphinxcontrib.logo']
 extensions += ['lino.sphinxcontrib.base']  # for tcname
 # extensions += ['sphinxcontrib.taglist']
 # extensions += ['sphinxcontrib.youtube']
 extensions += ['sphinx.ext.inheritance_diagram']
 
-extensions += ['atelier.sphinxconf.sigal_image']
+extensions += ['rstgen.sphinxconf.sigal_image']
 
 sigal_base_url = 'https://sigal.saffre-rumma.net'
 
