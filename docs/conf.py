@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from atelier.sphinxconf import configure ; configure(globals())
+
 import lino
 from lino.sphinxcontrib import configure
 
