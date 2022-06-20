@@ -52,20 +52,21 @@ html_logo = "logo2.jpg"
 # extlinks.update(ticket=('http://trac.lino-framework.org/ticket/%s', '#'))
 # extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
 # extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
-extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
+extlinks.update(ticket=(
+    'https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#%s'))
 extlinks.update({
     'issue': (
-        'http://code.google.com/p/lino/issues/detail?id=%s', '# '),
-    'checkin': (
-        'http://code.google.com/p/lino/source/detail?r=%s', 'Checkin '),
-    'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', ''),
-    'linosrcref': ('https://github.com/lsaffre/lino/blob/master/%s', ''),
-    'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', ''),
-    'extux': ('http://extjs-ux.org/ext-docs/?class=%s', ''),
+        'http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
+    # 'checkin': (
+    #     'http://code.google.com/p/lino/source/detail?r=%s', 'Checkin '),
+    # 'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', ''),
+    # 'linosrcref': ('https://github.com/lsaffre/lino/blob/master/%s', ''),
+    'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', None),
+    'extux': ('http://extjs-ux.org/ext-docs/?class=%s', None),
     'djangoticket': (
-        'http://code.djangoproject.com/ticket/%s', 'Django ticket #'),
-    'welfare': ('https://welfare.lino-framework.org%s.html', ''),
-    'lino': ('https://www.lino-framework.org%s.html', ''),
+        'http://code.djangoproject.com/ticket/%s', 'Django ticket #%s'),
+    'welfare': ('https://welfare.lino-framework.org%s.html', None),
+    'lino': ('https://www.lino-framework.org%s.html', None),
     # 'welfareticket': (
     #     'https://welfare.lino-framework.org/tickets/%s.html', ''),
     # 'welfareusermande': (
@@ -73,7 +74,6 @@ extlinks.update({
     # 'welfareusermanfr': (
     #     'https://welfare-userman.lino-framework.org/fr%s.html', ''),
 })
-
 
 
 blogref_format = "https://luc.lino-framework.org/blog/%Y/%m%d.html"
