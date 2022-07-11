@@ -57,10 +57,10 @@ extlinks.update(ticket=(
 extlinks.update({
     'issue': (
         'http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
-    # 'checkin': (
-    #     'http://code.google.com/p/lino/source/detail?r=%s', 'Checkin '),
-    # 'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', ''),
-    # 'linosrcref': ('https://github.com/lsaffre/lino/blob/master/%s', ''),
+    'checkin': (
+        'http://code.google.com/p/lino/source/detail?r=%s', None),
+    'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', '%s'),
+    'linosrcref': ('https://gitlab.com/lino-framework/lino/blob/master/%s', '%s'),
     'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', None),
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', None),
     'djangoticket': (

@@ -1,8 +1,12 @@
 :date: 2022-06-18
 
 =======================
-Saturday, June 18, 2022
+About sales notes
 =======================
+
+Saturday, June 18, 2022
+
+Sales notes
 
 First use case: a sales note is being paid cash immediately. We don't know
 anything about the customer.
@@ -10,45 +14,56 @@ anything about the customer.
 =========================== ======== ========= ==========
 Account                     Debit    Credit    Partner
 =========================== ======== ========= ==========
-701000 sales of goods        100€
-570000 cash                              100 €
+701000 sales of goods                    100 €
+570000 cash                    100 €
 =========================== ======== ========= ==========
 
 Second case: client pays with credit card or online payment. Here we know the
 partner (at least his card number), and the API communication with the bank has
-been done during :meth:`register`.
+been done during :meth:`register` (otherwise the voucher would not have been
+registered).
 
 =========================== ======== ========= ==========
 Account                     Debit    Credit    Partner
 =========================== ======== ========= ==========
-701000 sales of goods          100 €
-400000 clients receivable                100 € somebody
+701000 sales of goods                    100 €
 400000 clients receivable      100 €           somebody
-570100 credit card payments              100 €
+400000 clients receivable                100 € somebody
+570100 credit card payments    100 €
 =========================== ======== ========= ==========
 
 Third case. The payment fails. We say "Okay, take your goods and we trust you to
-come back tomorrow and pay in cash".  Just set payment method to "invoice". Lino
-should book this:
+come back tomorrow and pay in cash".  Just set :term:`payment method` to
+"invoice" or "later". Lino should book this:
 
 =========================== ======== ========= ==========
 Account                     Debit    Credit    Partner
 =========================== ======== ========= ==========
-701000 sales of goods          100 €
-400000 clients receivable                100 € somebody
+701000 sales of goods                    100 €
+400000 clients receivable      100 €           somebody
 =========================== ======== ========= ==========
 
 When the customer returns later the same day and pays cash, we register a
-"payment without sale". This is just a sales note without any product. Lino
+**payment without sale**. This is just a sales note without any product. Lino
 should automatically show in the :attr:`balance_before` virtual field. And since
 there are no items, the :attr:`balance_to_pay` will be the same.
 
 =========================== ======== ========= ==========
 Account                     Debit    Credit    Partner
 =========================== ======== ========= ==========
-400000 clients receivable      100 €           somebody
-570000 cash payment                      100 €
+400000 clients receivable                100 € somebody
+570000 cash payment            100 €
 =========================== ======== ========= ==========
 
 If the client forgets to return and to pay, we will automatically issue an
 invoice.
+
+Next use case: we have an agreement with the client that they receive a monthly
+invoice for all sales. Two sub-cases: (a) client pays on each delivery or (b)
+client pays only when invoice comes.
+
+In both cases we have already the money (or a proof that promises that we will
+get money), but we still need to write an invoice. The payment should *not*
+clear with the sales note but with the invoice.
+
+When (a), we do have the cash without invoice. **Invoices to issue**
