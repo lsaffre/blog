@@ -23,12 +23,17 @@ moved to `Estonia <https://en.wikipedia.org/wiki/Estonia>`__ at the age of 30
 after having married an Estonian.  We have 2 daughters and live in a small
 village and the capital.
 
-I am manager and senior developer at `Rumma & Ko OÜ
+Since October 2001 I am manager and senior developer at `Rumma & Ko OÜ
 <https://www.saffre-rumma.net/>`__, which I own together with my wife. We
 provide development, hosting, maintenance and customer support of `free
 <https://www.saffre-rumma.net/free/>`__ customized database applications, mainly
 using the `Lino framework <http://www.lino-framework.org/>`__ and its older
 brother `TIM <http://tim.lino-framework.org/129.html>`__.
+
+Since September 2021 I am also Diocesan Contact Person of the `Apostolic
+Administration of Estonia
+<https://en.wikipedia.org/wiki/Apostolic_Administration_of_Estonia>`__
+for the `Synod on Synodality <https://hw.saffre-rumma.net/sc/>`__.
 
 
 How to contact me:
