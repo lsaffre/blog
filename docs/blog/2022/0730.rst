@@ -1,0 +1,120 @@
+:date: 2022-07-30
+
+=======================
+Saturday, July 30, 2022
+=======================
+
+SyntaxError: JSON.parse: unexpected character at line 1 column 1 of the JSON data
+
+This message in the JS console usually means that the client made an AJAX
+request expecting an answer in JSON, but received a response in HTML. This
+currently happens also when there was an internal server error (a traceback)
+while building the response.
+
+The :file:`/var/log/nginx/access.log` says::
+
+  90.191.153.133 - - [30/Jul/2022:05:22:34 +0200]
+  "GET /api/tickets/Tickets/4586?dm=grid&fmt=json&limit=15&lv=1645431581.0682056&query=&rp=weak-key-54&start=0&wt=d HTTP/1.1"
+  502 173 "https://jane.mylino.net/"
+  "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:102.0) Gecko/20100101 Firefox/102.0"
+
+
+The :file:`/var/log/nginx/error.log` says::
+
+  2022/07/30 05:22:34 [error] 3273#3273: *43784 upstream prematurely closed
+  connection while reading response header from upstream, client:
+  90.191.153.133, server: jane.mylino.net, request:
+  "GET /api/tickets/Tickets/4586?dm=grid&fmt=json&limit=15&lv=1645431581.0682056&query=&rp=weak-key-54&start=0&wt=d HTTP/1.1",
+  upstream: "uwsgi://unix:/usr/local/lino/lino_local/jane/nginx.sock:",
+  host: "jane.mylino.net",
+  referrer: "https://jane.mylino.net/"
+
+The file :file:`/var/log/supervisor/jane-uwsgi-stderr---supervisor-caHb85.log` says::
+
+  [pid: 2307|app: 0|req: 125/240] 90.191.153.133 () {50 vars in 1162 bytes} [Sat Jul 30 06:22:23 2022] GET /api/tickets/Tickets/4586?dm=grid&fmt=json&limit=15&lv=1645431581.0682056&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&pv&query=&rp=weak-key-1&start=0&wt=d => generated 7813 bytes in 159 msecs (HTTP/1.1 200) 6 headers in 439 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 126/241] 90.191.153.133 () {50 vars in 935 bytes} [Sat Jul 30 06:22:24 2022] GET /values/tickets/Tickets/4586/working.SessionsByTicket => generated 49 bytes in 20 msecs (HTTP/1.1 200) 4 headers in 124 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 121/242] 90.191.153.133 () {50 vars in 931 bytes} [Sat Jul 30 06:22:24 2022] GET /values/tickets/Tickets/4586/comments.CommentsByRFC => generated 8044 bytes in 126 msecs (HTTP/1.1 200) 4 headers in 126 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 122/243] 90.191.153.133 () {50 vars in 918 bytes} [Sat Jul 30 06:22:27 2022] GET /api/main_html?fmt=json&lv=1645431581.0682056 => generated 3872 bytes in 176 msecs (HTTP/1.1 200) 4 headers in 126 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 127/245] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:27 2022] GET /dashboard/0?fmt=json&lv=1645431581.0682056 => generated 9096 bytes in 972 msecs (HTTP/1.1 200) 4 headers in 126 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 123/245] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:27 2022] GET /dashboard/1?fmt=json&lv=1645431581.0682056 => generated 10648 bytes in 796 msecs (HTTP/1.1 200) 4 headers in 127 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 124/246] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:28 2022] GET /dashboard/2?fmt=json&lv=1645431581.0682056 => generated 45242 bytes in 307 msecs (HTTP/1.1 200) 4 headers in 127 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 125/247] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:28 2022] GET /dashboard/4?fmt=json&lv=1645431581.0682056 => generated 44574 bytes in 254 msecs (HTTP/1.1 200) 4 headers in 127 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 128/248] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:28 2022] GET /dashboard/3?fmt=json&lv=1645431581.0682056 => generated 26846 bytes in 564 msecs (HTTP/1.1 200) 4 headers in 127 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 129/249] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:29 2022] GET /dashboard/6?fmt=json&lv=1645431581.0682056 => generated 31 bytes in 49 msecs (HTTP/1.1 200) 4 headers in 124 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 130/250] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:29 2022] GET /dashboard/7?fmt=json&lv=1645431581.0682056 => generated 4344 bytes in 99 msecs (HTTP/1.1 200) 4 headers in 126 bytes (1 switches on core 0)
+  [pid: 2307|app: 0|req: 131/252] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:29 2022] GET /dashboard/8?fmt=json&lv=1645431581.0682056 => generated 1002 bytes in 121 msecs (HTTP/1.1 200) 4 headers in 126 bytes (1 switches on core 0)
+  [pid: 4875|app: 0|req: 126/252] 90.191.153.133 () {50 vars in 914 bytes} [Sat Jul 30 06:22:29 2022] GET /dashboard/5?fmt=json&lv=1645431581.0682056 => generated 20501 bytes in 274 msecs (HTTP/1.1 200) 4 headers in 127 bytes (1 switches on core 0)
+  DAMN ! worker 1 (pid: 2307) died, killed by signal 9 :( trying respawn ...
+  Respawned uWSGI worker 1 (new pid: 5443)
+
+
+The file :file:`/var/log/supervisor/linod-jane-stderr---supervisor-SToYrb.log`
+contains a traceback::
+
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/jane/manage.py", line 11, in <module>
+      execute_from_command_line(sys.argv)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/management/__init__.py", line 419, in execute_from_command_line
+      utility.execute()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/management/__init__.py", line 413, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/management/base.py", line 354, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/django/core/management/base.py", line 398, in execute
+      output = self.handle(*args, **options)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino/management/commands/linod.py", line 49, in handle
+      schedule.run_pending()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/schedule/__init__.py", line 780, in run_pending
+      default_scheduler.run_pending()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/schedule/__init__.py", line 100, in run_pending
+      self._run_job(job)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/schedule/__init__.py", line 172, in _run_job
+      ret = job.run()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/schedule/__init__.py", line 661, in run
+      ret = self.job_func()
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/models.py", line 241, in update_all_repos
+      Repository.update_all_repos.run_from_code(rt.models.github.Repositories.request())
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/actions.py", line 149, in run_from_code
+      super(Update_all_repos, self).run_from_code(ar, *args, **kw)
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/actions.py", line 81, in run_from_code
+      for commit in self.get_commits(**kw):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/actions.py", line 127, in get_commits
+      for commit in super(Import_new_commits, self).get_commits(**kw):
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/actions.py", line 64, in get_commits
+      commit = rt.models.github.Commit.from_api(c, kw.get('repo'))
+    File "/usr/local/lino/lino_local/jane/env/lib/python3.7/site-packages/lino_xl/lib/github/models.py", line 207, in from_api
+      c = Commit.objects.get(sha=d['sha'])
+  TypeError: string indices must be integers
+
+
+The timestamp of this file is shown as "Jul 30 05:05" by :cmd:`ls -l`.  When I
+say :cmd:`touch tmp ; ls -l tmp`, then it shows one hour earlier than my desktop
+clock. Because the server is in CEST time zone. This traceback is caused by the
+following code (in :mod:`lino_xl.lib.github`)::
+
+  @dd.schedule_often(3600)
+  def update_all_repos():
+      Repository.update_all_repos.run_from_code(rt.models.github.Repositories.request())
+
+
+I am surprised that the :xfile:`lino.log` contains nothing about the event. It
+looks as if it contains only the logging of the :manage:`linod` process. Yes,
+that's because  the uwsgi and the lino processes are two concurrent processes
+trying to log to a single file. See `here
+<https://stackoverflow.com/questions/17902972/how-to-log-to-a-single-file-with-concurrent-processes-in-django-without-exclusiv#17907805>`__
+for example. When I run :cmd:`reload_services.sh`, the :xfile:`lino.log`
+contains::
+
+  202207-30 07:09:17 INFO [kernel 4875 139817209964416] : Done uwsgi (PID 4875)
+  202207-30 07:09:17 INFO [kernel 5443 139817209964416] : Done uwsgi (PID 5443)
+  202207-30 07:09:27 INFO [kernel 6001 140241389811520] : Started /usr/local/lino/lino_local/jane/manage.py linod (using lino_local.jane.settings) --> PID 6001
+  202207-30 07:09:29 INFO [kernel 6000 140542291392384] : Started uwsgi (using lino_local.jane.settings) --> PID 6000
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : 8 scheduled jobs:
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [1] Every 300 seconds do event_notification_scheduler() (last run: [never], next run: 2022-07-30 07:14:22)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [2] Every 1 day at 20:00:00 do checksummaries() (last run: [never], next run: 2022-07-30 20:00:00)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [3] Every 1 day at 20:00:00 do checkdata() (last run: [never], next run: 2022-07-30 20:00:00)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [4] Every 10 seconds do send_pending_emails_often() (last run: [never], next run: 2022-07-30 07:09:34)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [5] Every 1 day at 20:00:00 do send_pending_emails_daily() (last run: [never], next run: 2022-07-30 20:00:00)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [6] Every 1 day at 20:00:00 do clear_seen_messages() (last run: [never], next run: 2022-07-30 20:00:00)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [7] Every 3600 seconds do update_all_repos() (last run: [never], next run: 2022-07-30 08:09:25)
+  202207-30 07:09:29 INFO [linod 6001 140241389811520] : [8] Every 10 seconds do get_new_mail() (last run: [never], next run: 2022-07-30 07:09:37)

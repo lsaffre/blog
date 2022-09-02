@@ -1,0 +1,55 @@
+:date: 2022-08-10
+
+==========================
+Wednesday, August 10, 2022
+==========================
+
+Morning session
+===============
+
+.. program:: inv prep
+
+The :cmd:`inv prep` command now accepts a new option :option:`--after`.
+
+.. program:: per_project
+
+En passant I worked in the documentation for :mod:`atelier`. For example, I can
+now write sentences like "The :cmd:`per_project` command has an option
+:option:`--list`" and it links to the right place.
+
+Don't mix up the directives ``.. command::`` and ``.. program::``, and the
+roles ``:cmd:`` , ``:command:`` and ``:option:``.
+
+- `program
+  <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html?highlight=command#directive-program>`__,
+  `command <https://www.sphinx-doc.org/en/master/usage/restructuredtext/roles.html?highlight=command#role-command>`__ and `option
+  <https://www.sphinx-doc.org/en/master/usage/restructuredtext/domains.html?highlight=command#directive-option>`__
+  are defined by Sphinx.
+
+- :rst:dir:`command` and :rst:role:`cmd` are defined by :mod:`rstgen.sphinxcontrib`.
+
+
+About display_mode on mobile views
+==================================
+
+We currently have display_mode_slave and display_mode_main. I think about
+replacing them by a single attribute display_mode, which would be a tuple, with
+the following *default value*::
+
+  display_mode = (
+    (70, constants.DISPLAY_MODE_TABLE),
+    (None, constants.DISPLAY_MODE_LIST)
+  )
+
+Where "70" would be the available width on screen, in "logical characters".
+
+The display mode would no longer depend on whether it is a
+slave or a main widget, but on the available width.
+
+The whole `display_mode` tuple must be given to the client (in the `.js` file),
+and the client must  loop over this tuple and pick the first item that fits into
+the available width.
+
+The question is can we know the available width when we need it? In ExtJS we
+could say that it is always 80, meaning that the dynamic display mode doesn't
+work in ExtJS.

@@ -1,0 +1,46 @@
+:date: 2022-08-31
+
+==========================
+Wednesday, August 31, 2022
+==========================
+
+::
+
+  $ sudo apt-get update
+  Get:1 http://deb.debian.org/debian buster InRelease [122 kB]
+  Get:2 http://security.debian.org buster/updates InRelease [34,8 kB]
+  Get:3 http://deb.debian.org/debian buster-updates InRelease [56,6 kB]
+  Hit:4 http://deb.debian.org/debian buster-backports InRelease
+  Get:5 http://mirror.hetzner.de/debian/packages buster InRelease [122 kB]
+  Hit:6 http://ftp.de.debian.org/debian buster-backports InRelease
+  Get:7 http://mirror.hetzner.de/debian/packages buster-updates InRelease [56,6 kB]
+  Hit:8 http://mirror.hetzner.de/debian/packages buster-backports InRelease
+  Get:9 http://mirror.hetzner.de/debian/security buster/updates InRelease [34,8 kB]
+  Reading package lists... Done
+  N: Repository 'http://deb.debian.org/debian buster InRelease' changed its 'Version' value from '10.6' to '10.12'
+  E: Repository 'http://deb.debian.org/debian buster InRelease' changed its 'Suite' value from 'stable' to 'oldstable'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+  E: Repository 'http://security.debian.org buster/updates InRelease' changed its 'Suite' value from 'stable' to 'oldstable'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+  E: Repository 'http://deb.debian.org/debian buster-updates InRelease' changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+  N: Repository 'http://mirror.hetzner.de/debian/packages buster InRelease' changed its 'Version' value from '10.6' to '10.12'
+  E: Repository 'http://mirror.hetzner.de/debian/packages buster InRelease' changed its 'Suite' value from 'stable' to 'oldstable'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+  E: Repository 'http://mirror.hetzner.de/debian/packages buster-updates InRelease' changed its 'Suite' value from 'stable-updates' to 'oldstable-updates'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+  E: Repository 'http://mirror.hetzner.de/debian/security buster/updates InRelease' changed its 'Suite' value from 'stable' to 'oldstable'
+  N: This must be accepted explicitly before updates for this repository can be applied. See apt-secure(8) manpage for details.
+
+
+
+I added the following line to
+different files below :file:`/etc/apt/apt.conf.d`::
+
+  Acquire::AllowInsecureRepositories "true";
+
+But without success.
+
+The solution was to simply say ``--allow-releaseinfo-change`` at the
+command-line. Thanks to  `Josh Sherman for sharing
+<https://joshtronic.com/2021/09/12/fixed-repository-debian-security-buster-updates-changed-suite-from-stable-to-oldstable/>`__.
