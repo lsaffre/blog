@@ -1,0 +1,28 @@
+:date: 2022-09-06
+
+==========================
+Tuesday, September 6, 2022
+==========================
+
+:ticket:`4642` is an example of something that would be difficult if Lino were
+maintained by a bigger team: modifying the name of a database model.
+
+This would have caused endless discussions. It's true that by "just doing it" I
+stumbled into a few surprises. But the advantage is that I didn't even need to
+bother the other developers, they will just see the result and feel intuitively
+that things are more clear now. Unless I am wrong, which is still possible, but
+at least my change has done already a big series of conceptual tests when I
+handled all the surprises.
+
+Another reason why such a change would be difficult: no customer would ever pay
+for fixing them.
+
+One of the surprises was::
+
+  checkdata.Message.owner_type: (fields.E304) Reverse accessor 'ContentType.message_set' for 'checkdata.Message.owner_type' clashes with reverse accessor for 'notify.Message.owner_type'.
+  	HINT: Add or change a related_name argument to the definition for 'checkdata.Message.owner_type' or 'notify.Message.owner_type'.
+  notify.Message.owner_type: (fields.E304) Reverse accessor 'ContentType.message_set' for 'notify.Message.owner_type' clashes with reverse accessor for 'checkdata.Message.owner_type'.
+  	HINT: Add or change a related_name argument to the definition for 'notify.Message.owner_type' or 'checkdata.Message.owner_type'.
+
+I had to modify :class:`lino.modlib.gfks.Controllable` so that it includes the
+`appname` into the `related_name`.
