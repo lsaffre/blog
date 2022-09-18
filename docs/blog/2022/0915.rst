@@ -1,0 +1,138 @@
+:date: 2022-09-15
+
+============================
+Thursday, September 15, 2022
+============================
+
+This is the first blog entry written on my new notebook computer, a Lenovo Yoga.
+
+:cmd:`inv clean -b bd` in my blog takes now 1 real minute instead of 3,
+:cmd:`inv prep` in book takes now 3m52 instead of 15m48, that's 3 to 4 times
+faster.
+
+Atom editor
+===========
+
+I used Ubuntu's snap to install "snappyatom". But then uninstalled it and
+downloaded the deb installer from Atom project instead. Don't know what snap
+wanted to make snappier, and the snappy variant didn't find my existing atom
+config files.
+
+Oops! Then I saw that Atom is being discontinued! What a pity!
+
+- https://github.blog/2022-06-08-sunsetting-atom/
+- https://www.ghacks.net/2022/06/09/githubs-atom-text-editor-will-be-retired-in-december/
+
+Yes, it was predictable.  Atom is a competitor for Microsoft Visual Studio.
+Atom was being developed mainly by GitHub. GitHub was bought by Microsoft. It's
+a typical Microsoft strategy for eliminating their competitors: they buy them.
+And even a free software product is vulnerable to this when it is being
+developed by a single legal person.
+
+Let's try Eric. Looks nice, but it keeps saying:
+
+  Could not download the requested file from
+  https://eric-ide.python-projects.org/plugins7/repository.xml.
+
+  Error: TLS initialization failed
+
+Probably related to the following warnings in the console::
+
+  qt.tlsbackend.ossl: Incompatible version of OpenSSL (built with OpenSSL 1.x, runtime version is >= 3.x)
+  qt.network.ssl: The backend "cert-only" does not support QSslKey
+  qt.network.ssl: Active TLS backend does not support key creation
+
+::
+
+  $ openssl version
+  OpenSSL 3.0.2 15 Mar 2022 (Library: OpenSSL 3.0.2 15 Mar 2022)
+
+Nah. Sorry, Eric, I'll stay with Atom right now. I guess that anyway somebody
+will continue at least its maintenance.
+
+Yet another warning:
+
+  python-tools was unable to find your machine's python executable.
+
+  Please try set the path in package settings and then restart atom.
+
+  If the issue persists please post an issue on
+  https://github.com/michaelaquilina/python-tools/issues/new
+
+  Error: spawn python ENOENT
+
+Solution: :menuselection:`Edit --> Preferences --> Packages`
+
+
+VirtualBox
+==========
+
+On my new computer I said::
+
+  $ sudo apt install virtualbox
+
+When I then started VirtualBox on my :file:`.vdi` file, it said:
+
+  Kernel driver not installed (rc=-1908)
+
+  The VirtualBox Linux kernel driver is either not loaded or not set up
+  correctly. Please reinstall virtualbox-dkms package and load the kernel module
+  by executing
+
+  'modprobe vboxdrv'
+
+  as root.
+
+  If your system has EFI Secure Boot enabled you may also need to sign the
+  kernel modules (vboxdrv, vboxnetflt, vboxnetadp, vboxpci) before you can load
+  them. Please see your Linux system's documentation for more information.
+
+  where: suplibOsInit what: 3 VERR_VM_DRIVER_NOT_INSTALLED (-1908) - The support
+  driver is not installed. On linux, open returned ENOENT.
+
+
+Solution::
+
+  $ sudo apt reinstall virtualbox-dkms
+
+This told me that my "system has UEFI Secure Boot enabled" and prompted me to
+enter a password. It didn't reboot automatically, but my guts told me to say::
+
+  $ sudo reboot now
+
+And during the boot process I had a little menu inviting me to "register" some
+"modification key".
+
+Next problem:
+
+  The virtual machine execution ran into a non-fatal problem as described below.
+  We suggest that you take appropriate action to prevent the problem from
+  recurring.
+
+  The image file '/usr/share/virtualbox/VBoxGuestAdditions.iso' is inaccessible
+  and is being ignored. Please select a different image file for the virtual DVD
+  drive..
+
+Solution::
+
+  $ sudo apt install virtualbox-guest-additions-iso
+
+A last remark, it took me some time to re-understand the following informative
+message:
+
+  The virtual machine window will be now switched to Scale mode. You can go back
+  to windowed mode at any time by pressing Host+C.
+
+  Note that the Host key is currently defined as Right Ctrl.
+
+  Note that the main menu bar is hidden in scaled mode. You can access it by
+  pressing Host+Home
+
+I checked the "Don't show this again" checkbox. And later I disabled the "Host
+key" in the VirtualBox preferences. I use the :kbd:`Right Ctrl` key quite often,
+so it was disturbing to have it not operate the usual way.
+
+Sphinx
+======
+
+Could not import extension sphinxcontrib.yt (exception: No module named 'sphinxcontrib.yt')
