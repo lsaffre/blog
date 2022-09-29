@@ -26,6 +26,5 @@ This website is part of the Lino documentation:
 `Community Guide <https://community.lino-framework.org>`__ |
 `User Guide <https://using.lino-framework.org>`__ |
 `Hosting Guide <https://hosting.lino-framework.org>`__ |
-`Developer Guide <https://dev.lino-framework.org>`__
-
-.. | `Luc's developer blog <https://luc.lino-framework.org>`__
+`Developer Guide <https://dev.lino-framework.org>`__ |
+`Luc's blog <https://luc.lino-framework.org>`__
