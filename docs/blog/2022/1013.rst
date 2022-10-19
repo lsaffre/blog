@@ -1,0 +1,47 @@
+:date: 2022-10-13
+
+==========================
+Thursday, October 13, 2022
+==========================
+
+I started wondering what they actually wanted to say when they asked to keep the
+position number unchanged for each client. I guess that they are talking about
+:class:`lino_xl.lib.reception.WaitingVisitors`.
+
+It was a bit irritating to see that the visitors in our demo have been waiting
+there for more than 8 years. So I accidentally wrote a solution for the old
+``naturaltime`` problem: when you want the output of a naturaltime string to
+respect :attr:`Site.the_demo_date` (to make it testable, but also to avoid the
+irritating value mentioned above), then you can now simply replace your import::
+
+  from django.contrib.humanize.templatetags.humanize import naturaltime
+
+by this::
+
+  from lino.utils.format_dates import naturaltime
+
+
+
+>>> import lino
+>>> # lino.startup('lino_book.projects.min1.settings')
+>>> lino.startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> from datetime import date, datetime, timezone
+>>> from django.contrib.humanize.templatetags.humanize import naturaltime as hnaturaltime
+>>> from lino_xl.lib.reception.models import naturaltime
+
+>>> print(datetime.now())  #doctest: +ELLIPSIS +SKIP
+2022-10-12 23:14:...
+
+>>> t1 = datetime(2022,10,12,22,20,0)
+>>> print(hnaturaltime(t1))  #doctest: +ELLIPSIS +SKIP
+54 minutes ago
+
+>>> print(settings.SITE.the_demo_date)
+2014-05-22
+>>> print(hnaturaltime(t1))
+il y a une heure
+
+>>> print(naturaltime(t1))
+dans 8 années, 4 mois

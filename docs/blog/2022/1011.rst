@@ -1,0 +1,33 @@
+:date: 2022-10-11
+
+=========================
+Tuesday, October 11, 2022
+=========================
+
+Here is something we didn't yet need: update the "othermodel" pointed to by a
+ForeignKey. Something like this::
+
+  dd.update_field(Convention, "company", othermodel="jobs.JobProvider")
+
+But that doesn't work. I updated the docstring of :func:`dd.update_field`.
+
+The best solution (IMHO) was to split up the
+:class:`lino_xl.lib.contacts.ContactRelated` mixin into an
+:class:`AbstractContactRelated`, which does the same as ``ContactRelated``
+except defining the :attr:`company` field.
+
+A side effect of this change is that :func:`lino.utils.diag.Analyzer.show_database_structure`
+gives a series of false alarms: every model based on :class:`ContactRelated`
+
+>>> import lino
+>>> lino.startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> art60.Convention._meta.get_field("company")
+<django.db.models.fields.related.ForeignKey: company>
+
+>>> art60.Convention.objects.first().company.__class__
+<class 'lino_welfare.modlib.jobs.models.JobProvider'>
+
+>>> art61.Contract.objects.first().company.__class__
+<class 'lino_welfare.modlib.jobs.models.Employer'>

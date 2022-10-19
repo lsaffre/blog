@@ -1,0 +1,147 @@
+:date: 2022-10-02
+
+=======================
+Sunday, October 2, 2022
+=======================
+
+
+Working on :ticket:`4436`.
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+I had started (locally) a  new :mod:`lino_welcht.lib.jobs` plugin as a copy of
+:mod:`lino_welfare.modlib.jobs`, with the only change (so far) that the
+:attr:`is_social` field was now on the :term:`job provider`, no longer on the
+job type. My plan was that this might replace its parent in the future. En
+passant I also had moved all :term:`data views <data view>` to a separate module
+:xfile:`ui.py`.
+
+But then I realized that copying the whole ``jobs`` plugin is not needed. I
+made a new plugin :mod:`lino_welfare.modlib.art60`.
+
+With the new art60 contracts we have multiple subcontracts per contract. An
+art60 contract is between the center and a client, the center is the legal
+employer and makes an "agreement" with one of their partners (called the
+"utilizing services") to take that particular client for that particular period
+and that particular job. Usually there's one "agreement" per "contract". But
+reality can differ from theory, there can be "movements".
+
+Centers who don't want this new feature just  don't install
+:mod:`lino_welfare.modlib.art60` and continue to use the
+:class:`lino_welfare.modlib.jobs.Contract` as before. Their `verbose_name` is
+the same:
+
+>>> show_model_translations(jobs.Contract, art60.Contract, languages="en fr de")
+... #doctest: +SKIP
++----------------+-------------------------+--------------------------+-----------------------+
+| Name           | en                      | fr                       | de                    |
++================+=========================+==========================+=======================+
+| jobs.Contract  | Art60§7 job supplyment  | Mise à l'emploi art60§7  | Art.60§7-Konvention   |
+|                | Art60§7 job supplyments | Mises à l'emploi art60§7 | Art.60§7-Konventionen |
++----------------+-------------------------+--------------------------+-----------------------+
+| art60.Contract | Art60§7 job supplyment  | Mise à l'emploi art60§7  | Art.60§7-Konvention   |
+|                | Art60§7 job supplyments | Mises à l'emploi art60§7 | Art.60§7-Konventionen |
++----------------+-------------------------+--------------------------+-----------------------+
+<BLANKLINE>
+
+Actually ``art60`` even removes ``jobs.Contract``, above test was made with an
+intermediate version.
+
+>>> show_field_translations(jobs.Contract, languages="en fr de")  #doctest: +SKIP
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   |   | Field            | en                                       | fr                                       | de                                       |
++===+===+==================+==========================================+==========================================+==========================================+
+| x | x | id               | ID                                       | ID                                       | ID                                       |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | signer1          | Secretary                                | Secrétaire                               | Sekretär                                 |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | signer2          | President                                | Président                                | Präsident                                |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | user             | Author : The person who created this     | Auteur : La personne qui a créé ce       | Autor : Die Person, die diesen Vertrag   |
+|   |   |                  | contract.                                | contrat.                                 | erstellt hat.                            |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | company          | Organization : Pointer to Company.       | Organisation : Pointer to Company.       | Organisation : Pointer to Company.       |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | contact_person   | Represented by : Pointer to Person.      | Represented by : Pointer to Person.      | Represented by : Pointer to Person.      |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | contact_role     | Represented as : The optional Role of    | Represented as : The optional Role of    | Represented as : The optional Role of    |
+|   |   |                  | the contact_person within company.       | the contact_person within company.       | the contact_person within company.       |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | printed_by       | Printed : ForeignKey to the Excerpt      | Imprimé : ForeignKey to the Excerpt      | Gedruckt : ForeignKey to the Excerpt     |
+|   |   |                  | which certifies this instance.           | which certifies this instance.           | which certifies this instance.           |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | client           | Client : The client for whom this        | Bénéficiaire : The client for whom this  | Klient : The client for whom this        |
+|   |   |                  | contract is done.                        | contract is done.                        | contract is done.                        |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | language         | Language : The language of this          | Langue : The language of this contract.  | Sprache : The language of this contract. |
+|   |   |                  | contract. Default value is the client’s  | Default value is the client’s language.  | Default value is the client’s language.  |
+|   |   |                  | language.                                |                                          |                                          |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | applies_from     | applies from : The start date of the     | Début de contrat : The start date of the | Laufzeit von : The start date of the     |
+|   |   |                  | contract.                                | contract.                                | contract.                                |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | applies_until    | applies until : The planned end date of  | Fin prévue : The planned end date of     | Laufzeit bis : The planned end date of   |
+|   |   |                  | this contract.                           | this contract.                           | this contract.                           |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | date_decided     | date decided : When the contract was     | Décidé le : When the contract was        | Beschlossen am : When the contract was   |
+|   |   |                  | ratified by the responsible board.       | ratified by the responsible board.       | ratified by the responsible board.       |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | date_issued      | date issued : When the contract was      | Date de signature : When the contract    | Ausgestellt am : When the contract was   |
+|   |   |                  | issued to the client and signed by them. | was issued to the client and signed by   | issued to the client and signed by them. |
+|   |   |                  |                                          | them.                                    |                                          |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | user_asd         | Responsible (GSS) : The responsible      | Titulaire (SSG) : La personne            | Verantwortlicher (ASD) : Die             |
+|   |   |                  | person at the general social service.    | responsable au service social général.   | verantwortliche Person im allgemeinen    |
+|   |   |                  |                                          |                                          | Sozialdienst.                            |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | exam_policy      | Examination Policy                       | Régime d'évaluation                      | Auswertungsstrategie                     |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | ending           | Reason of termination : The reason of    | Motif d'arrêt : The reason of prematured | Beendigungsgrund : The reason of         |
+|   |   |                  | prematured ending.  Pointer to           | ending.  Pointer to ContractEnding       | prematured ending.  Pointer to           |
+|   |   |                  | ContractEnding                           |                                          | ContractEnding                           |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | date_ended       | date ended : The date when this contract | Date de fin : The date when this         | Enddatum : The date when this contract   |
+|   |   |                  | was effectively ended. This field is set | contract was effectively ended. This     | was effectively ended. This field is set |
+|   |   |                  | to the same value as applies_until.      | field is set to the same value as        | to the same value as applies_until.      |
+|   |   |                  |                                          | applies_until.                           |                                          |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| x |   | duration         | duration (days)                          | Jours ONSS                               | Dauer (Arbeitstage)                      |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | reference_person | reference person                         | persone de référence                     | Referenzperson                           |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | responsibilities | responsibilities                         | responsabilités                          | Aufgabenbereich                          |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | remark           | Remark                                   | Remarque                                 | Bemerkung                                |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| ? |   | type             | Type : The type of this contract.        | Type : The type of this contract.        | Art : The type of this contract. Pointer |
+|   |   |                  | Pointer to a subclass of                 | Pointer to a subclass of                 | to a subclass of ContractTypeBase.       |
+|   |   |                  | ContractTypeBase.                        | ContractTypeBase.                        |                                          |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+| ? |   | job              | Job                                      | Poste de travail                         | Stelle                                   |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | regime           | Work Regime                              | Régime de travail                        | Arbeitsregime                            |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | schedule         | Work Schedule                            | Horaire                                  | Stundenplan                              |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | hourly_rate      | hourly rate                              | coût horaire                             | Stundensatz                              |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+|   | x | refund_rate      | refund rate                              | tarif de remboursement                   | Rückzahlung                              |
++---+---+------------------+------------------------------------------+------------------------------------------+------------------------------------------+
+<BLANKLINE>
+
+
+
+Review the hierarchy of JobSupplyment, ContractPartnerBase,
+ContractBase mixins.
+
+>>> print(' '.join([f.name for f in isip.ContractBase._meta.get_fields()]))
+... #doctest: +SKIP
+signer1 signer2 user printed_by client language applies_from applies_until date_decided date_issued user_asd exam_policy ending date_ended
+
+>>> print(' '.join([f.name for f in isip.ContractPartnerBase._meta.get_fields()]))
+company contact_person contact_role
+
+>>> print(' '.join([f.name for f in jobs.JobSupplyment._meta.get_fields(include_parents=False)]))
+signer1 signer2 user printed_by client language applies_from applies_until date_decided date_issued user_asd exam_policy ending date_ended duration reference_person responsibilities remark

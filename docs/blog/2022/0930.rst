@@ -1,0 +1,39 @@
+:date: 2022-09-30
+
+.. doctest docs/blog/2022/0930.rst
+
+==========================
+Internal fork of a plugin
+==========================
+
+Friday, September 30, 2022
+
+I started a new plugin :mod:`lino_welcht.lib.jobs` as a copy of
+:mod:`lino_welfare.modlib.jobs`.
+
+I wrote a new utility function :func:`lino.api.doctest.show_field_translations`.
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> show_field_translations(jobs.Contract, "user user_asd", languages="en fr de")
++----------+---------------------------------------+----------------------------------------+----------------------------------------+
+| Field    | en                                    | fr                                     | de                                     |
++==========+=======================================+========================================+========================================+
+| user     | Author : The person who created this  | Auteur : La personne qui a créé ce     | Autor : Die Person, die diesen Vertrag |
+|          | contract.                             | contrat.                               | erstellt hat.                          |
++----------+---------------------------------------+----------------------------------------+----------------------------------------+
+| user_asd | Responsible (GSS) : The responsible   | Titulaire (SSG) : La personne          | Verantwortlicher (ASD) : Die           |
+|          | person at the general social service. | responsable au service social général. | verantwortliche Person im allgemeinen  |
+|          |                                       |                                        | Sozialdienst.                          |
++----------+---------------------------------------+----------------------------------------+----------------------------------------+
+<BLANKLINE>
+
+>>> show_field_translations(jobs.JobProvider, "is_social", languages="en fr de")
+=========== ================ ================== ================
+ Field       en               fr                 de
+----------- ---------------- ------------------ ----------------
+ is_social   Social economy   Économie sociale   Sozialökonomie
+=========== ================ ================== ================
+<BLANKLINE>
