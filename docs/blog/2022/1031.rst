@@ -1,0 +1,62 @@
+:date: 2022-10-31
+
+========================
+Monday, October 31, 2022
+========================
+
+
+Example of the magic things you can do with Lino migrations.
+
+In an amici database there was a series of ca 250 blog entries  that had been
+imported from TIM. They are rather comments than blog entries (were never
+thought to get published). I simply changed the :func:`create_blogs_entry`
+function in the :xfile:`restore.py` so that it converts them to comments.
+
+Here is the :func:`create_blogs_entry` function as it was before::
+
+  def create_blogs_entry(id, user_id, owner_type_id, owner_id, body, body_short_preview, body_full_preview, title, pub_date, pub_time, entry_type_id, language):
+      owner_type_id = new_content_type_id(owner_type_id)
+      kw = dict()
+      kw.update(id=id)
+      kw.update(user_id=user_id)
+      kw.update(owner_type_id=owner_type_id)
+      kw.update(owner_id=owner_id)
+      kw.update(body=body)
+      kw.update(body_short_preview=body_short_preview)
+      kw.update(body_full_preview=body_full_preview)
+      kw.update(title=title)
+      kw.update(pub_date=pub_date)
+      kw.update(pub_time=pub_time)
+      kw.update(entry_type_id=entry_type_id)
+      kw.update(language=language)
+      return blogs_Entry(**kw)
+
+Here is what I changed it into::
+
+  def create_blogs_entry(id, user_id, owner_type_id, owner_id, body, body_short_preview, body_full_preview, title, pub_date, pub_time, entry_type_id, language):
+      owner_type_id = new_content_type_id(owner_type_id)
+      kw = dict()
+      #kw.update(id=id)
+      kw.update(user_id=user_id)
+      kw.update(owner_type_id=owner_type_id)
+      kw.update(owner_id=owner_id)
+      kw.update(body=title+". "+body)
+      #kw.update(body_short_preview=body_short_preview)
+      #kw.update(body_full_preview=body_full_preview)
+      #kw.update(title=title)
+      if pub_time is None:
+          pub_time = time(12,0,0)
+      kw.update(created=make_aware(datetime.combine(pub_date, pub_time)))
+      #kw.update(entry_type_id=entry_type_id)
+      #kw.update(language=language)
+      return comments_Comment(**kw)
+
+I also had to change the ordering of the execfile statements in the :func:`main`
+function because otherwise the automatically generated id fields of the former
+blog entries would clash with ids of existing comments::
+
+    execfile("comments_reaction.py", *args)
+    execfile("blogs_entry.py", *args)
+
+After the migration we need to run :cmd:`pm checkdata -pf` in order to fill the
+body preview fields.
