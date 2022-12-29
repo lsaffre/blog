@@ -44,7 +44,7 @@ How to contact me:
 ================== ====================================================================
 Email              **luc** (at) **saffre** (dash) **rumma** (dot) **net**
 Phone              +372 4824548
-Mobile             +372 56672435
+Mobile             +372 56672435, +32 475 368513
 Social networks    |me|, `LinkedIn <http://www.linkedin.com/in/lucsaffre>`_ `GitLab <https://gitlab.com/lsaffre>`_, `Facebook <https://www.facebook.com/luc.saffre>`__
 Wikipedia          `et <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ `de <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ `en <https://en.wikipedia.org/wiki/User:LucSaffre>`_ `fr <https://fr.wikipedia.org/wiki/Utilisateur:LucSaffre>`__
 Blog               `en <http://luc.lino-framework.org>`__ `de <http://luc.saffre-rumma.net>`__ `et <http://belglane.saffre-rumma.net>`__
