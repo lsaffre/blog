@@ -60,7 +60,7 @@ object. Done.
 
 Unfortunately this change did not yet solve the error which occured
 when importing data. This error came because the :xfile:`restore.py`
-script created by :manage:`dump2py` also initialized the choicelist
+script created by :cmd:`pm dump2py` also initialized the choicelist
 fields of database objects using strings instead of their
 :class:`Choice` instances. 
 
@@ -72,11 +72,11 @@ calls :meth:`to_python`.
 
 Checkin and test. Problem is fixed.
 
-I also converted :manage:`dump2py` so that it now explicitly resolves
+I also converted :cmd:`pm dump2py` so that it now explicitly resolves
 these strings (by calling the choicelist's :meth:`get_by_value
 <lino.core.choicelists.ChoicelList.get_by_value>`).
 
-This revealed a theoretical bug in :manage:`dump2py`: the
+This revealed a theoretical bug in :cmd:`pm dump2py`: the
 :func:`new_content_type_id` function was called for `ForeignKey`
 fields only if they were defined on the child model.
 

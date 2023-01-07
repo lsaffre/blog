@@ -21,13 +21,13 @@ When somebody living in Brussels tells you "it was at on 2017-10-29 at
 time.  Because their clock showed that time exactly twice during that
 night. The timestamp "2017-10-29 01:16:06" is ambigous.
 
-The reason for :ticket:`2204` was that :manage:`dump2py` used the
+The reason for :ticket:`2204` was that :cmd:`pm dump2py` used the
 site's default :setting:`TIME_ZONE` setting when writing the naive
 values of DateTimeFields in the generated `applabel_modelname.py`
 files.  When trying to load a dump which contains such a timstamp,
 Lino would cause an `AmbiguousTimeError`.
 
-So :manage:`dump2py` must make sure to express the naive time literals
+So :cmd:`pm dump2py` must make sure to express the naive time literals
 in a timezone which doesn't have such ambigous hours. UTC for example.
 
 I extended :ref:`book.specs.dumps` so that it now verifies whether

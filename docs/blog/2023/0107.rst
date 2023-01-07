@@ -1,0 +1,73 @@
+:date: 2023-01-07
+
+=========================
+Saturday, January 7, 2023
+=========================
+
+En passant
+==========
+
+Yesterday and today, while trying to understand what's happening, I did a series
+of *en passant* changes.
+
+A fake dump2py
+==============
+
+When upgrading a production site 
+
+.. program:: pm dump2py
+
+I wrote a new option :option:`--simulate` for the :cmd:`pm dump2py` command and
+optimized the code that causes the models :class:`contenttypes.ContentType`,
+:class:`sessions.Session` and :class:`lino.modlib.checkdata.Message` to never be
+dumped.
+
+There were still references to
+https://docs.djangoproject.com/en/1.9
+and
+https://docs.djangoproject.com/en/1.11
+in the docs. I replaced them by
+https://docs.djangoproject.com/en/4.1
+
+I started a new section :ref:`dg.commands` in the "Reference" section of the
+Developer Guide. The first commands to benefit from this reorganization are
+:cmd:`pm dump2py`, :cmd:`pm run` and :cmd:`pm prep`.
+
+
+
+
+Inactive plugins
+================
+
+I recently wrote a solution for ticket :ticket:`4780`, but now I optimized my
+own approach. The :class:`lino.core.plugin.Plugin` class has two new methods
+:func:`deactivate` and :func:`is_active`. When a plugin is inactive, its
+database models exist but otherwise almost everything, including its actors,
+becomes non-existent. The ``tinymce`` and ``extensible`` plugins now deactivate
+themselves in their :meth:`on_init` method when the default_ui is not ``extjs``.
+As a side effect, the main menu is now built using
+:attr:`lino.core.site.Site.sorted_plugins`.
+
+
+Event loop is closed
+====================
+
+When I run :cmd:`pm prep` in :ref:`noi1r <book.projects.noi1r>`, there is a long
+series of --non-fatal-- tracebacks that have been there for some time::
+
+  Task exception was never retrieved
+  future: <Task finished name='Task-1548' coro=<Connection.disconnect() done, defined at /home/luc/virtualenvs/dev/lib/python3.10/site-packages/redis/asyncio/connection.py:687> exception=RuntimeError('Event loop is closed')>
+  Traceback (most recent call last):
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/redis/asyncio/connection.py", line 696, in disconnect
+      self._writer.close()  # type: ignore[union-attr]
+    File "/usr/lib/python3.10/asyncio/streams.py", line 338, in close
+      return self._transport.close()
+    File "/usr/lib/python3.10/asyncio/selector_events.py", line 698, in close
+      self._loop.call_soon(self._call_connection_lost, None)
+    File "/usr/lib/python3.10/asyncio/base_events.py", line 750, in call_soon
+      self._check_closed()
+    File "/usr/lib/python3.10/asyncio/base_events.py", line 515, in _check_closed
+      raise RuntimeError('Event loop is closed')
+  RuntimeError: Event loop is closed
+
+Question to async experts: what's happening?

@@ -13,7 +13,7 @@ unreproducible!
 
 But then I stumbled over the
 `Order in which tests are executed
-<https://docs.djangoproject.com/en/1.11/topics/testing/overview/#order-in-which-tests-are-executed>`__ section of the Django docs.
+<https://docs.djangoproject.com/en/4.1/topics/testing/overview/#order-in-which-tests-are-executed>`__ section of the Django docs.
 
 IOW: while Django differentiates three groups of test cases, and while
 the test methods of a single TestCase class are ordered
@@ -25,7 +25,7 @@ another on the travis machine.
 
 And here is a first partly success: indeed I can reproduce the problem
 on my machine by the `--reverse
-<https://docs.djangoproject.com/en/1.11/ref/django-admin/#cmdoption-test-reverse>``
+<https://docs.djangoproject.com/en/4.1/ref/django-admin/#cmdoption-test-reverse>``
 option::
 
   $ dm test --reverse
@@ -40,7 +40,7 @@ too late.  Django loads the fixtures before calling the test method.
 By looking into the code of :mod:`django.test.testcases` I saw that it
 emits a signal :attr:`django.test.signals.setting_changed` before
 loading the `fixtures
-<https://docs.djangoproject.com/en/1.11/topics/testing/tools/#django.test.TransactionTestCase.fixtures>`__.  
+<https://docs.djangoproject.com/en/4.1/topics/testing/tools/#django.test.TransactionTestCase.fixtures>`__.  
 
 So the solution for :ticket:`2296` is to simply connect
 :func:`lino.modlib.system.my_handler` (which calls

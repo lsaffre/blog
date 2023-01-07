@@ -1,0 +1,80 @@
+:date: 2023-01-06
+
+=======================
+Friday, January 6, 2023
+=======================
+
+Contracts vanishing during restore?
+===================================
+
+One of our customers will switch their :term:`preview site` to production.
+Theoretically this means simply to run their :xfile:`initdb_from_prod.sh` a last
+time and then tell their system administrator to change the DNS entry of their
+:term:`Lino server` to point to the new machine.
+
+But then surprise: something is still going wrong with the migration because
+there are only 1811 contracts in :class:`isip.Contract
+<lino_welfare.modelib.isip.Contract>` on the preview while there are 1859 on the
+production server! And the  :xfile:`initdb_from_prod.sh` script runs without
+error message!
+
+After running :xfile:`initdb_from_prod.sh` there are only 1811 and not 1858
+rows:
+
+>>> from lino.api.shell import *
+>>> print(isip.Contract.objects.count())
+1811
+
+The :xfile:`restore.py` (which is called from :xfile:`initdb_from_prod.sh`) logs
+the following output to stdout when running::
+
+  Execute file isip_contract.py ...
+  Loading 1811 objects to table isip_contract...
+  ...
+  Execute file uploads_upload.py ...
+  Loading 5585 objects to table uploads_upload...
+
+Here is how the  :file:`isip_contract.py` file looks like::
+
+  # -*- coding: UTF-8 -*-
+  logger.info("Loading 1858 objects to table isip_contract...")
+  # fields: id, signer1, signer2, user, printed_by, client, language, applies_from, applies_until, date_decided, date_issued, user_asd, exam_policy, ending, date_ended, type, study_type, stages, goals, duties_asd, duties_dsbe, duties_pcsw, duties_person, user_dsbe
+  loader.save(create_isip_contract(u'1',u'124',u'125',u'30',None,u'140',u'fr',None,None,None,None,u'4',u'2',None,None,u'1',None,None,None,None,None,None,None,u'30'))
+  loader.save(create_isip_contract(u'3',u'124',u'125',u'30',u'46',u'138',u'fr',date(2014,9,25),date(2015,9,24),None,None,None,u'2',None,date(2015,9,24),u'1',None,u'',u'',None,None,None,None,u'30'))
+  ...
+  loader.save(create_isip_contract(u'1908',u'124',u'125',u'67',None,u'13364',u'',date(2022,12,22),date(2023,11,30),None,None,u'74',u'4',None,date(2023,11,30),u'3',None,None,None,None,None,None,None,None))
+
+  loader.flush_deferred_objects()
+
+The reason was stupid: the (modified) :xfile:`restore.py` took the snapshot
+files from another directory from October 2022.
+
+
+async logging seems buggy
+=========================
+
+I also made the following observation: the :xfile:`lino.log` file contains the
+messages emitted by :xfile:`restore.py` are in a kind of random ordering.
+
+  202301-07 03:25:48 INFO [restore2preview 2273819 139926527686464] : Execute file isip_contract.py ...
+  202301-07 04:27:12 INFO [isip_contract 2274609 140001715451712] : Loading 1811 objects to table isip_contract...
+
+We are on a production server with asgi and daphne, so logging happens via an
+async consumer. How does a :xfile:`restore.py` script (invoked using a
+:cmd:`pm run` command) connect to the logger consumer? What if supervisor is not
+running? What if it is running but has not been restarted after the
+:xfile:`pull.sh`?
+
+I stopped the supervisor service and set :setting:`use_linod` to False, and then
+restarted the migration. Now the :xfile:`lino.log` file is at least consistent
+with what I saw on screen::
+
+  202301-07 03:25:48 INFO [restore2preview 2273819 139926527686464] : Execute file isip_contract.py ...
+  202301-07 03:25:48 INFO [isip_contract 2273819 139926527686464] : Loading 1811 objects to table isip_contract...
+  ...
+  202301-07 03:28:14 INFO [uploads_upload 2273819 139926527686464] : Loading 5585 objects to table uploads_upload...
+  202301-07 03:28:38 INFO [restore2preview 2273819 139926527686464] : Execute file users_authority.py ...
+
+But setting :setting:`use_linod` to `False` when running a manual
+:term:`Django-admin command` is of course not a satisfying workaround. I'd like
+to have a Jitsi session with Sharif and try to understand what's happening.
