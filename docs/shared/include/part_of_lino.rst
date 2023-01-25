@@ -21,10 +21,11 @@
   :width: 30%
   :align: right
 
-This website is part of the Lino documentation:
-`Main website <https://www.lino-framework.org>`__ |
+This website is part of the Synodalsoft project:
+`Main website <https://www.synodalsoft.net>`__ |
 `Community Guide <https://community.lino-framework.org>`__ |
-`User Guide <https://using.lino-framework.org>`__ |
+`Lino framework <https://www.lino-framework.org>`__ |
+`Lino User Guide <https://using.lino-framework.org>`__ |
 `Hosting Guide <https://hosting.lino-framework.org>`__ |
 `Developer Guide <https://dev.lino-framework.org>`__ |
 `Luc's blog <https://luc.lino-framework.org>`__

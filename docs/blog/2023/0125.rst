@@ -1,0 +1,52 @@
+:date: 2023-01-25
+
+===========================
+Wednesday, January 25, 2023
+===========================
+
+Uff, I finally published a full week of my work!
+
+Insert images into arbitrary places using memo commands
+=======================================================
+
+Moved the `Mention` model from comments to memo.
+
+The :mod:`lino.modlib.memo` plugin now creates a special :class:`BaseRequest`
+instance that is used when parsing memo commands.
+
+It is special in that its user is an instance of :class:`AnonymousUser` with
+user_type `admin`
+
+with admin rights. This is because we want to store the result of memo commands
+in the preview fields of :class:`lino.modlib.memo.Previewable`. When a non-admin
+user saves a blog entry that contains references to other database objects, then
+the author maybe has no permission to see the detail of these objects, but other
+users have.
+
+The new model mixin :class:`lino.modlib.memo.MemoReferrable` eliminates quite
+some boilerplate code.
+
+In :func:`rstgen.sphinxconf.sigal_image.line2html` I renamed the format "couple"
+to "duo". And I fixed a bug that caused duo and trio to be floating (wrapped by
+their surrounding text).
+
+.. rubric:: Data migration
+
+in your :xfile:`restore.py` uncomment the line that loads
+``comments_mention.py``. The :class:`lino.modlib.memo.Mention` objects will be
+populated by :cmd:`pm checkdata -f`.
+
+.. rubric:: En passant
+
+I removed the :attr:`Site.max_file_size` setting because it was useless: Lino
+would never get it because the server would make a disk overflow.
+
+
+Documentation about Synodalsoft
+===============================
+
+I also have been working in the documentation during the last days. I started
+the website for https:://www.synodalsoft.net
+
+The :mod:`synodal` package is far from being perfectly, but it is already
+useful. Soon we can remove the dependency of rstgen towards atelier.

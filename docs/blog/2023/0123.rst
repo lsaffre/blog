@@ -1,0 +1,34 @@
+:date: 2023-01-23
+
+===================================
+Why our server was sending spam
+===================================
+
+Monday, January 23, 2023
+
+Our server SR has been blocked once more by OVH (the data center) because it was
+sending spam. This was the third time since January 8. Each time we thought that
+we had identified and fixed the issue. The first two times we were obviously
+wrong. The spammer was obviously the same because there are again 30000 mails in
+our mailq, and they all claim to come from `mail10.lwspanel.com`
+
+The first time, :doc:`two weeks ago <0109>`, I thought somebody had sniffed out
+my password because I had been using Thunderbird from a relatively insecure
+network. The second time we suspected dnswl.org to be somehow collaborate with
+spammers.
+
+Today Hannes and I worked together on this because two brains are more powerful
+in parallel than in series. And now I think I know what happened: the spammer
+used the account of one of our team members. I guess that the spammer used brute
+force: we don't use fail2ban the username are publicly known, so they just
+needed to try patiently enough.
+
+The :file:`/var/log/mail.log` shows lines like these::
+
+  Jan 23 15:13:09 saffre-rumma postfix/submission/smtpd[22461]: B8D82268DF: client=unknown[172.245.249.148], sasl_method=LOGIN, sasl_username=xxxxx
+
+We changed the password of that user to a secure one. We removed the mails that
+were still waiting in the mail queue. Then we told OVH to remove their block. I
+am confident that this was the explanation.
+
+Hannes isn't yet convinced that dnswl.org are innocent.
