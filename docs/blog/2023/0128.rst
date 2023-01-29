@@ -1,0 +1,82 @@
+:date: 2023-01-28
+
+==========================
+Saturday, January 28, 2023
+==========================
+
+As a follow-up to :doc:`0124`, Hannes added yesterday the following option to
+our postfix main.cf file:
+
+  smtpd_client_restrictions = reject_unknown_reverse_client_hostname
+
+This morning when I tried to send an email via FairEmail on my phone, the server
+answered::
+
+  Invalid Addresses 450 4.7.1 Client host rejected: cannot find your reverse hostname, [109.130.103.89] To be meditated.
+
+And here is relevant part in the mail.log file::
+
+  Jan 28 05:59:08 saffre-rumma postfix/submission/smtpd[7246]: connect from unknown[109.130.103.89]
+  Jan 28 05:59:09 saffre-rumma postfix/submission/smtpd[7246]: Anonymous TLS connection established from unknown[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  Jan 28 05:59:10 saffre-rumma postfix/submission/smtpd[7246]: NOQUEUE: reject: RCPT from unknown[109.130.103.89]: 450 4.7.1 Client host rejected: cannot find your reverse hostname, [109.130.103.89]; from=<luc@saffre-rumma.net> to=<luc@saffre-rumma.net> proto=ESMTP helo=<dummy.faircode.eu>
+  Jan 28 05:59:10 saffre-rumma postfix/submission/smtpd[7246]: disconnect from unknown[109.130.103.89] ehlo=2 starttls=1 auth=1 mail=1 rcpt=0/1 rset=1 noop=1 quit=1 commands=8/9
+
+A bit later I tried to send via Thunderbird from my notebook, using the same
+WLAN as my phone, and there it worked. And the mail.log says::
+
+  Jan 28 06:49:52 saffre-rumma postfix/submission/smtpd[32661]: connect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]
+  Jan 28 06:49:52 saffre-rumma postfix/submission/smtpd[32661]: Anonymous TLS connection established from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits)
+  Jan 28 06:49:52 saffre-rumma postfix/submission/smtpd[32661]: 6B5252155A: client=89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89], sasl_method=PLAIN, sasl_username=luc
+  Jan 28 06:49:52 saffre-rumma postfix/cleanup[577]: 6B5252155A: message-id=<244735bc-b3cb-067a-4c17-67e693db4372@saffre-rumma.net>
+  Jan 28 06:49:52 saffre-rumma opendkim[627]: 6B5252155A: DKIM-Signature field added (s=mail, d=saffre-rumma.net)
+  Jan 28 06:49:52 saffre-rumma postfix/qmgr[30080]: 6B5252155A: from=<luc@saffre-rumma.net>, size=50016, nrcpt=1 (queue active)
+  Jan 28 06:49:52 saffre-rumma postfix/submission/smtpd[32661]: disconnect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89] ehlo=2 starttls=1 auth=1 mail=1 rcpt=1 data=1 quit=1 commands=8
+  Jan 28 06:49:55 saffre-rumma postfix/smtp[579]: 6B5252155A: to=<sharifmehedi24@outlook.com>, relay=outlook-com.olc.protection.outlook.com[104.47.51.225]:25, delay=2.9, delays=0.15/0.02/0.08/2.7, dsn=2.6.0, status=sent (250 2.6.0 <244735bc-b3cb-067a-4c17-67e693db4372@saffre-rumma.net> [InternalId=14177687056028, Hostname=SI2PR04MB5919.apcprd04.prod.outlook.com] 59623 bytes in 0.545, 106.767 KB/sec Queued mail for delivery -> 250 2.1.5)
+  Jan 28 06:49:55 saffre-rumma postfix/qmgr[30080]: 6B5252155A: removed
+
+After checking an advanced setting "Use local IP address instead of host name"
+in FairEmail, I was able to send and the mail.log says::
+
+  Jan 28 07:37:21 saffre-rumma postfix/submission/smtpd[24706]: connect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]
+  Jan 28 07:37:21 saffre-rumma postfix/submission/smtpd[24706]: Anonymous TLS connection established from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  Jan 28 07:37:21 saffre-rumma postfix/submission/smtpd[24706]: disconnect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89] ehlo=2 starttls=1 auth=1 noop=1 quit=1 commands=6
+
+A bit later I tried to send another email from TB, and it failed, TB saying:
+
+  Sending of the message failed.
+  An error occurred while sending mail. The mail server responded:
+  Client host rejected: cannot find your reverse hostname, [109.130.103.89].
+  Please check the message recipient "sharifmehedi24@outlook.com" and try again.
+
+And the mail.log said::
+
+  Jan 28 07:51:21 saffre-rumma postfix/submission/smtpd[31470]: connect from unknown[109.130.103.89]
+  Jan 28 07:51:21 saffre-rumma postfix/submission/smtpd[31470]: Anonymous TLS connection established from unknown[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  Jan 28 07:51:21 saffre-rumma postfix/submission/smtpd[31470]: NOQUEUE: reject: RCPT from unknown[109.130.103.89]: 450 4.7.1 Client host rejected: cannot find your reverse hostname, [109.130.103.89]; from=<luc@saffre-rumma.net> to=<sharifmehedi24@outlook.com> proto=ESMTP helo=<[192.168.1.42]>
+  Jan 28 07:51:21 saffre-rumma postfix/submission/smtpd[31470]: lost connection after RCPT from unknown[109.130.103.89]
+  Jan 28 07:51:21 saffre-rumma postfix/submission/smtpd[31470]: disconnect from unknown[109.130.103.89] ehlo=2 starttls=1 auth=1 mail=1 rcpt=0/1 commands=5/6
+
+I tried several more times to send my email, and after a few attempts it
+worked::
+
+  Jan 28 07:54:00 saffre-rumma postfix/submission/smtpd[905]: connect from unknown[109.130.103.89]
+  Jan 28 07:54:00 saffre-rumma postfix/submission/smtpd[905]: Anonymous TLS connection established from unknown[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits)
+  Jan 28 07:54:00 saffre-rumma postfix/submission/smtpd[905]: NOQUEUE: reject: RCPT from unknown[109.130.103.89]: 450 4.7.1 Client host rejected: cannot find your reverse hostname, [109.130.103.89]; from=<luc@saffre-rumma.net> to=<sharifmehedi24@outlook.com> proto=ESMTP helo=<[192.168.1.42]>
+  Jan 28 07:54:00 saffre-rumma postfix/submission/smtpd[905]: lost connection after RCPT from unknown[109.130.103.89]
+  Jan 28 07:54:00 saffre-rumma postfix/submission/smtpd[905]: disconnect from unknown[109.130.103.89] ehlo=2 starttls=1 auth=1 mail=1 rcpt=0/1 commands=5/6
+
+  Jan 28 07:54:20 saffre-rumma postfix/submission/smtpd[905]: connect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]
+  Jan 28 07:54:20 saffre-rumma postfix/submission/smtpd[905]: Anonymous TLS connection established from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89]: TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits)
+  Jan 28 07:54:21 saffre-rumma postfix/submission/smtpd[905]: 0F73621666: client=89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89], sasl_method=PLAIN, sasl_username=luc
+  Jan 28 07:54:21 saffre-rumma postfix/cleanup[1083]: 0F73621666: message-id=<37ff8af4-686e-1ad2-6d59-b65a21feb8af@saffre-rumma.net>
+  Jan 28 07:54:21 saffre-rumma opendkim[627]: 0F73621666: DKIM-Signature field added (s=mail, d=saffre-rumma.net)
+  Jan 28 07:54:21 saffre-rumma postfix/qmgr[30080]: 0F73621666: from=<luc@saffre-rumma.net>, size=45170, nrcpt=1 (queue active)
+  Jan 28 07:54:21 saffre-rumma postfix/submission/smtpd[905]: disconnect from 89.103-130-109.adsl-dyn.isp.belgacom.be[109.130.103.89] ehlo=2 starttls=1 auth=1 mail=1 rcpt=1 data=1 quit=1 commands=8
+  Jan 28 07:54:24 saffre-rumma postfix/smtp[1085]: 0F73621666: to=<sharifmehedi24@outlook.com>, relay=outlook-com.olc.protection.outlook.com[104.47.2.33]:25, delay=3.6, delays=0.16/0.02/0.11/3.3, dsn=2.6.0, status=sent (250 2.6.0 <37ff8af4-686e-1ad2-6d59-b65a21feb8af@saffre-rumma.net> [InternalId=14482629735081, Hostname=PUZPR04MB6295.apcprd04.prod.outlook.com] 54786 bytes in 0.549, 97.388 KB/sec Queued mail for delivery -> 250 2.1.5)
+  Jan 28 07:54:24 saffre-rumma postfix/qmgr[30080]: 0F73621666: removed
+
+I unchecked the "Use local IP address instead of host name" setting in FairEmail
+and still was able to send.
+
+IOW the WLAN connection of the place where I am seems to connect using different
+methods, depending on some random condition.
