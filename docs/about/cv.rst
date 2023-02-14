@@ -96,7 +96,7 @@ Personal preferences
   how they organize themselves. I enjoy communicating with end-users
   in order to optimize their work methods.
 
-- I prefer doing the first 20% of a job which return `80% of the final
+- I prefer doing the first 20% of a job that return `80% of the final
   result <https://en.wikipedia.org/wiki/Pareto_principle>`__.
 
 - I haven't watched television other than occasionally since
@@ -114,7 +114,7 @@ Hobbies
 
 - I sporadically work for Wikipedia, mostly in `Estonian
   <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`__ because I live
-  there, sometimes in `German
+  in Estonia, sometimes in `German
   <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ because
   that's my mother language.
 
@@ -124,6 +124,10 @@ Hobbies
   <https://fr.wikipedia.org/wiki/Les_Scouts_-_F%C3%A9d%C3%A9ration_des_Scouts_Baden-Powell_de_Belgique>`__
   honored my work by assigning me the `Wood Badge
   <https://en.wikipedia.org/wiki/Wood_Badge>`__ award.
+
+- Before getting married I lived 3 years in a volunteer project community of the
+  `Ephata <https://www.ephata.be/>`__ youth center in Eupen, followed by 3 years
+  in a private community with my sister and her husband.
 
 
 .. _AbAKUS: http://www.abakus.be
