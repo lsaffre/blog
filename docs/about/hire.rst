@@ -22,7 +22,7 @@ It will rather be a non-profit organization, a foundation, a cooperative or a
 public service. That's because the :ref:`Lino framework <lf>` is published under the
 *GNU Affero General Public License* (AGPL), the most :term:`protective Free
 Software license` there is. You cannot write :term:`proprietary software` using
-Lino. (See :ref:`lino.copyright`).
+Lino. (See :ref:`ss.free`).
 
 
 
