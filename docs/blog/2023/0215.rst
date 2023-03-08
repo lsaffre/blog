@@ -1,0 +1,28 @@
+:date: 2023-02-15
+
+============================
+Wednesday, February 15, 2023
+============================
+
+I upgraded Jane. No big problem but a few smal ones.
+
+:cmd:`pm collectstatic` failed because of three trivial regressions I introduced when I moved the
+:meth:`build_site_cache` from kernel to :class:`lino.core.site.Site`.
+
+These failures would probably have been noticed by the getlino test suite, but I
+didn't look at it before releasing to pypi. And looking at it now, it is
+`failing because of yet another reason
+<https://gitlab.com/lino-framework/getlino/-/jobs/3747450100>`__, equally a trivial one.
+I wish we had somebody who monitors the test suites on GitLab!
+
+I also upgraded froinde, which runs on an older server under Python 3.7. Seems
+that the type hints we recently started to use aren't yet supported there ::
+
+  Traceback (most recent call last):
+    ...
+    File ".../env/lib/python3.7/site-packages/lino/modlib/memo/parser.py", line 341, in <module>
+      def split_name_rest(s: str) -> tuple[str]:
+  TypeError: 'type' object is not subscriptable
+
+  File ".../env/lib/python3.7/site-packages/lino_xl/lib/cal/utils.py", line 188, in <module>
+    def parse_rrule(rr: str) -> tuple[Any, int, Union[int, datetime.datetime, datetime.date], dict]:

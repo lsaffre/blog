@@ -1,0 +1,40 @@
+:date: 2023-02-27
+
+=========================
+Monday, February 27, 2023
+=========================
+
+I reviewed Sharif's work. Looks good! I am looking forward to get a
+presentation. I responded with two minor changes (in four commits):  (1) We
+still need to support Python 3.7, so I removed a type hint in lino. (2) And then
+the output of :class:`lino_xl.lib.cal.Calendars` in :ref:`book.specs.cal` was:
+
+>>> rt.show(cal.Calendars)
+... #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+==== ============= ================== ================== ============= =======
+ ID   Designation   Designation (de)   Designation (fr)   Description   color
+---- ------------- ------------------ ------------------ ------------- -------
+ 1    General       Allgemein          Général                          1
+                                                                        **1**
+==== ============= ================== ================== ============= =======
+<BLANKLINE>
+
+Sharif's work had added a column "Modified", right after the ID. But we don't
+want this field to be so visible!  The *code* needs to be fixed, not the test
+case! This is an example where the test suite protects us from an unwanted
+change in the user interface.
+
+Here are the four commits:
+
+- 2023-02-27 04:03 in *lino*:
+  `4f61f1f <git@gitlab.com:lino-framework/lino.git>`__
+  (remove type hint to support Python before 3.8)
+- 2023-02-27 04:33 in *xl*:
+  `b44bb78 <git@gitlab.com:lino-framework/xl.git>`__
+  (add explicit column_names to cal.Calendars)
+- 2023-02-27 04:35 in *xl*:
+  `f895af5 <git@gitlab.com:lino-framework/xl.git>`__
+  (oops add explicit column_names to cal.Calendars)
+- 2023-02-27 04:36 in *book*:
+  `87f8517 <git@gitlab.com:lino-framework/book.git>`__
+  (adapt after adding explicit column_names to cal.Calendars)
