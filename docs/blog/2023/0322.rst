@@ -1,0 +1,34 @@
+:date: 2023-03-22
+
+=========================
+Wednesday, March 22, 2023
+=========================
+
+I plan to start coding for :ticket:`4783`. There will be three database models
+and a choicelist::
+
+  class JobRule(Sequenced, RecurrenceSet):
+      name
+      procedure = Procedures.field()
+
+  class Job(Started):
+      rule = ForeignKey(JobRule)
+
+  class Procedures(dd.Choicelist):
+      item_class = Procedure
+
+  class Procedure(dd.Choice):
+      func : the callable to run
+      every_unit = "sec"
+      every_value = 10
+      start_time
+
+The `schedule_daily` and `schedule_daily` decorators will now add a Procedure to
+the Procedures choicelist. We will replace the `every` and `at` keywords, which
+come from the schedule API, by the `RecurrenceSet` syntax. For a `Procedure`
+these values are now just suggestions that lead to a default JobRule generted by
+the :fixture:`std` fixture.
+
+But halt! I realized that this is a rather invisible feature! Lino actually
+needs *visible* features. For example the warehouse plugin. Or the CMS.
+So I will let :ticket:`4783` wait for another time.

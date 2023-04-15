@@ -1,0 +1,28 @@
+:date: 2023-03-28
+
+=======================
+Tuesday, March 28, 2023
+=======================
+
+The `bootstrap3/base.html` template has a language selector and I think that we
+actually want to to use this logic for publisher as well. And `page.pub.html` is
+based on this template, but overrides the ``header`` block. The bootstrap
+language selector uses :class:`lino.core.requests.BaseRequest.get_request_url`,
+which currently doesn't work for a publisher page. Solution was to write a
+Renderer for publisher, and reimplement the publisher views.
+
+I tried to find a better place for the `hash_router` and `permalink_uris`
+attributes of :class:`lino.core.requests.BaseRequest`.
+
+- `hash_router` is used in :meth:`lino.core.renderer.HtmlRenderer.get_permalink`
+  to insert the "#" sign before the URL. This information is constant for the
+  react front end and shouldn't be stored on each incoming request.
+
+- ``permalink_uris`` is used in
+  :meth:`lino.core.renderer.HtmlRenderer.row_action_button`
+  :meth:`lino.core.renderer.JsRenderer.obj2url`
+
+The ``hash_router`` attribute was used only by the publisher view, which I
+reimplemented. So it can go away.
+
+But :attr:`lino.core.requests.BaseRequest.permalink_uris` stays.

@@ -1,0 +1,31 @@
+:date: 2023-04-05
+
+========================
+Wednesday, April 5, 2023
+========================
+
+Sites with multiple front ends
+==============================
+
+I removed :attr:`Plugin.force_url_prefix` because it was unused.
+
+Specifying :attr:`Site.default_ui` is now "the old way".  The attribute
+:attr:`default_ui` on the Kernel (which was the :class:`Plugin` instance of the
+plugin named by `Site.default_ui`) is no replaced by  an attribute
+:attr:`web_front_ends`.
+
+To use the new feature, you can now set the :attr:`web_front_ends` on the Site,
+which in that case must be a list of tuples having two items `(prefix, modname)`
+each.  For example a site with react as default and extjs as alternative front
+end would have::
+
+  web_front_ends = [
+    (None, "lino_react.react"),
+    ('ext', "lino.modlib.extjs")]
+
+Or in :mod:`cms1` we have publisher as default and react as the "admin" front
+end::
+
+  web_front_ends = [
+    (None, "lino.modlib.publisher"),
+    ('admin', "lino_react.react")]
