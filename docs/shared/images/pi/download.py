@@ -8,6 +8,7 @@ slave repository.  See https://dev.lino-framework.org/writedocs/shared.html
 """
 import requests
 from pathlib import Path
+# TODO: from lino.core.constants import ICON_NAMES
 ICON_NAMES = "external-link filter plus plus-circle user refresh trash".split()
 
 dest = Path(__file__).parent.absolute()

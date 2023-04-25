@@ -1,0 +1,65 @@
+:date: 2023-04-25
+
+=======================
+Tuesday, April 25, 2023
+=======================
+
+I published my changes for :ticket:`4940`.
+
+Lino CMS (the :ref:`cms1 <book.projects.cms1>` demo) no longer has the calendar
+plugin. Websites with a public calendar do not require CMS functionality, but
+they do require the courses plugin. Lino Voga now demonstrates this use case.
+The :ref:`roger <book.projects.roger>` demo is not yet convincing but we are
+advancing towards this goal.
+
+.. currentmodule:: lino_xl.lib.cal
+
+Side effects in :mod:`lino_xl.lib.cal`:  :class:`Event` had a method
+:meth:`get_default_table`, which unconditionally returned :class:`OneEvent`.
+This was in contradiction with the fact that :class:`OneEvent` had
+:attr:`use_as_default_table` set to `False`. I removed the method.
+
+
+These changes had extensive side effects in :mod:`lino.modlib.publisher`. For
+example, the Publishable mixin has a new method :meth:`is_public`, which returns
+`False` by default. For a blog entry it would return True or False depending on
+the state. Most fundamental change in publisher is the renderer, which now
+forwards things to the site's `editing_frontend`... For more details you must
+consult the source code :-/
+
+List of commits:
+
+- 2023-04-25 21:47 in *lino*:
+  `a80f1c3 <git@gitlab.com:lino-framework/lino.git>`__
+- 2023-04-25 21:48 in *xl*:
+  `24672fe <git@gitlab.com:lino-framework/xl.git>`__
+- 2023-04-25 21:48 in *noi*:
+  `778f334 <git@gitlab.com:lino-framework/noi.git>`__
+- 2023-04-25 21:49 in *voga*:
+  `804b803 <git@gitlab.com:lino-framework/voga.git>`__
+- 2023-04-25 21:49 in *care*:
+  `1fe6368 <git@gitlab.com:lino-framework/care.git>`__
+- 2023-04-25 21:49 in *avanti*:
+  `6955bc3 <git@gitlab.com:lino-framework/avanti.git>`__
+- 2023-04-25 21:49 in *tera*:
+  `a332666 <git@gitlab.com:lino-framework/tera.git>`__
+- 2023-04-25 21:49 in *book*:
+  `dca42df <git@gitlab.com:lino-framework/book.git>`__
+- 2023-04-25 21:49 in *welfare*:
+  `ddfd8e4 <git@gitlab.com:lino-framework/welfare.git>`__
+- 2023-04-25 21:49 in *presto*:
+  `2b85ff3 <git@gitlab.com:lino-framework/presto.git>`__
+- 2023-04-25 21:49 in *mentori*:
+  `8697685 <git@gitlab.com:lino-framework/mentori.git>`__
+- 2023-04-25 21:49 in *shop*:
+  `112532e <git@gitlab.com:lino-framework/shop.git>`__
+- 2023-04-25 21:50 in *react*:
+  `2becc37 <git@gitlab.com:lino-framework/react.git>`__
+- 2023-04-25 21:50 in *amici*:
+  `e42562d <git@gitlab.com:lino-framework/amici.git>`__
+- 2023-04-25 21:50 in *algus*:
+  `f038cbf <git@gitlab.com:lino-framework/algus.git>`__
+- 2023-04-25 21:50 in *cms*:
+  `f849afa <git@gitlab.com:lino-framework/cms.git>`__
+- 2023-04-25 21:50 in *medico*:
+  `f870664 <git@gitlab.com:lino-framework/medico.git>`__
