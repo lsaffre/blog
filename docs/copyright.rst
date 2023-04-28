@@ -1,11 +1,12 @@
-.. this document is maintained in book and copied to lf, cg, ug and hg
+.. this document is maintained in book and copied to lf, cg, ug, hg and others
 
 =======================
 Copyright & legal notes
 =======================
 
 This :term:`documentation tree` is part of the `Synodalsoft project
-<https://www.synodalsoft.net>`__. See  https://www.synodalsoft.net/contact/ for
+<https://www.synodalsoft.net>`__ and maintained by `Rumma & Ko Ltd
+<https://www.saffre-rumma.net>`__. See https://www.saffre-rumma.net/contact/ for
 information about how to contact us.
 
 The source code of this documentation tree is published under the GNU
