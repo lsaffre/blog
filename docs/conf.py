@@ -104,3 +104,9 @@ linkcheck_anchors = False
 linkcheck_ignore = [r'http://localhost:\d+/']
 
 templates_path.append(".templates")
+
+# rst_prolog = """
+# :doc:`Blog </blog/2023/index>`
+# :doc:`/about/index`
+#
+# """

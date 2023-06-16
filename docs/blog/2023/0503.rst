@@ -1,0 +1,190 @@
+:date: 2023-05-03
+
+======================
+About time slots
+======================
+
+Wednesday, May 3, 2023
+
+We currently have two similar models ``courses.Slot`` and
+``calview.PlannerRow``. The former is subclassed in medico. I have the feeling
+that none of these is what we really need. Today I collected some ideas.
+
+User documentation
+==================
+
+Using time slots means that appointments are scheduled so they fit into a
+"timetable". Instead of specifying start and end time, users just specify the
+"slot". For example the slot "third hour" would mean "from 10:05 to 10:50". The
+advantage of using time slots is to simplify planning and minimize "holes".
+
+A typical usage example are schools. These "slot systems" differ between
+schools. For a given school you can have different slot systems.
+
+A real-world example
+====================
+
+For example, in
+`Vigala vocational school <https://vigalattk.ee/et/tundide-ajakava>`_ they have
+five slot systems, three for the "regular school" and two for the "session
+school".
+
+Regular school / Monday:
+
+= =============
+1 10:25 - 11:10
+2 11:15 - 12:00
+3 12:10 - 12:55
+4 12:55 - 13:40
+5 13:50 - 14:35
+6 14:45 - 15:30
+7 15:40 - 16:25
+= =============
+
+Regular school / Tuesday to Thursday:
+
+= =============
+1 08:30 - 09:15
+2 09:25 - 10:10
+3 10:20 - 11:05
+4 11:15 - 12:00
+5 12:10 - 12:55
+6 12:55 - 13:40
+7 13:50 - 14:35
+8 14:45 - 15:30
+9 15:40 - 16:25
+= =============
+
+Regular school / Friday
+
+= =============
+1 08:00 - 08:45
+2 08:55 - 09:40
+3 09:50 - 10:35
+4 10:45 - 11:30
+= =============
+
+Session school / Monday - Satuday
+
+== =============
+1  08:30 - 09:15
+2  09:25 - 10:10
+3  10:20 - 11:05
+4  11:15 - 12:00
+5  12:10 - 12:55
+6  12:55 - 13:50
+7  13:50 - 14:35
+8  14:45 - 15:30
+9  15:40 - 16:25
+9  16:30 - 18:00
+10 18:10 - 19:40
+== =============
+
+Session school / Friday
+
+== =============
+ 1 08:00 - 08:45
+ 2 08:55 - 09:40
+ 3 09:50 - 10:35
+ 4 10:45 - 11:30
+ 5 11:40 - 12:25
+ 6 12:25 - 13:10
+ 7 13:20 - 14:05
+ 8 14:05 - 14:50
+ 9 15:00 - 15:45
+10 15:45 - 16:30
+11 16:40 - 17:25
+12 17:25 - 18:10
+== =============
+
+>>> rt.show(cal.SlotSystems)
+== ================
+RE Regular / Monday
+RF Regular / Friday
+RT Regular / Other
+SF Session / Friday
+SO Session / Other
+== ================
+
+>>> rt.show(cal.SlotSelectors)
+= =======
+R Regular
+S Session
+= =======
+
+
+::
+  class Slot:
+    id = CharField(primary=True)
+    slot_system = SlotSystems.field()
+    number = IntegerField()
+    start_time
+    end_time
+
+    def clean(self):
+      self.id = self.slot_system.value + str(self.number)
+      super().clean()
+
+
+>>> rt.show(cal.Slots)
+==== ===== =====
+ID   Start End
+==== ===== =====
+RE1  10:25 11:10
+...
+SF12 17:25 18:10
+==== ===== =====
+
+
+Slot rules
+==========
+
+It's even more complex: the "Friday" systems are not used only on Fridays, they
+are additionally used on every day before a holiday. And the "Monday" system is
+used additionally on every first day after a holiday.
+
+Add a model :class:`cal.SlotRule`::
+
+  class SlotRule(Sequenced):
+    weekday = Weekdays.field()
+    day, month, year = IntegerField()
+    // Dynamically add one field ``XYZ_slots = SlotSystems.field()``
+    // for each ``XYZ`` in ``SlotSelectors.get_list_items()``
+
+    @classmethod
+    def get_slot_system(cls, slot_sel, date):
+        weekday = Weekdays.get_from_date(date)
+        for rule in cls.objects.all():
+          if rule.selector in (None, slot_sel):
+            if rule.weekday in (None, weekday):
+              if rule.year in (None, date.year):
+                ...
+
+
+>>> rt.show(cal.SlotRules)
+======= ==== ===== === ======= =======
+Weekday Year Month Day Regular Session
+======= ==== ===== === ======= =======
+                4   30  RF      SF
+               12   24  RF      SF
+1                       RM      SO
+2                       RO      SO
+3                       RO      SO
+4                       RO      SO
+5                       RF      SF
+======= ==== ===== === ======= =======
+
+The :class:`cal.Event` model would get a new field ``slot = Slots.field()``
+
+  def slot_choices():
+    slot_sel = self.
+    slot_sys =
+
+
+
+
+::
+
+  class Event(...):
+
+    def get_slot_system(self, date, selector)

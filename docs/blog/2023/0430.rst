@@ -1,0 +1,62 @@
+:date: 2023-04-30
+
+======================
+Sunday, April 30, 2023
+======================
+
+I am trying to understand why the Monthly and Daily views say "None in February
+2017" and "None on Wed 15/02/2017" while the weekly view says correctly "Planner
+in Week 7 / 2017 (13 February)".
+
+Theoretically it should work by specifying the right
+:attr:`details_of_master_template <lino.core.actors.Actor.details_of_master_template>`
+and :attr:`title <lino.core.actors.Actor.title>` attributes.
+
+I can currently imagine two possible causes:
+
+- some side effect caused by the complex class hierarchy,
+- react does not call :meth:`get_title <lino.core.actors.Actor.get_title>`
+
+.. inheritance-diagram::
+    lino_xl.lib.calview.ui.DailyView
+    lino_xl.lib.calview.ui.WeeklyView
+    lino_xl.lib.calview.ui.MonthlyView
+    :parts: 1
+    :top-classes: lino.core.actors.Actor
+
+.. inheritance-diagram::
+    lino_xl.lib.calview.ui.DailySlave
+    lino_xl.lib.calview.ui.WeeklySlave
+    lino_xl.lib.calview.ui.MonthlySlave
+    :parts: 1
+    :top-classes: lino.core.actors.Actor
+
+Presto contacts :
+
+.. inheritance-diagram::
+    lino_presto.lib.contacts.models.DailyView
+    lino_presto.lib.contacts.models.WeeklyView
+    :parts: 1
+    :top-classes: lino.core.actors.Actor
+
+>>> from lino import startup
+>>> startup('lino_presto.projects.noereth.settings')
+>>> from lino.api.doctest import *
+
+>>> print(calview.DailyView.title)
+None
+>>> print(calview.DailyView.label)
+Daily view
+
+>>> ar = rt.login("robin").spawn(calview.DailyView, master_instance=0)
+>>> print(ar.get_title())
+Daily view
+
+
+>>> rt.show(calview.Planners)
+========= ========= ========== ===================== ==================== ===================
+ value     name      text       Monthly view          Weekly view          Daily view
+--------- --------- ---------- --------------------- -------------------- -------------------
+ default   default   Calendar   calview.MonthlyView   calview.WeeklyView   calview.DailyView
+========= ========= ========== ===================== ==================== ===================
+<BLANKLINE>

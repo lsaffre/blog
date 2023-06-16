@@ -8,8 +8,10 @@ slave repository.  See https://dev.lino-framework.org/writedocs/shared.html
 """
 import requests
 from pathlib import Path
+
 # TODO: from lino.core.constants import ICON_NAMES
-ICON_NAMES = "external-link filter plus plus-circle user refresh trash".split()
+ICON_NAMES = ("external-link", "filter", "plus", "plus-circle", "user",
+    "refresh", "trash", "bell")
 
 dest = Path(__file__).parent.absolute()
 root = "https://raw.githubusercontent.com/primefaces/primeicons/master/raw-svg"

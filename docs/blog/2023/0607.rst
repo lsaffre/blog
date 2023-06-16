@@ -1,0 +1,82 @@
+:date: 2023-06-07
+
+=======================
+Wednesday, June 7, 2023
+=======================
+
+I am still meditating for :ticket:`4551` (A first example of warehouse
+management). Continued from :doc:`0527`.
+
+A **provision** (Vorrat) is when a given quantity of a given product is in a
+given *storage state* for a given partner.
+
+A **storage state** is a name given to a certain type of *provision*.  Some
+typical storage states:
+
+== ========================= =======================
+01 auf Lager                 in stock
+02 bestellt vom Kunden       ordered by customer
+03 bestellt bei Lieferant    ordered from provider
+04 ausgeliehen               rented out
+05 beschädigt                damaged
+06 in Reparatur              under repair
+07 gekauft                   purchased
+== ========================= =======================
+
+In Lino Noi we would use only one storage state "purchased", and two transfer
+rules:
+
+- A sales invoice (SLS) *credits* "purchased"
+- A service report (SRV) *debits* "purchased"
+
+In Jane there would be only one product with storage management enabled, and
+that product would be named "Time credit". Maybe there will be multiple
+products in order to differentiate between "temporary" (befristet) and
+"timeless" (unbefristet) time credit.
+
+A *subscription agreement* must somehow specify the "required provision", which
+means that the customer must always have a minimum provision of time credit. For
+example they buy 10 hours, which are being used up with each working session,
+and when the time credit gets used up they want to buy new credit. This can be
+done by `Subscription.get_invoice_items`. For each subscription that has such a
+"required provision", it would check whether the partner still has enough
+provision. If not, it would generate an invoice to buy new time credit.
+
+To specify this, we could simply add three new fields:
+
+- "product" : a pointer to the "Time credit" product
+- a minimum quantity (e.g. 5 hours)
+- an order quantity (e.g. 10 hours)
+
+This reminds what  the :class:`Tariff` model and the :class:`InvoicingInfo`
+class do until now. And indeed the storage plugin will partly replace these
+classes.
+
+We have two basic approaches for generating invoices:
+
+- :meth:`get_invoicing_periodicity` or "period-based invoicing" : The enrolment
+  has a start_date and an end_date, and the "subscription periodicity" gives
+  `renew_unit`, `renew_every` and `renew_before`. Period-based invoicing is for
+  subscriptions, with a monthly or yearly fee.
+
+- :meth:`get_invoicing_pass_type` or "occurence-based invoicing" :
+  Lino needs a `number_of_events`, a `min_asset` and `max_asset`.
+  This is used e.g. in Voga when a customer buys a
+  "multi-pass card" for 10 sessions of an activity.
+
+I am not yet sure where to store these information. Maybe we just want to add a
+`Tariff.product` field.  The current *flatrates* (:class:`Tariff`) do not
+currently point to another product. 
+
+==== ========
+qty  minimum
+==== ========
+12   4
+5    1
+8    2
+==== ========
+
+Side note. How to handle quantity-related prices?  For example the unit price of
+an hour would be 90 € while 5 hours would cost only 400 € and 10 hours only 750
+€. --> This is not related to the storage plugin and should be addressed by
+"price rules" or "complex products".

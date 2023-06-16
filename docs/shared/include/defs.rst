@@ -19,6 +19,10 @@
   :class: pi-button
   :alt: refresh button
 
+.. |bell|  image:: /../docs/shared/images/pi/bell.svg
+  :class: pi-button
+  :alt: bell button
+
 .. |user|  image:: /../docs/shared/images/pi/user.svg
   :class: pi-button
   :alt: user button
