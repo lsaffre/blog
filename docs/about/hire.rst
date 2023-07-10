@@ -24,8 +24,7 @@ I am open to consider replacing Lino by it and help you to
 migrate existing Lino users to your product.
 
 I guess that my future employer is unlikely to be a :term:`private corporation`.
-It will rather be a non-profit organization, a foundation, a cooperative or a
-public service.
+It will rather be a non-profit organization, a foundation, or a public service.
 
 
 Here is my self-presentation:
