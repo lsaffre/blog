@@ -1,0 +1,68 @@
+:date: 2023-07-21
+
+=====================
+Friday, July 21, 2023
+=====================
+
+I had the following traceback during :cmd:`getlino startsite`::
+
+  (pilv) root@pilv:/home/luc# getlino startsite amici alpha
+  Running as root.
+  This is getlino version 23.7.0 running on Debian GNU/Linux 11 (bullseye) (debian bullseye).
+  Preparing to reinstall amici to /usr/local/lino/lino_local/alpha
+  Shared virtualenv []:
+  Okay to reinstall amici to /usr/local/lino/lino_local/alpha? [y or n] Yes
+  Overwrite existing file /usr/local/lino/lino_local/alpha/manage.py ? [y or n] Yes
+  Overwrite existing file /usr/local/lino/lino_local/alpha/make_snapshot.sh ? [y or n] Yes
+  Overwrite existing file /usr/local/lino/lino_local/alpha/asgi.py ? [y or n] Yes
+  Installing 6 Python packages...
+  run . /usr/local/lino/lino_local/alpha/env/bin/activate && pip install -q --upgrade daphne mysqlclient lino lino-amici lino-xl lino-react [y or n] Yes
+  . /usr/local/lino/lino_local/alpha/env/bin/activate && pip install -q --upgrade daphne mysqlclient lino lino-amici lino-xl lino-react
+  Overwrite existing file /etc/supervisor/conf.d/alpha-asgi.conf ? [y or n] Yes
+  Overwrite existing file /etc/nginx/sites-available/alpha.conf ? [y or n] Yes
+  run . /usr/local/lino/lino_local/alpha/env/bin/activate && python manage.py install --noinput [y or n] No
+  run . /usr/local/lino/lino_local/alpha/env/bin/activate && python manage.py collectstatic --noinput [y or n] Yes
+  . /usr/local/lino/lino_local/alpha/env/bin/activate && python manage.py collectstatic --noinput
+  Run worker process ...
+  Started manage.py collectstatic --noinput (using lino_local.alpha.settings) --> PID 1963049
+
+  0 static files copied to '/usr/local/lino/lino_local/alpha/env/static_root', 4007 unmodified.
+  Traceback (most recent call last):
+    File "/usr/local/lino/lino_local/alpha/manage.py", line 11, in <module>
+      execute_from_command_line(sys.argv)
+    File "/usr/local/lino/lino_local/alpha/env/lib/python3.9/site-packages/lino/core/management/__init__.py", line 144, in execute_from_command_line
+      stop_utility(argv)
+    File "/usr/local/lino/lino_local/alpha/env/lib/python3.9/site-packages/lino/core/management/__init__.py", line 121, in stop_utility
+      sock = get_socket()
+    File "/usr/local/lino/lino_local/alpha/env/lib/python3.9/site-packages/lino/core/management/__init__.py", line 55, in get_socket
+      sock.connect(str(worker_sock_file))
+  FileNotFoundError: [Errno 2] No such file or directory
+  Done manage.py collectstatic --noinput (PID 1963049)
+  Error: . /usr/local/lino/lino_local/alpha/env/bin/activate && python manage.py collectstatic --noinput ended with return code 1
+
+This getlino was running in a `sudo su` session. Afterwards I tried to reproduce
+the error in a normal session and it didn't fail again::
+
+  luc@pilv:~$ go alpha
+  luc@pilv:/usr/local/lino/lino_local/alpha$ a
+  (env) luc@pilv:/usr/local/lino/lino_local/alpha$ pm collectstatic
+  Started manage.py collectstatic (using lino_local.alpha.settings) --> PID 1963126
+
+  You have requested to collect static files at the destination
+  location as specified in your settings:
+
+      /usr/local/lino/lino_local/alpha/env/static_root
+
+  This will overwrite existing files!
+  Are you sure you want to do this?
+
+  Type 'yes' to continue, or 'no' to cancel: yes
+
+  0 static files copied to '/usr/local/lino/lino_local/alpha/env/static_root', 4007 unmodified.
+  Done manage.py collectstatic (PID 1963126)
+
+
+Unfortunately the message "FileNotFoundError: [Errno 2] No such file or
+directory" is not very helpful. We would want to know the name of the file it
+was trying to connect to. So I changed :func:`lino.core.management.get_socket`
+to be more verbose in the future.

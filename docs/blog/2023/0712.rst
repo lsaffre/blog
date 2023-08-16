@@ -1,0 +1,186 @@
+:date: 2023-07-12
+
+========================
+Wednesday, July 12, 2023
+========================
+
+I had written the following comment in Jane:
+
+  Indeed links *should* work because the server_uri is given as the base href of
+  the email in the html header: <html><head><base href="https://jane.mylino.net"
+  target="_blank"></head><body>
+
+Ouch! This caused Jane to become unusable for a few hours of research time. What
+was happening? Lino now faithfully showed that ``<base href>`` tag in the Jane
+dashboard as part of the :class:`RecentComments` story. Which caused every link
+to open a new window. But links in a Lino website with React look like this::
+
+  javascript:window.App.runAction({ "actorId": "tickets.Tickets", "an": "detail", "rp": null, "status": { "record_id": 5038 } })
+
+They won't work in an empty window. But the ``<base href>`` tag was instructing
+my browser to do exactly this: open a new target window for every link.
+
+I ran the following script to find the offending comment::
+
+  from lino.api.shell import *
+  for msg in comments.Comment.objects.filter(body__contains='<base'):
+      print(msg.id)
+
+Output was a single line::
+
+  10922
+
+I wrote another script to fix the problem::
+
+  from lino.api.shell import *
+  msg = comments.Comment.objects.get(id=10922)
+  msg.body = msg.body.replace("<head", "&lt;head")
+  msg.body = msg.body.replace("<base", "&lt;base")
+  msg.save()
+
+
+The only problem was that it didn't fix the problem...
+
+>>> import lino
+>>> lino.startup('lino_book.projects.noi1e.settings.demo')
+>>> from lino.api.doctest import *
+
+But why doesn't the :attr:`body_short_preview` field get adapted? To understand
+this, I used the following doctest on my machine:
+
+>>> msg = comments.Comment()
+
+>>> msg.body = """<p>foo <html><head><base href="bar" target="_blank"></head><body></p><p>baz</p>"""
+>>> msg.save()
+>>> msg.body_short_preview    # (1)
+'foo \n\nbaz\n\n'
+>>> msg.body_full_preview
+'<p>foo <html><head><base href="bar" target="_blank"/></head><body></body></html></p><p>baz</p>'
+
+>>> msg.body = msg.body.replace("<head", "&lt;head")
+>>> msg.body = msg.body.replace("<base", "&lt;base")
+>>> msg.save()
+>>> msg.body_short_preview    # (2)
+'foo <head><base href="bar" target="_blank">\n\nbaz\n\n'
+>>> msg.body_full_preview
+'<p>foo <html>&lt;head&gt;&lt;base href="bar" target="_blank"&gt;<body></body></html></p><p>baz</p>'
+
+>>> msg.delete()  # tidy up
+
+
+Notes
+
+(1) Where has the end tag ("</head>") gone? Answer: the memo parser removed it
+when parsing the text via BeautifulSoup:
+
+>>> txt = "foo &lt;head>bar</head> baz"
+>>> soup = BeautifulSoup(txt, 'html.parser')
+>>> str(soup)
+'foo &lt;head&gt;bar baz'
+
+(2) Why does the full "<head>" reappear in the short preview? Because during
+parse it was escaped and therefore wasn't recognized as a HTML tag. And because
+the short preview (currently, wrongly) contains the rendered un-escaped HTML.
+
+The wrong behaviour is in :func:`truncate_comment`
+
+>>> from lino.modlib.memo.mixins import truncate_comment
+>>> settings.SITE.plugins.memo.short_preview_length
+300
+>>> txt = "<p>foo &lt;head>bar</head> baz</p>"
+>>> settings.SITE.plugins.memo.parser.parse(txt)
+'<p>foo &lt;head&gt;bar baz</p>'
+
+>>> truncate_comment(txt)
+'foo <head>bar baz\n\n'
+
+The short and long preview field are expected to contain safe HTML content,  and
+bleach is responsible for removing any unsafe content. But
+:func:`truncate_comment` resolves html entities and therefore potentially
+converts safe html into unsafe html.
+
+>>> truncate_comment("<p>foo &lt;head>bar</head> baz</p>")
+'foo <head>bar baz\n\n'
+
+
+
+Another topic
+=============
+
+Note that :meth:`lino.modlib.notify.Message.send_summary_emails` makes a special
+action request with `permalink_uris` set to `True` when rendering the
+notification body::
+
+  ar = rt.login(renderer=dd.plugins.memo.front_end.renderer, permalink_uris=True)
+
+
+
+Old stuff:
+
+>>> msg = comments.Comment(body="foo <head>bar</head> baz")
+>>> msg.save()
+>>> msg.body
+'foo <head>bar</head> baz'
+>>> msg.body_short_preview
+'foo <head>bar</head> baz'
+
+>>> msg.body = msg.body.replace("<head", "&lt;head")
+>>> msg.save()
+>>> msg.body
+'foo &lt;head>bar</head> baz'
+>>> msg.body_short_preview
+'foo &lt;head&gt;bar baz'
+
+
+
+>>> txt = "<p>A <b>bold</b> and <i>italic</i> thing."
+>>> soup = BeautifulSoup(txt, "html.parser")
+>>> list(soup.descendants)
+[<p>A <b>bold</b> and <i>italic</i> thing.</p>, 'A ', <b>bold</b>, 'bold', ' and ', <i>italic</i>, 'italic', ' thing.']
+>>> soup.p.name
+'p'
+>>> soup.p.text
+'A bold and italic thing.'
+>>> soup.p.string
+
+>>> soup.b.text
+'bold'
+>>> soup.b.string
+'bold'
+
+>>> list(soup.p.strings)
+['A ', 'bold', ' and ', 'italic', ' thing.']
+>>> list(soup.strings)
+['A ', 'bold', ' and ', 'italic', ' thing.']
+
+>>> list(soup.p.children)
+['A ', <b>bold</b>, ' and ', <i>italic</i>, ' thing.']
+>>> list(soup.children)
+[<p>A <b>bold</b> and <i>italic</i> thing.</p>]
+
+>>> [c.name for c in soup.p.children]
+[None, 'b', None, 'i', None]
+>>> [c.name for c in soup.children]
+['p']
+
+Modifying the content:
+
+>>> str(soup.b)
+'<b>bold</b>'
+>>> soup.b.string = soup.b.string[:2]
+>>> str(soup.b)
+'<b>bo</b>'
+>>> soup.b.string = 'very bold'
+>>> str(soup.b)
+'<b>very bold</b>'
+>>> str(soup)
+'<p>A <b>very bold</b> and <i>italic</i> thing.</p>'
+
+
+>>> from lino.modlib.memo.mixins import truncate_comment as tc
+
+>>> tc("<p>A <b>bold</b> and <i>italic</i> thing.")
+'A <b>bold</b> and <i>italic</i> thing.\n\n'
+
+>>> tc("<p>A plain paragraph with more than 20 characters.</p>", 20)
+'A plain paragraph wi...'

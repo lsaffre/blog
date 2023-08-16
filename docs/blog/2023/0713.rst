@@ -1,0 +1,21 @@
+:date: 2023-07-13
+
+=======================
+Thursday, July 13, 2023
+=======================
+
+I pushed my work for :ticket:`5039` although the actual issue is not fixed.
+Because I want to test everything "on the field" on two production sites (jane
+and froinde). And because :ticket:`5039` has been there before, it is not a
+release blocker.
+
+I completely rewrote the :func:`lino.modlib.memo.truncate_comment` function  and
+moved doctests to a `separate document
+<https://dev.lino-framework.org/topics/truncate.html>`__:
+:ref:`book.topics.truncate`.
+
+
+The remark field in :class:`lino_xl.lib.polls.AnswerRemark` was also being
+truncated by :func:`truncate_comment`, with `max_p_len` being -1. I suspect that
+this was mixing up sanitizing and truncating. The remark of a poll answer needs
+to be *sanitized*, not truncated. Sanitizing is done using bleach in Lino.
