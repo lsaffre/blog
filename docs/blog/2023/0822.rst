@@ -1,0 +1,70 @@
+:date: 2023-08-22
+
+========================
+Tuesday, August 22, 2023
+========================
+
+
+.. contents::
+  :local:
+
+.. include:: /../docs/shared/include/tested.rst
+
+>>> import datetime
+>>> from lino import startup
+>>> startup('lino_book.projects.noi1r.settings')
+>>> from lino.api.doctest import *
+>>> from lino.core.diff import ChangeWatcher
+>>> from etgen.html import tostring
+>>> from lino.modlib.notify.mixins import ChangeNotifier
+
+>>> obj = tickets.Ticket.objects.first()
+>>> cw = None
+>>> cw = ChangeWatcher(obj)
+>>> ar = rt.login("robin", renderer=settings.SITE.kernel.default_renderer, permalink_uris=True)
+>>> obj.summary = "foo"
+
+Just to verify that our change watcher works:
+
+>>> cw.is_dirty()
+True
+>>> tostring(cw.get_updates_html())
+'<li><b>Summary</b> : Föö fails to bar when baz --&gt; foo</li>'
+
+The reason for #5038 (Links in email notifications are escaped) on 2023-08-22
+was that  the ``<a href ...>`` in the text returned by :meth:`get_change_body`
+was getting escaped. This is fixed now:
+
+>>> obj.get_change_body(ar, cw)
+'<div><p>Robin Rood modified <a href="/#/api/tickets/Tickets/1">#1 (foo)</a>:</p><ul><li><b>Summary</b> : Föö fails to bar when baz --&gt; foo</li></ul></div>'
+
+
+That's fun! Let's repeat this for other objects in order to increase test
+coverage!
+
+>>> pprint(rt.models_by_base(ChangeNotifier))
+[<class 'lino_noi.lib.cal.models.Event'>,
+ <class 'lino_xl.lib.cal.models.Task'>,
+ <class 'lino.modlib.comments.models.Comment'>,
+ <class 'lino_noi.lib.groups.models.Group'>,
+ <class 'lino_noi.lib.tickets.models.Site'>,
+ <class 'lino_noi.lib.tickets.models.Ticket'>]
+
+>>> def test(obj, **kwargs):
+...     cw = ChangeWatcher(obj)
+...     print(obj.get_change_body(ar, None))
+...     for k, v in kwargs.items():
+...         setattr(obj, k, v)
+...     print(obj.get_change_body(ar, cw))
+
+>>> test(tickets.Site.objects.first(), name="Foo")
+<div><p>Robin Rood created <a href="/#/api/tickets/Sites/1">pypi</a></p>.</div>
+<div><p>Robin Rood modified <a href="/#/api/tickets/Sites/1">pypi</a>:</p><ul><li><b>Designation</b> : pypi --&gt; Foo</li></ul></div>
+
+>>> test(cal.Event.objects.first(), start_time=datetime.time(10,5))
+<div><p>Robin Rood created <a href="/#/api/cal/Events/1">New Year's Day (01.01.2013)</a></p>.</div>
+<div><p>Robin Rood modified <a href="/#/api/cal/Events/1">New Year's Day (01.01.2013 10:05)</a>:</p><ul><li><b>Start time</b> : None --&gt; 10:05:00</li></ul></div>
+
+>>> test(comments.Comment.objects.first(), body="Foo")
+Robin Rood commented on <a href="/#/api/groups/Groups/1">Developers</a>:<br>Styled comment <span>pasted from word!</span>
+Robin Rood modified comment on <a href="/#/api/groups/Groups/1">Developers</a>:<br>Foo
