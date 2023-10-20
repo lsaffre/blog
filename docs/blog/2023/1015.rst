@@ -1,0 +1,35 @@
+:date: 2023-10-15
+
+=======================================================
+Some fundamental changes in background jobs and logging
+=======================================================
+
+Sunday, October 15, 2023
+
+I pushed yet another series of changes in :mod:`lino.modlib.linod` and
+:mod:`lino.core.logging`: `2023-10-15 16:10
+<https://gitlab.com/lino-framework/lino/-/commit/f39dc46616744f60acf62e7151d1a70a31139d58>`__.
+They are a follow-up of my changes from 4 days ago: `2023-10-11 09:05
+<https://gitlab.com/lino-framework/lino/-/commit/19131f56f51bb321ad01e986410096c3e388837b>`__
+
+
+I have been working more than a week on this.  It all started with a customer
+who observed that a background job apparently was not running. Ticket
+:ticket:`5172` (lino_runworker is running but doesn't work).
+
+We no longer have a history of the individual background job runs. If I want
+that, I can consult the :xfile:`lino.log` file. What we want is a detailed log
+of the last run. And we want a way to manually set a higher logging level for an
+individual job.
+
+A side effect is the log server.  I partly rewrote how we had been doing things
+for :ticket:`4595﻿` (Multiple Lino processes logging to single file). And this
+time it is also about :ticket:`5179` (Write to lino.log even when log server is
+not running). The decision whether a Lino process writes directly to the
+:xfile:`lino.log` or logs via a socket server does not depend on whether we are
+in an async environment. The processes now simply check whether the socket file
+exists. If it exists, they connect to the log server, otherwise they write
+directly to the file.  On a production site the log server is supposed to run as
+a consumer in :manage:`linod`. The :manage:`linod` process is responsible for
+starting the :term:`log server`. All other processes become clients of that
+server when the socket file exists and otherwise write to the file themselves.
