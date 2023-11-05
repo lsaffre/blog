@@ -1,0 +1,43 @@
+:date: 2023-10-28
+
+==========================
+Saturday, October 28, 2023
+==========================
+
+I am meditating and juggling with the database structure of pages and blogs.
+
+The big difference with established systems is that in Lino we don't provide a
+WYSIWYG editor.
+Every section or subsection of a page is a *node* in the Lino database.
+Lino CMS is not like `SimpleCMS <http://www.simplecms.com>`__
+but rather like `CMSimple <https://www.cmsimple.org>`__.
+Why is this so cool?
+See `this screencast by Black Scorpion <https://youtu.be/fd0orxY8jz8?si=XM4prIsSr-WTGq_P>`__.
+
+I am meditating about questions like:
+Is there one big pagination sequence, which includes special pages like
+automatically generated monthly overviews? Can blog entries have multiple pages?
+Are there pages where we want the children to sorted alphabetically by name?
+Should we rename the current concept of ContentFillers to NodeGenerator?
+
+::
+
+  - Node(Polymorphic, Hierarchical, Sequenced, Previewable, Commentable):
+    - title
+    - body
+    - child_node_depth
+    - node_type
+    - filler
+
+  - Publishable:
+    - publishing_state
+    - language
+
+  - pages.Page(Node, Publishable):
+    - ref (or name)
+    - translated_from
+
+  - blogs.Entry(Node, Publishable):
+    - pub_date
+    - pub_time
+    - author

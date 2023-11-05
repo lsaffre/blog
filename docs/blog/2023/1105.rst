@@ -1,0 +1,73 @@
+:date: 2023-11-05
+
+================================================
+Blog entries should be just another type of node
+================================================
+
+Sunday, November 5, 2023
+
+Here is my summary after having played a full week with :ticket:`5193` (Blog
+entries should be just another type of node).
+
+Visible changes in publisher: Hierarchical pages now have previous/next links.
+Blog entries now have the same layout as hierarchical pages.
+
+After my playing I think that we actually do *not* want previous/next links on
+blog entries.  In the admin view yes, there we want to navigate also in display
+mode "detail", but not on a publisher link. Such links are meant to be shared in
+social media where people get quickly distracted by every useless detail.
+
+The :mod:`lino.modlib.publisher` plugin is now used as :term:`menu group` for
+the three other CMS-specific plugins (blogs, pages and albums).
+
+The new setting :setting:`publisher.locations` replaces the
+:class:`PublisherViews` choicelist.
+
+A bug caused the "Start now" button on a background task to not work. We can now
+run these tasks manually.
+
+TODO: Think about :ticket:`5204` (About Site.user_linod, checkdata,
+checksummaries & Co)
+
+I reviewed the :meth:`__init__` method of :class:`lino.modlib.linod.Procedure`.
+Now it takes just the `func` object. That's much easier to remember for
+application developers. This optimization revealed an issue in
+:mod:`lino.core.choicelists`: the :meth:`deconstruct` method of a
+:class:`ChoiceListField` must remove the `choices` keyword because the list of
+choices of a :class:`ChoiceListField` does *not* influence whether we need a
+migration or not. As a side effect, :class:`Choice` no longer needs to be
+``@deconstructible``. (See :doc:`1103` for details)
+
+Removed duplicate definition of :meth:`requests.BaseRequest.obj2url`.
+
+:class:`lino.modlib.users.User` is now :class:`lino.modlib.publisher.Publishable`
+
+:file:`lino_xl/lib/pages/fixtures/demo2.py` shows how to run a :term:`system
+task` from a script.
+
+
+
+.. currentmodule:: lino.core.plugins
+
+I changed :attr:`Plugin._active` to :attr:`Plugin.hidden` and renamed
+:meth:`Plugin.deactivate` to :meth:`Plugin.hide`. You can now hide a plugin in
+the :meth:`get_plugin_configs <lino.core.site.Site.get_plugin_configs>`. I
+removed the obsolete :attr:`Plugin.disables_plugins` attribute.
+
+
+.. currentmodule:: lino_xl.lib.topics
+
+The :mod:`lino_xl.lib.topics` plugin is now more easy to integrate because the
+:class:`InterestsByController` slave panel becomes invisible when the plugin
+gets hidden.
+
+The :attr:`add_interest` action is no longer needed since
+:class:`InterestsByController` has an insert button in the slave summary.
+
+
+The files :file:`utils.py` and :file:`views.py` in :mod:`lino_xl.lib.pages` were
+no longer used. I removed them.
+
+When the plugin specified as the :term:`menu group` of another plugin has itself
+a menu_group, then :meth:`get_menu_group` now returns the menu_group of the menu
+group.

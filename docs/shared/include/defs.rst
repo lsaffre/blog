@@ -27,6 +27,10 @@
   :class: pi-button
   :alt: user button
 
+.. |close|  image:: /../docs/shared/images/pi/times-circle.svg
+  :class: pi-button
+  :alt: close button
+
 .. |gear|  image:: /../docs/shared/images/buttons/gear.png
   :height: 1em
 

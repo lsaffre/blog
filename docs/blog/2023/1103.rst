@@ -1,0 +1,318 @@
+:date: 2023-11-03
+
+========================
+Friday, November 3, 2023
+========================
+
+I had a not-so-trivial failure::
+
+  (dev) luc@yoga:~/work/book$ dt docs/specs/migrate.rst
+  **********************************************************************
+  File "docs/specs/migrate.rst", line 87, in migrate.rst
+  Failed example:
+      shell("python manage.py prep --noinput")
+      #doctest: +ELLIPSIS +REPORT_UDIFF +NORMALIZE_WHITESPACE
+  Differences (unified diff with -expected +actual):
+      @@ -1,3 +1,256 @@
+      -`initdb std minimal_ledger demo demo2 demo_bookings checksummaries checkdata` started on database .../default.db.
+      -...
+      -Installed 4030 object(s) from 31 fixture(s)
+      +`initdb std minimal_ledger demo demo2 demo_bookings checksummaries checkdata` started on database /home/luc/work/book/lino_book/projects/migs/default.db.
+      +Migrations for 'calview':
+      +  migrations/calview/0001_initial.py
+      +    - Create model DailyPlannerRow
+      +Migrations for 'countries':
+      +  migrations/countries/0001_initial.py
+      +    - Create model Country
+      +    - Create model Place
+      +Migrations for 'linod':
+      +  migrations/linod/0001_initial.py
+      +    - Create model BackgroundTask
+      +Migrations for 'pages':
+      +  migrations/pages/0001_initial.py
+      +    - Create model Node
+      +    - Create model Page
+      +Migrations for 'userstats':
+      +  migrations/userstats/0001_initial.py
+      +    - Create model UserStat
+      +Migrations for 'cal':
+      +  migrations/cal/0001_initial.py
+      +    - Create model Calendar
+      +    - Create model EntryRepeater
+      +    - Create model Event
+      +    - Create model EventPolicy
+      +    - Create model EventType
+      +    - Create model Guest
+      +    - Create model GuestRole
+      +    - Create model RecurrentEvent
+      +    - Create model RemoteCalendar
+      +    - Create model Room
+      +    - Create model Subscription
+      +    - Create model Task
+      +  migrations/cal/0002_initial.py
+      +    - Add field user to task
+      +    - Add field calendar to subscription
+      +    - Add field user to subscription
+      +    - Add field calendar to room
+      +    - Add field company to room
+      +    - Add field contact_person to room
+      +    - Add field contact_role to room
+      +    - Add field event_type to recurrentevent
+      +    - Add field user to recurrentevent
+      +    - Add field event to guest
+      +    - Add field partner to guest
+      +    - Add field role to guest
+      +    - Add field event_type to eventpolicy
+      +    - Add field assigned_to to event
+      +    - Add field company to event
+      +    - Add field contact_person to event
+      +    - Add field contact_role to event
+      +    - Add field event_type to event
+      +    - Add field owner_type to event
+      +    - Add field previous_page to event
+      +    - Add field room to event
+      +    - Add field user to event
+      +    - Add field cal_entry to entryrepeater
+      +    - Alter unique_together for guest (1 constraint(s))
+      +Migrations for 'changes':
+      +  migrations/changes/0001_initial.py
+      +    - Create model Change
+      +  migrations/changes/0002_initial.py
+      +    - Add field user to change
+      +Migrations for 'checkdata':
+      +  migrations/checkdata/0001_initial.py
+      +    - Create model Message
+      +  migrations/checkdata/0002_initial.py
+      +    - Add field user to message
+      +Migrations for 'comments':
+      +  migrations/comments/0001_initial.py
+      +    - Create model Comment
+      +    - Create model CommentType
+      +    - Create model Reaction
+      +  migrations/comments/0002_initial.py
+      +    - Add field user to reaction
+      +    - Add field comment_type to comment
+      +    - Add field owner_type to comment
+      +    - Add field reply_to to comment
+      +    - Add field user to comment
+      +Migrations for 'contacts':
+      +  migrations/contacts/0001_initial.py
+      +    - Create model CompanyType
+      +    - Create model Partner
+      +    - Create model RoleType
+      +    - Create model Company
+      +    - Create model Person
+      +    - Create model Role
+      +  migrations/contacts/0002_initial.py
+      +    - Add field payment_term to partner
+      +    - Add field purchase_account to partner
+      +    - Add field region to partner
+      +    - Add field company to role
+      +    - Add field person to role
+      +    - Add field type to company
+      +Migrations for 'lists':
+      +  migrations/lists/0001_initial.py
+      +    - Create model List
+      +    - Create model ListType
+      +    - Create model Member
+      +    - Add field list_type to list
+      +Migrations for 'system':
+      +  migrations/system/0001_initial.py
+      +    - Create model SiteConfig
+      +Migrations for 'users':
+      +  migrations/users/0001_initial.py
+      +    - Create model User
+      +    - Create model Authority
+      +Migrations for 'dashboard':
+      +  migrations/dashboard/0001_initial.py
+      +    - Create model Widget
+      +Migrations for 'groups':
+      +  migrations/groups/0001_initial.py
+      +    - Create model Group
+      +    - Create model Membership
+      +Migrations for 'tinymce':
+      +  migrations/tinymce/0001_initial.py
+      +    - Create model TextFieldTemplate
+      +Migrations for 'excerpts':
+      +  migrations/excerpts/0001_initial.py
+      +    - Create model ExcerptType
+      +    - Create model Excerpt
+      +Migrations for 'invoicing':
+      +  migrations/invoicing/0001_initial.py
+      +    - Create model FollowUpRule
+      +    - Create model Item
+      +    - Create model Plan
+      +    - Create model SalesRule
+      +    - Create model Tariff
+      +  migrations/invoicing/0002_initial.py
+      +    - Add field product to tariff
+      +    - Add field invoice_recipient to salesrule
+      +  migrations/invoicing/0003_initial.py
+      +    - Add field paper_type to salesrule
+      +    - Add field order to plan
+      +    - Add field partner to plan
+      +    - Add field user to plan
+      +    - Add field generator_type to item
+      +    - Add field invoice to item
+      +    - Add field partner to item
+      +    - Add field plan to item
+      +    - Add field source_journal to followuprule
+      +Migrations for 'ledger':
+      +  migrations/ledger/0001_initial.py
+      +    - Create model Account
+      +    - Create model AccountingPeriod
+      +    - Create model FiscalYear
+      +    - Create model Journal
+      +    - Create model LedgerInfo
+      +    - Create model PaymentTerm
+      +    - Create model Voucher
+      +    - Create model Movement
+      +    - Create model MatchRule
+      +  migrations/ledger/0002_initial.py
+      +    - Add field uploads_volume to journal
+      +    - Add field year to accountingperiod
+      +    - Alter unique_together for matchrule (1 constraint(s))
+      +Migrations for 'vat':
+      +  migrations/vat/0001_initial.py
+      +    - Create model VatAccountInvoice
+      +    - Create model InvoiceItem
+      +Migrations for 'memo':
+      +  migrations/memo/0001_initial.py
+      +    - Create model Mention
+      +Migrations for 'notify':
+      +  migrations/notify/0001_initial.py
+      +    - Create model Message
+      +Migrations for 'products':
+      +  migrations/products/0001_initial.py
+      +    - Create model Category
+      +    - Create model Product
+      +    - Create model PriceRule
+      +  migrations/products/0002_initial.py
+      +    - Add field selector to pricerule
+      +    - Add field parent to category
+      +Migrations for 'sales':
+      +  migrations/sales/0001_initial.py
+      +    - Create model PaperType
+      +    - Create model VatProductInvoice
+      +    - Create model InvoiceItem
+      +Migrations for 'subscriptions':
+      +  migrations/subscriptions/0001_initial.py
+      +    - Create model Subscription
+      +    - Create model SubscriptionPeriod
+      +    - Create model SubscriptionItem
+      +Migrations for 'tickets':
+      +  migrations/tickets/0001_initial.py
+      +    - Create model Site
+      +    - Create model TicketType
+      +    - Create model Ticket
+      +    - Create model CheckListItem
+      +Migrations for 'working':
+      +  migrations/working/0001_initial.py
+      +    - Create model SessionType
+      +    - Create model UserSummary
+      +    - Create model SiteSummary
+      +    - Create model Session
+      +    - Create model ServiceReport
+      +Migrations for 'storage':
+      +  migrations/storage/0001_initial.py
+      +    - Create model TransferRule
+      +    - Create model Provision
+      +    - Create model Movement
+      +    - Create model Filler
+      +    - Create model DeliveryNote
+      +    - Create model DeliveryItem
+      +    - Create model Component
+      +Migrations for 'uploads':
+      +  migrations/uploads/0001_initial.py
+      +    - Create model UploadType
+      +    - Create model Volume
+      +    - Create model Upload
+      +Traceback (most recent call last):
+      +  File "/home/luc/work/book/lino_book/projects/migs/manage.py", line 9, in <module>
+      +    execute_from_command_line(sys.argv)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+      +    utility.execute()
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 436, in execute
+      +    self.fetch_command(subcommand).run_from_argv(self.argv)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 412, in run_from_argv
+      +    self.execute(*args, **cmd_options)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 458, in execute
+      +    output = self.handle(*args, **options)
+      +  File "/home/luc/work/lino/lino/management/commands/prep.py", line 43, in handle
+      +    super().handle(**options)
+      +  File "/home/luc/work/lino/lino/management/commands/initdb.py", line 261, in handle
+      +    call_command('migrate', '--run-syncdb', **options)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 194, in call_command
+      +    return command.execute(*args, **defaults)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 458, in execute
+      +    output = self.handle(*args, **options)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 106, in wrapper
+      +    res = handle_func(*args, **kwargs)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/commands/migrate.py", line 117, in handle
+      +    executor = MigrationExecutor(connection, self.migration_progress_callback)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/migrations/executor.py", line 18, in __init__
+      +    self.loader = MigrationLoader(self.connection)
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/migrations/loader.py", line 58, in __init__
+      +    self.build_graph()
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/migrations/loader.py", line 229, in build_graph
+      +    self.load_disk()
+      +  File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/migrations/loader.py", line 120, in load_disk
+      +    migration_module = import_module(migration_path)
+      +  File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+      +    return _bootstrap._gcd_import(name[level:], package, level)
+      +  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+      +  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+      +  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+      +  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+      +  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+      +  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+      +  File "/home/luc/work/book/lino_book/projects/migs/migrations/linod/0001_initial.py", line 17, in <module>
+      +    class Migration(migrations.Migration):
+      +  File "/home/luc/work/book/lino_book/projects/migs/migrations/linod/0001_initial.py", line 195, in Migration
+      +    lino.modlib.linod.choicelists.Procedure(
+      +  File "/home/luc/work/lino/lino/modlib/linod/choicelists.py", line 20, in __init__
+      +    name = func.__name__
+      +AttributeError: 'NoneType' object has no attribute '__name__'. Did you mean: '__ne__'?
+
+
+This error was because the migration file :file:`linod/0001_initial.py` had
+something like this::
+
+      (
+          "procedure",
+          lino.core.choicelists.ChoiceListField(
+              choicelist=lino.modlib.linod.choicelists.Procedures,
+              choices=[
+                  (
+                      lino.modlib.linod.choicelists.Procedure(
+                          lino_xl.lib.cal.models.event_notification_scheduler,
+                          every=300,
+                          every_unit="secondly",
+                      ),
+                      "event_notification_scheduler",
+                  ),
+                  ...
+              ],
+              help_text="Pointer to an instance of Procedure.",
+              max_length=100,
+              unique=True,
+              verbose_name="Background procedure",
+          ),
+      ),
+
+I fixed it by reviewing the :meth:`deconstruct` method of the
+:class:`lino.core.choicelists.ChoiceListField` class.  It now
+removes the `'choices'` key from ``kwargs``::
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        kwargs['choicelist'] = self.choicelist
+  +     kwargs.pop('choices', None)
+        return name, path, args, kwargs
+
+Because the available choices are *not* relevant for the database structure, and
+Django might have problems for representing them in a migration.
+
+This didn't disturb until now, but I changed the signature of
+:meth:`Procedure.__init__`: it now takes just the `function` object. And
+`function` objects are not always serializable.
