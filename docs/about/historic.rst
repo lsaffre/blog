@@ -41,16 +41,16 @@ much. I switched to full-time on September 1st, 1992. PAC Systems was
 at this time a company with three employees. Now there are 5 employees
 and three trainees.
 
-During the next 8 years I worked at PAC Systems (renamed to AbAKUS_
-in 2008) as software designer and programmer.  I developed TIM_, a
-customizable software application for small and medium-sized
-companies, used for invoicing, accountance, stock management, etc. TIM
-is written in Clipper_ (now compiled using `Alaska xBase++
-<http://www.alaska-software.com/products/xpp/xpp.shtm>`_) and runs on
-MS-DOS.  Besides software development I also gave hotline and
-technical support for our customers.  Besides working on TIM I gave
-computer lessons about Office software (MS Word, Excel, Access) to
+During the next 8 years I worked at PAC Systems (renamed to AbAKUS_ in 2008) as
+software designer and programmer.  I developed TIM_, a customizable software
+application for small and medium-sized companies, used for invoicing,
+accounting, stock management, etc. TIM is written in Clipper_ (now compiled
+using `Alaska xBase++`_) and runs on MS-DOS.  Besides software development I
+also gave hotline and technical support for our customers.  Besides working on
+TIM I gave computer lessons about Office software (MS Word, Excel, Access) to
 end-users in our training center or at the customers' offices.
+
+.. _Alaska xBase++: https://www.alaska-software.com/products/overview.cxp
 
 In **1995** I started to work on a "TIM for Windows", using *Borland
 C++*. In **March 1999** I switched to *Java*.
@@ -93,12 +93,12 @@ started to write Lino.  After some search for a valuable user interface, I
 started to use ExtJS_ in **August 2009**.
 
 
-.. _AbAKUS: http://www.abakus.be
+.. _AbAKUS: https://www.abakusitsolutions.eu
 .. _TIM: http://tim.lino-framework.org/129.html
-.. _Lino: http://www.lino-framework.org
+.. _Lino: https://www.lino-framework.org
 .. _TIMtools: http://code.google.com/p/timtools/
-.. _Clipper: http://en.wikipedia.org/wiki/Clipper_(programming_language)
-.. _Python: http://www.python.org/
+.. _Clipper: https://en.wikipedia.org/wiki/Clipper_(programming_language)
+.. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
 .. _ExtJS: http://www.sencha.com/products/extjs/
 .. _Eupen: http://en.wikipedia.org/wiki/Eupen
