@@ -81,8 +81,10 @@ continue to maintain and give support for TIM, but at new conditions, requiring
 a yearly fee. About half of the users joined the project, which was enough to
 provide a decent salary.  My vision received a financially sustainable base.
 
-In **2002** I discovered the Python_ programming language and
-abandoned C++, Java and PHP without tears.
+In **2002** I discovered the Python_ programming language and abandoned C++,
+Java and PHP without tears. My first Python product is called `TIM Tools
+<https://github.com/lsaffre/timtools>`__ and is used by others since December
+2002.
 
 When I discovered Django_ in the end of **2008**, after having worked many
 months on my own database model, I was quickly fascinated.  Django's  ORM and
