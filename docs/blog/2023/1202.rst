@@ -1,0 +1,59 @@
+:date: 2023-12-02
+
+==========================
+SynchronousOnlyOperation
+==========================
+
+Saturday, December 2, 2023
+
+Hannes upgraded Jane yesterday, Jane still doesn't send mails (:ticket:`5278`)
+The status of `send_pending_emails_often` is still `Not started` (because I had
+clicked on "Run now") for this tasks.  The other tasks are "Scheduled to run at
+2023-12-02T03:31:14 (3 hours ago)" or "Running since 2023-10-21T19:53:32 (1
+month, 1 week ago)".
+
+Hmm... did I forget to set :setting:`linod.use_channels`  to `True`?  No.
+
+Tilt! Here is probably the explanation::
+
+  $ sudo cat /var/log/supervisor/jane_linod-stdout---supervisor-kis1sukm.log
+  Started manage.py linod --force (using lino_local.jane.settings) --> PID 218446
+  Running worker for channels ['linod_jane']
+  Start the log server...
+  Start the background tasks runner using <Logger lino (INFO)>...
+  Task exception was never retrieved
+  future: <Task finished name='Task-32' coro=<LinodConsumer._run_background_tasks() done, defined at /usr/local/lino
+  /lino_local/jane/env/lib/python3.9/site-packages/lino/modlib/linod/consumers.py:88> exception=SynchronousOnlyOpera
+  tion('You cannot call this from an async context - use a thread or sync_to_async.')>
+  Traceback (most recent call last):
+    File ".../python3.9/site-packages/lino/modlib/linod/consumers.py", line 96, in _run_background_tasks
+      next_dt = await BackgroundTask.run_them_all(ar)
+    File ".../python3.9/site-packages/lino/modlib/linod/models.py", line 91, in run_them_all
+      self.full_clean()
+    File ".../python3.9/site-packages/lino/mixins/sequenced.py", line 286, in full_clean
+      super(Sequenced, self).full_clean(*args, **kw)
+    File ".../python3.9/site-packages/lino/modlib/system/mixins.py", line 260, in full_clean
+      super().full_clean(*args, **kw)
+    File ".../python3.9/site-packages/django/db/models/base.py", line 1465, in full_clean
+      self.validate_unique(exclude=exclude)
+    File ".../python3.9/site-packages/django/db/models/base.py", line 1207, in validate_unique
+      errors = self._perform_unique_checks(unique_checks)
+    File ".../python3.9/site-packages/django/db/models/base.py", line 1317, in _perform_unique_checks
+      if qs.exists():
+    File ".../python3.9/site-packages/django/db/models/query.py", line 1226, in exists
+      return self.query.has_results(using=self.db)
+    File ".../python3.9/site-packages/django/db/models/sql/query.py", line 592, in has_results
+      return compiler.has_results()
+    File ".../python3.9/site-packages/django/db/models/sql/compiler.py", line 1366, in has_results
+      return bool(self.execute_sql(SINGLE))
+    File ".../python3.9/site-packages/django/db/models/sql/compiler.py", line 1396, in execute_sql
+      cursor = self.connection.cursor()
+    File ".../python3.9/site-packages/django/utils/asyncio.py", line 24, in inner
+      raise SynchronousOnlyOperation(message)
+  django.core.exceptions.SynchronousOnlyOperation: You cannot call this from an async context - use a thread or sync_to_async.
+  Started /usr/local/lino/lino_local/jane/env/bin/daphne -u /run/daphne/jane_daphne1.sock --fd 0 --access-log - --proxy-headers asgi:application (using lino_local.jane.settings) --> PID 218443
+  Started /usr/local/lino/lino_local/jane/env/bin/daphne -u /run/daphne/jane_daphne0.sock --fd 0 --access-log - --proxy-headers asgi:application (using lino_local.jane.settings) --> PID 218442
+
+
+
+I upgraded Django (from 4.1.7 to 4.2.7)
