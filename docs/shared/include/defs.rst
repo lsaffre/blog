@@ -31,6 +31,10 @@
   :class: pi-button
   :alt: close button
 
+.. |envelope|  image:: /../docs/shared/images/pi/envelope.svg
+  :class: pi-button
+  :alt: envelope button
+
 .. |gear|  image:: /../docs/shared/images/buttons/gear.png
   :height: 1em
 
