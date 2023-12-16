@@ -303,12 +303,19 @@ Jane
 using a :ref:`noi`.
 
 
+.. _rumma:
+
+Rumma & Ko
+----------
+
+Website: https://www.saffre-rumma.net
+
 .. _abakus:
 
 Abakus
 ---------
 
-Website: http://www.abakusitsolutions.eu/
+Website: https://www.abakusitsolutions.eu
 
 
 Other
