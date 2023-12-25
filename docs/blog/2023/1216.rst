@@ -1,0 +1,71 @@
+:date: 2023-12-16
+
+===========================
+Saturday, December 16, 2023
+===========================
+
+Strange. On Thursday morning around 8:00 I changed the level of the "Let
+background tasks sleep for 8.694031 seconds" logger message in
+:meth:`BackgroundTask.start_task_runner` from "debug" to "info" so that Jane
+since then faithfully wrote this message every 10 seconds to the
+:xfile:`lino.log` file. These messages appear until Thu at 20:07:09. And then
+they stop suddenly without any visible reason. This is also the moment when Jane
+stopped to send email notifications.
+
+::
+
+  202312-14 09:35:31 INFO [lino 125638 140314165638912] : run_action luc tickets.Tickets.submit_detail None [Ticket #5278 ("#5278 (Jane doesn't send mails)")]
+  202312-14 10:11:56 INFO [lino 136977 139740051445568] : Started manage.py linod --force (using lino_local.jane.settings) --> PID 136977
+  202312-14 10:12:00 INFO [django.channels.worker 136977 139739903883008] : Running worker for channels ['linod_jane']
+  202312-14 10:12:00 INFO [lino 136977 139739903883008] : Start the log server...
+  202312-14 10:12:00 INFO [lino 136977 139739903883008] : Start the background tasks runner using <Logger lino (INFO)>...
+  202312-14 10:12:00 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.984451 seconds.
+  202312-14 10:12:03 INFO [lino 136972 140550985377600] : Started /usr/local/lino/lino_local/jane/env/bin/daphne -u /run/daphne/jane_daphne1.sock --fd 0 --access-log - --proxy-headers asgi:application (using lino_local.jane.settings) --> PID 136972
+  202312-14 10:12:03 INFO [lino 136971 140023566563136] : Started /usr/local/lino/lino_local/jane/env/bin/daphne -u /run/daphne/jane_daphne0.sock --fd 0 --access-log - --proxy-headers asgi:application (using lino_local.jane.settings) --> PID 136971
+  202312-14 10:12:10 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.99448 seconds.
+  202312-14 10:12:20 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996263 seconds.
+  202312-14 10:12:30 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995986 seconds.
+  202312-14 10:12:40 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.994652 seconds.
+  ...
+  202312-14 10:16:03 INFO [lino 136971 140023299036928] : run_action luc tickets.Tickets.submit_detail None [Ticket #5278 ("#5278 (Jane doesn't send mails)")]
+  202312-14 10:16:11 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995164 seconds.
+  ...
+  202312-14 10:20:22 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996292 seconds.
+  202312-14 10:20:28 INFO [lino 136972 140550819161856] : run_action luc tickets.Tickets.end_session None [Ticket #5278 ("#5278 (Jane doesn't send mails)")]
+  202312-14 10:20:32 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996359 seconds.
+  ...
+  202312-14 19:53:10 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995296 seconds.
+  202312-14 19:53:20 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995327 seconds.
+  202312-14 19:53:30 INFO [lino 136977 139739903883008] : Let background tasks sleep for 4.892348 seconds.
+  202312-14 19:58:08 INFO [lino~ 136977 139739903883008] : Start Background task #8 generate_calendar_entries...
+  202312-14 19:58:08 INFO [lino~ 136977 139739903883008] : Start Background task #9 update_publisher_pages...
+  202312-14 19:58:08 INFO [lino~ 136977 139739873892096] : Update published pages...
+  202312-14 19:58:08 INFO [lino~ 136977 139739873892096] : 0 pages have been updated.
+  202312-14 19:58:08 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.563372 seconds.
+  202312-14 19:58:17 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996238 seconds.
+  202312-14 19:58:27 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996709 seconds.
+  ...
+  202312-14 20:00:48 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995795 seconds.
+  202312-14 20:00:58 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996443 seconds.
+  202312-14 20:01:08 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996272 seconds.
+  202312-14 20:01:16 INFO [lino 136971 140023273858816] : run_action luc working.Sessions.end_session None [Session #26243 ('14.12.2023 16:50')]
+  202312-14 20:01:18 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996541 seconds.
+  202312-14 20:01:28 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.995331 seconds.
+  ...
+  202312-14 20:06:49 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996506 seconds.
+  202312-14 20:06:59 INFO [lino 136977 139739903883008] : Let background tasks sleep for 9.996184 seconds.
+  202312-14 20:07:09 INFO [lino 136977 139739903883008] : Let background tasks sleep for 8.694031 seconds.
+  202312-14 20:23:10 WARNING [django.request 136971 140023307429632] : Not Found: /.well-known/traffic-advice
+  202312-14 21:29:11 INFO [lino 136972 140550714943232] : run_action luc working.MySessionsByDay.grid_put <lino_xl.lib.working.ui.Day object at 0x7fd4826495e0> [Session #26243 ('14.12.2023 16:50')]
+  202312-14 21:29:24 INFO [lino 136971 140022899271424] : run_action luc working.MySessionsByDay.grid_put <lino_xl.lib.working.ui.Day object at 0x7f59bc1520a0> [Session #26242 ('14.12.2023 10:20')]
+  202312-14 21:40:16 INFO [lino 136972 140550706550528] : run_action luc working.MySessionsByDay.grid_put <lino_xl.lib.working.ui.Day object at 0x7fd481615e50> [Session #26245 ('14.12.2023 21:40')]
+  202312-14 22:07:37 INFO [lino 136971 140023273858816] : run_action hannes comments.CommentsByRFC.submit_insert Ticket #5311 ('#5311 (Install a Zulip instance 2023)') []
+  202312-14 22:07:44 INFO [lino 136972 140550671939328] : run_action hannes working.Sessions.end_session None [Session #26244 ('14.12.2023 19:03')]
+  202312-14 22:20:43 INFO [lino 136972 140550706550528] : run_action luc working.Sessions.end_session None [Session #26245 ('14.12.2023 21:30')]
+  202312-14 22:20:58 INFO [lino 136972 140550706550528] : run_action luc tickets.AllTickets.submit_insert None []
+  202312-14 22:21:13 INFO [lino 136972 140550706550528] : run_action luc tickets.AllTickets.submit_detail None [Ticket #5319 ("#5319 (AttributeError: 'PosixPath' object has no attribute 'startswith')")]
+  202312-14 22:21:23 INFO [lino 136972 140550706550528] : run_action luc tickets.AllTickets.end_session None [Ticket #5319 ("#5319 (AttributeError: 'PosixPath' object has no attribute 'startswith')")]
+  202312-14 22:23:33 INFO [lino 136971 140023273858816] : run_action luc tickets.AllTickets.submit_insert None []
+  202312-14 22:24:01 INFO [lino 136972 140550706550528] : run_action luc tickets.AllTickets.submit_detail None [Ticket #5320 ("#5320 (unable to access 'https://gitlab.com/lino-framework/book.git/')")]
+  202312-14 22:24:11 INFO [lino 136971 140023273858816] : run_action luc tickets.AllTickets.end_session None [Ticket #5320 ("#5320 (unable to access 'https://gitlab.com/lino-framework/book.git/')")]
+  202312-15 00:31:15 WARNING [django.request 136972 140550819161856] : Not Found: /.well-known/traffic-advice

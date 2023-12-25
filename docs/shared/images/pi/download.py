@@ -11,7 +11,7 @@ from pathlib import Path
 
 # TODO: from lino.core.constants import ICON_NAMES
 ICON_NAMES = ("external-link", "filter", "plus", "plus-circle", "user",
-    "refresh", "trash", "bell", "times-circle", "envelope")
+    "refresh", "trash", "bell", "times-circle", "envelope", "copy")
 
 dest = Path(__file__).parent.absolute()
 root = "https://raw.githubusercontent.com/primefaces/primeicons/master/raw-svg"

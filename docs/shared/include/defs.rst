@@ -1,4 +1,8 @@
 .. see also /docs/dev/shared.rst
+.. |copy|  image:: /../docs/shared/images/pi/copy.svg
+  :class: pi-button
+  :alt: copy button
+
 .. |external-link|  image:: /../docs/shared/images/pi/external-link.svg
   :class: pi-button
   :alt: external link
