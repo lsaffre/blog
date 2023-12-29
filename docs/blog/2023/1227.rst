@@ -1,0 +1,31 @@
+:date: 2023-12-27
+
+===================================================
+#5346 (Optimize RolesByCompany) caused an avalanche
+===================================================
+
+December 27-29, 2023
+
+I did some fundamental cleanup in the following methods. Initially it was just
+for #5346 (Optimize RolesByCompany), but caused an avalanche into
+#5353 (Use mark_safe instead of ElementTree).
+
+The fundamental new thing is that we started to use :func:`mark_safe` function.
+When a virtual field or any function returns some content, then the caller and
+the function need to agree whether that content is (1) plain or (2)
+HTML-formatted text.
+
+- qs2summary() no longer returns an etree but an html string. As a result,
+  :attr:`Actor.summary_sep` no longer needs to be a callable, we can remove the
+  "from lino.core.utils import comma".
+
+- The default implementation of :meth:`Model.as_story_item` returned :meth:`as_summary_row`
+  but now returns :meth:`as_paragraph`
+
+- :meth:`summary_row` replaced by :meth:`as_summary_row`
+
+- row_as_summary()
+
+- ar.obj2htmls(self)
+
+- :meth:`Model.as_search_item`

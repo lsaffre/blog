@@ -1,0 +1,133 @@
+:date: 2023-12-26
+
+==========================
+Tuesday, December 26, 2023
+==========================
+
+I am trying to understand :ticket:`5278` (Jane doesn't send mails (because linod
+is stuck). Yesterday and today I used "clinical software development": I
+replaced a call to :func:`sync_to_async` by :func:`database_sync_to_async`.
+
+::
+
+  class Procedure(dd.Choice):
+      ...
+      async def run(self, ar):
+          if True:
+            return await sync_to_async(self.func)(ar)
+          else:
+            return await database_sync_to_async(self.func)(ar)
+
+When calling :func:`sync_to_async`, :cmd:`pm prep` in the `noi1e` demo project
+works::
+
+  Loading data from /home/luc/work/lino/lino/modlib/help/fixtures/demo2.py
+  Fixture lino.dpy_tmp_3876721588043865475 has no attribute 'objects'
+  Loading data from /home/luc/work/noi/lino_noi/lib/users/fixtures/demo2.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/excerpts/fixtures/demo2.py
+  appy.pod render /home/luc/work/xl/lino_xl/lib/contacts/config/contacts/Person/TermsConditions.odt -> /home/luc/work/book/lino_book/projects/noi1e/settings/media/cache/appypdf/excerpts.Excerpt-1.pdf
+  weasy2pdf render ['subscriptions/Subscription/default.weasy.html', 'excerpts/default.weasy.html'] -> /home/luc/work/book/lino_book/projects/noi1e/settings/media/cache/weasy2pdf/subscriptions.Subscription-1.pdf ('en', {})
+  weasy2pdf render ['contacts/Partner/payment_reminder.weasy.html', 'excerpts/payment_reminder.weasy.html'] -> /home/luc/work/book/lino_book/projects/noi1e/settings/media/cache/weasy2pdf/excerpts.Excerpt-3.pdf ('en', {})
+  Loading data from /home/luc/work/lino/lino/modlib/comments/fixtures/demo2.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/lists/fixtures/demo2.py
+  Loading data from /home/luc/work/lino/lino/modlib/notify/fixtures/demo2.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/pages/fixtures/demo2.py
+  Update published pages...
+  72 pages have been updated.
+  Loading data from /home/luc/work/xl/lino_xl/lib/addresses/fixtures/demo2.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/phones/fixtures/demo2.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/ledger/fixtures/demo_bookings.py
+  Loading data from /home/luc/work/xl/lino_xl/lib/invoicing/fixtures/demo_bookings.py
+  Loading data from /home/luc/work/lino/lino/modlib/summaries/fixtures/checksummaries.py
+
+But when I replace the `True` by `False`, it fails::
+
+  Loading data from /home/luc/work/xl/lino_xl/lib/pages/fixtures/demo2.py
+  Update published pages...
+  Traceback (most recent call last):
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/base/base.py", line 294, in _cursor
+      return self._prepare_cursor(self.create_cursor(name))
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 190, in create_cursor
+      return self.connection.cursor(factory=SQLiteCursorWrapper)
+  sqlite3.ProgrammingError: Cannot operate on a closed database.
+
+  The above exception was the direct cause of the following exception:
+
+  Traceback (most recent call last):
+    File "/home/luc/work/book/lino_book/projects/noi1e/manage.py", line 9, in <module>
+      execute_from_command_line(sys.argv)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 442, in execute_from_command_line
+      utility.execute()
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 436, in execute
+      self.fetch_command(subcommand).run_from_argv(self.argv)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 412, in run_from_argv
+      self.execute(*args, **cmd_options)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 458, in execute
+      output = self.handle(*args, **options)
+    File "/home/luc/work/lino/lino/management/commands/prep.py", line 55, in handle
+      call_command('initdb', *args, **kwargs)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 194, in call_command
+      return command.execute(*args, **defaults)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 458, in execute
+      output = self.handle(*args, **options)
+    File "/home/luc/work/lino/lino/management/commands/initdb.py", line 271, in handle
+      call_command('loaddata', *fixtures, **options)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/__init__.py", line 194, in call_command
+      return command.execute(*args, **defaults)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/base.py", line 458, in execute
+      output = self.handle(*args, **options)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/commands/loaddata.py", line 102, in handle
+      self.loaddata(fixture_labels)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/commands/loaddata.py", line 163, in loaddata
+      self.load_label(fixture_label)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/core/management/commands/loaddata.py", line 251, in load_label
+      for obj in objects:
+    File "/home/luc/work/lino/lino/utils/dpy.py", line 400, in deserialize
+      for o in self.deserialize_module(module, **options):
+    File "/home/luc/work/lino/lino/utils/dpy.py", line 413, in deserialize_module
+      for obj in objects():
+    File "/home/luc/work/xl/lino_xl/lib/pages/fixtures/demo2.py", line 10, in objects
+      async_to_sync(Procedures.update_publisher_pages.run)(ar)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/asgiref/sync.py", line 277, in __call__
+      return call_result.result()
+    File "/usr/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+      return self.__get_result()
+    File "/usr/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+      raise self._exception
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/asgiref/sync.py", line 353, in main_wrap
+      result = await self.awaitable(*args, **kwargs)
+    File "/home/luc/work/lino/lino/modlib/linod/choicelists.py", line 28, in run
+      return await database_sync_to_async(self.func)(ar)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/asgiref/sync.py", line 479, in __call__
+      ret: _R = await loop.run_in_executor(
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/asgiref/current_thread_executor.py", line 40, in run
+      result = self.fn(*self.args, **self.kwargs)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/channels/db.py", line 13, in thread_handler
+      return super().thread_handler(loop, *args, **kwargs)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/asgiref/sync.py", line 538, in thread_handler
+      return func(*args, **kwargs)
+    File "/home/luc/work/xl/lino_xl/lib/pages/models.py", line 344, in update_publisher_pages
+      for obj in Page.get_publisher_pages():
+    File "/home/luc/work/xl/lino_xl/lib/pages/models.py", line 266, in get_publisher_pages
+      for root in cls.objects.filter(parent__isnull=True):
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/models/query.py", line 398, in __iter__
+      self._fetch_all()
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/models/query.py", line 1926, in _fetch_all
+      self._result_cache = list(self._iterable_class(self))
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/models/query.py", line 91, in __iter__
+      results = compiler.execute_sql(
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/models/sql/compiler.py", line 1560, in execute_sql
+      cursor = self.connection.cursor()
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/utils/asyncio.py", line 26, in inner
+      return func(*args, **kwargs)
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/base/base.py", line 316, in cursor
+      return self._cursor()
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/base/base.py", line 293, in _cursor
+      with self.wrap_database_errors:
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/utils.py", line 91, in __exit__
+      raise dj_exc_value.with_traceback(traceback) from exc_value
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/base/base.py", line 294, in _cursor
+      return self._prepare_cursor(self.create_cursor(name))
+    File "/home/luc/virtualenvs/dev/lib/python3.10/site-packages/django/db/backends/sqlite3/base.py", line 190, in create_cursor
+      return self.connection.cursor(factory=SQLiteCursorWrapper)
+  django.db.utils.ProgrammingError: Problem installing fixture '/home/luc/work/xl/lino_xl/lib/pages/fixtures/demo2.py': Cannot operate on a closed database.
