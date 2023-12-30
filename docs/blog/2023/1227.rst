@@ -1,19 +1,42 @@
 :date: 2023-12-27
 
 ===================================================
-#5346 (Optimize RolesByCompany) caused an avalanche
+Optimizing RolesByCompany caused an avalanche
 ===================================================
 
 December 27-29, 2023
 
 I did some fundamental cleanup in the following methods. Initially it was just
-for #5346 (Optimize RolesByCompany), but caused an avalanche into
-#5353 (Use mark_safe instead of ElementTree).
+for :ticket:`5346` (Optimize RolesByCompany), which was trivial: there was no
+insert layout and therefore it was difficult to add a new :term:`contact person`
+for an :term:`organization`.
+
+But working on this caused an avalanche of :ticket:`5353` (Use mark_safe instead of
+ElementTree).
+
+
+ElementTree versus mark_safe()
+==============================
 
 The fundamental new thing is that we started to use :func:`mark_safe` function.
-When a virtual field or any function returns some content, then the caller and
-the function need to agree whether that content is (1) plain or (2)
-HTML-formatted text.
+When a virtual field or any function returns some content, then the caller needs
+to know whether that content is (1) plain text or (2) HTML-formatted text.
+During the first years of Lino, I discovered ElementTree and fell in love. And I
+still say that it's a great tool for generating HTML. And I based most function
+calls on the convention that when it's a `str` then it is plain text (and thus
+needs to get escaped when rendered as HTML), and when a function wants to return
+formatted text, then it must return an ElementTree.
+
+But this convention is suboptimal when we return content of a rich text field,
+it that is already a chunk of HTML, verified and bleached and validated. In that
+case a method that is expected to return ElementTree currently has to parse the
+stored HTML using :func:`lxml.html.fromstring` in order to get an ET from it.
+Which is a bit stupid because that ET is used for nothing else but to generate
+HTML.
+
+I had been feeling this issue for quite some time already, but now I finally
+created a separate ticket for it: #5353 (Use mark_safe instead of ElementTree).
+
 
 - qs2summary() no longer returns an etree but an html string. As a result,
   :attr:`Actor.summary_sep` no longer needs to be a callable, we can remove the
@@ -29,3 +52,29 @@ HTML-formatted text.
 - ar.obj2htmls(self)
 
 - :meth:`Model.as_search_item`
+
+About mark_safe()
+=================
+
+The Django docs about `mark_safe()
+<https://docs.djangoproject.com/en/4.1/ref/utils/#django.utils.safestring.mark_safe>`__
+say that a "safe" string becomes unsafe as soon as it is modified. I wondered
+what happens if you just concatenate two safe strings. Answer the result is
+still safe.
+
+>>> from django.utils.html import mark_safe
+>>> s1 = mark_safe("<b>Foo</b>")
+>>> s2 = mark_safe("<b>Bar</b>")
+>>> s3 = mark_safe("<em>{} and {}</em>")
+
+>>> type(s1+s2)
+<class 'django.utils.safestring.SafeString'>
+
+But already the following requires another call to :func:`mark_safe`:
+
+>>> s4 = s3.format(s1, s2)
+>>> type(s4)
+<class 'str'>
+
+Note that the word "safe" here has nothing to do with actual security. A
+:class:`SafeString` can contain dangerous HTML.
