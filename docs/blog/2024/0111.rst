@@ -1,0 +1,408 @@
+:date: 2024-01-11
+
+========================================
+Please reinstall virtualbox-dkms package
+========================================
+
+Thursday, January 11, 2024
+
+I use virtualbox to run a venerable legacy accounting software under Windows XP
+from within my Ubuntu system. Works like a charm. But after the latest system
+upgrade (or at least I cannot see any other reason) it was broken. When I try to
+launch the VM, it says:
+
+  Kernel driver not installed (rc=-1908) The VirtualBox Linux kernel driver is
+  either not loaded or not set up correctly. Please reinstall virtualbox-dkms
+  package and load the kernel module by executing 'modprobe vboxdrv' as root.
+
+  If your system has EFI Secure Boot enabled you may also need to sign the kernel
+  modules (vboxdrv, vboxnetflt, vboxnetadp, vboxpci) before you can load them.
+  Please see your Linux system's documentation for more information.
+
+  where: suplibOsInit what: 3 VERR_VM_DRIVER_NOT_INSTALLED (-1908) - The support
+  driver is not installed. On linux, open returned ENOENT.
+
+And later:
+
+  Failed to open a session for the virtual machine Windows XP. The virtual
+  machine 'Windows XP' has terminated unexpectedly during startup with exit code
+  1 (0x1).
+
+  Result Code: NS_ERROR_FAILURE (0x80004005)
+
+  Component: MachineWrap
+
+  Interface: IMachine {85632c68-b5bb-4316-a900-5eb28d3413df}
+
+I have had this message years ago (on another computer) and remember that a
+"reinstall virtualbox-dkms" helped. But this time it didn't.  I tried to remove
+and reinstall the virtualbox packages without success.
+
+Here are some things I tried.
+
+::
+
+  $ sudo apt remove virtualbox-guest-additions-iso virtualbox-guest-utils virtualbox-qt virtualbox-source
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages were automatically installed and are no longer required:
+    kbuild module-assistant
+  Use 'sudo apt autoremove' to remove them.
+  The following packages will be REMOVED:
+    virtualbox-guest-additions-iso virtualbox-guest-utils virtualbox-qt virtualbox-source
+  0 upgraded, 0 newly installed, 4 to remove and 3 not upgraded.
+  1 not fully installed or removed.
+  After this operation, 131 MB disk space will be freed.
+  Do you want to continue? [Y/n]
+  (Reading database ... 317868 files and directories currently installed.)
+  Removing virtualbox-guest-additions-iso (6.1.38-1~ubuntu1.22.04.1) ...
+  Removing virtualbox-guest-utils (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Removing virtualbox-qt (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  dpkg: virtualbox-source: dependency problems, but removing anyway as you requested:
+   virtualbox depends on virtualbox-dkms (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-source (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-modules; however:
+    Package virtualbox-dkms is not configured yet.
+    Package virtualbox-source is to be removed.
+    Package virtualbox-modules is not installed.
+    Package virtualbox-dkms which provides virtualbox-modules is not configured yet.
+
+  Removing virtualbox-source (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Setting up virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Removing old virtualbox-6.1.38 DKMS files...
+  Deleting module virtualbox-6.1.38 completely from the DKMS tree.
+  Loading new virtualbox-6.1.38 DKMS files...
+  Building for 6.5.0-14-generic
+  Building initial module for 6.5.0-14-generic
+  ERROR: Cannot create report: [Errno 17] File exists: '/var/crash/virtualbox-dkms.0.crash'
+  Error! Bad return status for module build on kernel: 6.5.0-14-generic (x86_64)
+  Consult /var/lib/dkms/virtualbox/6.1.38/build/make.log for more information.
+  dpkg: error processing package virtualbox-dkms (--configure):
+   installed virtualbox-dkms package post-installation script subprocess returned error exit status 10
+  Processing triggers for desktop-file-utils (0.26-1ubuntu3) ...
+  Processing triggers for hicolor-icon-theme (0.17-2) ...
+  Processing triggers for gnome-menus (3.36.0-1ubuntu3) ...
+  Processing triggers for man-db (2.10.2-1) ...
+  Processing triggers for shared-mime-info (2.1-2) ...
+  Processing triggers for mailcap (3.70+nmu1ubuntu1) ...
+  Errors were encountered while processing:
+   virtualbox-dkms
+  E: Sub-process /usr/bin/dpkg returned an error code (1)
+
+::
+
+  $ sudo cat /var/lib/dkms/virtualbox/6.1.38/build/make.log
+  DKMS make.log for virtualbox-6.1.38 for kernel 6.5.0-14-generic (x86_64)
+  N 11 jaan  2024 07:49:57 EET
+  make: Entering directory '/usr/src/linux-headers-6.5.0-14-generic'
+  warning: the compiler differs from the one used to build the kernel
+    The kernel was built by: x86_64-linux-gnu-gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0
+    You are using:           gcc-12 (Ubuntu 12.3.0-1ubuntu1~22.04) 12.3.0
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/linux/SUPDrv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrvGip.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrvSem.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrvTracer.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPLibAll.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/alloc-r0drv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/initterm-r0drv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/memobj-r0drv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/mpnotification-r0drv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/powernotification-r0drv.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/assert-r0drv-linux.o
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrvTracer.o: warning: objtool: SUPR0TracerFireProbe+0x7: indirect jump found in RETPOLINE build
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/SUPDrvTracer.o: warning: objtool: supdrvTracerProbeFireStub+0x0: 'naked' return found in RETHUNK build
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/alloc-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/initterm-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memuserkernel-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/mp-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/mpnotification-r0drv-linux.o
+    CC [M]  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/process-r0drv-linux.o
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c: In function ‘rtR0MemObjNativeLockUser’:
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:1228:18: error: too many arguments to function ‘get_user_pages’
+   1228 |             rc = get_user_pages(R3Ptr,                  /* Where from. */
+        |                  ^~~~~~~~~~~~~~
+  In file included from /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/the-linux-kernel.h:102,
+                   from /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:31:
+  ./include/linux/mm.h:2430:6: note: declared here
+   2430 | long get_user_pages(unsigned long start, unsigned long nr_pages,
+        |      ^~~~~~~~~~~~~~
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:1261:33: error: passing argument 6 of ‘get_user_pages_remote’ from incompatible pointer type [-Werror=incompatible-pointer-types]
+   1261 |                                 papVMAs                 /* vmas */
+        |                                 ^~~~~~~
+        |                                 |
+        |                                 struct vm_area_struct **
+  ./include/linux/mm.h:2400:33: note: expected ‘int *’ but argument is of type ‘struct vm_area_struct **’
+   2400 |                            int *locked);
+        |                            ~~~~~^~~~~~
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:1245:18: error: too many arguments to function ‘get_user_pages_remote’
+   1245 |             rc = get_user_pages_remote(
+        |                  ^~~~~~~~~~~~~~~~~~~~~
+  ./include/linux/mm.h:2397:6: note: declared here
+   2397 | long get_user_pages_remote(struct mm_struct *mm,
+        |      ^~~~~~~~~~~~~~~~~~~~~
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:1304:39: error: assignment of read-only member ‘vm_flags’
+   1304 |                 papVMAs[rc]->vm_flags |= VM_DONTCOPY | VM_LOCKED;
+        |                                       ^~
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c: In function ‘rtR0MemObjNativeMapUser’:
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.c:1774:35: error: assignment of read-only member ‘vm_flags’
+   1774 |                     vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
+        |                                   ^~
+  cc1: some warnings being treated as errors
+  make[3]: *** [scripts/Makefile.build:251: /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memobj-r0drv-linux.o] Error 1
+  make[3]: *** Waiting for unfinished jobs....
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memuserkernel-r0drv-linux.o: warning: objtool: VBoxHost_RTR0MemKernelCopyTo+0x13: redundant CLD
+  /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv/r0drv/linux/memuserkernel-r0drv-linux.o: warning: objtool: VBoxHost_RTR0MemKernelCopyFrom+0x13: redundant CLD
+  make[2]: *** [scripts/Makefile.build:488: /var/lib/dkms/virtualbox/6.1.38/build/vboxdrv] Error 2
+  make[1]: *** [/usr/src/linux-headers-6.5.0-14-generic/Makefile:2037: /var/lib/dkms/virtualbox/6.1.38/build] Error 2
+  make: *** [Makefile:234: __sub-make] Error 2
+  make: Leaving directory '/usr/src/linux-headers-6.5.0-14-generic'
+
+::
+
+  $ sudo apt install virtualbox
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  virtualbox is already the newest version (6.1.38-dfsg-3~ubuntu1.22.04.1).
+  The following packages were automatically installed and are no longer required:
+    kbuild module-assistant
+  Use 'sudo apt autoremove' to remove them.
+  0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+  1 not fully installed or removed.
+  After this operation, 0 B of additional disk space will be used.
+  Do you want to continue? [Y/n]
+  Setting up virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Removing old virtualbox-6.1.38 DKMS files...
+  Deleting module virtualbox-6.1.38 completely from the DKMS tree.
+  Loading new virtualbox-6.1.38 DKMS files...
+  Building for 6.5.0-14-generic
+  Building initial module for 6.5.0-14-generic
+  ERROR: Cannot create report: [Errno 17] File exists: '/var/crash/virtualbox-dkms.0.crash'
+  Error! Bad return status for module build on kernel: 6.5.0-14-generic (x86_64)
+  Consult /var/lib/dkms/virtualbox/6.1.38/build/make.log for more information.
+  dpkg: error processing package virtualbox-dkms (--configure):
+   installed virtualbox-dkms package post-installation script subprocess returned error exit status 10
+  Errors were encountered while processing:
+   virtualbox-dkms
+  E: Sub-process /usr/bin/dpkg returned an error code (1)
+
+::
+  $ ls -l /var/crash/virtualbox-dkms.0.crash
+  -rw-r--r-- 1 root whoopsie 6048 jaan  11 07:29 /var/crash/virtualbox-dkms.0.crash
+
+
+I was able to remove all virtualbox packages::
+
+  $ sudo apt remove virtualbox-dkms
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages were automatically installed and are no longer required:
+    dctrl-tools dkms linux-headers-5.15.0-60 linux-headers-5.15.0-60-generic linux-headers-5.19.0-50-generic linux-hwe-5.19-headers-5.19.0-50
+  Use 'sudo apt autoremove' to remove them.
+  The following additional packages will be installed:
+    virtualbox-source
+  The following packages will be REMOVED:
+    virtualbox-dkms
+  The following NEW packages will be installed:
+    virtualbox-source
+  0 upgraded, 1 newly installed, 1 to remove and 3 not upgraded.
+  1 not fully installed or removed.
+  Need to get 836 kB of archives.
+  After this operation, 4 789 kB disk space will be freed.
+  Do you want to continue? [Y/n]
+  Get:1 http://ee.archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 virtualbox-source amd64 6.1.38-dfsg-3~ubuntu1.22.04.1 [836 kB]
+  Fetched 836 kB in 0s (3 211 kB/s)
+  Selecting previously unselected package virtualbox-source.
+  (Reading database ... 317674 files and directories currently installed.)
+  Preparing to unpack .../virtualbox-source_6.1.38-dfsg-3~ubuntu1.22.04.1_amd64.deb ...
+  Unpacking virtualbox-source (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  dpkg: virtualbox-dkms: dependency problems, but removing anyway as you requested:
+   virtualbox depends on virtualbox-dkms (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-source (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-modules; however:
+    Package virtualbox-dkms is to be removed.
+    Package virtualbox-source is not configured yet.
+    Package virtualbox-modules is not installed.
+    Package virtualbox-dkms which provides virtualbox-modules is to be removed.
+   virtualbox depends on virtualbox-dkms (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-source (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-modules; however:
+    Package virtualbox-dkms is to be removed.
+    Package virtualbox-source is not configured yet.
+    Package virtualbox-modules is not installed.
+    Package virtualbox-dkms which provides virtualbox-modules is to be removed.
+  (Reading database ... 317679 files and directories currently installed.)
+  Removing virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Deleting module virtualbox-6.1.38 completely from the DKMS tree.
+  Setting up virtualbox-source (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  (dev) luc@yoga:~$ sudo apt remove virtualbox
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages were automatically installed and are no longer required:
+    dctrl-tools dkms kbuild libgsoap-2.8.117 linux-headers-5.15.0-60 linux-headers-5.15.0-60-generic linux-headers-5.19.0-50-generic linux-hwe-5.19-headers-5.19.0-50
+    module-assistant virtualbox-source
+  Use 'sudo apt autoremove' to remove them.
+  The following packages will be REMOVED:
+    virtualbox
+  0 upgraded, 0 newly installed, 1 to remove and 3 not upgraded.
+  After this operation, 112 MB disk space will be freed.
+  Do you want to continue? [Y/n]
+  (Reading database ... 317402 files and directories currently installed.)
+  Removing virtualbox (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Processing triggers for man-db (2.10.2-1) ...
+
+  $ sudo apt remove virtualbox-source
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages were automatically installed and are no longer required:
+    dctrl-tools dkms kbuild libgsoap-2.8.117 linux-headers-5.15.0-60 linux-headers-5.15.0-60-generic linux-headers-5.19.0-50-generic linux-hwe-5.19-headers-5.19.0-50
+    module-assistant
+  Use 'sudo apt autoremove' to remove them.
+  The following packages will be REMOVED:
+    virtualbox-source
+  0 upgraded, 0 newly installed, 1 to remove and 3 not upgraded.
+  After this operation, 936 kB disk space will be freed.
+  Do you want to continue? [Y/n]
+  (Reading database ... 317207 files and directories currently installed.)
+  Removing virtualbox-source (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+
+
+But now I can't install it any more::
+
+  $ sudo apt install virtualbox
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages were automatically installed and are no longer required:
+    kbuild module-assistant
+  Use 'sudo apt autoremove' to remove them.
+  The following additional packages will be installed:
+    virtualbox-dkms virtualbox-qt
+  Suggested packages:
+    vde2 virtualbox-guest-additions-iso
+  The following NEW packages will be installed:
+    virtualbox virtualbox-dkms virtualbox-qt
+  0 upgraded, 3 newly installed, 0 to remove and 3 not upgraded.
+  Need to get 22,1 MB/46,1 MB of archives.
+  After this operation, 178 MB of additional disk space will be used.
+  Do you want to continue? [Y/n]
+  Get:1 http://ee.archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 virtualbox-qt amd64 6.1.38-dfsg-3~ubuntu1.22.04.1 [22,1 MB]
+  Fetched 22,1 MB in 4s (5 703 kB/s)
+  Selecting previously unselected package virtualbox-dkms.
+  (Reading database ... 317202 files and directories currently installed.)
+  Preparing to unpack .../virtualbox-dkms_6.1.38-dfsg-3~ubuntu1.22.04.1_amd64.deb ...
+  Unpacking virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Selecting previously unselected package virtualbox.
+  Preparing to unpack .../virtualbox_6.1.38-dfsg-3~ubuntu1.22.04.1_amd64.deb ...
+  Unpacking virtualbox (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Selecting previously unselected package virtualbox-qt.
+  Preparing to unpack .../virtualbox-qt_6.1.38-dfsg-3~ubuntu1.22.04.1_amd64.deb ...
+  Unpacking virtualbox-qt (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Setting up virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Loading new virtualbox-6.1.38 DKMS files...
+  Building for 6.5.0-14-generic
+  Building initial module for 6.5.0-14-generic
+  ERROR: Cannot create report: [Errno 17] File exists: '/var/crash/virtualbox-dkms.0.crash'
+  Error! Bad return status for module build on kernel: 6.5.0-14-generic (x86_64)
+  Consult /var/lib/dkms/virtualbox/6.1.38/build/make.log for more information.
+  dpkg: error processing package virtualbox-dkms (--configure):
+   installed virtualbox-dkms package post-installation script subprocess returned error exit status 10
+  dpkg: dependency problems prevent configuration of virtualbox:
+   virtualbox depends on virtualbox-dkms (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-source (>= 6.1.38-dfsg-3~ubuntu1.22.04.1) | virtualbox-modules; however:
+    Package virtualbox-dkms is not configured yet.
+    Package virtualbox-source is not installed.
+    Package virtualbox-modules is not installed.
+    Package virtualbox-dkms which provides virtualbox-modules is not configured yet.
+
+  dpkg: error processing package virtualbox (--configure):
+   dependency problems - leaving unconfigured
+  No apport report written because the error message indicates its a followup error from a previous failure.
+  No apport report written because the error message indicates its a followup error from a previous failure.
+  dpkg: dependency problems prevent configuration of virtualbox-qt:
+   virtualbox-qt depends on virtualbox (= 6.1.38-dfsg-3~ubuntu1.22.04.1); however:
+    Package virtualbox is not configured yet.
+
+  dpkg: error processing package virtualbox-qt (--configure):
+   dependency problems - leaving unconfigured
+  Processing triggers for mailcap (3.70+nmu1ubuntu1) ...
+  Processing triggers for desktop-file-utils (0.26-1ubuntu3) ...
+  Processing triggers for hicolor-icon-theme (0.17-2) ...
+  Processing triggers for gnome-menus (3.36.0-1ubuntu3) ...
+  Processing triggers for man-db (2.10.2-1) ...
+  Processing triggers for shared-mime-info (2.1-2) ...
+  Errors were encountered while processing:
+   virtualbox-dkms
+   virtualbox
+   virtualbox-qt
+  E: Sub-process /usr/bin/dpkg returned an error code (1)
+
+
+
+I tried some cleanup actions, with success::
+
+  $ sudo apt autoremove
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  The following packages will be REMOVED:
+    dctrl-tools dkms kbuild libgsoap-2.8.117 linux-headers-5.15.0-60 linux-headers-5.15.0-60-generic linux-headers-5.19.0-50-generic linux-hwe-5.19-headers-5.19.0-50
+    module-assistant virtualbox-dkms
+  0 upgraded, 0 newly installed, 10 to remove and 3 not upgraded.
+  1 not fully installed or removed.
+  After this operation, 222 MB disk space will be freed.
+  Do you want to continue? [Y/n]
+  (Reading database ... 317479 files and directories currently installed.)
+  Removing virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Deleting module virtualbox-6.1.38 completely from the DKMS tree.
+  Removing dkms (2.8.7-2ubuntu2.2) ...
+  Removing dctrl-tools (2.24-3build2) ...
+  Removing kbuild (1:0.1.9998svn3564+dfsg-1) ...
+  Removing libgsoap-2.8.117:amd64 (2.8.117-2build1) ...
+  Removing linux-headers-5.15.0-60-generic (5.15.0-60.66) ...
+  dpkg: warning: while removing linux-headers-5.15.0-60-generic, directory '/lib/modules/5.15.0-60-generic' not empty so not removed
+  Removing linux-headers-5.15.0-60 (5.15.0-60.66) ...
+  Removing linux-headers-5.19.0-50-generic (5.19.0-50.50) ...
+  dpkg: warning: while removing linux-headers-5.19.0-50-generic, directory '/lib/modules/5.19.0-50-generic' not empty so not removed
+  Removing linux-hwe-5.19-headers-5.19.0-50 (5.19.0-50.50) ...
+  Removing module-assistant (0.11.10) ...
+  Processing triggers for man-db (2.10.2-1) ...
+  Processing triggers for libc-bin (2.35-0ubuntu3.6) ...
+
+::
+  $ sudo dpkg --purge virtualbox virtualbox-qt virtualbox-dkms
+  (Reading database ... 260368 files and directories currently installed.)
+  Removing virtualbox-qt (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Removing virtualbox (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Purging configuration files for virtualbox (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Removing virtualbox-dkms (6.1.38-dfsg-3~ubuntu1.22.04.1) ...
+  Deleting module virtualbox-6.1.38 completely from the DKMS tree.
+  Processing triggers for man-db (2.10.2-1) ...
+  Processing triggers for shared-mime-info (2.1-2) ...
+  Processing triggers for hicolor-icon-theme (0.17-2) ...
+  Processing triggers for mailcap (3.70+nmu1ubuntu1) ...
+  Processing triggers for gnome-menus (3.36.0-1ubuntu3) ...
+  Processing triggers for desktop-file-utils (0.26-1ubuntu3) ...
+
+
+System diagnostics::
+
+  $ dpkg -l | grep -i virtualb
+  iU  virtualbox                                    6.1.38-dfsg-3~ubuntu1.22.04.1           amd64        x86 virtualization solution - base binaries
+  iF  virtualbox-dkms                               6.1.38-dfsg-3~ubuntu1.22.04.1           amd64        x86 virtualization solution - kernel module sources for dkms
+  rc  virtualbox-guest-utils                        6.1.38-dfsg-3~ubuntu1.22.04.1           amd64        x86 virtualization solution - non-X11 guest utilities
+  iU  virtualbox-qt                                 6.1.38-dfsg-3~ubuntu1.22.04.1           amd64        x86 virtualization solution - Qt based user interface
+
+  $ uname -a
+  Linux yoga 6.5.0-14-generic #14~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Nov 20 18:15:30 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+  $ lsb_release -crid
+  Distributor ID:	Ubuntu
+  Description:	Ubuntu 22.04.3 LTS
+  Release:	22.04
+  Codename:	jammy
+
+  $ sudo dmesg | grep -i -e virtualb -e vbox
+  (no output)
+
+  $ find /lib/modules -iname vboxdrv.ko -ls
+  (no output)

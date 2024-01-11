@@ -1,0 +1,48 @@
+:date: 2024-01-02
+
+========================
+Tuesday, January 2, 2024
+========================
+
+Here is my first Django session on the Zeugnisse Server::
+
+  In [1]: from zeugnisse.models import BausteinArbeitBewertung
+  In [2]: qs = BausteinArbeitBewertung.objects.filter(schüler=361, baustein=27)
+  In [16]: [b.arbeit for b in qs]
+  Out[16]:
+  [<BausteinArbeit: Arbeitsverhalten>,
+   <BausteinArbeit: Sauberkeit>,
+   <BausteinArbeit: Korrektur>,
+   <BausteinArbeit: Zeitmanagement>,
+   <BausteinArbeit: Arbeitsverhalten>]
+
+  In [17]: [b.arbeit.id for b in qs]
+  Out[17]: [4, 1, 2, 3, 4]
+
+  In [20]: qs = BausteinArbeitBewertung.objects.filter(schüler=361, baustein=27, arbeit=4)
+
+  In [21]: qs.count()
+  Out[21]: 2
+
+  In [22]: [b.punkte for b in qs]
+  Out[22]: [Decimal('2.0'), Decimal('2.0')]
+
+  In [23]: [b.id for b in qs]
+  Out[23]: [319012, 319022]
+
+  In [23]: [b.id for b in qs]
+  Out[23]: [319012, 319022]
+
+  In [24]: b = BausteinArbeitBewertung.objects.get(id=319022)
+
+  In [25]: b.punkte
+  Out[25]: Decimal('2.0')
+
+  In [26]: b.arbeit
+  Out[26]: <BausteinArbeit: Arbeitsverhalten>
+
+  In [27]: b.schüler
+  Out[27]: <Schüler: Musterman Max>
+
+  In [28]: b.delete()
+  Out[28]: (2, {'zeugnisse.BausteinArbeitBewertung': 1, 'zeugnisse.Bewertung': 1})
