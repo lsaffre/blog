@@ -1,0 +1,30 @@
+:date: 2024-01-16
+
+=========================
+Tuesday, January 16, 2024
+=========================
+
+The following output (issued by :meth:`lino.utils.diag.Anayzer.show_db_overview`) helped me to understand
+the MRO problem with ledger.Voucher and ledger.RegistrableVoucher::
+
+  class VatProductInvoice(SalesDocument, Matching, InvoicingTargetVoucher, StorageTransferer):
+
+  Model:
+  	lino_xl.lib.sales.models.VatProductInvoice
+  Duplicate base:
+  	LedgerRegistrable
+  Inheritance trees:
+  	LedgerRegistrable.StorageTransferer.VatProductInvoice
+  	LedgerRegistrable.VatDocument.VatVoucher.SalesDocument.VatProductInvoice
+  ----------------------------------------
+  Duplicate base:
+  	Voucher
+  Inheritance trees:
+  	Voucher.LedgerRegistrable.StorageTransferer.VatProductInvoice
+  	Voucher.LedgerRegistrable.VatDocument.VatVoucher.SalesDocument.VatProductInvoice
+  ----------------------------------------
+  Duplicate base:
+  	UserAuthored
+  Inheritance trees:
+  	UserAuthored.Voucher.LedgerRegistrable.StorageTransferer.VatProductInvoice
+  	UserAuthored.Voucher.LedgerRegistrable.VatDocument.VatVoucher.SalesDocument.VatProductInvoice
