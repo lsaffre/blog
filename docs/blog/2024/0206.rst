@@ -1,0 +1,84 @@
+:date: 2024-02-06
+
+=========================
+Tuesday, February 6, 2024
+=========================
+
+How to set up a server for zeugnisse
+
+- sudo hostnamectl set-hostname pdg2
+- Create users lsaffre and hliivat.
+
+- Add "umask 002" in /etc/bash.bashrc
+- sudo apt install git python3-venv python3-pip libffi-dev
+- cd /usr/local
+- sudo mkdir synodal
+- cd synodal
+- sudo chown www-data .
+- sudo chgrp www-data .
+- sudo chmod g+ws .
+- git clone https://gitlab.com/synodalsoft/zeugnisse.git .
+- nano bash_aliases  #
+- nano ~/.bashrc  # and add a line ". /usr/local/synodal/bash_aliases"
+
+Ctrl-D and come back
+
+- go  # cd /usr/local/synodal
+- python3 -m venv env
+- a
+- pip install -r requirements.txt
+
+It was interesting to read `this
+<https://uwsgi.readthedocs.io/en/latest/tutorials/Django_and_nginx.html>`__ but
+don't follow it blindly. We install uwsgi using the *Debian* package, not using
+the *Python* package.
+
+- sudo apt install nginx uwsgi uwsgi-plugin-python3 postgresql
+
+Hannes defined a domain name ``zeugnisse.mylino.net`` pointing to ``pdg2``.
+
+Create config files for nginx and uwsgi:
+
+  - sudo nano /etc/nginx/sites-available/zeugnisse.conf
+  - sudo nano /etc/uwsgi/apps-available/zeugnisse.ini
+
+Enable them:
+
+  - sudo nano ln -s /etc/nginx/sites-available/zeugnisse.conf /etc/nginx/sites-enabled
+  - sudo nano ln -s /etc/uwsgi/apps-available/zeugnisse.ini /etc/uwsgi/apps-enabled
+
+
+How to copy a file from
+
+$ scp pdg:/home/django/django-seite/django_seite/secret/* pdg2:/usr/local/synodal/django_seite/secret/
+
+- sudo -u postgres psql -c "CREATE DATABASE django;"
+
+
+On old server as user django:
+
+- cd
+- pg_dump django > 20240210.psql
+
+On my machine:
+
+- scp pdg:/home/django/20240210.psql pdg2:/usr/local/synodal/
+
+On new server:
+
+- sudo -u postgres psql -c 'CREATE USER "www-data";'
+- sudo -u postgres psql -c 'GRANT ALL PRIVILEGES ON DATABASE django TO "www-data";'
+- sudo -u postgres psql django < 20240210.psql
+
+- sudo mkdir /var/log/zeugnisse
+- sudo chown www-data:www-data /var/log/zeugnisse
+- sudo chmod g+ws /var/log/zeugnisse
+
+- nano django_seite/settings/settings_prod.py
+
+   'filename': '/var/log/zeugnisse/django.log',
+
+- apt install libpango-1.0-0 libpangoft2-1.0-0
+- apt install python3-certbot-nginx
+
+- sudo certbot --nginx -d zeugnisse.mylino.net

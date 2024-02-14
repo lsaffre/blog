@@ -1,0 +1,212 @@
+:date: 2024-02-08
+
+==========================
+Thursday, February 8, 2024
+==========================
+
+.. doctest docs/blog/2024/0208.rst
+
+It seems that we want a new database model for contracts in Lino Welfare. This
+new contract model is called "Activation SINE". Question for a brainstorming:
+which database fields should this new model have?
+
+.. contents::
+  :local:
+
+>>> from lino import startup
+>>> startup('lino_welfare.projects.mathieu.settings.demo')
+>>> from lino.api.doctest import *
+
+>>> def fmt(f):
+...   if hasattr(f, 'verbose_name'):
+...     return "{} ({}) {}".format(f.name, f.verbose_name, f.__class__.__name__)
+...   return "{} ({})".format(f.name, f)
+
+>>> base_fields = set([f.name for f in isip.ContractBase._meta.get_fields()])
+>>> from lino.core.fields import VirtualField
+
+>>> def show(f):
+...     if f.name in base_fields: return False
+...     if isinstance(f, VirtualField): return False
+...     return True
+
+
+
+Classes de contrats
+===================
+
+Here is a list of the contracts classes we currently differentiate in Lino
+
+>>> langs = ["en", "fr"]
+>>> rows = []
+>>> for m in rt.models_by_base(isip.ContractBase):
+...     cells = [dd.full_model_name(m)]
+...     for lng in langs:
+...       with translation.override(lng):
+...         cells.append(str(m._meta.verbose_name))
+...     rows.append(cells)
+>>> print(rstgen.table(["model"]+langs, rows))
+==================== ======================== =========================
+ model                en                       fr
+-------------------- ------------------------ -------------------------
+ art60.Contract       Art60§7 job supplyment   Mise à l'emploi art60§7
+ art61.Contract       Art61 job supplyment     Mise à l'emploi art.61
+ immersion.Contract   Immersion training       Stage d'immersion
+ isip.Contract        ISIP                     PIIS
+==================== ======================== =========================
+<BLANKLINE>
+
+
+List of fields that are common to all contracts:
+
+>>> for f in isip.ContractBase._meta.get_fields():
+...     print(fmt(f))
+signer1 (Secrétaire) ForeignKey
+signer2 (Président) ForeignKey
+user (Titulaire (SI)) ForeignKey
+printed_by (Imprimé) ForeignKey
+client (client) ForeignKey
+language (Langue) LanguageField
+applies_from (Début de contrat) DateField
+applies_until (Fin prévue) DateField
+date_decided (Décidé le) DateField
+date_issued (Date de signature) DateField
+user_asd (Titulaire (SSG)) ForeignKey
+exam_policy (exam policy) ForeignKey
+ending (ending) ForeignKey
+date_ended (Date de fin) DateField
+
+
+Remarks:
+
+- art60.Contract is the only model with multiple conventions per contract.
+
+
+
+Mise à l'emploi art60§7
+=======================
+
+>>> print(art60.Contract._meta.verbose_name)
+Mise à l'emploi art60§7
+>>> for f in art60.Contract._meta.get_fields():
+...   if show(f):
+...     print(fmt(f))
+convention (<ManyToOneRel: art60.convention>)
+id (ID) BigAutoField
+duration (Jours ONSS) IntegerField
+remark (Remarque) TextField
+type (Type) ForeignKey
+
+
+>>> for f in art60.Convention._meta.get_fields():
+...   if not isinstance(f, VirtualField):
+...     print(fmt(f))
+id (ID) BigAutoField
+contact_person (Représenté par) ForeignKey
+contact_role (En tant que) ForeignKey
+reference_person (persone de référence) CharField
+responsibilities (responsabilités) RichTextField
+company (Service utilisateur) ForeignKey
+contract (Mise à l'emploi art60§7) ForeignKey
+job (Poste de travail) ForeignKey
+start_date (Date début) DateField
+regime (Régime de travail) ForeignKey
+schedule (Horaire) ForeignKey
+monthly_refund (Rétrocession mensuelle) PriceField
+hourly_rate (coût horaire) PriceField
+refund_rate (tarif de remboursement) CharField
+
+
+Mise à l'emploi art.61
+======================
+
+>>> print(art61.Contract._meta.verbose_name)
+Mise à l'emploi art.61
+>>> for f in art61.Contract._meta.get_fields():
+...   if show(f):
+...     print(fmt(f))
+id (ID) BigAutoField
+contact_person (Représenté par) ForeignKey
+contact_role (En tant que) ForeignKey
+sector (Secteur d'activité) ForeignKey
+function (Fonction professionnelle) ForeignKey
+reference_person (persone de référence) CharField
+responsibilities (responsabilités) RichTextField
+duration (Jours ONSS) IntegerField
+remark (Remarque) TextField
+company (Employeur) ForeignKey
+type (Type) ForeignKey
+job_title (Fonction professionnelle) CharField
+status (Statut) ForeignKey
+cv_duration (Type de contrat) ForeignKey
+regime (Régime de travail) ForeignKey
+sub_10_amount (Aide à l'emploi) PriceField
+sub_10_start (Depuis) DateField
+sub_10_end (Jusqu'à) DateField
+sub_20_amount (Tutorat) PriceField
+sub_20_start (Depuis) DateField
+sub_20_end (Jusqu'à) DateField
+sub_30_amount (Région Wallonne) PriceField
+sub_30_start (Depuis) DateField
+sub_30_end (Jusqu'à) DateField
+
+
+PIIS
+====
+
+>>> print(isip.Contract._meta.verbose_name)
+PIIS
+>>> for f in isip.Contract._meta.get_fields():
+...   if show(f):
+...     print(fmt(f))
+contractpartner (<ManyToOneRel: isip.contractpartner>)
+id (ID) BigAutoField
+type (Type de contrat) ForeignKey
+study_type (Type d'éducation) ForeignKey
+stages (stages) RichTextField
+goals (buts) RichTextField
+duties_asd (Obligations du service social) RichTextField
+duties_dsbe (Obligations du service d'insertion) RichTextField
+duties_pcsw (Obligations du CPAS) RichTextField
+duties_person (Obligations du bénéficiaire) RichTextField
+user_dsbe (Titulaire (SI)) ForeignKey
+
+
+Stage d'immersion
+=================
+
+>>> print(immersion.Contract._meta.verbose_name)
+Stage d'immersion
+>>> for f in immersion.Contract._meta.get_fields():
+...   if show(f):
+...     print(fmt(f))
+id (ID) BigAutoField
+contact_person (Représenté par) ForeignKey
+contact_role (En tant que) ForeignKey
+sector (Secteur d'activité) ForeignKey
+function (Fonction professionnelle) ForeignKey
+company (Organisation) ForeignKey
+type (Type de stage d'immersion) ForeignKey
+goal (Objectif) ForeignKey
+reference_person (persone de référence) CharField
+responsibilities (responsabilités) RichTextField
+remark (Remarque) TextField
+
+
+Différence entre "Service utilisateur" et "Employeur"
+=====================================================
+
+Les postes de travail ne devraient-ils pas être offerts par les *employeurs*
+plutot que par les *services utilisateurs*?
+
+:attr:`jobs.Job.provider` is currently a pointer to :class:`JobProvider` but
+shouldn't it point to :class:`Employer` instead?
+
+>>> print(jobs.Job._meta.verbose_name)
+Poste de travail
+
+>>> print(jobs.JobProvider._meta.verbose_name)
+Service utilisateur
+
+>>> print(jobs.Employer._meta.verbose_name)
+Employeur

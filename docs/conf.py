@@ -5,7 +5,7 @@ import lino
 from lino.sphinxcontrib import configure
 configure(globals(), 'lino_book.projects.min9.settings')
 
-spec = """getlino eidreader atelier etgen lino_react lino_noi lino_amici
+spec = """getlino atelier etgen lino_react lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
 lino_avanti"""
 from rstgen.sphinxconf import interproject
