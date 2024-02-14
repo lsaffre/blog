@@ -1,12 +1,15 @@
 from lino import startup
+
 startup('lino_welfare.projects.eupen.settings.demo')
 
 from rstgen import table
 from lino.api.shell import *
 from lino_welfare.modlib.welfare.roles import *
 
-roles = [OfficeOperator, OfficeUser, SepaUser, DebtsUser, LedgerStaff,
-         Supervisor, SiteAdmin]
+roles = [
+    OfficeOperator, OfficeUser, SepaUser, DebtsUser, LedgerStaff, Supervisor,
+    SiteAdmin
+]
 rows = []
 headers = ["Profile"]
 for r in roles:

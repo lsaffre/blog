@@ -9,6 +9,7 @@ class LinoTestCase(TestCase):
 
 
 class BlogTests(LinoTestCase):
+
     def test_all(self):
         self.run_simple_doctests("""
         docs/blog/2013/0316.rst

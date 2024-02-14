@@ -11,8 +11,8 @@ from lino.core.diff import ChangeWatcher
 former = pcsw.ClientStates.former
 # refused = pcsw.ClientStates.refused
 
-qs = pcsw.Coaching.objects.filter(
-    client__client_state=former, end_date__isnull=True)
+qs = pcsw.Coaching.objects.filter(client__client_state=former,
+                                  end_date__isnull=True)
 # qs = pcsw.Coaching.objects.filter(client__client_state=former)
 
 puts("{0} unbeendete Begleitungen ehemaliger Klienten".format(qs.count()))

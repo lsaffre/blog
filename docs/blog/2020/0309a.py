@@ -6,6 +6,7 @@ from nio import AsyncClient
 username = "luc.saffre"
 passwd = getpass.getpass("Password for {}:".format(username))
 
+
 async def main():
     # https://riot.im/app/#/room/#lino-core:matrix.org
     client = AsyncClient("https://matrix.org", username)
@@ -21,5 +22,6 @@ async def main():
         # ignore_unverified_devices=False
     )
     await client.close()
+
 
 asyncio.get_event_loop().run_until_complete(main())

@@ -20,6 +20,7 @@ from PyKCS11 import *
 import platform
 import sys
 
+
 class getData(object):
 
     def __init__(self):
@@ -36,8 +37,8 @@ class getData(object):
 
     def getData(self, slot, name):
         session = self.pkcs11.openSession(slot)
-        o = session.findObjects([(CKA_CLASS, CKO_DATA), (CKA_LABEL, name)])[0]        
-        value = session.getAttributeValue(o,[CKA_VALUE])[0]
+        o = session.findObjects([(CKA_CLASS, CKO_DATA), (CKA_LABEL, name)])[0]
+        value = session.getAttributeValue(o, [CKA_VALUE])[0]
         #print(value)
         text = bytes(value).decode('utf-8')
         print(text)
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     beid.getInfo()
 
     slots = beid.pkcs11.getSlotList()
-    
+
     if len(slots) == 0:
         sys.exit(2)
 

@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
-from atelier.sphinxconf import configure ; configure(globals())
+from atelier.sphinxconf import configure
+
+configure(globals())
 
 import lino
 from lino.sphinxcontrib import configure
+
 configure(globals(), 'lino_book.projects.min9.settings')
 
 spec = """getlino atelier etgen lino_react lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
 lino_avanti"""
 from rstgen.sphinxconf import interproject
+
 interproject.configure(globals(), spec)
 
 # intersphinx_mapping['book'] = ('https://dev.lino-framework.org/', None)
@@ -38,8 +42,8 @@ sigal_base_url = 'https://sigal.saffre-rumma.net'
 # General substitutions.
 project = "Luc's developer blog"
 import datetime
-copyright = '2001-{} Luc Saffre'.format(datetime.date.today().year)
 
+copyright = '2001-{} Luc Saffre'.format(datetime.date.today().year)
 
 # html_title = "Luc's dblog"
 html_short_title = "Home"
@@ -48,19 +52,18 @@ html_logo = "logo2.jpg"
 # extlinks.update(ticket=('http://trac.lino-framework.org/ticket/%s', '#'))
 # extlinks.update(ticket=('javascript:alert("Sorry, linking to tickets (%s) is not yet implemented!")', '#'))
 # extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#'))
-extlinks.update(ticket=(
-    'https://jane.mylino.net/#/api/tickets/AllTickets/%s', '#%s'))
+extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s',
+                        '#%s'))
 extlinks.update({
-    'issue': (
-        'http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
-    'checkin': (
-        'http://code.google.com/p/lino/source/detail?r=%s', None),
+    'issue': ('http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
+    'checkin': ('http://code.google.com/p/lino/source/detail?r=%s', None),
     'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', '%s'),
-    'linosrcref': ('https://gitlab.com/lino-framework/lino/blob/master/%s', '%s'),
+    'linosrcref':
+    ('https://gitlab.com/lino-framework/lino/blob/master/%s', '%s'),
     'extjs': ('http://www.sencha.com/deploy/dev/docs/?class=%s', None),
     'extux': ('http://extjs-ux.org/ext-docs/?class=%s', None),
-    'djangoticket': (
-        'http://code.djangoproject.com/ticket/%s', 'Django ticket #%s'),
+    'djangoticket':
+    ('http://code.djangoproject.com/ticket/%s', 'Django ticket #%s'),
     'welfare': ('https://welfare.lino-framework.org%s.html', None),
     'lino': ('https://www.lino-framework.org%s.html', None),
     # 'welfareticket': (
@@ -71,15 +74,12 @@ extlinks.update({
     #     'https://welfare-userman.lino-framework.org/fr%s.html', ''),
 })
 
-
 blogref_format = "https://luc.lino-framework.org/blog/%Y/%m%d.html"
-
 
 inheritance_graph_attrs = dict(rankdir="TB")
 # inheritance_graph_attrs.update(size='"12.0, 16.0"')
 inheritance_graph_attrs.update(size='"48.0, 64.0"')
 inheritance_graph_attrs.update(fontsize=14, ratio='compress')
-
 
 # extensions += ['yasfb']
 # extensions += ['sphinxcontrib.feed']
@@ -96,6 +96,7 @@ feed_description = "Luc's developer blog"
 # slide_numbers = True
 
 import os
+
 os.environ['LC_TIME'] = 'en_GB.UTF-8'
 
 # html_context.update(public_url='https://luc.lino-framework.org')

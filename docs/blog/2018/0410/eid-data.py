@@ -20,6 +20,7 @@ from PyKCS11 import *
 import platform
 import sys
 
+
 class BEID(object):
 
     def __init__(self):
@@ -37,8 +38,7 @@ class BEID(object):
         return self.pkcs11.openSession(slot)
 
     def getData(self, session, name, filename=None):
-        lst = session.findObjects(
-            [(CKA_CLASS, CKO_DATA), (CKA_LABEL, name)])
+        lst = session.findObjects([(CKA_CLASS, CKO_DATA), (CKA_LABEL, name)])
         if len(lst) == 0:
             return
         o = lst[0]
@@ -58,14 +58,14 @@ if __name__ == '__main__':
     beid.show_info()
 
     slots = beid.pkcs11.getSlotList()
-    
+
     if len(slots) == 0:
         sys.exit(2)
 
     for slot in slots:
         try:
             sess = beid.open_session(slot)
-            
+
             # print(dir(sess))
             objs = sess.findObjects([(CKA_CLASS, CKO_DATA)])
             # print(len(objs))
@@ -96,7 +96,7 @@ if __name__ == '__main__':
             # beid.getData(sess, 'address_street_and_number')
             # beid.getData(sess, 'ADDRESS_FILE')
             # beid.getData(sess, 'date_and_country_of_protection')
-            
+
             # beid.getData(sess, 'ResidencePermitType')
             # beid.getData(sess, 'remark1')
             # beid.getData(sess, 'remark2')

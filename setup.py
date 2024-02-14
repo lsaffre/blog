@@ -1,4 +1,5 @@
 from setuptools import setup
+
 SETUP_INFO = dict()
 SETUP_INFO.update(test_suite='tests')
 SETUP_INFO.update(url='https://github.com/lsaffre/blog')

@@ -59,8 +59,6 @@ with open(os.path.expanduser('~/Downloads/JNL.csv'), 'r') as csvfile:
                 print(tpl.format(*row))
                 # print(', '.join(row))
 
-
 #print("# Seen aliases:", seen_aliases)
 print("# Seen views:", seen_views)
 print("# Seen groups:", seen_groups)
-

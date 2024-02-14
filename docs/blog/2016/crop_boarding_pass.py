@@ -5,9 +5,9 @@ from argh import dispatch_command, arg, CommandError
 
 
 @dispatch_command
-@arg('filenames', 
-     help="The pdf files to crop.")
-@arg('--bottom', default=None, 
+@arg('filenames', help="The pdf files to crop.")
+@arg('--bottom',
+     default=None,
      help='Height of bottom area to crop. Default is half of page.')
 def main(bottom=None, *filenames):
     output = PdfFileWriter()

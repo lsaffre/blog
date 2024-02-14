@@ -32,4 +32,3 @@ class MyPartnerDetail(DefaultPartnerDetail, PartnerDetailMixin):
 dtl = MyPartnerDetail()
 for k in dtl.main.split():
     print(k, getattr(dtl, k, "undefined"))
-

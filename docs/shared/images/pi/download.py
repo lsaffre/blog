@@ -11,7 +11,7 @@ from pathlib import Path
 
 # TODO: from lino.core.constants import ICON_NAMES
 ICON_NAMES = ("external-link", "filter", "plus", "plus-circle", "user",
-    "refresh", "trash", "bell", "times-circle", "envelope", "copy")
+              "refresh", "trash", "bell", "times-circle", "envelope", "copy")
 
 dest = Path(__file__).parent.absolute()
 root = "https://raw.githubusercontent.com/primefaces/primeicons/master/raw-svg"
@@ -21,5 +21,5 @@ for name in ICON_NAMES:
     print("Downloading {} from primeicons master...".format(filename))
     r = requests.get(url, stream=True)
     with open(dest / filename, "wb") as f:
-        for chunk in r.iter_content(chunk_size=16*1024):
+        for chunk in r.iter_content(chunk_size=16 * 1024):
             f.write(chunk)
