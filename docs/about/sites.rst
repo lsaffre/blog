@@ -3,16 +3,6 @@ My sites
 ========
 
 
-.. _lf:
-
-lino-framework.org
-------------------
-
-`lino-framework.org <http://www.lino-framework.org>`__ is the primary
-domain of the Lino project.  It is hosted in collaboration with
-`Active Systems OÜ <http://active.ee>`_.
-
-
 .. _sr:
 
 saffre-rumma.net
