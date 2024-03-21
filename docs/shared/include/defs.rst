@@ -3,6 +3,10 @@
   :class: pi-button
   :alt: copy button
 
+.. |save|  image:: /../docs/shared/images/pi/save.svg
+  :class: pi-button
+  :alt: save button
+
 .. |external-link|  image:: /../docs/shared/images/pi/external-link.svg
   :class: pi-button
   :alt: external link
@@ -76,6 +80,7 @@
   :height: 1em
 
 .. |print|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/printer.png?inline=false
+  :height: 1em
 
 
 .. .. |refresh|  image:: /../docs/shared/images/buttons/refresh.png
