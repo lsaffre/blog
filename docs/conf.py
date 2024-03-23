@@ -8,9 +8,10 @@ from lino.sphinxcontrib import configure
 
 configure(globals(), 'lino_book.projects.min9.settings')
 
-spec = """getlino atelier etgen lino_react lino_noi lino_amici
+
+spec = """getlino atelier etgen lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
-lino_avanti eidreader"""
+lino_avanti eidreader"""  # lino_react 
 from rstgen.sphinxconf import interproject
 
 interproject.configure(globals(), spec)
