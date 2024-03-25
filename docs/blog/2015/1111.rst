@@ -5,7 +5,7 @@ Wednesday, November 11, 2015
 Avoid line breaks in formatted amounts
 ======================================
 
-Gerd reported :ticket:`611`. 
+Gerd reported :ticket:`611`.
 The solution was easy, I just added this
 to their :xfile:`settings.py` file::
 
@@ -146,9 +146,9 @@ Workaround is to wrap them into a ``<div>``:
 Cannot reuse detail_layout
 ==========================
 
-The following error came in :mod:`lino_cosi.lib.sales` when I
+The following error came in :mod:`lino_cosi.lib.trading` when I
 
-    Exception: Cannot reuse detail_layout of <class 'lino_cosi.lib.sales.models.ItemsByInvoicePrint'> for <class 'lino_cosi.lib.sales.models.InvoiceItemsByProduct'>
+    Exception: Cannot reuse detail_layout of <class 'lino_cosi.lib.trading.models.ItemsByInvoicePrint'> for <class 'lino_cosi.lib.trading.models.InvoiceItemsByProduct'>
 
 The explanation was probably that the `InvoiceItems` table was never
 used.  Since the table who defined the `detail_layout` was never used,
@@ -187,20 +187,14 @@ IllegalText: The <text:section> element does not allow text
 ===========================================================
 
 I had this error message and wrote a test case in
-:ref:`specs.sales` to reproduce it.
+:ref:`dg.plugins.trading` to reproduce it.
 
 The problem is in :mod:`lino.utils.html2odf`. Actually we just
 stumbled over one of the probably many situations which are not yet
-supported.  I started a section "Not yet supported" in this document. 
+supported.  I started a section "Not yet supported" in this document.
 
 TODO: is there really no existing library for this task? The only
 approaches I saw call libreoffice in headless mode to do the
 conversion. Which sounds inappropriate for our situation where we must
 glue together fragments from different sources. Also note that we use
 :mod:`appy.pod` to do the actual generation.
-
-
-
-
-
-
