@@ -8,8 +8,8 @@ In my yesterday's changes I didn't like the way :ref:`cosi` was expecting a
 hoster to specify which VAT declaration plugin to install.  My quick solution
 yesterday asked something like this in your local :xfile:`settings.py` file::
 
-    def get_installed_apps(self):
-        yield super(Site, self).get_installed_apps()
+    def get_installed_plugins(self):
+        yield super(Site, self).get_installed_plugins()
         yield 'lino_xl.lib.eevat'
 
     def setup_plugins(self):
@@ -31,7 +31,7 @@ Now it says::
 
 Until now it wasn't easy to make it that easy because
 :meth:`lino.core.site.Site.setup_plugins` is being called long after
-:meth:`lino.core.site.Site.get_installed_apps`.  IOW it was not easy to say to
+:meth:`lino.core.site.Site.get_installed_plugins`.  IOW it was not easy to say to
 one plugin (vat) that it should load (or not) some other plugin depending on
 the value of a configuration setting.
 

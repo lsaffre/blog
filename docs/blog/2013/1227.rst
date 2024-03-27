@@ -17,7 +17,7 @@ to maintain.
 
 My :ref:`djangosite` approach is more powerful... but also more
 revolutionary.  Especially I don't see how we could avoid to define
-the installed apps by overriding the :setting:`get_installed_apps` of
+the installed apps by overriding the :setting:`get_installed_plugins` of
 a `Site` class.  And we know how conservative Django is.
 
 So basically everything is okay, I don't hope to convert Django to do
@@ -36,20 +36,20 @@ other developers understand what i mean.
 
 .. currentmodule:: djangosite.djangosite_site
 
-:setting:`get_installed_apps` is now allowed to yield items which are
+:setting:`get_installed_plugins` is now allowed to yield items which are
 generators.  This makes aplication code more intuitive.  Until today
 you had to write::
 
-    def get_installed_apps(self):
-        for a in super(Site, self).get_installed_apps():
+    def get_installed_plugins(self):
+        for a in super(Site, self).get_installed_plugins():
             yield a
         yield 'django.contrib.contenttypes'
         ...
 
 Now you can write::
 
-    def get_installed_apps(self):
-        yield super(Site, self).get_installed_apps()
+    def get_installed_plugins(self):
+        yield super(Site, self).get_installed_plugins()
         yield 'django.contrib.contenttypes'
         ...
 
