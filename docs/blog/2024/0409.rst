@@ -1,0 +1,108 @@
+:date: 2024-04-09
+
+====================================================
+Helo command rejected: need fully-qualified hostname
+====================================================
+
+Tuesday, April 9, 2024
+
+Uff! :ticket:`5535` (How to send emails from a developer environment) is finally
+done! Today I learned a lot, but the only visible result is this blog post and
+two paragraphs in :ref:`hg.email`.
+
+For my tests, I wrote a script :file:`quick_mail_test.py` in the :ref:`noi1r
+<dg.projects.noi1r>` demo project. My email settings are  of course not
+published, I store them in my :mod:`lino_local.settings` module.
+
+Problem: When I try to send emails from my developer environment, our mail
+server refuses them saying "Helo command rejected: need fully-qualified
+hostname".
+
+That's because in our :file:`/etc/postfix/main.cf` we have::
+
+  smtpd_helo_restrictions = reject_invalid_helo_hostname,
+          reject_non_fqdn_helo_hostname,
+          reject_unknown_helo_hostname
+
+I got my mail to pass by commenting out the ``smtpd_helo_restrictions`` in the
+:file:`/etc/postfix/main.cf` file. But that's not a solution. These restrictions
+are probably a good choice, and they don't cause Thunderbird to fail. So the
+question is: what does Thunderbird do differently from Django when sending
+emails?
+
+I increased the verbosity of smtpd (in :file:`/etc/postfix/master.cf`) and then
+observed our :file:`/var/log/mail.log`. But that didn't help. Postfix doesn't
+seem to consider the HELO command something worth to log. Here are some
+excerpts.
+
+Submit an email from my Thunderbird::
+
+  13:25:12 xyz postfix/submission/smtpd[944041]: connect from 211-169-190-90.dyn.estpak.ee[90.190.169.211]
+  13:25:13 xyz postfix/submission/smtpd[944041]: Anonymous TLS connection established from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  13:25:13 xyz postfix/submission/smtpd[944041]: F22F2209BB: client=211-169-190-90.dyn.estpak.ee[90.190.169.211], sasl_method=PLAIN, sasl_username=luc
+  13:25:14 xyz postfix/cleanup[944055]: F22F2209BB: message-id=<b52dde5e-165a-4b73-89aa-bb1bde876303@saffre-rumma.net>
+  13:25:14 xyz opendkim[573]: F22F2209BB: DKIM-Signature field added (s=mail, d=saffre-rumma.net)
+  13:25:14 xyz postfix/qmgr[943857]: F22F2209BB: from=<luc@saffre-rumma.net>, size=1308, nrcpt=1 (queue active)
+  13:25:14 xyz postfix/smtp[944057]: F22F2209BB: to=<luc.saffre@gmx.net>, relay=mx01.emig.gmx.net[212.227.17.5]:25, delay=1, delays=0.38/0.02/0.28/0.35, dsn=2.0.0, status=sent (250 Requested mail action okay, completed: id=1MzjvV-1sgRrf2LZJ-0152Y8)
+  13:25:14 xyz postfix/qmgr[943857]: F22F2209BB: removed
+  13:25:19 xyz postfix/submission/smtpd[944041]: disconnect from 211-169-190-90.dyn.estpak.ee[90.190.169.211] ehlo=2 starttls=1 auth=1 mail=1 rcpt=1 data=1 quit=1 commands=8
+
+TB asking for new mail::
+
+  13:25:46 xyz dovecot: pop3-login: Login: user=<luc>, method=PLAIN, rip=90.190.169.211, lip=51.68.71.43, mpid=944130, TLS, session=<NOJbWKcV3tRavqnT>
+  13:25:47 xyz dovecot: pop3(luc)<944130><NOJbWKcV3tRavqnT>: Disconnected: Logged out top=0/0, retr=1/12373, del=1/1, size=12355
+
+Submit via quick_mail_test.py with EMAIL_USERNAME="luc"::
+
+  13:26:02 xyz postfix/submission/smtpd[944041]: connect from 211-169-190-90.dyn.estpak.ee[90.190.169.211]
+  13:26:02 xyz postfix/submission/smtpd[944041]: Anonymous TLS connection established from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  13:26:03 xyz postfix/submission/smtpd[944041]: NOQUEUE: reject: RCPT from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    504 5.5.2 <yoga>: Helo command rejected: need fully-qualified hostname; from=<root@localhost> to=<luc.saffre@gmx.net> proto=ESMTP helo=<yoga>
+  13:26:03 xyz postfix/submission/smtpd[944041]: disconnect from 211-169-190-90.dyn.estpak.ee[90.190.169.211] ehlo=2 starttls=1 mail=1 rcpt=0/1 rset=1 quit=1 commands=6/7
+
+Submit via quick_mail_test.py with EMAIL_USERNAME=""::
+
+  13:29:47 xyz postfix/submission/smtpd[944183]: connect from 211-169-190-90.dyn.estpak.ee[90.190.169.211]
+  13:29:49 xyz postfix/submission/smtpd[944183]: Anonymous TLS connection established from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  13:29:49 xyz postfix/submission/smtpd[944183]: NOQUEUE: reject: RCPT from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    504 5.5.2 <yoga>: Helo command rejected: need fully-qualified hostname; from=<root@localhost> to=<luc.saffre@gmx.net> proto=ESMTP helo=<yoga>
+  13:29:49 xyz postfix/submission/smtpd[944183]: disconnect from 211-169-190-90.dyn.estpak.ee[90.190.169.211] ehlo=2 starttls=1 mail=1 rcpt=0/1 rset=1 quit=1 commands=6/7
+  13:29:57 xyz postfix/smtps/smtpd[943972]: warning: unknown[194.169.175.10]: SASL LOGIN authentication failed: UGFzc3dvcmQ6
+  13:30:03 xyz postfix/smtps/smtpd[943972]: lost connection after AUTH from unknown[194.169.175.10]
+  13:30:03 xyz postfix/smtps/smtpd[943972]: disconnect from unknown[194.169.175.10] ehlo=1 auth=0/1 rset=1 commands=2/3
+
+Submit via quick_mail_test.py with EMAIL_USERNAME=""::
+
+  16:02:48 xyz postfix/submission/smtpd[945692]: connect from 211-169-190-90.dyn.estpak.ee[90.190.169.211]
+  16:02:48 xyz postfix/submission/smtpd[945692]: Anonymous TLS connection established from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+  16:02:48 xyz postfix/submission/smtpd[945692]: NOQUEUE: reject: RCPT from 211-169-190-90.dyn.estpak.ee[90.190.169.211]:
+    504 5.5.2 <yoga>: Helo command rejected: need fully-qualified hostname; from=<noreply@saffre-rumma.net> to=<luc.saffre@gmx.net> proto=ESMTP helo=<yoga>
+  16:02:48 xyz postfix/submission/smtpd[945692]: disconnect from 211-169-190-90.dyn.estpak.ee[90.190.169.211] ehlo=2 starttls=1 mail=1 rcpt=0/1 rset=1 quit=1 commands=6/7
+
+
+But then I had the idea to increase Thunderbird's logging verbosity. Here is how
+to do that:
+
+- Open :menuselection:`Preferences --> Settings`
+- Search for "Config editor" and change ``mailnews.smtp.loglevel`` from "Warn" to "All"
+- Hit :kbd:`Ctrl+Shift+J` to open the Error Console
+
+And there is the answer to my question: Thunderbird sends the following FQDN in the EHLO request::
+
+  mailnews.smtp: C: EHLO [192.168.1.115]
+
+See also the two paragraphs in :ref:`hg.email`.
+
+Thanks to
+=========
+
+- http://khelearning168.blogspot.com/p/enabling-verbose-logs-default-mail-log.html
+- https://realpython.com/python-send-email
+- https://aws.amazon.com/compare/the-difference-between-ssl-and-tls
+- https://wiki.mozilla.org/MailNews:Logging
+- https://docs.python.org/3/library/smtplib.html
+- https://blog.gitguardian.com/how-to-handle-secrets-in-python/

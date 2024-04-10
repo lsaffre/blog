@@ -11,7 +11,7 @@ configure(globals(), 'lino_book.projects.min9.settings')
 
 spec = """getlino atelier etgen lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
-lino_avanti eidreader"""  # lino_react 
+lino_avanti eidreader"""  # lino_react
 from rstgen.sphinxconf import interproject
 
 interproject.configure(globals(), spec)
@@ -19,7 +19,7 @@ interproject.configure(globals(), spec)
 # intersphinx_mapping['book'] = ('https://dev.lino-framework.org/', None)
 # intersphinx_mapping['lf'] = ('https://www.lino-framework.org/', None)
 # intersphinx_mapping['cg'] = ('https://community.lino-framework.org/', None)
-# intersphinx_mapping['hg'] = ('https://hosting.lino-framework.org/', None)
+intersphinx_mapping['hg'] = ('https://hosting.lino-framework.org/', None)
 
 intersphinx_mapping['hw'] = ('https://hw.saffre-rumma.net/', None)
 intersphinx_mapping['www'] = ('https://www.saffre-rumma.net/', None)
