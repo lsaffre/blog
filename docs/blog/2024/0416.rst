@@ -1,0 +1,75 @@
+:date: 2024-04-16
+
+==============================================
+Fictive VAT numbers are different on GitLab
+==============================================
+
+April 16--17, 2024
+
+I'm investigating for :ticket:`5542` (Two VAT doctests fail because generated
+VAT numbers differ).
+
+The (pseudo) random VAT numbers are assigned by
+:meth:`lino_xl.lib.vat.VatNumberManager.generate_vid`. This is the only place in
+the code where the random module is used (there is another import in users
+plugin to generate the verification code, but this is never called during
+:cmd:`inv prep`). I added a diagnostic log message in the :meth:`generate_vid
+<lino_xl.lib.vat.VatNumberManager.generate_vid>` method::
+
+  dd.logger.info("20240416 generated VAT id {} for {}".format(self.obj.vat_id, self.obj))
+
+Then I run :cmd:`inv prep --verbose`. The first demo database to get prepared is
+``pierre``. The first message on my machine is always the same::
+
+  20240416 generated VAT id BE 7088.996.857 for Bäckerei Ausdemwald
+
+It is also the first message on `GitLab
+<https://gitlab.com/lino-framework/book/-/jobs/6640438653>`__, but there it has
+another VAT number::
+
+  20240416 generated VAT id BE 2914.517.428 for Bäckerei Ausdemwald
+
+What causes this difference? That's the question!
+
+The :meth:`seed` method initializes the random number generator, and if you use
+the same seed value twice you will get the same random number twice. I verify
+this in :ref:`vat.generate_id` (which passes both on my machine and on GitLab).
+
+Calling :meth:`seed` without argument would take the system time (and therefore
+yield different random numbers). But we (deliberately) call ``random.seed(1)``
+at the global context of :mod:`lino_xl.lib.vat.choicelists`, i.e. when that
+module is imported. I added another log message at that place::
+
+  20240417 random.seed(1)
+
+NB: Until now the import had been conditional (only when
+``dd.is_installed("vat")``), I removed this condition because it's not needed
+and because it adds complexity. But that didn't fix our problem.
+
+One theoretic possibility was that for some reason the sorting order of the
+business partners might differ when they get their VAT id.  By comparing the
+output between my machine and GitLab we can now exclude this possibility (IOW we
+are advancing ;-)
+
+I also had a closer look at the code in :mod:`lino_xl.lib.vat.choicelists` and
+noticed this::
+
+  for cc, length in {
+          "HR": 11,
+          "DK": 8,
+          "EE": 9,
+          "FI": 8,
+          "FR": 11,
+          "DE": 9,
+          "EL": 9,
+          "HU": 8,
+          "IT": 11,
+          "LV": 11,
+          "LT": 12,
+          "LU": 8,
+  }.items():
+      vat_origins.add_item(cc, VatOrigin(cc, length))
+
+Which means that :class:`VatOrigin` objects are instantiated in an order that
+can vary. I don't say that this is the culprit, but it is suspicious... I made a
+series of bold simplifications to the code. Result: none.
