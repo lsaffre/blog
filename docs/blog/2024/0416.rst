@@ -9,42 +9,75 @@ April 16--17, 2024
 I'm investigating for :ticket:`5542` (Two VAT doctests fail because generated
 VAT numbers differ).
 
-The (pseudo) random VAT numbers are assigned by
-:meth:`lino_xl.lib.vat.VatNumberManager.generate_vid`. This is the only place in
-the code where the random module is used (there is another import in users
-plugin to generate the verification code, but this is never called during
-:cmd:`inv prep`). I added a diagnostic log message in the :meth:`generate_vid
-<lino_xl.lib.vat.VatNumberManager.generate_vid>` method::
+The ``demo`` fixture of the ``vat`` plugin assigns a fictive and randomly
+generated (but syntactically valid) VAT number to each :term:`business partner`.
+For some reason, the generated VAT numbers differ between my computer and GitLab
+CI, causing two doctests (:file:`docs/plugins/eevat.rst` and
+:file:`docs/plugins/bevats.rst`) to fail.
+
+What causes this difference? That's the question of :ticket:`5542`!
+
+The VAT numbers are assigned by :meth:`VatNumberManager.generate_vid
+<lino_xl.lib.vat.VatNumberManager.generate_vid>`. I added a diagnostic log
+message in this method::
 
   dd.logger.info("20240416 generated VAT id {} for {}".format(self.obj.vat_id, self.obj))
 
-Then I run :cmd:`inv prep --verbose`. The first demo database to get prepared is
-``pierre``. The first message on my machine is always the same::
+Then I run :cmd:`inv prep` with the new :option:`--verbose <inv prep --verbose>`
+option. The first demo database to get prepared is ``pierre``. The resulting
+messages are always the same::
 
   20240416 generated VAT id BE 7088.996.857 for Bäckerei Ausdemwald
+  20240416 generated VAT id BE 4685.739.309 for Bäckerei Mießen
+  20240416 generated VAT id BE 4181.505.692 for Bäckerei Schmitz
+  20240416 generated VAT id BE 9045.438.159 for Garage Mergelsberg
+  20240416 generated VAT id NL 220.876.686B01 for Donderweer BV
+  20240416 generated VAT id NL 451.948.587B01 for Van Achter NV
+  20240416 generated VAT id DE 143.956.862 for Hans Flott & Co
+  20240416 generated VAT id DE 135.079.295 for Bernd Brechts Bücherladen
+  20240416 generated VAT id DE 138.433.397 for Reinhards Baumschule
+  20240416 generated VAT id FR 86.915.334.564 for Moulin Rouge
+  20240416 generated VAT id FR 66.435.589.280 for Auto École Verte
+  20240416 generated VAT id EE 848.217.541 for Maksu- ja Tolliamet
+  20240416 generated VAT id BE 4018.258.949 for Electrabel Customer Solutions
 
-It is also the first message on `GitLab
-<https://gitlab.com/lino-framework/book/-/jobs/6640438653>`__, but there it has
-another VAT number::
+The same messages also come on `GitLab
+<https://gitlab.com/lino-framework/book/-/jobs/6640438653>`__, but with other
+VAT numbers::
 
   20240416 generated VAT id BE 2914.517.428 for Bäckerei Ausdemwald
-
-What causes this difference? That's the question!
+  20240416 generated VAT id BE 8750.836.192 for Bäckerei Mießen
+  20240416 generated VAT id BE 1958.116.531 for Bäckerei Schmitz
+  20240416 generated VAT id BE 4534.589.652 for Garage Mergelsberg
+  20240416 generated VAT id NL 237.725.353B01 for Donderweer BV
+  20240416 generated VAT id NL 643.080.485B01 for Van Achter NV
+  20240416 generated VAT id DE 928.188.312 for Hans Flott & Co
+  20240416 generated VAT id DE 593.748.463 for Bernd Brechts Bücherladen
+  20240416 generated VAT id DE 618.180.575 for Reinhards Baumschule
+  20240416 generated VAT id FR 65.449.289.186 for Moulin Rouge
+  20240416 generated VAT id FR 40.268.455.901 for Auto École Verte
+  20240416 generated VAT id EE 211.892.074 for Maksu- ja Tolliamet
+  20240416 generated VAT id BE 7659.012.310 for Electrabel Customer Solutions
 
 The :meth:`seed` method initializes the random number generator, and if you use
 the same seed value twice you will get the same random number twice. I verify
 this in :ref:`vat.generate_id` (which passes both on my machine and on GitLab).
 
+The :meth:`generate_vid <lino_xl.lib.vat.VatNumberManager.generate_vid>`  is the
+only place in Lino where Python's :mod:`random` module is used (there is another
+import in the ``users`` plugin to generate the verification code, but this is
+never called during :cmd:`inv prep`).
+
 Calling :meth:`seed` without argument would take the system time (and therefore
-yield different random numbers). But we (deliberately) call ``random.seed(1)``
+yield different random numbers). But we deliberately call ``random.seed(1)``
 at the global context of :mod:`lino_xl.lib.vat.choicelists`, i.e. when that
 module is imported. I added another log message at that place::
 
   20240417 random.seed(1)
 
-NB: Until now the import had been conditional (only when
-``dd.is_installed("vat")``), I removed this condition because it's not needed
-and because it adds complexity. But that didn't fix our problem.
+NB: Until now the import and the ``random.seed(1)`` call had been conditional
+(only when ``dd.is_installed("vat")``), I removed this condition because it's
+not needed and because it adds complexity. But that didn't fix our problem.
 
 One theoretic possibility was that for some reason the sorting order of the
 business partners might differ when they get their VAT id.  By comparing the
