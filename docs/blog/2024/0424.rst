@@ -1,0 +1,60 @@
+:date: 2024-04-24
+
+=========================
+Wednesday, April 24, 2024
+=========================
+
+:ticket:`5570` (Jane doesn't send email notifications) is not trivial. It was
+(of course) caused by my changes in the :term:`background task runner`. I am
+really still too naive regarding asynchronous programming!
+
+Should we add test coverage for asynchronous operations.  A unit test case in
+noi1r that creates a :xfile:`log` directory (in order to activate the socket
+logger), launches a :cmd:`pm linod` process and some :term:`django-admin
+command` and then checks the content of the :xfile:`lino.log` file...
+
+Here is an excerpt from :mod:`lino_xl.lib.invoicing.models`::
+
+
+  class Task(Runnable, UserAuthored):
+
+      target_journal = dd.ForeignKey(
+          'ledger.Journal',
+          verbose_name=_("Target journal"),
+          related_name="invoicing_task_targets")
+
+      def __str__(self):
+          return _("Make {}").format(self.target_journal)
+
+  class Runnable(Sequenced, RecurrenceSet):
+
+      async def start_task(self, ar):
+          ...
+
+Arguments: (Unprintable Task(pk=1,error=SynchronousOnlyOperation('You cannot
+call this from an async context - use a thread or sync_to_async.'),)
+
+Do we really need the asynchronous versions of
+:meth:`ar.debug <lino.core.requests.BaseRequest.debug>`,
+:meth:`ar.info <lino.core.requests.BaseRequest.info>` and
+:meth:`ar.warning <lino.core.requests.BaseRequest.warning>`?
+
+Edit 20240426: Yes we do. Because these methods potentially lead to I/O
+operations. When calling them from an async context, code execution would
+potentially continue before they have done their work. I tried to reproduce the
+problem but without success. Maybe the problem exists only with Django?
+
+.. literalinclude:: 20240426.py
+
+"If you want to call a part of Django that is still synchronous, you will need
+to wrap it in a sync_to_async() call. If you accidentally try to call a part of
+Django that is synchronous-only from an async view, you will trigger Django’s
+asynchronous safety protection to protect your data from corruption."
+
+"Transactions do not yet work in async mode. If you have a piece of code that
+needs transactions behavior, we recommend you write that piece as a single
+synchronous function and call it using sync_to_async()."
+
+- https://stackoverflow.com/questions/45842926/python-asynchronous-logging
+- https://docs.djangoproject.com/en/5.0/topics/async/
+- https://discuss.python.org/t/support-async-logging-module/50130
