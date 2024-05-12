@@ -104,18 +104,18 @@ observed. :ticket:`600`.
 Fixed some test failures in Welfare
 ===================================
 
-I fixed some failures in :ref:`welfare.specs.ledger` which were caused
+I fixed some failures in :ref:`welfare.specs.accounting` which were caused
 by Hamza's changes. Actually he wanted to look at them. 
 
 Since ``sepa`` now needs ``ledger``, Hamza had to
 change the order of these plugins in `get_installed_plugins`. 
 
-This caused :mod:`lino_welfare.modlib.ledger.fixtures.demo` to fail
+This caused :mod:`lino_welfare.modlib.accounting.fixtures.demo` to fail
 because it was now being loaded before
 :mod:`lino_xl.lib.sepa.fixtures.demo`. But the latter creates the
 contacts with an IBAN account number needed by the former.  So I moved
 the creating of incoming demo invoices from
-:mod:`lino_welfare.modlib.ledger.fixtures.demo` to
+:mod:`lino_welfare.modlib.accounting.fixtures.demo` to
 :mod:`lino_welfare.modlib.sepa.fixtures.demo`.
 
 Another series of failures was due to the fact that demo user

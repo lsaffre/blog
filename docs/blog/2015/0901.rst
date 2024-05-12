@@ -12,16 +12,16 @@ except `SiteAdmin`.  But in practice it did: most actors in these
 modules did not yet have their `required_roles` set. Fixed.
 
 I ran the following script to load
-:mod:`lino_welfare.modlib.ledger.fixtures.std` into their database::
+:mod:`lino_welfare.modlib.accounting.fixtures.std` into their database::
 
-    from lino_welfare.modlib.ledger.fixtures.std import objects
+    from lino_welfare.modlib.accounting.fixtures.std import objects
     for obj in objects():
         obj.full_clean()
         obj.save()
 
 
 During the day Gerd reported a similar detail: :ticket:`480`.
-Indeed :class:`lino.modlib.ledger.ui.DebtsByPartner` did not have 
+Indeed :class:`lino.modlib.accounting.ui.DebtsByPartner` did not have 
 `required_roles` set.
 
 This made me discover and fix a subtle framework bug:
@@ -33,7 +33,7 @@ Having set `required_roles` on the table, the button did not
 disappear, but clicking on it no longer opened the window with the
 table, only an error message in the JavaScript console::
     
-  TypeError: Lino.ledger.DebtsByPartner.grid is undefined    
+  TypeError: Lino.accounting.DebtsByPartner.grid is undefined    
     
 Explanation: the button was rendered since it did not inherit the
 requirements.

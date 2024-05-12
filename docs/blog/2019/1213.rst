@@ -6,7 +6,7 @@ Friday, December 13, 2019
 
 I upgraded our own :ref:`cosi` production site, which made me discover a bug.
 
-I had reviewed the names and values for :class:`lino_xl.lib.ledger.CommonAccounts`
+I had reviewed the names and values for :class:`lino_xl.lib.accounting.CommonAccounts`
 (`commit <https://github.com/lino-framework/xl/commit/f3f4c54d6a49de3a37c2239416c4338252ea06a2#diff-0f305d08e906793950f4cb18ce44a786>`__)
 and :class:`lino_xl.lib.vat.VatClasses`
 (`commit <https://github.com/lino-framework/xl/commit/f3f4c54d6a49de3a37c2239416c4338252ea06a2#diff-ec62eebf936040bd8ac09a880e7d0f42>`__).
@@ -24,7 +24,7 @@ As expected, this caused a series of error messages:
 So this change requires the following code in the :xfile:`restore.py`::
 
   from lino.api import rt
-  rt.models.ledger.CommonAccounts.old2new = {
+  rt.models.accounting.CommonAccounts.old2new = {
     '4400' : '4100', # suppliers
     '4550' : '4800', # clearings
     '4600' : '4500', # tax_offices

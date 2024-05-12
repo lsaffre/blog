@@ -19,7 +19,7 @@ But how to avoid this pitfall for other application developers? Actually the
 ledger plugin does not need to get installed explicitly because it is
 automatically installed by invoicing and vat.
 
-The :mod:`lino_xl.lib.ledger` plugin has a complex :meth:`setup_main_menu
+The :mod:`lino_xl.lib.accounting` plugin has a complex :meth:`setup_main_menu
 <lino.core.plugin.Plugin.setup_main_menu>` method which should run before that
 of the invoicing plugin.
 
@@ -53,16 +53,16 @@ For example :mod:`lino.modlib.checkdata` sorts its
 :mod:`lino.modlib.printing` sorts its
 :class:`BuildMethods <lino.modlib.printing.BuildMethods>`
 and
-:mod:`lino_xl.lib.ledger` sorts its :class:`CommonAccounts
-<lino_xl.lib.ledger.CommonAccounts>` like this.
+:mod:`lino_xl.lib.accounting` sorts its :class:`CommonAccounts
+<lino_xl.lib.accounting.CommonAccounts>` like this.
 
 Note that :meth:`pre_site_startup <lino.core.plugin.Plugin.pre_site_startup>` is
-too early for sorting the choicelists, at least for :mod:`lino_xl.lib.ledger`
+too early for sorting the choicelists, at least for :mod:`lino_xl.lib.accounting`
 because you can have lazy voucher type definitions which get added only
 afterwards.
 
 Note that :mod:`lino_xl.lib.orders` sorts
-:class:`lino_xl.lib.ledger.JournalGroups`, i.e. a choicelist defined in another
+:class:`lino_xl.lib.accounting.JournalGroups`, i.e. a choicelist defined in another
 plugin. That's also possible.
 
 Note the sorting order of :class:`lino_xl.lib.cal.EntryStates` in

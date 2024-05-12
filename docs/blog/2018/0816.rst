@@ -63,17 +63,17 @@ entering purchase invoices which are half a year old, she didn't want
 Lino to suggest :func:`dd.today` as the entry date for each new
 invoice.  Also for suppliers having an empty :attr:`purchase_account`
 Lino was suggesting the rather arbitrary account I chose as the
-:attr:`base_account <lino_xl.lib.ledger.TradeTypes.base_account>` for
+:attr:`base_account <lino_xl.lib.accounting.TradeTypes.base_account>` for
 purchases.
 
 I added the notion of "Waiting account": a new choice ``waiting`` in
-:attr:`lino_xl.lib.ledger.CommonAccounts` and changed
+:attr:`lino_xl.lib.accounting.CommonAccounts` and changed
 :class:`lino_xl.lib.vat.VatDocument` so that it uses this as the
 default account (instead of the TradeType's :attr:`main_account
-<lino_xl.lib.ledger.TradeTypes.main_account>`).
+<lino_xl.lib.accounting.TradeTypes.main_account>`).
 
 As for the entry date I used the recently discovered approach of using
-a new database model :class:`lino_xl.lib.ledger.LedgerInfo` with a
+a new database model :class:`lino_xl.lib.accounting.LedgerInfo` with a
 OneToOneField (similar to :class:`lino_xl.lib.invoicing.SalesRule`,
 see :doc:`0712`).  Before that date I would have used
 :func:`dd.inject_field <lino.core.fields.inject_field>` in such a

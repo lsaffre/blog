@@ -11,18 +11,18 @@ I published more than four days of work for :ticket:`2510`.  The
 following is a summary of the changes.
 
 **Fiscal years** are now stored in the database instead of being a
-choicelist. :class:`lino_xl.lib.ledger.FiscalYear` is now a model.
+choicelist. :class:`lino_xl.lib.accounting.FiscalYear` is now a model.
 
 New plugin :mod:`lino_xl.lib.sheets` documented in
-:ref:`xl.specs.sheets`.  Changes in :ref:`xl.specs.ledger`.
+:ref:`xl.specs.sheets`.  Changes in :ref:`xl.specs.accounting`.
 
 I discovered a cool and well-hidden bug.  The virtual fields
-:attr:`debit <lino_xl.lib.ledger.Movement.debit>` and :attr:`credit
-<lino_xl.lib.ledger.Movement.credit>` said the opposite of what they
+:attr:`debit <lino_xl.lib.accounting.Movement.debit>` and :attr:`credit
+<lino_xl.lib.accounting.Movement.credit>` said the opposite of what they
 should say.  A movement with :attr:`dc
-<lino_xl.lib.ledger.Movement.dc>` having `True` was shown in the
+<lino_xl.lib.accounting.Movement.dc>` having `True` was shown in the
 "Credit" column and vice versa.  As a result, the
-:attr:`lino_xl.lib.ledger.Journal.dc` in demo data were wrong because
+:attr:`lino_xl.lib.accounting.Journal.dc` in demo data were wrong because
 I configured their value based on the debit and credit in generated
 movements.  And consequently all `dc` fields theoretically need to get
 inverted.  In a later commit I changed the values of :data:`DEBIT
@@ -45,7 +45,7 @@ Side effects
 ============
   
 Later I also merged :mod:`lino_xl.lib.accounts` into
-:mod:`lino_xl.specs.ledger` (:ticket:`2514`).
+:mod:`lino_xl.specs.accounting` (:ticket:`2514`).
 
 
   

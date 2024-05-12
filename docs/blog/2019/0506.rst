@@ -26,14 +26,14 @@ Okay replacing the hack in
 :meth:`lino.core.choicelists.ChoiceList.add_item_lazy` was a good thing, but
 that hack wasn't guilty at all.  Guilty was another bug, this time in
 :meth:`VoucherTypes.get_for_model
-<lino_xl.lib.ledger.VoucherTypes.get_for_model>` which caused it to simply
+<lino_xl.lib.accounting.VoucherTypes.get_for_model>` which caused it to simply
 return the first possible candidate.  But in Welfare we have two voucher types
 which use the same model PaymentOrder. For the demo journal ZKBC the result had
 been okay so far, but when the voucher types were sorted, it returned the wrong
 candidate.  It is an error to call :meth:`VoucherTypes.get_for_model
-<lino_xl.lib.ledger.VoucherTypes.get_for_model>` (or
+<lino_xl.lib.accounting.VoucherTypes.get_for_model>` (or
 :meth:`VoucherTypes.get_for_table
-<lino_xl.lib.ledger.VoucherTypes.get_for_table>`) with a model (or a table) for
+<lino_xl.lib.accounting.VoucherTypes.get_for_table>`) with a model (or a table) for
 which we don't have a unique voucher type. And it seems that last week I was so
 sure about having found the bug that obviously I failed to test a last time...
 
