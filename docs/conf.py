@@ -112,3 +112,5 @@ templates_path.append(".templates")
 # :doc:`/about/index`
 #
 # """
+
+html_use_index = True
