@@ -18,18 +18,19 @@ About me
 
 My name is **Luc Saffre** (French: `lyk 'safʁə
 <https://en.wikipedia.org/wiki/International_Phonetic_Alphabet>`__). I was born
-and grew up in Belgium (`Eupen <http://en.wikipedia.org/wiki/Eupen>`_), but
+and grew up in Belgium (`Eupen <http://en.wikipedia.org/wiki/Eupen>`_) and
 moved to `Estonia <https://en.wikipedia.org/wiki/Estonia>`__ at the age of 30
 after having married an Estonian.  We have 2 daughters and live in a small
 village and the capital.
 
 .. Since October 2001
 
-I am manager and senior developer at `Rumma & Ko OÜ
-<https://www.saffre-rumma.net/>`__, which I own together with my wife. We
-provide development, hosting, maintenance and support of  `sustainably
-free <https://hw.saffre-rumma.net/fs/>`__ customized database applications,
-mainly using the `Lino framework <https://www.lino-framework.org/>`__ and its
+I am manager and senior developer for the
+`Synodalsoft project <https://www.synodalsoft.net/>`__
+at `Rumma & Ko OÜ <https://www.saffre-rumma.net/>`__.
+We provide development, hosting, maintenance and support of
+customized database applications
+using `Lino <https://www.lino-framework.org/>`__ and its
 older brother `TIM <https://tim.lino-framework.org/129.html>`__.
 
 ..
