@@ -1,2 +1,2 @@
-This page is a :ref:`tested document <tested_docs>` and the following
-instructions are used for initialization:
+Lines starting with ``>>>`` in this document are code snippets that get
+:ref:`tested as part of our development workflow <tested_docs>`.
