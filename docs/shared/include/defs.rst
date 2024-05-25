@@ -1,4 +1,12 @@
 .. see also /docs/dev/shared.rst
+.. |bars|  image:: /../docs/shared/images/pi/bars.svg
+  :class: pi-button
+  :alt: bars button
+
+.. |home|  image:: /../docs/shared/images/pi/home.svg
+  :class: pi-button
+  :alt: home button
+
 .. |copy|  image:: /../docs/shared/images/pi/copy.svg
   :class: pi-button
   :alt: copy button
