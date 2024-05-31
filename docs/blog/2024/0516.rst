@@ -1,11 +1,10 @@
 :date: 2024-05-16
 
-======================
-Thursday, May 16, 2024
-======================
-
+==================
 A miracle in cron?
 ==================
+
+Thursday, May 16, 2024
 
 I am working on :ticket:`5588`.
 
@@ -43,3 +42,18 @@ So I undid this move::
   $ sudo mv /etc/cron.daily/linobackups .
   $ sudo mv /usr/local/bin/make_snapshot_a.sh /etc/cron.daily/
   $ sudo mv /usr/local/bin/make_snapshot_b.sh /etc/cron.daily/
+
+P.S. 2024-05-31:
+
+And yes, after my change the daily snapshots stopped again to work. And I
+explained to Hannes that I don't want a *solution*, I want an *explanation*. And
+after two weeks of research, Hannes found this explanation (in a `discussion on
+SO
+<https://stackoverflow.com/questions/16218705/crontab-not-executing-bash-script>`__):
+`run-parts` (which is used by `cron`) ignores files with a period in the name.
+
+So yes, :cmd:`getlino startsite` did something wrong. I made the :ref:`change
+<getlino.changes>`, it was `a single line of code
+<https://gitlab.com/lino-framework/getlino/-/commit/82d4b7521dc0c6d2422c7ab7f14f5bc215fc735f>`__.
+
+Yes, the stupidest errors are the hardest to find!
