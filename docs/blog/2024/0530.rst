@@ -1,4 +1,5 @@
 :date: 2024-05-30
+:tags: alvatal estonia foss
 
 ===================================
 Alvatal moved from GitHub to GitLab
@@ -24,9 +25,6 @@ September 2016 (`initial commit
 - Website: https://www.alvatal.ee
 - Project page on GitLab: https://gitlab.com/alvatal/www
 
-Hashtags: 
-#alvatal #estonia #foss
-@alvatal @estonia @foss
 
 At least one problem is still open: the present blog post does not appear in the
 `news section <https://www.alvatal.ee/en/news/>`__ even though I added my blog
@@ -34,14 +32,82 @@ to the `planet_en.yml
 <https://gitlab.com/alvatal/www/-/blob/master/planet_en.yml?ref_type=heads>`__
 file and GitLab `reports
 <https://gitlab.com/alvatal/www/-/jobs/6981067570#L1034>`__ "Parsing
-https://luc.lino-framework.org/rss.xml". But then ignores all blog posts, even
-the last one, which starts with "Alvatal", which is defined as a keyword in
-`whitelisted_tags`.
+https://luc.lino-framework.org/rss.xml". But planet then ignores all blog posts,
+even this one, which starts with "Alvatal" (the keyword defined in
+`whitelisted_tags`).
 
-I converted my newsfeed xml generator (`sphinxfeed
+I converted my Sphinx newsfeed generator (`sphinxfeed
 <https://github.com/lsaffre/sphinxfeed>`__) to generate `ATOM
 <https://validator.w3.org/feed/docs/atom.html>`__ instead of RSS (a task for
 which I had to read the docs and the code of `feedgen
 <https://feedgen.kiesow.be/>`__), but that too didn't fix the issue.
 
 Right now i do not know any further...
+
+
+2024-06-01
+==========
+
+I guess that RSS or ATOM has some concept of tags, and sphinxfeed doesn't create
+such tags. I now checked the xml files of the two blog entries that get
+selected, and indeed the atom.xml file of one of the selected blog posts has a
+following ``<category>`` element::
+
+  <feed	xmlns='http://www.w3.org/2005/Atom' ...>
+    ...
+  	<entry>
+    <category scheme="http://www.blogger.com/atom/ns#" term="alvatal"/>
+		<title type='text'>alvatal.ee lehel hakkas tööle HTTPS-protokoll</title>
+
+
+So I extended `sphinxfeed <https://github.com/lsaffre/sphinxfeed>`__ to look for
+two new fields ``category`` and ``tags`` in the ``metadata`` of the page. If it
+does, sphinxfeed now uses the `feedgen.FeedEntry.category()
+<https://feedgen.kiesow.be/api.entry.html#feedgen.entry.FeedEntry.category>`__
+method to add ``<category>`` elements to the feed item.
+
+The difference between ``category`` and ``tags`` is that  the ``category`` of a
+blog post may contain spaces while the ``tags`` metadata field is itself a
+space-separated list of tags, so each tag must be a single word. Both the
+category and each tag will become a ``<category>`` element in the feed.
+
+One feed entry can have multiple ``<category>`` elements (according to the `ATOM
+specification <https://datatracker.ietf.org/doc/html/rfc4287#section-4.1.2>`__),
+but Sphinx ``metadata`` is designed to have a field at most once per page.
+
+The `rss.xml file of my blog <https://luc.lino-framework.org/rss.xml>`__ now
+declares three "categories" for this entry::
+
+  <entry>
+  <id>https://luc.lino-framework.org/blog/2024/0530.html</id>
+  <title>Alvatal moved from GitHub to GitLab</title>
+  <updated>2024-06-01T07:05:14.936148+00:00</updated>
+  <content>...</content>
+  <link href="https://luc.lino-framework.org/blog/2024/0530.html"/>
+  <category term="alvatal"/>
+  <category term="estonia"/>
+  <category term="foss"/>
+  <published>2024-05-30T23:59:00+00:00</published>
+  </entry>
+
+And yes! After restarting the `pipeline on GitLab
+<https://gitlab.com/alvatal/www/-/pipelines>`__, here finally Alvatal also lists
+my blog entry:
+https://alvatal.ee/blogs_en/2024/05/30/alvatal-moved-from-github-to-gitlab/
+
+What's the difference between a "category" and a "tag"? WordPress as a leading
+free blogging software can be considered an authority for answering this
+question:
+
+- "WordPress lets you put a post into multiple categories. (...) It's possible
+  that having your post in multiple categories could cause some SEO issues due
+  to duplicate content. If you do use multiple categories, then try to avoid
+  putting one post into two or more main (parent) categories. Each post should
+  fit within one main category."
+
+- "WordPress itself doesn't have any limit on the number of tags you can have on
+  each post. ()...) We suggest that you normally stick to a maximum of 10 tags
+  per post."
+
+(Excerpt from `Categories vs Tags – SEO Best Practices for Sorting Your Content
+<https://www.wpbeginner.com/beginners-guide/categories-vs-tags-seo-best-practices-which-one-is-better/>`__.
