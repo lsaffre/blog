@@ -1,0 +1,74 @@
+:date: 2024-06-02
+
+====================
+A Lino for Alvatal
+====================
+
+June 2--3, 2024
+
+I am working on :ticket:`5636` (A Lino for Alvatal). After a first brainstorming
+I assume they need a Lino Noi, but *with* content management (publisher, blogs
+albums) and *without* accounting (invoicing, service reports).
+
+So I created :ticket:`5637` (New options with_accounting and with_cms for Noi)
+and added two new plugin settings
+:setting:`noi.with_accounting` and :setting:`noi.with_cms`.  When one of these
+options is `False`, then a series of plugins is set to "hidden":
+
+- :setting:`noi.with_accounting` : ``accounting``, ``vat``, ``trading``, ...
+- :setting:`noi.with_cms` : ``sources``, ``blogs``, ``albums``, ...
+
+I created a new demo project :ref:`dg.projects.noi2`.
+
+Because the concept of hiding plugins is relatively new, this revealed a few
+places in the core where Lino did not yet manage well with hidden plugins. When
+a plugin is hidden, then it remains installed (especially for the database
+schema) but is not visible to the end users.
+
+For example the :attr:`lino_xl.lib.products.Product.vat_class` field is hidden
+in ``noi2`` because the ``vat`` plugin is hidden. Hidden means that it is there
+in the database, but not visible to end users.
+:attr:`products.Products.column_names` has a field ``vat_class``:
+
+>>> products.Products.column_names
+'id name category vat_class *'
+>>> rt.show(products.Products)
+==== ============= ================== ==========
+ ID   Designation   Designation (et)   Category
+---- ------------- ------------------ ----------
+ 2    Extra         Extra
+ 3    Free          Free
+ 1    Regular       Regular
+==== ============= ================== ==========
+<BLANKLINE>
+
+After playing with this for some time (and fixing most but not all issues), I
+decided or realized that it's better to implement these two options by *not
+installing* the related plugins rather than *hiding* them.  Which also meant to
+implement the two new settings as :term:`site settings <site setting>`, not as
+:term:`plugin settings <plugin setting>`. An option that decides which plugins
+are to get installed cannot be a plugin setting because it must be known when
+the :class:`Site` instantiates.
+
+So Lino Noi has now two site settings (or "application options")
+:attr:`with_accounting <lino_noi.lib.noi.settings.Site.with_accounting>` and
+:attr:`with_cms <lino_noi.lib.noi.settings.Site.with_cms>`.
+
+I am not sure whether it would have been possible to implement it by just hiding
+the relevant plugins. I didn't dig further into that direction because I can't
+imagine any advantage in being able to change these options *without* also
+having to migrate the database.
+
+Some days ago I merged the pages plugin into the publisher plugin as a side
+effect of :ticket:`5633` (Special pages). Now I discovered a side effect of this
+side effect: the publisher plugin now influences the :term:`application menu`,
+it causes a "Publisher" menu to appear, and in  :ref:`noi2 <dg.projects.noi2>`
+it appeared even before the "Contacts" menu.  That was disturbing.  I fixed this
+by calling the :meth:`super` method in Noi's :meth:`get_installed_plugins
+<lino.core.site.Site.get_installed_plugins>` at the end, not at the beginning. I
+reviewed the docs about :ref:`dg.site.get_installed_plugins`.
+
+A side effect of  :ticket:`5637` (New options with_accounting and with_cms for
+Noi) is that Noi no longer has the publisher plugin installed when `with_cms` is
+`False`. Which makes sense, the publisher plugin in the "classical" Noi was
+rather accidentally there.
