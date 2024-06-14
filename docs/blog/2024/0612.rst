@@ -1,0 +1,90 @@
+:date: 2024-06-12
+
+===========================================================
+Merge obj2href() and as_summary_row() to as_summary_item()
+===========================================================
+
+Written between 2024-06-12 and 2024-06-14.
+
+I merged the :meth:`obj2href` and :meth:`as_summary_row` methods of
+:class:`Model <lino.api.dd.Model>` into a single method named
+:meth:`as_summary_item <lino.api.dd.Model.as_summary_item>`.
+
+They did almost the same, both returned a link (an ``<a href="...">...</a>``
+fragment) that opens the detail window of this object. One difference between
+them was that :meth:`obj2href` returned an ElementTree element while
+:meth:`as_summary_row` returned a safe string.  The :meth:`as_summary_item`
+method returns an ElementTree element. ElementTree is better than safe HTML for
+specifying small HTML chunks because it is more flexible and more fool-proof
+(and thus actually safer). And at this level we won't use any templating nor
+store the result in a database, so there is no advantage of using safe html. So
+I converted the :meth:`as_summary_row` methods from generating safe html to
+using ElementTree.
+
+The :meth:`as_summary_item` method expects the ``text`` of the link as an optional
+positional argument after the ``ar``.
+
+Note: We should also rename the :meth:`obj2html` method. But this is another
+topic because application developers aren't supposed to override it.
+:meth:`obj2html` just returns a link to
+
+Documentation about this is still poor. I started to move docstrings from
+:mod:`lino.core.requests` to :class:`lino.api.core.Request`, but then stopped
+because this is yet another huge set of changes. I prefer to do this another
+time.
+
+
+Usage examples:
+
+- :class:`lino_xl.lib.cal.Event` customizes the ``title`` of the link
+
+- Polymorphic.obj2href() potentially loops over navigatable MTI models
+  (``_mtinav_models``)
+
+- Voucher.obj2href() finds the MTI leaf (the implementing document type) before
+  linking to it.
+
+- Note.obj2href() customizes the default text to use.
+- Ticket.obj2href() customizes both title and default text.
+
+- ProjectRelated.as_summary_row() adds, between parentheses, a clickable link to
+  the related project.
+
+- coachings.Coaching.as_summary_row() adds, between parentheses, a clickable link to
+  the related client.
+
+- comments.Reaction.as_summary_row()
+
+- publisher.Page.as_summary_row()
+
+- cal.Component.as_summary_row() adds a bit more information (the start_time, state and summary).
+- notes.Note.as_summary_row() adds a bit more information (the subject).
+
+Calls:
+
+as_summary_row() is called by
+
+- Actor.row_as_summary()
+- Request.row_as_summary()
+
+obj2href() is called by
+
+- TableRow.as_summary_row and get_overview_elems() and as_paragraph()
+
+
+
+Changes
+=======
+
+- converted every :meth:`as_summary_row` to use ElementTree instead of safe html.
+
+- Renamed all :meth:`as_summary_row` and :meth:`obj2href` to :meth:`as_summary_item`.
+
+- :meth:`as_summary_item` supports a second optional positional argument ``text``
+
+- As a consequence, :meth:`row_as_summary` (on both Actor and Request) now
+  returns an ET element instead of safe html.
+
+TODO: Rename :meth:`obj2href` to :meth:`as_summary_item` or something similar,
+and :meth:`row_as_summary` to :meth:`row_as_summary_item`. I leave these renames
+to a later commit to keep the changes as transparent as possible.
