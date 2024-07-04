@@ -1,0 +1,23 @@
+:date: 2024-06-29
+
+=======================
+Saturday, June 29, 2024
+=======================
+
+Yesterday I sent a next newsletter to my friends.   I manage the recipient list
+in Thunderbird and set it as the bcc field (because we don't want everybody to
+see the other recipients).
+
+My list holds 375 addresses, 43 of which are at ``skynet.be``. And Skynet (which
+is now a part of Proximus) accepts a maximum number recipients per connection.
+After the 5th recipient it says "Too many recipients". But the Postfix on our
+mail server doesn't give up. It tries again after 5 minutes, then after ten
+minutes, after 20 minutes... Here is how that looks in the :file:`mail.log` file::
+
+  $ sudo grep joe.doe /var/log/mail.log
+  Jun 28 21:57:35 saffre-rumma postfix/smtp[2252573]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.22.25]:25, delay=22, delays=20/0.97/0.14/0.24, dsn=4.0.0, status=deferred (host mx.glb.proximus.be[195.238.22.25] said: 459 Too many recipients (RL) (in reply to RCPT TO command))
+  Jun 28 22:03:21 saffre-rumma postfix/smtp[2252792]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.20.25]:25, delay=367, delays=367/0.08/0.24/0.19, dsn=4.0.0, status=deferred (host mx.glb.proximus.be[195.238.20.25] said: 459 Too many recipients (RL) (in reply to RCPT TO command))
+  Jun 28 22:13:21 saffre-rumma postfix/smtp[2253003]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.20.25]:25, delay=967, delays=966/0.04/0.82/0.16, dsn=4.0.0, status=deferred (host mx.glb.proximus.be[195.238.20.25] said: 459 Too many recipients (RL) (in reply to RCPT TO command))
+  Jun 28 22:33:20 saffre-rumma postfix/smtp[2253231]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.20.25]:25, delay=2166, delays=2166/0.03/0.11/0.13, dsn=4.0.0, status=deferred (host mx.glb.proximus.be[195.238.20.25] said: 459 Too many recipients (RL) (in reply to RCPT TO command))
+  Jun 28 23:13:21 saffre-rumma postfix/smtp[2253484]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.22.25]:25, delay=4568, delays=4567/0.04/0.44/0.66, dsn=4.0.0, status=deferred (host mx.glb.proximus.be[195.238.22.25] said: 452 #4.5.3 Too many recipients. (in reply to RCPT TO command))
+  Jun 29 00:23:22 saffre-rumma postfix/smtp[2254227]: 3B984211FB: to=<joe.doe@skynet.be>, relay=mx.glb.proximus.be[195.238.20.25]:25, delay=8768, delays=8767/0.03/0.19/0.47, dsn=2.0.0, status=sent (250 ok:  Message 3727612 accepted)

@@ -1,0 +1,40 @@
+:date: 2024-07-04
+
+======================
+Thursday, July 4, 2024
+======================
+
+I did some more tests for :ticket:`5670` (Electronic sales invoices)
+and started a topics page about :ref:`dg.topics.peppol`.
+
+The following code snippet shows that :mod:`pyvat` knows Belgian VAT numbers but
+not Belgian company numbers. I use a selection of companies found on
+`companyweb.be
+<https://www.companyweb.be/nl/0437272535/assurances-dekempener>`__.
+
+>>> import pyvat
+>>> from stdnum.be import vat
+>>> examples = [
+... ["Abakus It-Solutions Belgium BV", '0443493896', 'BE'],
+... ["BSDG V.o.G.", '0441635753', 'BE'],
+... ["Assurances DEKEMPENER NV", '0437272535', 'BE']]
+
+The first company is subject to VAT, the other two aren't.
+
+>>> for name, vat_number, country_code in examples:
+...     res = pyvat.check_vat_number(vat_number, country_code)
+...     print(f"{country_code} {vat_number} {res.is_valid} {res.business_name}")
+BE 0443493896 True SRL ABAKUS IT-SOLUTIONS Belgium
+BE 0441635753 False None
+BE 0437272535 False None
+
+The `python-stdnum <https://arthurdejong.org/python-stdnum>`__ module validates
+also the company numbers (but it doesn't do any online check).
+
+>>> for name, vat_number, country_code in examples:
+...     print(vat.validate(vat_number))
+0443493896
+0441635753
+0437272535
+
+I currently assume that the schemeID

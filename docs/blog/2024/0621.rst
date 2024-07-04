@@ -1,0 +1,126 @@
+:date: 2024-06-21
+
+=====================
+Friday, June 21, 2024
+=====================
+
+Today I fixed about 6 bugs and documentation issues. None of them were
+revolutionary.
+
+.. contents::
+   :depth: 1
+   :local:
+
+
+getlino failed when no ``www-data`` group exists
+================================================
+
+Joy reported that :ref:`getlino` breaks in a :term:`developer environment` when
+no user group ``www-data`` exists. So I made it more resistant:
+:meth:`getlino.utils.Installer.check_permissions` no longer tries to change the
+group owner of the file to ``www-data`` when no such group exists. More
+precisely ``www-data`` is the group name specified in :envvar:`usergroup`. The
+user group is needed only on a :term:`production site` with a
+:envvar:`web-server`.
+
+>>> from getlino.utils import grpexists
+>>> help(grpexists)
+Help on function grpexists in module getlino.utils:
+<BLANKLINE>
+grpexists(name)
+    Check whether the user group with the given ``name`` exists.
+<BLANKLINE>
+
+>>> grpexists("foo")
+False
+>>> grpexists("luc")
+True
+>>> grpexists("www-data")
+True
+
+Cannot edit "today" date of a user plan
+=======================================
+
+.. currentmodule:: lino.modlib.users
+
+The :attr:`today <UserPlan.today>` field of a :class:`UserPlan` is no longer
+read-only (`editable=False`) because Lino no longer automatically sets it each
+time you open your :term:`invoicing plan`. When you start an invoicing plan
+today and finish it tomorrow, you might not want Lino to update that field, e.g.
+because you want all generated documents on the same date. But if you started a
+service report three weeks ago, got interrupted and now continue, you want to
+have the real date in this field.
+
+#5671 (bad argument type: __proxy__([some heading of a dashboard item]))
+========================================================================
+
+I have seen this error before. Here is how to get this error message:
+
+>>> from lino import startup
+>>> startup("lino_book.projects.min2.settings")
+>>> from lino.api import _
+>>> from lino.utils.html import E
+>>> E.h2(_("Foo"))
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/doctest.py", line 1350, in __run
+    exec(compile(example.source, filename, "single",
+  File "<doctest 0621.rst[9]>", line 1, in <module>
+    E.h2(_("Foo"))
+  File "src/lxml/builder.py", line 219, in lxml.builder.ElementMaker.__call__
+TypeError: bad argument type: __proxy__('Foo')
+
+
+I am quite sure it is caused by my recent changes with safetext and elementtree.
+But I don't see how to reproduce it.
+
+And I guess that it is caused by
+:meth:`lino.core.elems.DisplayElement.value2html`, which is indeed a strange
+piece of code.
+
+I cleaned up the code and changed the call to ``logger.error()``
+into ``logger.exception()``
+
+
+#5672 (A sales invoice must DEBIT the account but CREDIT the storage)
+=====================================================================
+
+The reason for this ticket was actually just a configuration problem in Jane.
+
+The title of this ticket is NOT a problem. Whether the storage (more exactly the
+:term:`provision`) gets debited or credited depends on the
+:class:`lino_xl.lib.storage.TransferRule`.
+
+.. currentmodule:: lino_xl.lib.accounting
+
+In :mod:`lino_xl.lib.accounting` :class:`DcAmountField` now uses
+:meth:`DC.normalized_amount` rather than the hard-coded meaning of debit and
+credit.
+
+"A sales invoice debits the customer’s account" (as explained `in the end-user
+docs
+<https://using.lino-framework.org/plugins/accounting.html#debit-and-credit>`__),
+but the :guilabel:`Primary booking direction` field of a :class:`Journal`
+:attr:`Journal.dc` field says "Credit" for sales invoices. I tried whether I can
+optimize this.
+
+
+
+#5673 (Internal Server Error: /api/invoicing/MyPlan/row)
+========================================================
+
+:meth:`invoicing.MyPlan.get_row_by_pk` does not check for permissions because
+that's done later during the request, but accesses the database using current
+user as argument, which fails when the authentication info has been cleared for
+some reason, causing current user to be an :class:`AnonymousUser` instance.
+Django then says :message:`Field 'id' expected a number but got
+<SimpleLazyObject: <lino.core.auth.utils.AnonymousUser object at
+0x7f9e52076d90>>`.
+
+
+Multiple invoicing tasks and help_text
+======================================
+
+When a site has multiple invoicing tasks, Lino adds one "Start invoicing" action
+for each of them to the :term:`partner` model and to the `invoicing order`
+model. These buttons have the same icon (a shopping basket), but now they have
+at least different help texts.
