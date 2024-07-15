@@ -8,7 +8,7 @@ They have some fields on ``courses.Pupil`` and ``courses.Enrolment``
 which are definitively limited to their concrete case.
 
 So I created the new plugin 
-:mod:`lino_voga.projects.roger.lib.courses`,
+:mod:`lino_voga.projects.voga2.lib.courses`,
 which extends :mod:`lino_voga.lib.courses`,
 which in turn extends :mod:`lino_xl.lib.courses`.
 
@@ -18,15 +18,15 @@ which in turn extends :mod:`lino_xl.lib.courses`.
 - :mod:`lino_voga.lib.courses` does not change anything on the
   `Enrolment` model
 
-- :mod:`lino_voga.projects.roger.lib.courses` extends the `Enrolment`
+- :mod:`lino_voga.projects.voga2.lib.courses` extends the `Enrolment`
   model with (currently) one field.
 
 I "activate" this plugin using the following definition on the
-:class:`lino_voga.projects.roger.settings.Site` class::
+:class:`lino_voga.projects.voga2.settings.Site` class::
 
     def get_plugin_modifiers(self, **kw):
         kw = super(Site, self).get_plugin_modifiers(**kw)
-        kw.update(courses='lino_voga.projects.roger.lib.courses')
+        kw.update(courses='lino_voga.projects.voga2.lib.courses')
         return kw
 
 
@@ -37,7 +37,7 @@ But now I get the following runtime error::
 
   RuntimeError: Conflicting 'enrolment' models in application 'courses': 
   <class 'lino_xl.lib.courses.models.Enrolment'> and
-  <class 'lino_voga.projects.roger.lib.courses.models.Enrolment'>.
+  <class 'lino_voga.projects.voga2.lib.courses.models.Enrolment'>.
 
 Both model definitions correctly have defined the following `Meta`
 class::

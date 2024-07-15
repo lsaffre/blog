@@ -1,6 +1,6 @@
 import lino
 
-lino.startup('lino_book.projects.apc.settings.demo')
+lino.startup('lino_book.projects.cosi1.settings.demo')
 from django.utils import translation
 from lino.api.doctest import *
 from django.db.models import Q

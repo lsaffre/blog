@@ -1,0 +1,83 @@
+:date: 2024-07-13
+
+==========================================
+Review the API for get_table_summary()
+==========================================
+
+.. currentmodule:: lino.core.actors
+
+I did :ticket:`5685` (Review the API for get_table_summary().  The following
+tables had a customized :meth:`Actor.get_table_summary` method, which I
+converted to :meth:`Actor.table_as_summary`:
+
+- :class:`lino_avanti.lib.courses.PresencesByEnrolment`
+- :class:`lino.mixins.dupable.SimilarObjects`
+- :class:`lino.modlib.dupable.SimilarObjects`
+- :class:`lino.modlib.notify.MyMessages`
+- :class:`lino_xl.lib.accounting.JournalsOverview`
+- :class:`lino_xl.lib.accounting.VouchersByPartnerBase`
+- :class:`lino_xl.lib.accounting.MovementsByPartner`
+- :class:`lino_xl.lib.blogs.EntriesByController` (currently not used anywhere)
+
+- :class:`lino_xl.lib.cal.Guests` and :class:`lino_xl.lib.cal.Events` use the
+  same code.
+
+- :class:`lino_xl.lib.cv.HistoryByPerson`
+- :class:`lino_xl.lib.cv.LanguageKnowledgesByPerson`
+
+- :class:`lino_xl.lib.households.SiblingsByPerson`
+- :class:`lino_xl.lib.households.MembersByPerson`
+
+- :class:`lino_xl.lib.humanlinks.SiblingsByPerson` (including an optimization of
+  the presentation)
+
+- :class:`lino_xl.lib.phones.ContactDetailsByPartner`
+
+- :class:`lino_xl.lib.tickets.TicketsByEndUser` (which had a bug that was not
+  covered; I fixed the bug and added coverage)
+
+- :class:`lino_xl.lib.working.SessionsByTicket`
+
+.. currentmodule:: lino.core.model
+
+The following table summaries: also have a customized
+:meth:`Actor.get_table_summary` method, but I dit **not** yet convert it to an
+:meth:`Actor.table_as_summary`:
+
+- :class:`lino.modlib.uploads.AreaUploads` (I prefer to leave this for later)
+
+- :class:`lino_xl.lib.deploy.DeploymentsByTicket` (not used anywhere)
+
+- :class:`lino_xl.lib.excerpts.ExcerptsByOwner` is not used anywhere directly,
+  but inherited by :class:`lino_xl.lib.excerpts.ExcerptsByProject`. I wonder
+  whether the current implementation is useful in real life.
+
+- :class:`lino_xl.lib.polls.AnswersByResponseEditor`,
+  :class:`lino_xl.lib.polls.AnswersByResponsePrint`,
+  :class:`lino_xl.lib.polls.ResponsesByPartner`,
+  :class:`lino_xl.lib.skills.DemandsByDemander`,
+  :class:`lino_xl.lib.skills.OffersByDemander`
+  and a few more.
+
+Side effects:
+
+- :class:`lino.utils.AttrDict` now supports *setting* an attribute.
+
+- The :attr:`Model.overview` field didn't yet support getting a safe html string
+  from :meth:`Model.get_overview_elems`.
+
+- New plugin setting :setting:`printing.print_demo_objects` and model attribute
+  :attr:`lino.modlib.printing.Printable.print_demo_objects`.
+
+- I started to move away from using the :meth:`ar.html_text` method. Under ExtJS
+  this method wraps the given html fragment into a ``<div class="htmlText">``,
+  which specifies that this fragment contains simple html text inside an ExtJS
+  component.  ExtJS does a lot of CSS magic to neutralize the "usual" effects of
+  most html tags. This htmlText class is required to restore a half-way normal
+  look. Under any other front end the :meth:`ar.html_text` method does nothing.
+  My plan is to add the ``class="htmlText"`` unconditionally, also under React.
+
+I reviewed :ref:`dev.table_summaries`.
+
+Blog entry started on Friday, July 12, 2024. Changes are in lino, xl, noi, cosi,
+care, avanti, tera, book, welfare and amici.
