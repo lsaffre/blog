@@ -1,0 +1,87 @@
+:date: 2024-07-17
+
+========================
+Wednesday, July 17, 2024
+========================
+
+I read and reviewed :ref:`react.npm`.
+
+::
+
+  $ npm -v
+  8.5.1
+  $ node -v
+  v12.22.9
+
+  $ sudo npm install -g n
+  [sudo] password for luc:
+
+  added 1 package, and audited 2 packages in 560ms
+
+  found 0 vulnerabilities
+  $ sudo n stable
+    installing : node-v20.15.1
+         mkdir : /usr/local/n/versions/node/20.15.1
+         fetch : https://nodejs.org/dist/v20.15.1/node-v20.15.1-linux-x64.tar.xz
+       copying : node/20.15.1
+     installed : v20.15.1 (with npm 10.7.0)
+
+  Note: the node command changed location and the old location may be remembered in your current shell.
+           old : /usr/bin/node
+           new : /usr/local/bin/node
+  If "node --version" shows the old version then start a new shell, or reset the location hash with:
+  hash -r  (for bash, zsh, ash, dash, and ksh)
+  rehash   (for csh and tcsh)
+
+  $ npm -v
+  10.7.0
+  $ node -v
+  v20.15.1
+
+
+Let's try::
+
+  $ npm run build
+
+  > lino_react@24.5.0 build
+  > NODE_OPTIONS='--max-old-space-size=8192' webpack --mode production
+
+  [webpack-cli] Failed to load '/home/luc/work/react/webpack.config.js' config
+  [webpack-cli] Error: Cannot find module 'html-webpack-plugin'
+  Require stack:
+  - /home/luc/work/react/webpack.config.js
+  - /home/luc/work/react/node_modules/webpack-cli/lib/webpack-cli.js
+  - /home/luc/work/react/node_modules/webpack-cli/lib/bootstrap.js
+  - /home/luc/work/react/node_modules/webpack-cli/bin/cli.js
+  - /home/luc/work/react/node_modules/webpack/bin/webpack.js
+      at Module._resolveFilename (node:internal/modules/cjs/loader:1145:15)
+      at Module._load (node:internal/modules/cjs/loader:986:27)
+      at Module.require (node:internal/modules/cjs/loader:1233:19)
+      at require (/home/luc/work/react/node_modules/v8-compile-cache/v8-compile-cache.js:159:20)
+      at Object.<anonymous> (/home/luc/work/react/webpack.config.js:2:27)
+      at Module._compile (/home/luc/work/react/node_modules/v8-compile-cache/v8-compile-cache.js:192:30)
+      at Module._extensions..js (node:internal/modules/cjs/loader:1416:10)
+      at Module.load (node:internal/modules/cjs/loader:1208:32)
+      at Module._load (node:internal/modules/cjs/loader:1024:12)
+      at Module.require (node:internal/modules/cjs/loader:1233:19) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [
+      '/home/luc/work/react/webpack.config.js',
+      '/home/luc/work/react/node_modules/webpack-cli/lib/webpack-cli.js',
+      '/home/luc/work/react/node_modules/webpack-cli/lib/bootstrap.js',
+      '/home/luc/work/react/node_modules/webpack-cli/bin/cli.js',
+      '/home/luc/work/react/node_modules/webpack/bin/webpack.js'
+    ]
+  }
+
+::
+
+  $ sudo npm install -g html-webpack-plugin
+
+  added 44 packages in 2s
+
+  10 packages are looking for funding
+    run `npm fund` for details
+
+::
+  $ sudo npm upgrade -g react
