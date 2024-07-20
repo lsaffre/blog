@@ -1,6 +1,6 @@
+import sys
 from pathlib import Path
-pth = Path("django.po")
-s = pth.read_text()
+
 mark_start = "<<<<<<< HEAD\n"
 mark_middle = "=======\n"
 mark_end = ">>>>>>> upstream/master\n"
@@ -25,4 +25,15 @@ def remove_all(s):
             return s
         s = s2
 
-pth.write_text(remove_all(s))
+def main():
+    if len(sys.argv) < 2:
+        print("You must specify at least one file to repair")
+        sys.exit(-1)
+    for fn in sys.argv[1:]:
+        pth = Path(fn)
+        s = pth.read_text()
+        s = remove_all(s)
+        pth.write_text(s)
+
+if __name__ == "__main__":
+    main()
