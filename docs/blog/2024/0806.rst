@@ -1,0 +1,68 @@
+:date: 2024-08-06
+
+=======================
+Tuesday, August 6, 2024
+=======================
+
+Continued from :doc:`0805`.
+
+I started to read introductions to Webpack: `Getting Started
+<https://webpack.js.org/guides/getting-started/>`__ and  `Core Concepts
+<https://webpack.js.org/concepts>`__.
+
+I also continued to update :ref:`react.npm`.
+
+Ha! I'm unlocked after two weeks of feeling stuck! Tonis donated half an hour of
+his spare time and had a look with me at my problem. Not even a video meeting,
+just a text chat. And he found the missing piece!
+
+The missing piece was this: We can assume that these error messages are actually
+not relevant, at least not immediately, they don't prevent the build from
+happening, they are experimental and Sharif probably also had them. I believed
+that they prevented the build from happening because :cmd:`npm run build` didn't
+create any static files. But *that* is normal because there is no actual change
+in the source code. After adding a "foo bar" string somewhere in the toolbar,
+:cmd:`npm run build` did create a whole series of files in the
+:xfile:`lino_react/react/static` directory.
+
+Okay I'm unlocked, but I still have quite a few things to learn before I'll get
+productive :-)
+
+Q: When Sharif did his last change `on June 16
+<https://gitlab.com/lino-framework/react/-/commit/d618c990d34aa30cfe3454309abc2b778badb43e>`__,
+there were 6 static files changed. Why do I now have, in my
+:xfile:`lino_react/react/static`, 41 untracked files named :file:`main.*.js`
+plus a :xfile:`.js.map` for each of them?
+
+A: That's because I ran "npm audit fix --force", to "address all issues
+(including breaking changes)", which updated a series of packages.
+
+Q: I tried to verify this answer by going back to the current GitLab version,
+adding again that "foo bar" string somewhere in the toolbar, run :cmd:`npm run
+build`. I should see a few files changes. But nothing changes. Why?
+
+A: Maybe because the audit report has critical issues, it says "12
+vulnerabilities (2 moderate, 4 high, 6 critical)".
+
+So I ran :cmd:`npm audit fix --force` again::
+
+  $ npm audit fix --force
+  npm warn using --force Recommended protections disabled.
+  npm warn audit Updating quill to 2.0.2, which is a SemVer major change.
+  npm warn audit Updating webpack-typescript to 0.5.5, which is a SemVer major change.
+  npm warn audit Updating quill-mention to 6.0.1, which is a SemVer major change.
+  npm warn audit Updating babel-plugin-transform-class-properties to 6.10.2, which is a SemVer major change.
+  npm warn audit Updating puppeteer to 22.15.0, which is a SemVer major change.
+
+  added 8 packages, removed 31 packages, changed 15 packages, and audited 1684 packages in 4m
+
+  208 packages are looking for funding
+    run `npm fund` for details
+
+  found 0 vulnerabilities
+
+And now :cmd:`npm run build` should build again those 41 static :xfile:`.js`
+files.
+
+But it doesn't! WTF!? I restored the same situation as two hours ago! Why did it
+stop working?

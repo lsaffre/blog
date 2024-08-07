@@ -43,7 +43,7 @@ Dazu brauch ich wahrscheinlich eine neue Art von MainPanel...
 
 Hah! Das ist der Moment, um endlich mal Issue 90 zu starten. Die extjs.py wird nämlich immer unübersichtlicher, sie hat 3045 Zeilen...
 
-Nebenbei hätte ich beinahe meine selbstgebastelte `py2js()` durch ein `simplejson.encode()` mit einem `LinoJSONEncoder` ersetzt. Das wäre theoretisch eleganter, aber das geht nicht, weil ich meine Klasse `js_code` definiere und auch ausgiebig nutze, um rohes Javascript generieren zu können. `js_code('foo')` wird nach JSON unverändert übergeben. Dieses Feature kann keiner der beiden JSONEncoder. Es funktioniert nur, weil ich `simplejson.dumps()` erst ganz am Ende von `py2js()` für reine Strings aufrufe.
+Nebenbei hätte ich beinahe meine selbstgebastelte `py2js()` durch ein `simplejson.encode()` mit einem `LinoJSONEncoder` ersetzt. Das wäre theoretisch eleganter, aber das geht nicht, weil ich meine Klasse `js_code` definiere und auch ausgiebig nutze, um rohes JavaScript generieren zu können. `js_code('foo')` wird nach JSON unverändert übergeben. Dieses Feature kann keiner der beiden JSONEncoder. Es funktioniert nur, weil ich `simplejson.dumps()` erst ganz am Ende von `py2js()` für reine Strings aufrufe.
 
 Mit Python 2.6 würde es nun funktionieren (Ich habe einen LinoJSONEncoder, der die interne Methode `_iterencode_default()` überschreibt). In Python 2.5 hat Django aber seine eigene Implementierung, mit der mein Hack nicht funktioniert. Deshalb ist das Ganze nun doch deaktiviert.
 

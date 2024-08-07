@@ -1,0 +1,161 @@
+:date: 2024-08-07
+
+=========================
+Wednesday, August 7, 2024
+=========================
+
+I read `npm vs npx — What’s the Difference?
+<https://www.freecodecamp.org/news/npm-vs-npx-whats-the-difference/>`__, here
+are my reading notes.
+
+:cmd:`npx cowsay Hello` works as described in the tutorial. It says::
+
+   _______
+  < Hello >
+   -------
+          \   ^__^
+           \  (oo)\_______
+              (__)\       )\/\
+                  ||----w |
+                  ||     ||
+
+
+And :cmd:`npx lino-react`, as expected, doesn't work, it says "npm error could
+not determine executable to run", which is normal because the :term:`React front
+end` is not an executable command-line tool, it is a Python package to be used
+as the :attr:`lino.core.site.Site.default_ui`.
+
+The next step in above tutorial is :cmd:`npx create-react-app`::
+
+  $ cd ~/work
+  $ npx create-react-app
+
+  Creating a new React app in /home/luc/work/my-app.
+  Installing packages. This might take a couple of minutes.
+  Installing react, react-dom, and react-scripts with cra-template...
+  added 1483 packages in 35s
+  261 packages are looking for funding
+    run `npm fund` for details
+  Installing template dependencies using npm...
+  added 54 packages in 3s
+  261 packages are looking for funding
+    run `npm fund` for details
+  Removing template package using npm...
+  removed 1 package, and audited 1537 packages in 2s
+  261 packages are looking for funding
+    run `npm fund` for details
+  8 vulnerabilities (2 moderate, 6 high)
+  To address all issues (including breaking changes), run:
+    npm audit fix --force
+  Run `npm audit` for details.
+  Success! Created my-app at /home/luc/work/my-app
+  Inside that directory, you can run several commands:
+
+    npm start
+      Starts the development server.
+
+    npm run build
+      Bundles the app into static files for production.
+
+    npm test
+      Starts the test runner.
+
+    npm run eject
+      Removes this tool and copies build dependencies, configuration files
+      and scripts into the app directory. If you do this, you can’t go back!
+
+  We suggest that you begin by typing:
+
+    cd my-app
+    npm start
+
+  Happy hacking!
+
+But when I do as instructed, I get an error message::
+
+  $ cd my-app
+  $ npm start
+  > my-app@0.1.0 start
+  > react-scripts start
+
+  Cannot find module 'ajv/dist/compile/codegen'
+  Require stack:
+  - /home/luc/work/my-app/node_modules/ajv-keywords/dist/definitions/typeof.js
+  - /home/luc/work/my-app/node_modules/ajv-keywords/dist/keywords/typeof.js
+  - /home/luc/work/my-app/node_modules/ajv-keywords/dist/keywords/index.js
+  - /home/luc/work/my-app/node_modules/ajv-keywords/dist/index.js
+  - /home/luc/work/my-app/node_modules/schema-utils/dist/validate.js
+  - /home/luc/work/my-app/node_modules/schema-utils/dist/index.js
+  - /home/luc/work/my-app/node_modules/webpack-dev-server/lib/Server.js
+  - /home/luc/work/my-app/node_modules/react-scripts/scripts/start.js
+
+I had to manually say :cmd:`npm install --save-dev ajv` to get it to work. Now
+it works::
+
+  Compiled successfully!
+
+  You can now view my-app in the browser.
+
+    Local:            http://localhost:3000
+    On Your Network:  http://192.168.1.115:3000
+
+  Note that the development build is not optimized.
+  To create a production build, use npm run build.
+
+  webpack compiled successfully
+
+And the browser launches and shows the screen described in the tutorial.
+
+But on the console I see the following warnings::
+
+  One of your dependencies, babel-preset-react-app, is importing the
+  "@babel/plugin-proposal-private-property-in-object" package without
+  declaring it in its dependencies. This is currently working because
+  "@babel/plugin-proposal-private-property-in-object" is already in your
+  node_modules folder for unrelated reasons, but it may break at any time.
+
+  babel-preset-react-app is part of the create-react-app project, which
+  is not maintianed anymore. It is thus unlikely that this bug will
+  ever be fixed. Add "@babel/plugin-proposal-private-property-in-object" to
+  your devDependencies to work around this error. This will make this message
+  go away.
+
+The ``create-react-app`` project is not maintained any more?! That sounds
+strange! Maybe the freecodecamp.org tutorial is obsolete? But also the
+"official" `Getting Started
+<https://create-react-app.dev/docs/getting-started>`__ page recommends the same
+steps.
+
+The ``create-react-app`` project is
+`hosted on GitHub <https://github.com/facebook/create-react-app>`__, so
+I started to file an issue.
+It asks me what type of issue: a bug report.
+
+The issue template recommends to do::
+
+  $ sudo npm install -g npm@latest
+
+Maybe this is the source of all my problems! I ran it, and it said::
+
+  changed 13 packages in 3s
+  22 packages are looking for funding
+  run `npm fund` for details
+
+But the issue remained the same.
+
+So today I submitted my first issue to the facebook group on GitHub:
+
+  https://github.com/facebook/create-react-app/issues/13643
+
+I ran :cmd:`npm uninstall -g html-webpack-plugin n react-dom typedoc` to remove
+everything except corepack and npm from my global environment::
+
+  $ npm ls -g
+  /usr/local/lib
+  ├── corepack@0.28.1
+  └── npm@10.8.2
+
+TODO: The second warning above ("babel-preset-react-app is part of the
+create-react-app project, which is not maintianed anymore....") seems to be a
+false alert. That might become my second issue. Furthermore it contains a type
+"maintianed" instead of "maintained".

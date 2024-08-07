@@ -70,7 +70,7 @@ Language skills
 Computer skills
 ---------------
 
-- Programming languages: Python, Javascript, Java, bash.
+- Programming languages: Python, JavaScript, Java, bash.
 - I have also worked in PHP, C++, Clipper_, VisualBasic.
 - Application software: LibreOffice, Thunderbird, GIMP
 - Operating Systems: Ubuntu, Debian
