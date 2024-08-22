@@ -130,11 +130,11 @@ Hobbies
   in a private community with my sister and her husband.
 
 
-.. _AbAKUS: http://www.abakus.be
-.. _TIM: http://tim.lino-framework.org/129.html
-.. _TIMtools: http://code.google.com/p/timtools/
-.. _Clipper: http://en.wikipedia.org/wiki/Clipper_(programming_language)
+.. _AbAKUS: https://www.abakus.be
+.. _TIM: https://tim.lino-framework.org/129.html
+.. _TIMtools: https://timtools.lino-framework.org/about.html
+.. _Clipper: https://en.wikipedia.org/wiki/Clipper_(programming_language)
 .. _Django: https://www.djangoproject.com/
-.. _ExtJS: http://www.sencha.com/products/extjs/
-.. _atelier: http://atelier.lino-framework.org
+.. _ExtJS: https://www.sencha.com/products/extjs/
+.. _atelier: https://atelier.lino-framework.org
 .. _davlink: https://github.com/lino-framework/davlink

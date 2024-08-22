@@ -55,7 +55,7 @@ html_logo = "logo2.jpg"
 extlinks.update(ticket=('https://jane.mylino.net/#/api/tickets/AllTickets/%s',
                         '#%s'))
 extlinks.update({
-    'issue': ('http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
+    # 'issue': ('http://code.google.com/p/lino/issues/detail?id=%s', '#%s'),
     'checkin': ('http://code.google.com/p/lino/source/detail?r=%s', None),
     'srcref': ('https://github.com/lsaffre/blog/blob/master/%s', '%s'),
     'linosrcref':

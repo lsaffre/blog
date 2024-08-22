@@ -1,0 +1,61 @@
+:date: 2024-08-15
+
+=============
+The main page
+=============
+
+Thursday, August 15, 2024
+
+The main page of every Lino application is returned by the
+:class:`lino_react.views.Index` view (`source
+<https://gitlab.com/lino-framework/react/-/blob/master/lino_react/react/views.py?ref_type=heads#L639>`__),
+which just renders the :xfile:`react/main.html` template using Jitsi. This
+rendering happens at runtime for each incoming HTTP request.
+
+The :xfile:`react/main.html` template is itself rendered from another template
+file :xfile:`lino_react/react/components/index.html` (`source
+<https://gitlab.com/lino-framework/react/-/blob/master/lino_react/react/components/index.html?ref_type=heads>`__).
+But this rendering is done only once, by webpack, during :cmd:`npm build`.  The
+two only statements replaced by webpack are ``<%= webpack_comment %>`` and ``<%=
+webpack_injects %>``.
+
+The ``<%= webpack_comment %>`` statement expands into a comment reminding us to
+not modify this file directly, the ``<%= webpack_injects %>`` statement expands
+into something like this::
+
+  <script defer src="{{site.build_static_url('react/main.runtime.ddd08114b7e8cedd5863.js')}}"></script>
+  <script defer src="{{site.build_static_url('react/main.2454e643ddf1a330e98b.js')}}"></script>
+
+The ``defer`` attribute means that the script should be downloaded in parallel
+to parsing the page, and executed after the page has finished parsing.
+
+More precisely, above rendering is done by the `HtmlWebpackPlugin plugin
+<https://webpack.js.org/plugins/html-webpack-plugin/>`__, as specified in the
+:xfile:`webpack.config.js`. We use this plugin mostly because our webpack bundle
+includes a hash in the filename, which changes every compilation.
+
+Now that we have explored the "administrative" aspects, let's have a look at the
+the actually "relevant" parts.  The body of the main page is very short::
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root">
+      <div class="splash-screen">
+        <div class="splash-container">
+          <div class="splash-double-bounce1"></div>
+          <div class="splash-double-bounce2"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+
+There is also the following little chunk::
+
+  <script>
+      window.Lino = Object.assign(window.Lino || {}, {
+          lv: {{ lino_version }},
+          site_name: "{{ site_name }}",
+      });
+  </script>
+
+(To be continued)

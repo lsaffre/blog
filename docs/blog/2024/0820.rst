@@ -1,0 +1,60 @@
+:date: 2024-08-20
+
+========================
+Explanation to my riddle
+========================
+
+Tuesday, August 20, 2024
+
+I found the explanation to my riddle (:doc:`0817`).
+
+When Sharif built the front end in June,  he had of course an older version of
+some dependency.  The :xfile:`package-lock.json` file is not included in the git
+repo (because otherwisde we would also have to include the node_modules), but I
+hope that webpack somehow writes the list of included dependencies and their
+versions somewhere in the distributed output.
+
+No, it seems that there is no such file. I might write it myself by extending
+our :cmd:`npm run build` command to say something like "npm ls > ...
+versions.txt" when making a build.
+
+So I have to guess. And since the Lino grid view is made using PrimeReact
+datatable, let's start with downgrading PrimeReact.
+
+Indeed, according to the `PrimeReact changelog
+<https://github.com/primefaces/primereact/releases>`__, 10.6.6 was the latest PR
+version on June 17 when Sharif built the React front end that is currently
+visible in the repository.
+
+Using :cmd:`npm ls` I can see which version is being used on my machine::
+
+  (dev) luc@yoga:~/work/react$ npm ls
+  lino_react@24.5.0 /home/luc/work/react
+  ├── @babel/cli@7.24.8
+  ...
+  ├── primereact@10.8.2
+  ...
+
+The difference comes because in the :xfile:`package.json` we have::
+
+  "primereact": "latest",
+
+I changed that line into::
+
+  "primereact": "^10.6.6",
+
+Afterwards I also had to repeat myself, saying::
+
+  npm install primereact@10.6.6
+
+And when I now build the front end, the cell editor is back! So the explanation
+is that meanwhile PrimeReact has evolved.
+
+Of course this explanation is not yet a solution for our problem. We are not
+going to freeze Lino onto version 10.6.6 of PR, are we? We must rather adapt
+Lino to work with the latest PR version.
+
+So the next step is to carefully read the `PrimeReact release notes
+<https://github.com/primefaces/primereact/releases>`__ and find out which change
+caused things to brake. After reading the release notes quickly, I realize that
+this won't be trivial. I need to dive into how we use the PR library.
