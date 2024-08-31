@@ -1,0 +1,114 @@
+:date: 2024-08-29
+
+=========================
+Thursday, August 29, 2024
+=========================
+
+Continued from :doc:`0828`. Working on :ticket:`4381` (Uploading photos or other
+media files via email (postfix)).
+
+
+Hey, all my yesterday's plans are probably bullshit! It's much more
+straightforward to let Postfix deliver all emails to photos locally, as if
+photos was a normal user. And all analyzing is done by Lino in the
+:term:`background task`. What I don't know yet is how to remove mails from a
+mailbox.
+
+https://docs.python.org/3/library/mailbox.html
+
+Yes, it seems like the :mod:`mailbox` module is what we need. And I copy their
+warning:
+
+  Be very cautious when modifying mailboxes that might be simultaneously changed
+  by some other process. The safest mailbox format to use for such tasks is
+  `Maildir`; try to avoid using single-file formats such as `mbox` for
+  concurrent writing. If you’re modifying a mailbox, you must lock it by calling
+  the lock() and unlock() methods before reading any messages in the file or
+  making any changes by adding or deleting a message. Failing to lock the
+  mailbox runs the risk of losing messages or corrupting the entire mailbox.
+
+And now I remember that we have the :mod:`lino_xl.lib.inbox` plugin, which also
+accesses mailboxes but doesn't write to them. It just looks for incoming emails
+that are a reply to an existing :class:`comments.Comment`.
+
+I had a look at the `django-mailbox
+<https://django-mailbox.readthedocs.io/en/latest/>`__ plugin. This plugin (they
+call it a "Django application") consumes messages from POP3, IMAP, Office365 API
+or local mailboxes into a Django database. It defines three database models
+``Mailbox``(name, uri, from_email, active, last_polling), ``Message``(mailbox,
+subject, message_id, in_reply_to. from_header, to_header, encoded, processed,
+read, raw_message_content) and ``MessageAttachment``(message, headers, document)
+as well as an django-admin command ``getmail`` and a Django signal
+``message_received``.
+
+The value of ``django-mailbox`` is that it provides a few additional transport
+classes compared to the standard mailbox package (see `source code
+<https://github.com/coddingtonbear/django-mailbox/tree/master/django_mailbox/transports>`__).
+
+But for :ticket:`4381` we don't need ``django-mailbox`` because we don't want to
+see the messages themselves. We actually want to avoid moving the messages too
+much from one place to another.
+
+
+
+Here is a copy of the last version of the :file:`/home/photos/bin/photos.py`
+script on SR, which I won't maintain any more::
+
+  import logging; logger = logging.getLogger("photos")
+  import sys
+  from pathlib import Path
+  import email
+  import mimetypes
+  from email.policy import default
+  import datetime
+  import getpass
+
+  # store_dir = Path("/var/mail/photos")
+  # store_dir = Path("/home/photos")
+  store_dir = Path.home()
+
+  allowed_chars = "_-+"
+  def saniiyze(filename):
+      filename = filename.replace(" ", "_")
+      filename = "".join(c for c in filename if c.isalpha() or c.isdigit() or c in allowed_chars).strip()
+      return filename
+
+
+  def main():
+
+      log_file = store_dir / "photos.log"
+      print("I am", getpass.getuser(), "writing to", str(log_file))  # "I am photos writing to /home/photos"
+
+      log_file.write_text("hello")
+
+      input_str = "".join(sys.stdin)
+
+      msg = email.message_from_string(input_str, policy=default)
+      log_file.write_text("{}\n\n{}\n\n".format(sys.argv, msg))
+      now = datetime.datetime.now()
+      log_file.write_text("{} Write message from {} to {}.\n".format(now, msg['From'], store_dir))
+      # log_file.write_text("Write {} to {}.\n".format(msg, store_dir))
+      log_file.write_text("my username: {}".format(getpass.getuser()))
+
+      counter = 1
+      for part in msg.walk():
+          # multipart/* are just containers
+          if part.get_content_maintype() == 'multipart':
+              continue
+          # Applications should really sanitize the given filename so that an
+          # email message can't be used to overwrite important files
+          filename = sanitize(part.get_filename())
+          if not filename:
+              ext = mimetypes.guess_extension(part.get_content_type())
+              if ext:
+                  filename = f'part-{counter:03d}{ext}'
+          counter += 1
+          with open(store_dir / filename, 'wb') as fp:
+              fp.write(part.get_payload(decode=True))
+
+          #print("Wrote {} parts to {}".format(counter, filename))
+      print("Wrote {} parts to {}.".format(counter, store_dir))
+
+
+  if __name__ == '__main__':
+      main()
