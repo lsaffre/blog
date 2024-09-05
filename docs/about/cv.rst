@@ -62,8 +62,8 @@ Language skills
 
 - German : native language
 - French : native language
-- English : quite well
-- Estonian : saan hakkama küll
+- English : every-day language
+- Estonian : every-day language
 - Dutch : able to speak and understand
 
 
@@ -72,12 +72,12 @@ Computer skills
 
 - Programming languages: Python, JavaScript, Java, bash.
 - I have also worked in PHP, C++, Clipper_, VisualBasic.
-- Application software: LibreOffice, Thunderbird, GIMP
+- Application software: LibreOffice, Thunderbird, GIMP, MuseScore
 - Operating Systems: Ubuntu, Debian
 - Databases: MySQL, SQLite, PostGreSQL, dBase, Clipper_, ...
 - Open Source development tools: Git, Mercurial, SVN, Trac
 - Open standards: SQL, HTML, XML, ...
-- Text processing: REstructuredText, Sphinx, LaTeX, Lilypond, ...
+- Text processing: reStructuredText, Sphinx, LaTeX, Lilypond, ...
 
 
 Personal preferences
