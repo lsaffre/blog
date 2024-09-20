@@ -8,9 +8,16 @@ import lino
 from lino.sphinxcontrib import configure
 configure(globals(), 'lino_book.projects.min9.settings')
 
-spec = """getlino atelier etgen lino_noi lino_amici
-lino_presto lino_voga lino_cosi lino_welfare lino_tera lino_shop
-lino_avanti eidreader"""  # lino_react
+intersphinx_mapping.pop("welfare")
+
+# 20240920 Sphinx 8 complains about duplicate entry for welfare. The blog needs
+# all three languages of the welfare docs, these are added because
+# "lino_welfare" is in the string below.
+
+
+spec = """getlino lino_noi lino_amici
+lino_presto lino_voga lino_cosi lino_tera lino_welfare lino_shop
+lino_avanti eidreader"""  # lino_react atelier etgen
 
 from rstgen.sphinxconf import interproject; interproject.configure(globals(), spec)
 
