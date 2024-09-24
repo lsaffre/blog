@@ -1,0 +1,38 @@
+:date: 2024-09-24
+
+====================================
+Tuesday, September 24, 2024
+====================================
+
+Today I fixed the warning `A props object containing a "key" prop is being
+spread into JSX`_ and I wrote a section "How to prepare lino_react for commit"
+in :ref:`react.start`.
+
+
+A props object containing a "key" prop is being spread into JSX
+===============================================================
+
+Full warning::
+
+  Warning: A props object containing a "key" prop is being spread into JSX:
+    let props = {key: someKey, window_layout: ..., wt: ..., editing_mode: ..., tabIndex: ..., elem: ..., parent: ..., urlParams: ..., children: ...};
+    <ChoicesFieldElement {...props} />
+    React keys must be passed directly to JSX without using spread:
+    let props = {window_layout: ..., wt: ..., editing_mode: ..., tabIndex: ..., elem: ..., parent: ..., urlParams: ..., children: ...};
+    <ChoicesFieldElement key={someKey} {...props} />
+
+The cause was actually quite easy, but it took me a while to find it::
+
+   let pss = {style: style, key: i, className: this.ex.classNames("l-component")}
+   if (resizable_panel) return <this.ex.prSplitter.SplitterPanel {...pss}>
+       {child}
+   </this.ex.prSplitter.SplitterPanel>
+   return <div {...pss}>
+
+Here is the correct code::
+
+   let pss = {style: style, className: this.ex.classNames("l-component")}
+   if (resizable_panel) return <this.ex.prSplitter.SplitterPanel {...pss} key={i}>
+       {child}
+   </this.ex.prSplitter.SplitterPanel>
+   return <div {...pss} key={i}>

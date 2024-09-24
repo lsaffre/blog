@@ -1,0 +1,280 @@
+:date: 2024-09-23
+
+======================================
+I fixed the editor bug September 2024!
+======================================
+
+Monday, September 23, 2024
+
+We had a bug in the text field editor: when you start editing a text field that
+has already some content, the field gets cleared before you receive the focus. I
+don't remember when I saw it for the first time. It's there already several
+weeks or maybe months.
+
+Yesterday I changed the quill version in :xfile:`package.json` from "^1.3.7" to
+"^2.0.2", but I'd actually want to try upgrading all dependencies to their
+latest version. How to do that?
+
+::
+
+  $ npm outdated
+  Package                                     Current   Wanted   Latest  Location                                                 Depended by
+  @babel/cli                                   7.24.8   7.25.6   7.25.6  node_modules/@babel/cli                                  react
+  @babel/core                                  7.24.9   7.25.2   7.25.2  node_modules/@babel/core                                 react
+  @babel/plugin-transform-runtime              7.14.3   7.25.4   7.25.4  node_modules/@babel/plugin-transform-runtime             react
+  @babel/preset-env                            7.14.4   7.25.4   7.25.4  node_modules/@babel/preset-env                           react
+  @babel/preset-react                         7.13.13   7.24.7   7.24.7  node_modules/@babel/preset-react                         react
+  @electron-forge/cli                           7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/cli                         react
+  @electron-forge/maker-deb                     7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/maker-deb                   react
+  @electron-forge/maker-rpm                     7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/maker-rpm                   react
+  @electron-forge/maker-squirrel                7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/maker-squirrel              react
+  @electron-forge/maker-zip                     7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/maker-zip                   react
+  @electron-forge/plugin-auto-unpack-natives    7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/plugin-auto-unpack-natives  react
+  @electron-forge/plugin-fuses                  7.4.0    7.5.0    7.5.0  node_modules/@electron-forge/plugin-fuses                react
+  @testing-library/jest-dom                     6.4.6    6.5.0    6.5.0  node_modules/@testing-library/jest-dom                   react
+  @testing-library/react                       14.3.1   14.3.1   16.0.1  node_modules/@testing-library/react                      react
+  @types/jest                                 29.5.12  29.5.13  29.5.13  node_modules/@types/jest                                 react
+  @types/react                                 18.3.3   18.3.8   18.3.8  node_modules/@types/react                                react
+  babel-loader                                  9.1.3    9.2.1    9.2.1  node_modules/babel-loader                                react
+  css-loader                                   6.11.0   6.11.0    7.1.2  node_modules/css-loader                                  react
+  css-minimizer-webpack-plugin                  5.0.1    5.0.1    7.0.0  node_modules/css-minimizer-webpack-plugin                react
+  electron                                     29.4.5   29.4.6   32.1.2  node_modules/electron                                    react
+  electron-log                                  5.1.7    5.2.0    5.2.0  node_modules/electron-log                                react
+  esbuild                                     0.19.12  0.19.12   0.24.0  node_modules/esbuild                                     react
+  i18next                                     23.13.0  23.15.1  23.15.1  node_modules/i18next                                     react
+  i18next-browser-languagedetector              7.2.1    7.2.1    8.0.0  node_modules/i18next-browser-languagedetector            react
+  i18next-http-backend                          2.5.2    2.6.1    2.6.1  node_modules/i18next-http-backend                        react
+  jest-puppeteer                                9.0.2    9.0.2   10.1.1  node_modules/jest-puppeteer                              react
+  primeicons                                    6.0.1    6.0.1    7.0.0  node_modules/primeicons                                  react
+  puppeteer                                   21.11.0  21.11.0   23.4.0  node_modules/puppeteer                                   react
+  query-string                                  8.2.0    8.2.0    9.1.0  node_modules/query-string                                react
+  quill-mention                                 4.1.0    4.1.0    6.0.1  node_modules/quill-mention                               react
+  rc-collapse                                   3.7.3    3.8.0    3.8.0  node_modules/rc-collapse                                 react
+  react-i18next                                14.1.3   14.1.3   15.0.2  node_modules/react-i18next                               react
+  react-router-dom                             6.26.1   6.26.2   6.26.2  node_modules/react-router-dom                            react
+  style-loader                                  3.3.4    3.3.4    4.0.0  node_modules/style-loader                                react
+  ts-jest                                      29.2.4   29.2.5   29.2.5  node_modules/ts-jest                                     react
+  typescript                                    5.5.4    5.6.2    5.6.2  node_modules/typescript                                  react
+  uglify-js                                    3.19.2   3.19.3   3.19.3  node_modules/uglify-js                                   react
+
+
+::
+  $ npx npm-check-updates -u
+  Need to install the following packages:
+  npm-check-updates@17.1.3
+  Ok to proceed? (y)
+
+  Upgrading /home/luc/work/react/package.json
+  [====================] 76/76 100%
+
+   @babel/cli                                    ^7.24.1  →   ^7.25.6
+   @babel/core                                   ^7.13.1  →   ^7.25.2
+   @babel/plugin-transform-runtime              ^7.13.10  →   ^7.25.4
+   @babel/preset-env                             ^7.13.5  →   ^7.25.4
+   @babel/preset-react                          ^7.12.13  →   ^7.24.7
+   @babel/preset-typescript                      ^7.23.3  →   ^7.24.7
+   @electron-forge/cli                            ^7.3.0  →    ^7.5.0
+   @electron-forge/maker-deb                      ^7.3.0  →    ^7.5.0
+   @electron-forge/maker-rpm                      ^7.3.0  →    ^7.5.0
+   @electron-forge/maker-squirrel                 ^7.3.0  →    ^7.5.0
+   @electron-forge/maker-zip                      ^7.3.0  →    ^7.5.0
+   @electron-forge/plugin-auto-unpack-natives     ^7.3.0  →    ^7.5.0
+   @electron-forge/plugin-fuses                   ^7.3.0  →    ^7.5.0
+   @electron/fuses                                ^1.7.0  →    ^1.8.0
+   @testing-library/jest-dom                      ^6.1.5  →    ^6.5.0
+   @testing-library/react                        ^14.1.2  →   ^16.0.1
+   @types/jest                                  ^29.5.11  →  ^29.5.13
+   @types/lodash                               ^4.14.202  →   ^4.17.7
+   @types/react                                 ^18.2.28  →   ^18.3.8
+   @types/react-dom                             ^18.2.13  →   ^18.3.0
+   autoprefixer                                  ^10.2.4  →  ^10.4.20
+   babel-loader                                   ^9.1.3  →    ^9.2.1
+   builder-util-runtime                           ^9.2.4  →    ^9.2.5
+   classnames                                     ^2.2.6  →    ^2.5.1
+   css-loader                                     ^6.8.1  →    ^7.1.2
+   css-minimizer-webpack-plugin                   ^5.0.1  →    ^7.0.0
+   electron                                      ^29.1.0  →   ^32.1.2
+   electron-log                                   ^5.1.1  →    ^5.2.0
+   electron-squirrel-startup                      ^1.0.0  →    ^1.0.1
+   electron-updater                               ^6.1.8  →    ^6.3.4
+   esbuild                                       ^0.19.8  →   ^0.24.0
+   html-webpack-plugin                            ^5.5.3  →    ^5.6.0
+   i18next                                      ^23.10.1  →  ^23.15.1
+   i18next-browser-languagedetector               ^7.2.1  →    ^8.0.0
+   i18next-http-backend                           ^2.5.0  →    ^2.6.1
+   i18next-scanner                                ^4.4.0  →    ^4.5.0
+   jest-puppeteer                                 ^9.0.2  →   ^10.1.1
+   primeicons                                     ^6.0.1  →    ^7.0.0
+   prop-types                                    ^15.7.2  →   ^15.8.1
+   puppeteer                                     ^21.6.1  →   ^23.4.0
+   query-string                                   ^8.1.0  →    ^9.1.0
+   quill-mention                                  ^4.1.0  →    ^6.0.1
+   rc-collapse                                    ^3.1.0  →    ^3.8.0
+   react                                         ^18.2.0  →   ^18.3.1
+   react-i18next                                 ^14.1.0  →   ^15.0.2
+   react-router-dom                              ^6.21.1  →   ^6.26.2
+   react-test-renderer                           ^18.2.0  →   ^18.3.1
+   react-transition-group                         ^4.4.1  →    ^4.4.5
+   style-loader                                   ^3.3.3  →    ^4.0.0
+   ts-jest                                       ^29.1.1  →   ^29.2.5
+   typescript                                     ^5.3.3  →    ^5.6.2
+   uglify-js                                     ^3.17.4  →   ^3.19.3
+   weak-key                                       ^1.0.2  →    ^1.0.3
+   webpack                                       ^5.53.0  →   ^5.94.0
+   whatwg-fetch                                   ^3.6.1  →   ^3.6.20
+   workbox-precaching                             ^7.0.0  →    ^7.1.0
+   workbox-webpack-plugin                         ^7.0.0  →    ^7.1.0
+
+  Run npm install to install new versions.
+  $
+
+::
+
+  $ npm install
+
+  added 32 packages, removed 43 packages, changed 169 packages, and audited 1687 packages in 1m
+
+  201 packages are looking for funding
+    run `npm fund` for details
+
+  7 vulnerabilities (1 high, 6 critical)
+
+  To address all issues (including breaking changes), run:
+    npm audit fix --force
+
+  Run `npm audit` for details.
+  $
+
+::
+
+  $ npm audit fix
+
+  up to date, audited 1687 packages in 3s
+
+  201 packages are looking for funding
+    run `npm fund` for details
+
+  # npm audit report
+
+  babel-traverse  *
+  Severity: critical
+  Babel vulnerable to arbitrary code execution when compiling specifically crafted malicious code - https://github.com/advisories/GHSA-67hx-6x53-jw92
+  fix available via `npm audit fix --force`
+  Will install babel-plugin-transform-class-properties@6.10.2, which is a breaking change
+  node_modules/babel-traverse
+    babel-helper-function-name  *
+    Depends on vulnerable versions of babel-template
+    Depends on vulnerable versions of babel-traverse
+    node_modules/babel-helper-function-name
+      babel-plugin-transform-class-properties  >=6.11.5
+      Depends on vulnerable versions of babel-helper-function-name
+      Depends on vulnerable versions of babel-template
+      node_modules/babel-plugin-transform-class-properties
+    babel-template  *
+    Depends on vulnerable versions of babel-traverse
+    node_modules/babel-template
+
+  json5  <1.0.2
+  Severity: high
+  Prototype Pollution in JSON5 via Parse Method - https://github.com/advisories/GHSA-9c47-m6qq-7p4h
+  fix available via `npm audit fix --force`
+  Will install webpack-typescript@0.5.5, which is a breaking change
+  node_modules/webpack-typescript/node_modules/json5
+    loader-utils  <=1.4.0
+    Depends on vulnerable versions of json5
+    node_modules/webpack-typescript/node_modules/loader-utils
+      webpack-typescript  >=0.5.6
+      Depends on vulnerable versions of loader-utils
+      node_modules/webpack-typescript
+
+
+  7 vulnerabilities (1 high, 6 critical)
+
+  To address all issues (including breaking changes), run:
+    npm audit fix --force
+  $
+
+::
+
+  $ npm audit fix --force
+  npm warn using --force Recommended protections disabled.
+  npm warn audit Updating webpack-typescript to 0.5.5, which is a SemVer major change.
+  npm warn audit Updating babel-plugin-transform-class-properties to 6.10.2, which is a SemVer major change.
+
+  removed 25 packages, changed 2 packages, and audited 1662 packages in 2s
+
+  201 packages are looking for funding
+    run `npm fund` for details
+
+  found 0 vulnerabilities
+  $
+
+After this upgrade, I had 2 `build` errors in :file:`cloneUI.ts` and
+:file:`integrity.ts` in :file:`lino_react/react/components/__tests__`, the same
+ones reported already by Joy when she had upgraded her dependencies. So it was
+easy to fix them.
+
+Now the front-end builds, and works at first glance... and surprise: the bug is
+gone!
+
+But there are at least two new problems:
+
+quill Cannot import modules/mention. Are you sure it was registered?
+====================================================================
+
+When a textfield editor starts, the JS console says "quill Cannot import
+modules/mention. Are you sure it was registered?"
+
+I saw that quill-mention has evolved from version 4 to 6 and that the first
+thing they instruct `in their README
+<https://github.com/quill-mention/quill-mention>`__ is to `import
+'quill-mention/autoregister';`, and that Lino's :xfile:`quillmodules.jsx` file
+doesn't do this. So I added that line and the warning went away. No need to dive
+deeper right now.
+
+Uncaught (in promise) TypeError: n is null
+==========================================
+
+The `New Client` :term:`quick link` is broken. When I click it, the JS console
+says::
+
+    Uncaught (in promise) TypeError: n is null,
+      onReady SiteContext.jsx:148
+      setReady Base.ts:181
+      componentDidMount Base.ts:153
+
+This issue is actually old, and it goes away when you reload the dashboard. It
+comes only when you had previously opened another table and then returned to the
+main page. I think it is a bug in our logic for retrieving the parent's context.
+I won't dive into this now because no customer has ever complained about it.
+
+It seems you are still using the old wait option
+================================================
+
+Full warning in the JS console:
+
+- react-i18next:: It seems you are still using the old wait option, you may
+  migrate to the new useSuspense behaviour.
+
+I had seen this warning before, and since it is still there after the upgrade, I
+decided to investigate a bit.
+
+As suggested e.g. `here
+<https://stackoverflow.com/questions/74850076/react-i18next-old-usesuspense-warning>`__,
+I replaced ``'wait'`` by ``'useSuspense'`` in  :file:`components/i18n.js` and
+the  warning was gone. And I didn't dive deeper.
+
+Another issue related to i18n is that the client requests GET
+http://127.0.0.1:8000/static/react/locales/en/translation.json and receives "404
+Not found". I didn't yet dive into this.
+
+Support for defaultProps will be removed from function components in a future major release
+===========================================================================================
+
+We have indeed a `Labeled` component, defined in
+:xfile:`LinoComponentUtils.jsx`, and not as a class but as a function.
+
+Thanks to Matt Pocock, who explains how to handle this issue in  a short video
+`Stop using defaultProps (React 18.3 preview)
+<https://www.youtube.com/watch?v=fnQusZt49_Y&t=102s>`_  After watching this
+video  I was able to convert our code.

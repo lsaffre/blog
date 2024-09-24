@@ -17,7 +17,7 @@ intersphinx_mapping.pop("welfare")
 
 spec = """getlino lino_noi lino_amici
 lino_presto lino_voga lino_cosi lino_tera lino_welfare lino_shop
-lino_avanti eidreader"""  # lino_react atelier etgen
+lino_avanti lino_react eidreader"""  # atelier etgen
 
 from rstgen.sphinxconf import interproject; interproject.configure(globals(), spec)
 
