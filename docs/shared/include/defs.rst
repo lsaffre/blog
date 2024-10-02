@@ -1,4 +1,10 @@
-.. see also /docs/dev/shared.rst
+.. The master copy of this file is in the book repository. Don't edit its copy in
+.. a slave repository.  See https://dev.lino-framework.org/writedocs/shared.html
+
+.. |eject|  image:: /../docs/shared/images/pi/eject.svg
+  :class: pi-button
+  :alt: pi-eject button
+
 .. |bars|  image:: /../docs/shared/images/pi/bars.svg
   :class: pi-button
   :alt: bars button
@@ -60,7 +66,7 @@
 .. |insert_old|  image:: /../docs/shared/images/buttons/insert.png
   :height: 1em
 
-.. |eject|  image:: /../docs/shared/images/buttons/eject.png
+.. .. |eject|  image:: /../docs/shared/images/buttons/eject.png
   :height: 1em
 
 .. |search|  image:: /../docs/shared/images/buttons/search.png

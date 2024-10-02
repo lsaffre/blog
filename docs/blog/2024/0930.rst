@@ -1,33 +1,72 @@
 :date: 2024-09-30
 
 ==========================
-A new Lino: Prima
+A new Lino: Lino Prima
 ==========================
 
 Monday, September 30, 2024
 
-Existing plugins: contacts
+Lino Prima is for storing evaluation results and printing certificates in a
+primary school.
 
+Existing plugins: contacts, users
 
-db models in the prima plugin:
+Database models in the ``prima`` plugin:
 
 - Teacher and Pupil are just subclasses of Person
-- Course: a set of Subjects and Skills to be taught to a number of Classes
-  Examples: 1. Schuljahr, 2. Schuljahr, ...
-- Subject (Unterrichtsfach).
-  Examples: Deutsch, Mathematik, ...
-- Block (Baustein): a subdivision of a Subject.
-  Fields: label, subject
-  Examples: Deutsch, Mathematik, ...
-- Year. Examples: 23-24, 24-25
-- Class: when a given Course is assigned to a group of pupils for a given Year
-  Examples: 1A, 1B, 2A, 2B, 2C, ...
-- Enrolment:
-  Fields: pupil, class
-- Role
-  Examples: Klassenleiter, Sportlehrer, 
-- Cast(teacher, class, role)
+
+- Year: A period of time, usually lasting from September to June
+  Examples: 23-24, 24-25
+
 - Periods: P1 and P2
+
+- Group (Klasse): A group of pupils who work together for a given ↗year in a
+  given ↗course.
+
+  Examples: 1A, 1B, 2A, 2B, 2C, ...
+
+- Enrolment (Einschreibung):
+  Fields: ↗pupil, ↗group
+
+- Role (Lehrerrolle)
+  Examples: Klassenleiter, Sportlehrer,
+
+- Cast (Rollenbelegung) : when a given role in a given group
+  Fields: ↗teacher, ↗group, ↗role
+
+- Subject (Unterrichtsfach).
+  Fields: name, ☑complex
+  Examples: Wissenschaften,  Kunst,  Musik,  Sport,  Schriftbild,  Heimatkunde/Sachkunde,
+  Französisch, Mathematik, Religion, Deutsch
+
+  Every subject has a set of ↗skills. "complex" means a complex schema for
+  evaluations using ↗skills, ↗blocks and ↗tests
+
+- Vintage (Jahrgang): 1, 2, ... 6
+
+- Skill (Hauptkompetenz): a subdivision of a ↗subject.
+  Fields: name, ↗subject
+  Examples: Deutsch:Schreiben, Deutsch:Lesen, Mathematik:Arithmetik
+
+- Block (Baustein): a subdivision of a ↗skill.
+  Fields: name, ref, ↗subject, ↗skill, ↗color, ↗vintage
+  Examples: Erlebnisse spannend erzählen (Erle), Rund um Tiere (Tier), Berichten
+  (Ber), Geschichten aus dem Leben erzählen (Leb)
+
+- Course (Kursus): a set of ↗subjects and ↗skills to be taught to a number of ↗groups
+  Fields : name, ↗vintage
+  Examples: 1. Schuljahr, 2. Schuljahr, ...
+
+- Probe: A test that has been made in a given group of pupils
+  Fields: name, ↗group, ↗period, ↗subject
+
+  Each probe has a list of "skill probes"
+
+- SkillProbe (Leistung): when a given ↗skill is being measured during a given
+  ↗probe
+
+  Fields: ↗probe, ↗skill, max_rating (Höchstpunktzahl)
+
 - Evaluation (Bewertung)
 
 - Certificate (Zeugnis)
