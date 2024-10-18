@@ -16,6 +16,15 @@ All other Linux software installed nicely on my Tuxedo notebook from
 :file:`.deb` packages because `Tuxedo OS is actually just an optimized Ubuntu
 <https://www.tuxedocomputers.com/en/Infos/Help-Support/Frequently-asked-questions/What-is-the-differences-between-TUXEDO-OS-and-Ubuntu/Kubuntu-_1.tuxedo>`__.
 
+More exactly it's an Ubuntu 22.04, codename "jammy"::
+
+  $ lsb_release -a
+  No LSB modules are available.
+  Distributor ID: Tuxedo
+  Description:    TUXEDO OS 3
+  Release:        22.04
+  Codename:       jammy
+
 Here is what I did.
 
 Modify the install script::
@@ -36,7 +45,8 @@ Change the case "ubuntu|neon|zorin)" into::
      ubuntu|neon|zorin|tuxedo)
 
 For normal people this would probably have worked. But I am a Belgian, and this
-caused a little problem::
+caused a little problem. It seems that the Belgian eid software conflicts with
+the Estonian one::
 
   $ sh install-open-eid.sh
   Adding RIA repository to APT sources list (/etc/apt/sources.list.d/ria-repository.list)
@@ -75,7 +85,6 @@ caused a little problem::
    libbeidpkcs11-0 : Conflicts: opensc-pkcs11 but 0.22.0-1ubuntu2 is to be installed
   E: Error, pkgProblemResolver::Resolve generated breaks, this may be caused by held packages.
 
-It seems that the Belgian eid software conflicts with the Estonian one.
 So I uninstalled the Belgian eid software::
 
   sudo apt remove eid-viewer eid-mw libbeidpkcs11-0
@@ -98,7 +107,7 @@ So I uninstalled the Belgian eid software::
   Removing libbeidpkcs11-0:amd64 (5.1.18v5.1.18-0u2204-1) ...
   Processing triggers for libc-bin (2.35-0ubuntu3.8) ...
 
-And then try again::
+And then tried again::
 
   $ sudo apt install open-eid
 
@@ -109,7 +118,8 @@ software installs as well::
 
 Voilà.
 
-..
-  Afterwards I noticed that maybe both (Estonian) DigiDoc and (Belgian) eid
-  viewer had been known to Tuxedo OS before and all this wasn't necessary. But
-  I'm not sure.
+Afterwards I noticed that maybe both (Estonian) DigiDoc and (Belgian) eid
+viewer had been known to Tuxedo OS before and all this wasn't necessary. But
+I'm not sure.
+
+sudo apt remove eid-viewer eid-mw libbeidpkcs11-0

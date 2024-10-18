@@ -1,0 +1,118 @@
+:date: 2024-10-10
+
+==========================
+Thursday, October 10, 2024
+==========================
+
+.. default-domain:: js
+
+I am working on :ticket:`5777` (ParameterStore (...) expects a list of 3 values
+but got 5), which requires me to dive into the :xfile:`NavigationControl.js` and
+:xfile:`Base.ts` files. This page contains my reading notes.
+
+The :attr:`localStorage` read-only property of `window
+<https://developer.mozilla.org/en-US/docs/Web/API/Window>`__ allows you to
+access a `Storage <https://developer.mozilla.org/en-US/docs/Web/API/Storage>`__
+object for the `Document
+<https://developer.mozilla.org/en-US/docs/Web/API/Document>`__\ 's origin; the
+stored data is saved across browser sessions. :attr:`localStorage` is similar to
+:attr:`sessionStorage`, except that :attr:`sessionStorage` gets cleared when the
+page session ends — that is, when the page is closed. (Source: `mozilla.org
+<https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage>`__) that
+
+
+.. xfile:: Base.ts
+
+The :xfile:`Base.ts` file:
+
+- defines the :class:`DynDep` class, which adds dynamic dependency management to
+  a class. The :meth:`constructor` loads the modules specified by
+  :attr:`requiredModules` and then calls :meth:`prepare`, sets :attr:`ready` to
+  true and finally calls :meth:`onReady` (which subclasses can override).
+
+- it also defines a :class:`Component` class, which extends the bare
+  :class:`React.Component` to use :class:`DynDep`.
+
+The file also creates two contexts :data:`URLContextType` and
+:data:`DataContextType`, using `React.createContext()
+<https://react.dev/reference/react/createContext>`__, and their default value is
+an (empty) object. A context lets a parent component provide data to the entire
+tree below it. (Source: `react.dev
+<https://react.dev/learn/passing-data-deeply-with-context>`__)
+
+They are assigned to the `contextType
+<https://react.dev/reference/react/Component#static-contexttype>`__ of our
+components. More precisely:
+
+- :data:`URLContextType` is used by: GridFilter, LinoBbar, LinoBody, LinoLayout,
+  LinoDialog, LinoPaginator, LinoParamsPanel, ...
+
+- :data:`DataContextType` is used by: GridElement, LinoComponents.UnknownElement
+
+IOW, in a GridElement instance, e.g. in the :meth:`GridElement.arrowSelect`
+method, `this.context` points to the :data:`DataContextType` and we
+can say ``this.context.rows`` to access the array of rows. Two questions:
+
+- Do all :class:`GridElement` instances share the same context? I guess that
+  React actually makes a copy of `contextType` for each new instance.
+
+- Where do we define that a :data:`DataContextType` has an attribute ``rows``?
+
+
+I see that React "recommend defining components as functions instead of
+classes." So some day we will probably `want to migrate
+<https://react.dev/reference/react/Component#alternatives>`__. But that won't be
+as easy as they describe it because we use an enhanced :class:`Component` base
+class.
+
+
+.. xfile:: NavigationControl.js
+
+The :xfile:`NavigationControl.js` file:
+
+- defines the :class:`Context` class, which extends :class:`DynDep`. A Context
+  is a controller for all navigation features. It as an attribute
+  :attr:`contextType`, which contains one of the following values (defined in
+  :xfile:`constants.js`)::
+
+    CONTEXT_TYPE_SINGLE_ROW = "SingleRow";
+    CONTEXT_TYPE_MULTI_ROW = "MultiRow";
+    CONTEXT_TYPE_ACTION = "Action";
+
+- defines the :class:`History` class, with attributes like
+  :attr:`state` (contains the "router state", an instance of :class:`State`),
+  and :attr:`context` (the context of its owner).
+
+  :meth:`History.pushPath`
+
+- defines :class:`Delegate`
+- defines :class:`State`, which represents a *router state*
+
+
+The :class:`ActionHandler`
+==========================
+
+.. class:: ActionHandler
+
+  .. method:: singleRow(event, pk, where, status)
+
+    Open a detail window on the given primary key `pk` in the current table.
+
+
+
+
+The :meth:`ActionHandler.singleRow` method is called by:
+
+- :meth:`GridElement.showDetail` (which is called when you click on the first cell of a row)
+- when you click on the title of a :class:`LinoCards` item
+
+
+.. class:: GridElement
+
+defines
+
+:meth:`DynDep.reflect`
+
+
+
+:class:`RegisterImportPool`,
