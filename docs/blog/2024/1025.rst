@@ -1,0 +1,32 @@
+:date: 2024-10-25
+
+========================
+Friday, October 25, 2024
+========================
+
+>>> url = "beid://https//xxxxxx.xxxx/receivedata.php?id=123456&date=2024-10-24"
+>>> from urllib.parse import quote, unquote
+>>> url
+'beid://https//xxxxxx.xxxx/receivedata.php?id=123456&date=2024-10-24'
+>>> quote(url)
+'beid%3A//https//xxxxxx.xxxx/receivedata.php%3Fid%3D123456%26date%3D2024-10-24'
+>>> unquote(quote(url))
+'beid://https//xxxxxx.xxxx/receivedata.php?id=123456&date=2024-10-24'
+>>> unquote(quote(url)) == url
+True
+>>> unquote(url) == url
+True
+
+Should we use urlparse rather than doing our own parsing? Like this:
+
+>>> from urllib.parse import urlparse
+>>> urlparse(url)
+ParseResult(scheme='beid', netloc='https', path='//xxxxxx.xxxx/receivedata.php', params='', query='id=123456&date=2024-10-24', fragment='')
+
+But this doesn't relieve us from having to unquote the URL:
+
+>>> urlparse(quote(url))
+ParseResult(scheme='', netloc='', path='beid%3A//https//xxxxxx.xxxx/receivedata.php%3Fid%3D123456%26date%3D2024-10-24', params='', query='', fragment='')
+
+So I prefer staying with our simple :meth:`split` because using :func:`urlparse`
+might introduce new unknown issues, 
