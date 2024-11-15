@@ -1,0 +1,59 @@
+:date: 2024-11-14
+
+===========================
+Thursday, November 14, 2024
+===========================
+
+I stumbled into a surprisingly easy solution for :ticket:`4851` (Bleach is no
+longer being maintained): I wrote a new function
+:func:`lino.utils.soup.sanitize`, which replaces :func:`bleach.clean`. Here are
+some first test cases I used for the new function. (But these are now merged
+into :doc:`/dev/bleach`).
+
+
+>>> from lino.utils.soup import sanitize
+
+>>> content = """
+... No tag at beginning of text.
+... bla bLTaQSTyI80t2t8l
+... foo bar.
+... And here is some <b>bold</b> text.
+...
+... """
+>>> print(sanitize(content))
+No tag at beginning of text.
+bla bLTaQSTyI80t2t8l
+foo bar.
+And here is some <b>bold</b> text.
+
+
+>>> content = """
+... <p align="right">First paragraph</p>
+... <p onclick="kill()">Second paragraph</p>
+... """
+>>> print(sanitize(content))
+<p align="right">First paragraph</p>
+<p>Second paragraph</p>
+
+
+>>> content = """
+... <!DOCTYPE html>
+... <html>
+...   <head>
+...     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+...     <title>Baby</title>
+...   </head>
+...   <body>
+...     This is a descriptive text with <b>some</b> formatting.<br>
+...     <br>
+...     Here is a second paragraph.<br>
+...     <br>
+...   </body>
+... </html>
+... """
+
+>>> print(sanitize(content))
+This is a descriptive text with <b>some</b> formatting.<br/>
+<br/>
+    Here is a second paragraph.<br/>
+<br/>
