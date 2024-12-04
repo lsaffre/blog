@@ -1,0 +1,152 @@
+:date: 2024-11-24
+
+=========================
+Sunday, November 24, 2024
+=========================
+
+When I run :cmd:`inv bd` in `prima`, I get this::
+
+  There is a programmable error in your configuration file:
+
+  Traceback (most recent call last):
+    File "/usr/lib/python3.10/pkgutil.py", line 417, in get_importer
+      importer = sys.path_importer_cache[path_item]
+  KeyError: PosixPath('/home/luc/work/prima/docs')
+
+  During handling of the above exception, another exception occurred:
+
+  Traceback (most recent call last):
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/sphinx/config.py", line 529, in eval_config_file
+      exec(code, namespace)  # NoQA: S102
+    File "/home/luc/work/prima/docs/conf.py", line 8, in <module>
+      configure(globals(), 'lino_prima.projects.prima1.settings')
+    File "/home/luc/work/lino/lino/sphinxcontrib/__init__.py", line 112, in configure
+      startup(django_settings_module)
+    File "/home/luc/work/lino/lino/__init__.py", line 158, in startup
+      django.setup()
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/django/__init__.py", line 19, in setup
+      configure_logging(settings.LOGGING_CONFIG, settings.LOGGING)
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/django/conf/__init__.py", line 81, in __getattr__
+      self._setup(name)
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/django/conf/__init__.py", line 68, in _setup
+      self._wrapped = Settings(settings_module)
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/django/conf/__init__.py", line 166, in __init__
+      mod = importlib.import_module(self.SETTINGS_MODULE)
+    File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+    File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+    File "/home/luc/work/prima/lino_prima/projects/prima1/settings.py", line 23, in <module>
+      SITE = Site(globals())
+    File "/home/luc/work/lino/lino/core/site.py", line 472, in __init__
+      self.load_plugins()
+    File "/home/luc/work/lino/lino/core/site.py", line 888, in load_plugins
+      install_plugin(app_name)
+    File "/home/luc/work/lino/lino/core/site.py", line 837, in install_plugin
+      app_mod = import_module(app_name)
+    File "/usr/lib/python3.10/importlib/__init__.py", line 126, in import_module
+      return _bootstrap._gcd_import(name[level:], package, level)
+    File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+    File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+    File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+    File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+    File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+    File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/bulma/__init__.py", line 1, in <module>
+      from pkg_resources import get_distribution, DistributionNotFound
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 3668, in <module>
+      def _initialize_master_working_set() -> None:
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 3651, in _call_aside
+      f(*args, **kwargs)
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 3680, in _initialize_master_working_set
+      working_set = _declare_state('object', 'working_set', WorkingSet._build_master())
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 647, in _build_master
+      ws = cls()
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 640, in __init__
+      self.add_entry(entry)
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 696, in add_entry
+      for dist in find_distributions(entry, True):
+    File "/home/luc/venvs/dev/lib/python3.10/site-packages/pkg_resources/__init__.py", line 2276, in find_distributions
+      importer = get_importer(path_item)
+    File "/usr/lib/python3.10/pkgutil.py", line 421, in get_importer
+      importer = path_hook(path_item)
+    File "<frozen importlib._bootstrap_external>", line 1632, in path_hook_for_FileFinder
+    File "<frozen importlib._bootstrap_external>", line 1504, in __init__
+    File "<frozen importlib._bootstrap_external>", line 182, in _path_isabs
+  AttributeError: 'PosixPath' object has no attribute 'startswith'
+
+It happens when the :xfile:`conf.py` says::
+
+  from lino.sphinxcontrib import configure
+  configure(globals(), 'lino_prima.projects.prima1.settings')
+
+Or more precisely when :func:`lino.sphinxcontrib.configure` calls
+:func:`lino.startup`. But the error does not occur when I do this in an
+interactive normal Python session:
+
+>>> from lino import startup
+>>> startup("lino_prima.projects.prima1.settings")
+
+>>> from importlib import import_module
+>>> import_module("bulma")
+<module 'bulma' from '/home/luc/venvs/dev/lib/python3.10/site-packages/bulma/__init__.py'>
+
+It might have to do with the fact that Bulma uses ``pkg_resources`` as an API,
+which is deprecated::
+
+  from pkg_resources import get_distribution, DistributionNotFound
+  <stdin>:1: DeprecationWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html
+
+I worked around the problem by modifying my copy of the `bulma/__init__.py
+<https://github.com/timonweb/django-bulma/blob/master/bulma/__init__.py>`__
+file as follows.
+
+Before::
+
+  from pkg_resources import get_distribution, DistributionNotFound
+  try:
+      __version__ = get_distribution('django-bulma').version
+  except DistributionNotFound:
+      # package is not installed
+      pass
+
+After::
+
+  __version__  = '0.9.0'
+  # from pkg_resources import get_distribution, DistributionNotFound
+  # try:
+  #     __version__ = get_distribution('django-bulma').version
+  # except DistributionNotFound:
+  #     # package is not installed
+  #     pass
+
+I considered already contacting Tim Kamanin, the maintainer of `django-bulma
+<https://github.com/timonweb/django-bulma>`__ and maybe even help him to move
+away from the deprecated usage of :mod:`pkg_resources`.
+
+But I can only ask him to change something if I can tell him how to reproduce my
+problem. So I created a virgin Sphinx project in a temporary directory and added
+the triggering code to the :xfile:`conf.py` file::
+
+  from lino.sphinxcontrib import configure
+  configure(globals(), 'lino_prima.projects.prima1.settings')
+  from lino import startup
+  startup("lino_prima.projects.prima1.settings")
+
+And this lead to undisclose the real culprit: it's my own code! No need to
+bother Tim. My :func:`rstgen.sphinxconf.configure` function did this::
+
+    docs_root = Path(...)
+    sys.path.append(docs_root)
+
+And the (deprecated) `pkg_resources` modules expects :data:`sys.path` to be a
+list of strings.
+
+So the solution was to change above line in
+:func:`rstgen.sphinxconf.configure` into::
+
+    sys.path.append(str(docs_root))
