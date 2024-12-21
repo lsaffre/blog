@@ -1,0 +1,102 @@
+:date: 2024-12-20
+
+=========================
+Friday, December 20, 2024
+=========================
+
+Today I continued to work on Ticket  :ticket:`5670` (Support e-invoices using
+PEPPOL).
+
+I decided to play with the source code of the `peppol-py
+<https://github.com/iterasdev/peppol-py>`__ package. Thanks for publishing your
+work, `Anders Rune Jensen <https://github.com/arj03>`__!
+
+Is it possible that my customers can (and must) become an "access point" of the
+Peppol network? So that I just need to install them something like this script?
+And when they register a sales invoice in TIM, TIM would call this script, which
+would connect to the Peppol network and say "Hello, here I have a new invoice".
+
+Before I actually started playing, I worked on the topic page
+:ref:`dg.topics.peppol`, trying to get a more or less satisfying understanding
+of :term:`PEPPOL` into my little brain. And I got quickly lost.
+
+For example the first sentence of the `README.md
+<https://github.com/iterasdev/peppol-py/blob/master/README.md>`__ file says that
+it is a "python implementation for sending peppol eDelivery AS4 documents". So I
+wanted to know what this :term:`AS4` actually means. On `docs.peppol.eu
+<https://docs.peppol.eu/edelivery/as4/specification/>`__ I found found the
+following definition:
+
+  In short, AS4 is used in the Peppol network for transmission of asynchronous
+  messages between corner 2 and corner 3 in a Four Corner Topology using the
+  Peppol PKI for signature and encryption on AS4 message level and SMP/SML for
+  dynamic discovery.
+
+Did you understand anything? I didn't. This is a good example of why I need my
+own definitions...
+Surf, surf, okay, everybody except me seems to know what this "AS4" stands
+for, but let's not get stuck any longer because of this. Let's have a look at
+this source code instead.
+
+The main script `sender.py
+<https://github.com/iterasdev/peppol-py/blob/master/sender.py>`__ wants at least
+two arguments: a ``--filename`` (I guess that this should be the XML file of the
+invoice) and a ``--receiver`` (which is then referred to as ``their_id``). And
+what does it do with this receiver?
+
+I copied `sml.py <https://github.com/iterasdev/peppol-py/blob/master/sml.py>`__
+and `smp.py <https://github.com/iterasdev/peppol-py/blob/master/smp.py>`__ into
+a file :file:`1220.py` (see below) in order to play with it.
+
+The README gives an example "9922:NGTBCNTRLP1001" for the ``--receiver``
+argument, and I guess that 9922 is an :term:`EAS` code (meaning "Andorra VAT
+number"). For my tests I'd rather use 9931 (Estonia VAT number) and our own VAT
+number, which is EE100588749.
+
+Here is my playground script :file:`1220.py`:
+
+.. literalinclude:: 1220.py
+
+
+Here is the output of my script::
+
+  smp_domain is B-e0aa140770a8690c4a3512bc5cdfaeb9.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu
+  request from url http://B-e0aa140770a8690c4a3512bc5cdfaeb9.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu/iso6523-actorid-upis::9931:EE100588749
+  Traceback (most recent call last):
+  ...
+  socket.gaierror: [Errno -2] Name or service not known
+
+So basically it builds a URL that requests from
+``acc.edelivery.tech.ec.europa.eu`` but gets an error "Name or service not
+known" as response.
+
+
+That server (acc.edelivery.tech.ec.europa.eu) seems to exist (at least it has an
+IP address) but doesn't answer to :cmd:`ping`::
+
+  $ ping acc.edelivery.tech.ec.europa.eu
+  PING acc.edelivery.tech.ec.europa.eu (147.67.35.45) 56(84) bytes of data.
+  ^C
+  --- acc.edelivery.tech.ec.europa.eu ping statistics ---
+  109 packets transmitted, 0 received, 100% packet loss, time 110629ms
+
+I must be missing something.
+
+I guess that the ``--receiver`` is not my customer (the receiver of the invoice)
+but a certified "Service Metadata Publisher" (:term:`SMP`). To become an SMP
+they need to `join OpenPeppol AISBL <https://peppol.org/join/>`__.
+That's definitively not something my customers will do.
+
+So these SMPs or APs are certified by Beppol authorities. Every country has a
+PEPPOL authority. For Belgium it is BOSA:  https://bosa.belgium.be
+
+And now I see that Hermes is back! I thought that it had vanished!
+
+https://bosa.belgium.be/fr/applications/hermes
+
+And my customers in Belgium can probably sign in to Hermes:
+
+https://hermes-belgium.be/hermeslogin?lang=fr
+
+Next step then is to explore Hermes with my customers and find out how Lino can
+upload their XML invoices to it.
