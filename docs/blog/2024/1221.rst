@@ -1,0 +1,51 @@
+:date: 2024-12-21
+
+===========================
+Saturday, December 21, 2024
+===========================
+
+I stumbled into what looks like a regression on the `cosi1e online demo
+<https://cosi1e.lino-framework.org>`__. I sign in as robin and then click on the
+"749 Sales invoices (SLS)" in the dashboard, ... but nothing happens. Or more
+precisely the JS console says::
+
+  Uncaught (in promise) TypeError: n is undefined
+    computeDefaults NavigationControl.js:289
+    _ NavigationControl.js:572
+    pushPath NavigationControl.js:731
+    runAction ActionHandler.tsx:739
+    checkAndRunAction ActionHandler.tsx:688
+    runAction App.jsx:559
+    <anonymous> :1
+  NavigationControl.js:289:47
+    pushPath NavigationControl.js:731
+    AsyncFunctionThrow self-hosted:804
+    (Async: async)
+    runAction ActionHandler.tsx:739
+    InterpretGeneratorResume self-hosted:1413
+    AsyncFunctionNext self-hosted:800
+    (Async: async)
+    checkAndRunAction ActionHandler.tsx:688
+    runAction App.jsx:559
+    <anonymous> :1
+
+The URL under the "749 Sales invoices (SLS)" text in the dashboard is::
+
+  javascript:window.App.runAction({ "actorId": "trading.InvoicesByJournal",
+  "an": "grid", "rp": null, "status": { "base_params": { "mk": 1, "mt": 23 },
+  "param_values": { "cleared": null, "clearedHidden": null, "end_period": null,
+  "end_periodHidden": null, "partner": null, "partnerHidden": null,
+  "start_period": null, "start_periodHidden": null, "state": null,
+  "stateHidden": null } } })
+
+I had a look at the mentioned source code :file:`App.jsx` and
+:file:`ActionHandler.tsx` (both are in
+:file:`react/lino_react/react/components`).
+
+Then I discovered that the problem doesn't occur on my machine. NB: of course I
+had hit :kbd:`Shift+Ctrl+R` before starting to investigate. So I cleared the
+cookies and site data for the online demo site, signed in again, hit
+:kbd:`Shift+Ctrl+R` once more, and the issue was gone.
+
+So I just stumbled into a situation where Lino does not automatically detect
+that the :term:`site data` needs to get cleared.

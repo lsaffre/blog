@@ -1,0 +1,26 @@
+:date: 2025-01-12
+
+========================
+Sunday, January 12, 2025
+========================
+
+Imagine you are building the dashboard for user X in a Lino Noi. You render the
+table of recent comments. At some moment you are there, with an instance of
+:class:`comments.Comment` and want to render a link to the
+:class:`comments.Comment.owner` of this comment. You call :meth:`ar.obj2html`,
+which calls :meth:`Model.as_str` to build the displayed text and :meth:`obj2url`
+to get the URL. Let's talk about that URL.
+It uses the "default table".
+:meth:`Model.get_default_table`
+
+
+The ↗ of the phantom row should open an insert window
+
+A different thing is when a row disappears from the list because of the end
+user's change. For example, you are in the list of "Active tickets", showing the
+detail view of one active ticket, and then you click on "Closed". Lino currently
+gives you a "bad request" warning in this case,, which is wrong. The correct
+behaviour here should be to skip to the next row, maybe with a warning "Ticket X
+is no longer in Active tickets after your change" (although there are situations
+where even this warning should get suppressed). If Lino cannot skip to the next
+row (because you were on the last one), it should skip back to the previous row.
