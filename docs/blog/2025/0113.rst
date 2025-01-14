@@ -1,0 +1,80 @@
+:date: 2025-01-13
+
+========================
+Playing with Ibanity
+========================
+
+Monday, January 13, 2025
+
+We are not going to become a PEPPOL Access Point, but we can become partner with
+Ibanity. We pay them a yearly fee of 2400€ and for this we can give access to up
+to 200 customers. It's not cheap but it's a reasonable price.
+
+Getting started
+===============
+
+- I opened an account on their `developer portal
+  <https://developer.ibanity.com>`__. This is where we will create credentials
+  for our customers.
+
+- They do not provide a web interface like Hermes where our customers would
+  themselves manage their invoices. We must implement this interface in TIM. The
+  TIM of my customers will connect to Ibanity using the credentials they get
+  from us, and TIM must handle all events of the PEPPOL network: receiving
+  invoices, sending invoices, verifying whether a business partner exists, ...
+
+- They provide a sandbox application, which I can use to write and test how our
+  software will access their API.
+
+- `API Reference <https://documentation.ibanity.com>`__
+
+- They have a `Python Library <https://github.com/ibanity/ibanity-python>`__,
+  which  "provides wrappers around the Ibanity API."
+
+
+I must now extend our accounting software TIM so that it uses the Ibanity API to
+access the Peppol network. I will create credentials for my customers in the
+Ibanity web interface. The TIM of my customers will connect to Ibanity using the
+credentials they get from me, and TIM must handle the events of the PEPPOL
+network: receiving invoices, sending invoices, verifying whether a business
+partner exists, ...
+
+I see that Ibanity had a Python library for accessing the API. But I also see
+that the last commit in this library is 7 years old, and this library is not
+published on PyPI, and there is no Python-specific documentation. I also know
+that I can make raw API calls from within Python. So here is my first question:
+Is this Python library actually being used by somebody? Is it a recommended way
+to use the Ibanity API?
+
+My first script
+===============
+
+Here is the first script I used for playing with Ibanity:
+
+.. literalinclude:: 0113.py
+
+I stored the client cert files in a directory below my :file:`~/.ssh`.
+
+I read https://requests.readthedocs.io/en/latest/user/advanced/#client-side-certificates
+
+I had to decrypt the private key because Python's requests module doesn't
+support encrypted keys::
+
+  $ cd ~/.ssh/ibanity
+  $ openssl rsa -in private_key.pem -out decrypted.private_key.pem
+
+Now I am getting::
+
+  ssl.SSLError: [SSL] PEM lib (_ssl.c:3900)
+
+Maybe I specified `key_file` and `cert_file` in the wrong order. After inverting
+the order I get at least a response::
+
+  <Response [401]>
+
+And 401 means "wrong credentials". So what is wrong with my credentials?
+
+I discovered the place in the `python-ibanity` library that does the connection:
+https://github.com/ibanity/ibanity-python/blob/master/ibanity/Ibanity.py
+
+I see that the `python-ibanity` package doesn't use :mod:`requests`. Why?

@@ -1,0 +1,41 @@
+:date: 2025-01-14
+
+================================
+Playing with Ibanity (continued)
+================================
+
+Tuesday, January 14, 2025
+
+I asked in the Ibanity support forum what's wrong with my :doc:`yesterday's
+script <0113>` and Pedro gave me a more promising version:
+
+.. literalinclude:: 0114.py
+
+Great! This version works::
+
+  Response status: 200
+  Response body: {"access_token":"access_token_1736875832","expires_in":300,"not-before-policy":0,"refresh_expires_in":300,"refresh_token":"refresh_token_1736875832","scope":"email profile","session_state":"94bdf4ce-0dea-4ab7-abda-a53c7ba4bc87","token_type":"bearer"}
+
+TIL that providing my credentials is more complex than just giving a certificate
+and a private key, it also requires `Basic access authentication
+<https://en.wikipedia.org/wiki/Basic_access_authentication>`__.
+
+I continue to read here:
+https://documentation.ibanity.com/einvoicing/1/products#services
+
+Some sentences in this document make me believe that maybe our customers can
+access the Peppol network via their online banking application:  "All the
+customer has to do is register to Zoomit via his preferred online banking
+application." So there is some hope that our customers can simply instruct their
+bank to accept incoming purchase invoices, they would then continue to enter
+them manually into TIM as they are used to do. Making this step automatically
+would involve considerable changes in configuration, we don't want this right
+now.
+
+TIM can already generate an invoice or credit note into Peppol XML format.  The
+next steps TIM should learn to do:
+
+- Customer Search – check if a customer is registered on the Peppol network (It
+  seems that the sender is responsible for verifying this, which makes sense)
+
+- Send document - sending the invoice or credit note in XML format
