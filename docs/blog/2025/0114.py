@@ -2,6 +2,8 @@ from pathlib import Path
 import requests
 import base64
 import sys
+import json
+from pprint import pprint
 
 # Define client ID and secret
 client_id = "69d85961-7d68-474d-9ac2-426fdc71bab8"
@@ -47,7 +49,10 @@ try:
 
     # Handle response
     print(f"Response status: {response.status_code}")
-    print(f"Response body: {response.text}")
+    # print(f"Response body: {response.text}")
+    rv = json.loads(response.text)
+    print("Response text:")
+    pprint(rv)
 
 except requests.exceptions.SSLError as ssl_error:
     print(f"SSL Error: {ssl_error}")
