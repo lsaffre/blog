@@ -6,7 +6,7 @@ import json
 from pprint import pprint
 
 # Set EXAMPLE to 1 or 2, see https://luc.lino-framework.org/blog/2025/0118.html
-EXAMPLE = 1
+EXAMPLE = 2
 
 # Define client ID and secret
 client_id = "69d85961-7d68-474d-9ac2-426fdc71bab8"
@@ -95,6 +95,7 @@ if EXAMPLE == 2:
     pprint(data)
     response = s.post(url, headers=headers, data=data)
     if response.status_code != 200:
+        print(response.text) # line added 20250121
         raise Exception(f"Unexpected status code {response.status_code} for POST {url}")
     rv = json.loads(response.text)
     pprint(rv)
