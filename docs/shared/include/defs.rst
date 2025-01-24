@@ -1,9 +1,13 @@
 .. The master copy of this file is in the book repository. Don't edit its copy in
 .. a slave repository.  See https://dev.lino-framework.org/writedocs/shared.html
 
+.. |sliders-h|  image:: /../docs/shared/images/pi/sliders-h.svg
+  :class: pi-button
+  :alt: sliders-h
+
 .. |eject|  image:: /../docs/shared/images/pi/eject.svg
   :class: pi-button
-  :alt: pi-eject button
+  :alt: eject
 
 .. |bars|  image:: /../docs/shared/images/pi/bars.svg
   :class: pi-button

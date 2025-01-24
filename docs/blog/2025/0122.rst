@@ -1,0 +1,43 @@
+:date: 2025-01-22
+
+================================
+Playing with Ibanity (continued)
+================================
+
+Wednesday, January 22, 2025
+
+:doc:`Yesterday <0118>` Geoffrey helped me to get a bit more of information::
+
+  {"errors":[{"code":"invalidPayload","detail":"The submitted payload could not be parsed.",
+  "meta":{"requestId":"00015ABF903CA9960A01063301BB678FE5E7E08D82DF"}}]}
+
+His explanation to this error message is "Well, that we couldn't parse the
+payload. an issue with the syntax. Sadly we can't see what, because we couldn't
+parse it."
+
+But what can be the problem? A blatant syntax problem is unlikely since I
+specify the payload as a dictionary and the Python ``requests`` module converts
+this to a stream. I have only the `Ibanity API documentation
+<https://documentation.ibanity.com/einvoicing/1/api/curl#peppol-customer-search-object>`__,
+and I cannot see anything that helps me.
+
+I reduced my script to focus on my problem:
+
+.. literalinclude:: 0122.py
+
+Out of intuition I tried to change the "Content-Type" header from
+"application/vnd.api+json" to "application/x-www-form-urlencoded".
+
+And with the new Content-Type I get a new result::
+
+  Exception: POST https://api.ibanity.com/einvoicing/customer-searches returned 404
+  {"errors":[{"code":"resourceNotFound","detail":"The route you are trying to reach was not found."}]}
+
+I tried all kind of variants of structuring the payload, and I added more
+information copied from the API docs example (``supportedDocumentFormats`` and
+``id``), but the response is always the same.
+
+I don't even know whether this result is better than :doc:`yesterday <0118>` or
+not :-/
+
+The story goes on here: :doc:`0123`.

@@ -1,0 +1,57 @@
+:date: 2025-01-23
+
+================================
+Playing with Ibanity (continued)
+================================
+
+Thursday, January 23, 2025
+
+Geoffrey helped me to find the mistakes in my :doc:`yesterday <0122>` script:
+content type should be ``application/vnd.api+json``,  there was a mistake in my
+URL, and the payload should get specified using the ``json`` keyword argument
+instead of ``data`` (I didn't know this argument, so I looked up the `API docs
+<https://requests.readthedocs.io/en/latest/api/#requests.request>`__).
+
+Here, finally, is the working script:
+
+.. literalinclude:: 0123.py
+
+And here is the output::
+
+  $ python docs/blog/2025/0123.py
+  Customer search
+  {'data': {'attributes': {'customerReference': '9925:BE0010012671',
+                           'supportedDocumentFormats': [{'customizationId': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0',
+                                                         'localName': 'Invoice',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
+                                                         'ublVersionId': '2.1'},
+                                                        {'customizationId': 'urn:cen.eu:en16931:2017#conformant#urn:UBL.BE:1.0.0.20180214',
+                                                         'localName': 'Invoice',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
+                                                         'ublVersionId': '2.1'},
+                                                        {'customizationId': 'urn:cen.eu:en16931:2017#conformant#urn:UBL.BE:1.0.0.20180214',
+                                                         'localName': 'CreditNote',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2',
+                                                         'ublVersionId': '2.1'},
+                                                        {'customizationId': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0',
+                                                         'localName': 'CreditNote',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2',
+                                                         'ublVersionId': '2.1'},
+                                                        {'customizationId': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0',
+                                                         'localName': 'Invoice',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
+                                                         'ublVersionId': '2.1'},
+                                                        {'customizationId': 'urn:cen.eu:en16931:2017#compliant#urn:fdc:nen.nl:nlcius:v1.0',
+                                                         'localName': 'CreditNote',
+                                                         'profileId': 'urn:fdc:peppol.eu:2017:poacc:billing:01:1.0',
+                                                         'rootNamespace': 'urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2',
+                                                         'ublVersionId': '2.1'}]},
+            'id': '99988e77-cc4a-4583-bd4a-288095c5566e',
+            'type': 'peppolCustomerSearch'}}
+
+Okay so far. Now let's go on.
