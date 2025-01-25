@@ -15,7 +15,7 @@ intersphinx_mapping.pop("welfare")
 # "lino_welfare" is in the string below.
 
 
-spec = """getlino lino_noi lino_amici
+spec = """getlino lino_amici
 lino_presto lino_voga lino_cosi lino_tera lino_welfare lino_shop
 lino_avanti lino_react eidreader lino_prima"""  # atelier etgen
 

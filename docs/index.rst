@@ -28,4 +28,5 @@ Sitemap
    tickets/index
    glossary
    ref/index
+   changes/index
    copyright
