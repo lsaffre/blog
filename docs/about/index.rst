@@ -46,7 +46,8 @@ older brother `TIM <https://tim.lino-framework.org/129.html>`__.
   `Synod on Synodality <https://hw.saffre-rumma.net/sc/>`__.
 
 
-How to contact me:
+How to contact me
+=================
 
 ================== ====================================================================
 Email              **luc** (at) **saffre** (dash) **rumma** (dot) **net**
@@ -60,7 +61,11 @@ VCF                `Import into your address book <../dl/luc.vcf>`_
 
 .. Confidential mails `GPG Public key <../dl/pubkey.gpg>`_ |br|
 
+More about me
+=============
+
 .. toctree::
+   :maxdepth: 1
 
    hire
    cv
@@ -69,7 +74,6 @@ VCF                `Import into your address book <../dl/luc.vcf>`_
 
 
 .. toctree::
-   :maxdepth: 1
    :hidden:
 
    contact
