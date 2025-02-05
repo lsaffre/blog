@@ -1,0 +1,98 @@
+:date: 2025-02-02
+
+==================================
+Lino sites with multiple "systems"
+==================================
+
+Sunday, February 2, 2025.
+
+Here is a set of unfinished ideas about  :ticket:`5904` (Lino sites with
+multiple "systems"), which is the result of my medittions on :ticket:`5901` and
+:ticket:`5902`.  This blog entry is meant to be integrated into the Developer
+Guide when the time has come. There is no need to hurry.
+
+The :mod:`lino_xl.lib.ledgers` plugin expresses something important, but the
+name "ledgers" is misleading. It's about more than accounting. And it is even
+more than a plugin, it is a new core feature, causing changes in many places of
+the Lino core. This is not a job for a simple plugin. The
+:mod:`lino_xl.lib.ledgers` plugin will be replaced by a new site attribute.  The
+Lino world will get a new fundamental concept: we knew already the difference
+between a :term:`Lino server` and a :term:`Lino site`, but now we will also talk
+about :term:`Lino systems <Lino system>`.
+
+.. glossary::
+
+  Lino system
+
+    A subset of a :term:`Lino site` that is accessible only to end users who are
+    part of this system. Each system can be subject to an individual hosting
+    agreement with a customer.
+
+With this new feature, a :term:`hosting provider` can run a single :term:`Lino
+site` and share it among multiple customers. Which is potentially much more
+lucrative.
+
+Until now all Lino sites are single-system. They have one and only one instance
+of  the :class:`lino.modlib.system.SiteConfig` model. We will rename this model
+to :class:`system.System` and introduce a new site attribute
+:setting:`multisystem`.
+
+.. setting:: multisystem
+
+  Whether this :term:`Lino site` hosts multiple :term:`Lino systems <Lino
+  system>`. You activate it in your :xfile:`settings.py` file::
+
+    class Site(Site):
+        multisystem = True
+
+Or should it rather be plugin setting? In this case the :xfile:`settings.py`
+would look like this::
+
+    def get_plugin_configs(self):
+        yield super().get_plugin_configs()
+        yield ('system', 'multisystem', True)
+
+Whether site attribute or plugin setting, the idea is that on a multisystem site
+there can me more than one :class:`system.System` instance.
+
+On a multisystem site, most database models get an additional field named
+:attr:`system`, which is a non-nullable :term:`foreign key` to
+:class:`system.System`. So every database row belongs to a given system. And
+this field is *invisible to normal users*. It is automatically set when the user
+creates a new database row, and Lino automatically guarantees to never show to a
+normal user any database rows belonging to an alien system.
+
+Normal users are not aware that a Lino site hosts multiple systems.
+
+We will have a new user role :class:`SystemAware`. A system-aware user can see
+and edit this special field :attr:`system`.  A multisystem Lino site should
+define a dedicated user type who does nothing but managing systems.
+The system manager of a :term:`Lino site` is responsible for
+
+- creating new systems and initializing them with demo data or default data from
+  fixtures or from from templates
+- creating at least one user for every system
+- deactivating or deleting systems that are no longer used
+
+The :class:`lino.modlib.users.Users` table will get the following required
+roles::
+
+    required_roles = {(SiteAdmin, SystemAware)}
+
+A tuple in :attr:`required_roles <lino.core.actors.Actor.required_roles>`  means
+that one *OR* the other role is required.
+
+The :class:`system.Systems` table will differ depending on whether
+:attr:`multisite` is `True` or `False`. This might get a bit magical.
+
+I said that *most* database models get an additional field named :attr:`system`
+because at least :class:`contenttypes.ContentType` and :class:`sessions.Session`
+do *not* need this field.
+
+We will probably say ``known_values.update(system=self.user.system)`` in
+:meth:`Request.__init__` or :meth:`Request.setup`.
+
+We will have to fight quite some dragons.
+
+Once more: there is no need to hurry. Even the term "system" might change. Try
+for example to re-read this post and replace "system" by "community".
