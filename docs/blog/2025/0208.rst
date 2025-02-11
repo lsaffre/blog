@@ -1,0 +1,107 @@
+:date: 2025-02-08
+
+==========================
+Saturday, February 8, 2025
+==========================
+
+>>> from bs4 import BeautifulSoup
+>>> from pprint import pprint
+>>> html = '''<p>The <a href="foo"><b>quick</b></a>, brown fox jumps over a lazy dog.</p>'''
+>>> # soup = BeautifulSoup(html, "html.parser")
+>>> soup = BeautifulSoup(html, features="lxml")
+>>> p = soup.find('p')
+>>> print(p.string)
+None
+>>> list(p.children)
+['The ', <a href="foo"><b>quick</b></a>, ', brown fox jumps over a lazy dog.']
+>>> pprint([c.__class__ for c in p.children])
+[<class 'bs4.element.NavigableString'>,
+ <class 'bs4.element.Tag'>,
+ <class 'bs4.element.NavigableString'>]
+>>> a = p.find('a')
+>>> b = a.find('b')
+>>> assert b == p.find('b')
+
+>>> list(a.children)
+[<b>quick</b>]
+>>> list(b.children)
+['quick']
+
+>>> a.string.__class__
+<class 'bs4.element.NavigableString'>
+>>> b.string.__class__
+<class 'bs4.element.NavigableString'>
+
+>>> a.string
+'quick'
+>>> b.string
+'quick'
+
+>>> a.string.string
+'quick'
+>>> a.string.string.string.string
+'quick'
+
+
+>>> a
+<a href="foo"><b>quick</b></a>
+>>> b
+<b>quick</b>
+
+>>> old = a.string.replace_with("foo")
+>>> a
+<a href="foo"><b>foo</b></a>
+
+>>> old = a.replace_with("bar")
+>>> a
+<a href="foo"><b>foo</b></a>
+
+
+
+>>> b.string.string.replace_with("bar")
+'foo'
+>>> a
+<a href="foo"><b>bar</b></a>
+>>> b
+<b>bar</b>
+
+
+>>> html = '<p>Before <a href="foo"><b>bar</b></a> and after.</p>'
+>>> soup = BeautifulSoup(html, features="lxml")
+>>> p = soup.find('p')
+>>> list(p.descendants)
+['Before ', <a href="foo"><b>bar</b></a>, <b>bar</b>, 'bar', ' and after.']
+>>> print(p.string)
+None
+>>> print(list(p))
+['Before ', <a href="foo"><b>bar</b></a>, ' and after.']
+>>> a = soup.find('a')
+>>> print(a.string)
+bar
+>>> list(a.children)
+[<b>bar</b>]
+
+
+>>> html = '<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>'
+>>> soup = BeautifulSoup(html, features="lxml")
+>>> p = soup.find('p')
+>>> s = p.string
+>>> print(s)
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+>>> unused = p.string.replace_with("foo")
+>>> print(p)
+<p>foo</p>
+
+
+>>> html = "<p>A <b>bold</b></p><p>\n\n and <i>italic</i> thing.</p>"
+>>> soup = BeautifulSoup(html, features="lxml")
+>>> p = soup.find('p')
+>>> list(p.children)
+['A ', <b>bold</b>]
+
+
+>>> html = """<p>foo <html><head><base href="bar" target="_blank"></head><body></p><p>baz</p>"""
+>>> soup = BeautifulSoup(html, features="lxml")
+>>> for c in soup.children:
+...     print(c)
+<html><body><p>foo </p><base href="bar" target="_blank"/><p>baz</p></body></html>

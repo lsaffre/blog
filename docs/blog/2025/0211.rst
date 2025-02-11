@@ -1,0 +1,99 @@
+:date: 2025-02-11
+
+==========================
+Tuesday, February 11, 2025
+==========================
+
+A user story about writing comments
+===================================
+
+A user writes a comment about a minor issue under a sticky ticket because he
+doesn't estimate necessary to create a whole ticket for such a little issue. But
+the issue gets a series of replies and other comments. It turns out that it
+wasn't such a minor thing. At this moment we can decide to create an independent
+ticket for it and to move the series of comments from the sticky ticket to the
+new one.
+
+This story just happened on Jane where I created :ticket:`5921`  (GL reports
+"Failed to sign in as robin" for noi1r and tera1) in order to regroup a series
+of three comments that until then had been under :ticket:`881` (Review test
+suites after a series of changes). How to move a comment from one ticket to
+another: by simply modifying the :attr:`owner_key` field. I did this for
+comments 15564, 15566 and 15567. Yes, it is possible to "change the topic"
+within a thread of comments. I think that this feature makes sense.
+
+("Owner" and "Topic" are synonym in the case of comments: we do
+``dd.update_field(Comment, "owner", verbose_name=_("Topic"))``.)
+
+Note that comment 15800 still has 881 as owner because it is just a reply to one
+of the tickets that were moved.  I *could* have moved it as well, but I didn't
+care because the default :class:`CommentsByRFC` table shows only top-level
+comments.
+
+It would be easy to extend :class:`comments.CommentChecker` so that it would
+correct this by setting the owner of a comment to the owner of its parent. But
+do we really want this? At least in the current situation it doesn't disturb,
+and it leaves a "memory" of the fact that this discussion had originally started
+on #881, 2 weeks before #5921 was created.
+
+
+
+Code review for #5910
+=====================
+
+I tried to review Sharif's commit `211cd2c09
+<https://gitlab.com/lino-framework/react/-/commit/211cd2c093b8ee72c787d2470cde6107024ff74d>`__,
+which fixes :ticket:`5910` (Detail link shows the wrong ticket in Jane). To
+review a change means to say something useful about it. Here is what I've been
+thinking. Though I'm not sure whether it is useful...
+
+Here is the code after the change::
+
+    interceptBrowserBF(event) {
+        const [pathname, search] = document.URL.split('#')[1].split('?'),
+            params = this.ex.queryString.parse(search),
+            { URLContext } = this;
+        if (pathname === URLContext.value.path) return;
+        if (URLContext.filled(params.rs)) {
+            if (URLContext.history.has(params.rs))
+                URLContext.history.load({rs: params.rs, lazy: true})
+            else URLContext.history.pushPath({
+                pathname: pathname, params: params, lazy: true});
+        } else {
+            params.rs = URLContext.newSlug();
+            this.navigate(URLContext.makePath({path: pathname, ...params}),
+                {replace: true})
+            URLContext.history.pushPath({
+                pathname: pathname, params: params, lazy: true});
+        }
+    }
+
+Here is what I learned from it:
+
+- The :meth:`App.interceptBrowserBF` method is our handler of the
+  `window.popstate
+  <https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event>`__.
+
+- The ``this.ex.queryString`` refers to the `query-string
+  <https://www.npmjs.com/package/query-string>`__ module. The ``this.ex`` tells
+  me that it has been loaded dynamically using the :class:`ImportPoolRegistry`.
+  As expected it parses the URL string into a JS object.
+
+- I wonder whether there is a difference between saying ``const { URLContext } =
+  this;`` and ``const URLContext = this.URLContext;``. It's one of these funny
+  Javascript magics...
+
+- Anyway, what is ``URLContext``? It is used so often in the Lino React frontend
+  but still a quite unknown beast to me. It has been initialized during
+  :meth:`App.prepare` using the following expression::
+
+      this.URLContext = new this.ex.nc.Context
+
+  Where ``nc`` refers to the :file:`NavigationControl` module.
+
+My summary so far: our :meth:`interceptBrowserBF` method does some magic to
+avoid loading a new page when it's not necessary. It searches the browser
+history for the current "random string" (the string stored in the ``rs`` URL
+parameter) and jumps back when possible. And the bug was that this mechanism
+didn't test for the case of an empty ``rs``. I have the feeling that this
+mechanism is quite magical and fragile. But my feeling isn't very founded.
