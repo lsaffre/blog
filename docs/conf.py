@@ -52,7 +52,7 @@ import datetime
 
 copyright = '2001-{} Luc Saffre'.format(datetime.date.today().year)
 
-# html_title = "Luc's dblog"
+html_title = project
 html_short_title = "Home"
 html_logo = "logo2.jpg"
 
@@ -94,7 +94,7 @@ extensions += ['sphinxfeed']
 # NB : not the public sphinxfeed but my extended version
 feed_base_url = 'https://luc.lino-framework.org'
 feed_author = 'Luc Saffre'
-feed_title = "Luc's developer blog"
+feed_title = project
 feed_field_name = 'date'
 feed_description = "Luc's developer blog"
 

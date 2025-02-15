@@ -1,0 +1,36 @@
+:date: 2025-02-14
+
+=========================
+Friday, February 14, 2025
+=========================
+
+I continued to explore the :term:`Ibanity API`. Thanks to Geoffrey who answered
+my questions on their support platform.
+
+Q: The Ibanity API documentation has three very similar sections about outbound
+documents: `Invoice
+<https://documentation.ibanity.com/einvoicing/1/api/curl#peppol-outbound-invoice>`__,
+`Credit Note
+<https://documentation.ibanity.com/einvoicing/1/api/curl#peppol-outbound-credit-note>`__
+and `Document
+<https://documentation.ibanity.com/einvoicing/1/api/curl#peppol-outbound-document>`__.
+Everything seems to be the same for these three sections, except for the value
+of ``type``. Why is this differentiation?
+
+A: The `outbound-document resource
+<https://documentation.ibanity.com/einvoicing/1/api/curl#peppol-outbound-document-object>`__
+exists only to describe the response of `list-peppol-outbound-documents
+<https://documentation.ibanity.com/einvoicing/1/api/curl#list-peppol-outbound-documents>`__,
+which returns a list of all outbound documents, both invoices and credit notes
+mixed up. Note that you cannot POST via this resource; when posting a document
+you must specify either Invoice or CreditNote.
+
+Q: What would happen if I would POST a credit note via the
+`create-peppol-outbound-invoice
+<https://documentation.ibanity.com/einvoicing/1/api/curl#create-peppol-outbound-invoice>`__
+call?
+
+A: It would return "invalid format" because Ibanity looks at the root element of
+the :term:`UBL` file, which is either ``<Invoice>`` or ``<CreditNote>``, and it will not
+match that of the POST. In the sandbox you cannot see this because the sandbox
+doesn't do such verification.

@@ -11,14 +11,11 @@
 About me
 ========
 
-.. sidebar::
+.. raw:: html
 
-  .. image:: photo2.jpg
-
-  .. raw:: html
-
-     <small>Photo by T. Korsar</small>
-
+  <p style="text-align:center; font-size:50%; float:right; margin:1ex; padding:2pt;">
+  <img src="https://luc.lino-framework.org/_images/photo2.jpg" style="max-width:100px;"/>
+  <br>Photo by T. Korsar</p>
 
 
 
@@ -52,7 +49,8 @@ How to contact me
 ================== ====================================================================
 Email              **luc** (at) **saffre** (dash) **rumma** (dot) **net**
 Phone              +372 56672435, +32 475 368513
-Social networks    |me|, `LinkedIn <https://www.linkedin.com/in/lucsaffre>`_ `GitLab <https://gitlab.com/lsaffre>`_, `Facebook <https://www.facebook.com/luc.saffre>`__
+Instant messages   `Matrix <https://matrix.to/#/@luc.saffre:matrix.org>`__, `Signal <https://signal.org/>`__, `WhatsApp <https://www.whatsapp.com/>`__
+Social networks    |me|,  `LinkedIn <https://www.linkedin.com/in/lucsaffre>`_ `GitLab <https://gitlab.com/lsaffre>`_, `Facebook <https://www.facebook.com/luc.saffre>`__
 Wikipedia          `et <https://et.wikipedia.org/wiki/Kasutaja:LucSaffre>`_ `de <https://de.wikipedia.org/wiki/Benutzer:LucSaffre>`__ `en <https://en.wikipedia.org/wiki/User:LucSaffre>`_ `fr <https://fr.wikipedia.org/wiki/Utilisateur:LucSaffre>`__
 Blog               `en <https://luc.lino-framework.org>`__ `de <https://luc.saffre-rumma.net>`__ `et <http://belglane.saffre-rumma.net>`__
 RSS                `en <https://luc.lino-framework.org/rss.xml>`__ `de <https://luc.saffre-rumma.net/rss.xml>`__ `et <https://belglane.saffre-rumma.net/rss.xml>`__
