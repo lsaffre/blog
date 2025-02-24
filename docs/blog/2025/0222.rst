@@ -1,0 +1,156 @@
+:date: 2025-02-22
+
+===========================
+Saturday, February 22, 2025
+===========================
+
+I am meditating on how to integrate into Lino the  `Participant Identifier
+Schemes
+<https://docs.peppol.eu/edelivery/codelists/v9.0/Peppol%20Code%20Lists%20-%20Participant%20identifier%20schemes%20v9.0.html>`_
+published as part of the  `OpenPeppol eDEC Code Lists
+<https://docs.peppol.eu/edelivery/codelists/>`_.
+
+For example the ``<cbc:EndpointID>`` for my employer `Rumma
+& Ko OÜ <https://www.saffre-rumma.net/>`__ is::
+
+  <cbc:EndpointID schemeID="9931">100588749</cbc:EndpointID>
+
+The **9931** is the **ICD value** of item **68** of the list of Participant Identifier Schemes,
+which has "Estonia VAT number" as **Scheme Name**.
+This item also has a **Scheme ID** of **EE:VAT**.
+
+Yes, our **VAT number** is 100588749.
+
+But we also have a **company number**, which is different from the VAT number:
+10501849. And there is another item for Estonia in that list, ICD value
+**0191**, named "Company code". So here is another valid ``<cbc:EndpointID>`` to
+point to my employer::
+
+  <cbc:EndpointID schemeID="0191">10501849</cbc:EndpointID>
+
+So the :meth:`lino_xl.lib.vat.VatVoucher.fill_from_xml` method will potentially
+get two different `<cbc:EndpointID>` for a same partner, either "9931:100588749"
+or "0191:10501849".
+
+>>> url = "https://docs.peppol.eu/edelivery/codelists/v9.0/Peppol%20Code%20Lists%20-%20Participant%20identifier%20schemes%20v9.0.json"
+>>> import requests
+>>> res = requests.get(url).json()
+>>> for scheme in sorted(res['values'], key=lambda x: x['country']):
+...        print("{country} {iso6523} {schemeid} {scheme-name}".format(**scheme))
+AD 9922 AD:VAT Andorra VAT number
+AL 9923 AL:VAT Albania VAT number
+AT 9914 AT:VAT Österreichische Umsatzsteuer-Identifikationsnummer
+AT 9915 AT:GOV Österreichisches Verwaltungs bzw. Organisationskennzeichen
+AT 9916 AT:CID Firmenidentifikationsnummer der Statistik Austria
+AT 9919 AT:KUR Kennziffer des Unternehmensregisters
+AU 0151 AU:ABN Australian Business Number (ABN) Scheme
+BA 9924 BA:VAT Bosnia and Herzegovina VAT number
+BE 0193 UBLBE UBL.BE Party Identifier
+BE 0208 BE:EN Numero d'entreprise / ondernemingsnummer / Unternehmensnummer
+BE 9925 BE:VAT Belgium VAT number
+BE 9956 BE:CBE Belgian Crossroad Bank of Enterprise number
+BG 9926 BG:VAT Bulgaria VAT number
+CH 0183 CH:UIDB Swiss Unique Business Identification Number (UIDB)
+CH 9927 CH:VAT Switzerland VAT number
+CY 9928 CY:VAT Cyprus VAT number
+CZ 9929 CZ:VAT Czech Republic VAT number
+DE 0204 DE:LWID Peppol-Leitweg-ID
+DE 9930 DE:VAT Germany VAT number
+DE 9958 DE:LID Peppol-Leitweg-ID
+DK 0096 DK:P The Danish Business Authority - P-number (DK:P)
+DK 0184 DK:DIGST The Danish Business Authority - CVR-number (DK:CVR)
+DK 0198 DK:ERST The Danish Business Authority - SE-number (DK:SE)
+DK 9901 DK:CPR Danish Ministry of the Interior and Health
+DK 9902 DK:CVR The Danish Commerce and Companies Agency
+DK 9904 DK:SE Danish Ministry of Taxation, Central Customs and Tax Administration
+DK 9905 DK:VANS Danish VANS providers
+EE 0191 EE:CC Company code
+EE 9931 EE:VAT Estonia VAT number
+ES 9920 ES:VAT Agencia Española de Administración Tributaria
+FI 0037 FI:OVT LY-tunnus
+FI 0212 FI:ORG Finnish Organization Identifier
+FI 0213 FI:VAT Finnish Organization Value Add Tax Identifier
+FI 0215 FI:NSI Net service ID
+FI 0216 FI:OVT2 OVTcode
+FR 0002 FR:SIRENE System Information et Repertoire des Entreprise et des Etablissements: SIRENE
+FR 0009 FR:SIRET SIRET-CODE
+FR 9957 FR:VAT French VAT number
+GB 9932 GB:VAT United Kingdom VAT number
+GR 9933 GR:VAT Greece VAT number
+HR 9934 HR:VAT Croatia VAT number
+HU 9910 HU:VAT Hungary VAT number
+IE 9935 IE:VAT Ireland VAT number
+IS 0196 IS:KTNR Icelandic identifier
+IS 9917 IS:KT Icelandic National Registry
+IT 0097 IT:FTI FTI - Ediforum Italia
+IT 0135 IT:SIA SIA Object Identifiers
+IT 0142 IT:SECETI SECETI Object Identifiers
+IT 0201 IT:CUUO Codice Univoco Unità Organizzativa iPA
+IT 0205 IT:COD CODDEST
+IT 0210 IT:CFI CODICE FISCALE
+IT 0211 IT:IVA PARTITA IVA
+IT 9906 IT:VAT Ufficio responsabile gestione partite IVA
+IT 9907 IT:CF TAX Authority
+IT 9921 IT:IPA Indice delle Pubbliche Amministrazioni
+JP 0188 JP:SST Corporate Number of The Social Security and Tax Number System
+JP 0221 JP:IIN The registered number of the qualified invoice issuer
+LI 9936 LI:VAT Liechtenstein VAT number
+LT 0200 LT:LEC Legal entity code
+LT 9937 LT:VAT Lithuania VAT number
+LU 9938 LU:VAT Luxemburg VAT number
+LV 0218 LV:URN Unified registration number
+LV 9939 LV:VAT Latvia VAT number
+MC 9940 MC:VAT Monaco VAT number
+ME 9941 ME:VAT Montenegro VAT number
+MK 9942 MK:VAT Macedonia, the former Yugoslav Republic of VAT number
+MT 9943 MT:VAT Malta VAT number
+MY 0230 MY:EIF National e-Invoicing Framework
+NL 0106 NL:KVK Vereniging van Kamers van Koophandel en Fabrieken in Nederland (Association of
+Chambers of Commerce and Industry in the Netherlands), Scheme
+NL 0190 NL:OINO Organisatie-identificatienummer (OIN)
+NL 9944 NL:VAT Netherlands VAT number
+NL 9954 NL:OIN Dutch Originator's Identification Number
+NO 0192 NO:ORG Organisasjonsnummer
+NO 9908 NO:ORGNR Enhetsregisteret ved Bronnoysundregisterne
+NO 9909 NO:VAT Norwegian VAT number
+PL 9945 PL:VAT Poland VAT number
+PT 9946 PT:VAT Portugal VAT number
+RO 9947 RO:VAT Romania VAT number
+RS 9948 RS:VAT Serbia VAT number
+SE 0007 SE:ORGNR Organisationsnummer
+SE 9955 SE:VAT Swedish VAT number
+SG 0195 SG:UEN Singapore Nationwide E-Invoice Framework
+SI 9949 SI:VAT Slovenia VAT number
+SK 9950 SK:VAT Slovakia VAT number
+SM 9951 SM:VAT San Marino VAT number
+TR 9952 TR:VAT Turkey VAT number
+US 9959 US:EIN US Employer ID Number
+VA 9953 VA:VAT Holy See (Vatican City State) VAT number
+international 0060 DUNS Data Universal Numbering System (D-U-N-S Number)
+international 0088 GLN Global Location Number
+international 0130 EU:NAL Directorates of the European Commission
+international 0199 LEI Legal Entity Identifier (LEI)
+international 0209 GS1 GS1 identification keys
+international 9912 EU:VAT National ministries of Economy
+international 9913 EU:REID Business Registers Network
+international 9918 IBAN SOCIETY FOR WORLDWIDE INTERBANK FINANCIAL, TELECOMMUNICATION S.W.I.F.T
+
+Countries like Andorra or Albania are simple and clear, the have only one
+identifier scheme. Italians are the most complex administration with not less
+than 10 schemes.
+
+For outbound documents things are simple: we can decide which EAS to use, and we
+opt for using the VAT number.  I used the code snippets of this page to write
+the `commondata.peppolcodes
+<https://github.com/lsaffre/commondata/tree/master?tab=readme-ov-file#peppol-codes>`__
+module.
+
+But what about inbound documents? When processing incoming documents we don't
+want to do per document yet another Ibanity request in order to find the VAT id
+of the partner. Do we need another database model "Customer"?
+
+Answer: No, because the name of the supplier is given in the invoice. As an end
+user, for your business partners who send sou invoices you should fill the
+:attr:`peppol_id` with the one *they* (your partner) use when sending invoices.
+Otherwise Lino will create a partner for you based on the name. If you then
+discover that you have a duplicate, you can merge them manually.
