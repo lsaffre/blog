@@ -1,0 +1,53 @@
+:date: 2025-03-06
+
+=======================
+Thursday, March 6, 2025
+=======================
+
+I'm working on :ticket:`5964` (pm prep in avanti1 says 'str' object has no
+attribute 'get_layout_handle')
+
+In :file:`lino_xl/lib/courses/models.py` we had::
+
+    @dd.requestfield(_("Enrolments"))
+    def enrolments(self, ar):
+        return self.get_enrolments(start_date=dd.today())
+
+    def get_enrolments(self, **pv):
+        return rt.models.courses.EnrolmentsByCourse.request(self,
+                                                            param_values=pv)
+
+The issue went away when I added "if ar is None: return" in the enrolments
+virtual field before calling :meth:`get_enrolments`.
+
+But why? And why did it start only now?
+
+And the same error message happens when I say :cmd:`doctest
+docs/specs/avanti/courses.rst`, this time it is when
+:xfile:`courses/Course/presence_sheet.weasy.html` says::
+
+  {% for enrolment in obj.get_enrolments(
+     start_date=ar.action_param_values.start_date,
+     end_date=ar.action_param_values.end_date) %}
+
+Note that :meth:`get_enrolments` accesses
+:class:`rt.models.courses.EnrolmentsByCourse`. This is an *actor*, more
+precisely a table. And avanti redefines this table.
+
+Lino is trying to setup the actor handle for the :class:`EnrolmentsByCourse`
+from :mod:`lino_xl.lib.courses` instead of :mod:`lino_avanti.lib.courses`.
+
+Aha!  Explanation: It's an aftermath of  :ticket:`5956` (python-tools no longer
+works). One of those automatic formatters that came with `pulsar-ide-python`,
+which I installed  to replace the orphaned `python-tools`, insists on moving all
+global imports to the top of the file. Including these ones::
+
+  from .ui import *
+
+But these imports *must* come at the end of the :xfile:`models.py` file, at
+least for :mod:`lino_avanti.lib.courses`.
+
+No. They don't need to be at the end of :xfile:`models.py` file, it's enough if
+they are after the::
+
+  from lino_xl.lib.courses.models import *
