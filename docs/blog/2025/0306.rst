@@ -51,3 +51,45 @@ No. They don't need to be at the end of :xfile:`models.py` file, it's enough if
 they are after the::
 
   from lino_xl.lib.courses.models import *
+
+
+Should we stop using ``from .ui import *`` ?
+============================================
+
+Most people say that ``from x import *`` is bad code style. But we use ``from
+.ui import *`` as a feature in a well-defined context in order to follow another
+code style principle which is "don't repeat yourself". We deliberately merge
+database models and actors into a same pot (the plugin's namespace) because it
+makes documentation more concise. For application developers it makes no sense
+to differentiate between models, tables, choicelists because these are
+implementation details. But the more I think about this I realize that it's a
+controversial topic, and for a developer who is used to relying on their IDE it
+can be a serious obstacle for diving into Lino.
+
+I started to move all ``from .ui import *`` lines from the bottom of the
+:xfile:`models.py` file to its top. But actually I have no clear plan yet. Even
+if we would name them explicitly, pyflakes would still complain because we
+import them and then don't use them.
+
+There is another topic, related to this: we actually have two namespaces per
+plugin: ``dd.plugins.foo`` and ``rt.models.foo``. Their difference is that
+``dd.plugins`` is available as soon as the plugins have been installed while
+``rt.models`` is available only when Django has populated its database models.
+The items of :data:`lino.api.dd.plugins` are instances of
+:class:`lino.core.plugins.Plugin` while the items of :data:`lino.api.rt.models`
+are the :xfile:`models.py` module objects.
+
+Once upon a time we had the actors collected into a namespace ``rt.actors``,
+separately from ``rt.models``. This used a automagic behaviour that we copied
+from Django: Django, when starting up, loops over :setting:`INSTALLED_APPS` and
+tries to import a module ``appname + ".models"``.
+
+I had a look at :mod:`django.apps.registry` and I am tempted to try to review
+the Lino startup process because Django has evolved during the last 10 years.
+Let :class:`lino.core.plugin.Plugin` inherit from :class:`AppConfig` and use
+:meth:`apps.get_app_config` instead of :attr:`dd.plugins`. Override
+:meth:`AppConfig.import_models` so that it also tries to import a "ui" module,
+similar to what it does with a "models" module.
+
+That would be fun! I'm really tempted. But there are more urgent things to do
+right now.
