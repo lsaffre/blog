@@ -1,0 +1,73 @@
+:date: 2025-03-13
+
+========================
+Thursday, March 13, 2025
+========================
+
+We had another occurrence of :ticket:`5965` (SyntaxError: unterminated string
+literal) in the daily cron job that runs :xfile:`pull_demos.sh` on
+``lino-framework.org``.
+
+The reason was that autopep8 had transformed
+
+::
+
+  if response.status_code not in {200, 201, 202}:
+      raise Exception(f"{meth_name} {url} returned unexpected status code {response.status_code}")
+
+into
+
+::
+
+  if response.status_code not in {200, 201, 202}:
+      raise Exception(f"{meth_name} {url} returned unexpected status code {
+          response.status_code}")
+
+This is indeed valid Python code under Python 3.12, but on a machine with Python
+3.9 it caused a syntax error. The new syntax was introduced in  `3.12
+<https://docs.python.org/3/whatsnew/3.12.html>`__.
+
+As a result, our public demo sites were down for
+several hours.
+
+Must I run all tests on both Python versions before pushing? The whole Lino test
+suite (:cmd:`pp inv prep test clean -b bd`) lasts almost an hour on my computer.
+
+I might have changed the line into::
+
+  if response.status_code not in {200, 201, 202}:
+      raise Exception(f"{meth_name} {url} returned unexpected status code " \
+          f"{response.status_code}")
+
+But I finally refactored it yet a bit more::
+
+  if response.status_code not in {200, 201, 202}:
+      msg = f"{meth_name} {url} returned unexpected status code " \
+          f"{response.status_code}"
+      raise Exception(msg)
+
+This "wastes" a bit of processor time for creating a variable name, but I prefer
+this construct because it is more readable, because it's easier to extend the
+message, for example like this::
+
+  msg += "and the content is {response.content}"
+
+or to insert a temporary debugging message::
+
+      print(msg)
+
+The underlying reason for these issues is that I recently started to use
+automated PEP8 code formatting. My Pulsar now has `pulsar-ide-python
+<https://web.pulsar-edit.dev/packages/pulsar-ide-python>`_ installed.
+
+Deep in my heart I fully agree with `E501
+<https://www.flake8rules.com/rules/E501.html>`__ (line too long). It's not
+because of my eyes. Okay they are getting older and I need larger fonts than
+young people, but I stopped using two-column code editing already quite some
+time ago, so I could work on lines of 100 chars without problem. The reason is
+rather this:
+
+  "when people let themselves write long lines, they stop caring about proper
+  abstraction in their code. Everything turns into uber-nested unreadable soup. If
+  a line is too long, it should probably get refactored."
+  --- `1668553684 on reddit.com <https://www.reddit.com/r/Python/comments/12cx3fa/is_e501_79_character_lines_still_relevant/?rdt=39139>`__

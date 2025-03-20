@@ -14,7 +14,7 @@ About me
 .. raw:: html
 
   <p style="text-align:center; font-size:50%; float:right; margin:1ex; padding:2pt;">
-  <img src="https://luc.lino-framework.org/_images/photo2.jpg" style="max-width:100px;"/>
+  <img src="https://luc.lino-framework.org/_static/photo2.jpg" style="max-width:100px;"/>
   <br>Photo by T. Korsar</p>
 
 
