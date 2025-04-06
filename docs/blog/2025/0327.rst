@@ -1,0 +1,31 @@
+:date: 2025-03-27
+
+========================
+Thursday, March 27, 2025
+========================
+
+The Ibanity staff activated our application, now I will configure Jane to use
+it.
+
+Creating a new application client certificate is more complicated for "live"
+applications than for "sandbox" applications. The developer portal asks me
+
+- to generate an RSA key pair::
+
+    openssl genrsa -aes256 -out private_key.pem 2048
+
+- and then to generate a Certificate Signing Request::
+
+    openssl req -new -sha256 -key private_key.pem -out ibanity.csr \
+    -subj "/C=BE/O=Isabel Group/OU=Isabel Group Certificate Authority/CN=Lino application account (abc123)/serialNumber=123456"
+
+  This creates a file ibanity.csr
+
+- and then to upload the :xfile:`ibanity.csr` file to their server.
+
+In response, I receive a zip file with two files :file:`ca_chain.pem` and
+:file:`certificate.pem`.
+
+
+I assume that I should run these commands in the project directory of my Lino
+site.

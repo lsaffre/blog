@@ -1,0 +1,43 @@
+:date: 2025-03-31
+
+======================
+Monday, March 31, 2025
+======================
+
+
+Some days ago I upgraded `the software for using Estonian ID cards
+<https://www.id.ee/artikkel/paigalda-id-tarkvara/>`__ and now :mod:`eidreader`
+is broken, :cmd:`inv test` says::
+
+  File "docs/usage.rst", line 191, in usage.rst
+  Failed example:
+      shell("eidreader")  #doctest: +NORMALIZE_WHITESPACE
+  Expected:
+      {"eidreader_version": "1.0.8", "success": false, "message": "Could not find any reader with a card inserted"}
+  Got:
+      {"eidreader_version": "1.0.8", "success": false, "message": "Middleware not properly installed"}
+      src/dyn_unix.c:34:SYS_dyn_LoadLibrary() libbeidpkcs11.so.0: cannot open shared object file: No such file or directory
+
+The following approach did not work::
+
+  $ sudo apt remove libbeidpkcs11-bin
+  ...
+  The following packages will be REMOVED
+    libbeidpkcs11-bin
+  0 to upgrade, 0 to newly install, 1 to remove and 51 not to upgrade.
+  ...
+  Removing libbeidpkcs11-bin (5.1.18v5.1.18-0u2204-1) ...
+
+  $ sudo apt install libbeidpkcs11-bin
+  Reading package lists... Done
+  Building dependency tree... Done
+  Reading state information... Done
+  Package libbeidpkcs11-bin is not available, but is referred to by another package.
+  This may mean that the package is missing, has been obsoleted, or
+  is only available from another source
+
+I tried to reinstall Belgian eid software according to :ref:`eidreader.install`.
+But they don't work on my computer, which I bought from a German company,
+Tuxedo, who use install own variant of Debian called "Tuxedo OS". I asked from
+Tuxedo for help, but they answered promptly that "Unfortunately we are unable to
+offer support for the individual setup, configuration or use of software."
