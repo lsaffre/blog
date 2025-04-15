@@ -1,0 +1,67 @@
+:date: 2025-04-14
+
+======================
+Monday, April 14, 2025
+======================
+
+
+For one of my demo invoices the `UBL validator <https://www.ubl.be/validator>`__
+says: [BR-Z-01]-An Invoice that contains an Invoice line (BG-25), a Document
+level allowance (BG-20) or a Document level charge (BG-21) where the VAT
+category code (BT-151, BT-95 or BT-102) is "Zero rated" shall contain in the VAT
+breakdown (BG-23) exactly one VAT category code (BT-118) equal with "Zero
+rated".
+
+And yes this invoice sells a bottle of gas with normal VAT rate, and the bottle
+itself without VAT (because the bottle is actually not sold, the customer gets
+this money back when he returns the empty bottle).
+
+Does this mean that it's not allowed to issue invoices with a mixture of
+normal-vat and zero-vat?
+
+To be exact, my example is even a bit more complex, it contains three different
+:term:`VAT categories <VAT category>` "normal", "reduced" and "exempt".
+
+>>> from lino import startup
+>>> startup('lino_book.projects.cosi1.settings')
+>>> from lino.api.doctest import *
+
+>>>
+
+>>> obj = trading.VatProductInvoice.objects.get(pk=111)
+>>> print(obj)
+SLS 6/2014
+
+>>> rt.show(trading.ItemsByInvoice, obj, language="en")
+==================== ================ ========== ======== ======== ============== ========
+ Product              Heading          Discount   Pr       Qty      TotExcl        InvObj
+-------------------- ---------------- ---------- -------- -------- -------------- --------
+ Book                 Book                        29,90    10       299,00
+ Stamp                Stamp                       1,40     8        11,20
+ Wooden table         Tisch aus Holz              199,99   4        799,96
+ **Total (3 rows)**                                        **22**   **1 110,16**
+==================== ================ ========== ======== ======== ============== ========
+<BLANKLINE>
+
+>>> rt.show(vat.MovementsByVoucher, obj, language="en")
+================== ==================== ============== ============== ================================= ================ =========
+ Account            Partner              Debit          Credit         VAT class                         Match            Cleared
+------------------ -------------------- -------------- -------------- --------------------------------- ---------------- ---------
+ (7000) Sales                                           299,00         Goods at reduced VAT rate (12%)                    Yes
+ (4510) VAT due                                         35,88          Goods at reduced VAT rate (12%)                    Yes
+ (7000) Sales                                           11,20          Goods exempt from VAT                              Yes
+ (7000) Sales                                           799,96         Services                                           Yes
+ (4510) VAT due                                         167,99         Services                                           Yes
+ (4000) Customers   Garage Mergelsberg   1 314,03                                                        **SLS 6/2014**   Yes
+                                         **1 314,03**   **1 314,03**
+================== ==================== ============== ============== ================================= ================ =========
+<BLANKLINE>
+
+
+Later it told me "Specification identifier MUST have the value
+'urn:cen.eu:en16931:2017#conformant#urn:UBL.BE:1.0.0.20180214'."
+Aha. But what is a Specification identifier?
+https://docs.peppol.eu/edelivery/specs/reporting/tsr/trn-transaction_statistics/semantic-model/trbt-001/
+
+
+Error message: [BR-CL-17]-Invoice tax categories MUST be coded using UNCL5305 code list

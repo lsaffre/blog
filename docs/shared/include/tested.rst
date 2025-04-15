@@ -1,3 +1,3 @@
-All **code snippets on this page** (lines starting with ``>>>``) are being
-:ref:`tested as part of our development workflow <tested_docs>`. The following
-snippet initializes a :term:`demo project` to use throughout this page.
+This page contains **code snippets** (lines starting with ``>>>``), which are
+being :ref:`tested <tested_docs>` during our development workflow. The following
+snippet initializes the :term:`demo project` used throughout this page.
