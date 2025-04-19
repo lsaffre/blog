@@ -1,0 +1,70 @@
+:date: 2025-04-17
+
+========================
+Thursday, April 17, 2025
+========================
+
+Today I continued testing :term:`Ibanity` synchronization using real data in
+integration mode.
+
+My first error message was::
+
+  No transmissionId in {
+  'data': {
+    'id': 'd772574a-bddb-4a7b-9b60-4921736daaca',
+    'type': 'peppolInvoice',
+    'attributes': {
+      'createdAt': '2025-04-17T06:43:37.760Z',
+      'errors': [{
+          'code': 'invalid-schematron',
+          'detail': 'Belgian VAT number MUST bestated in the correct format.
+          (/Invoice/cac:AccountingSupplierParty/cac:Party/cbc:EndpointID)\nBelgian VAT
+          number MUST be stated in the correct format.
+          (/Invoice/cac:AccountingCustomerParty/cac:Party/cbc:EndpointID)'}],
+      'status': 'invalid',
+      'technicalStatus': 'invalid'},
+    'relationships': {
+      'supplier': {'data': {
+        'id': '249e6232-5d7d-4654-8547-c8b252309698',
+        'type': 'supplier'}}}}}
+
+Okay, this is probably yet another trace of having validated against the wrong
+rule set. Seems that in Belgium they require the two first letters of the VAT
+number to be specified in ``<cbc:EndpointID>```. Why not.
+
+Next error message was:
+
+-  "Supplier data in document can't be matched with data of supplier.
+    Value found in //cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name
+    can't be matched with internal supplier data: FIRMA SOUNDSO AG"
+
+Indeed, I had registered them using the name "Soundso A.G.", not "FIRMA SOUNDSO
+AG". After changing the site owner's name to "SOUNDSO A.G." it worked.
+
+Here is the next error message::
+
+  No transmissionId in {'data': {'id': '94aa14c3-a5c6-49a3-9ec6-a13d66822087',
+  'type': 'peppolInvoice', 'attributes': {'createdAt':
+  '2025-04-17T07:09:44.016Z', 'errors': [{'code':
+  'error-customer-not-registered', 'detail': "Identifier
+  'iso6523-actorid-upis::9925:be 1234567890' is not registered in SML."}],
+  'status': 'send-error', 'technicalStatus': 'send-error'}, 'relationships':
+  {'supplier': {'data': {'id': '249e6232-5d7d-4654-8547-c8b252309698', 'type':
+  'supplier'}}}}}
+
+This makes sense because the recipient of that invoice obviously didn't yet
+register to the Peppol network. The :term:`SML` means Service Metadata Locator
+and because we said SchemeID "9925" (which means "Belgian VAT number"), they
+probably queried the Belgian VAT office to ask whether the organization with VAT
+id 1234567890 has already onboarded to the Peppol network.
+
+
+TODO:
+
+- The end user should not need to read the log messages of the CheckPeppol
+  action. Such error messages should be stored in the :class:`OutboundDocument`
+  instance.
+
+- When the :term:`VAT Regime` is ``subject`` or ``cocontractor``, then  the end
+  user doesn't need to check :attr:`PeppolPartner.send_peppol` because that's
+  mandatory.

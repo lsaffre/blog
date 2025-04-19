@@ -1,0 +1,80 @@
+:date: 2025-04-18
+
+======================
+Friday, April 18, 2025
+======================
+
+
+I worked on :ticket:`5754` (How to install esteid digidoc on Tuxedo OS) and
+:ticket:`6007` (eidreader test suite fails with libbeidpkcs11.so.0: No such file
+or directory)﻿. Seems that both issues are related. Difficult to get help
+because nobody feels responsible.  After finding and installing the  `pyasice
+package <https://pypi.org/project/pyasice/#quickstart>` I wrote a script
+:file:`asice.py`, which is supposed to print the names of the people who signed
+an `ASICE
+<https://www.id.ee/en/article/bdoc-cdoc-and-asice-digidoc-file-formats-2/>`_
+file::
+
+  import click
+  from pyasice import Container
+
+  @click.command()
+  @click.argument("filenames", nargs=-1)
+  def main(filenames: tuple[str, ...]):
+      """Show the signers of the specified .asice file."""
+      for fn in filenames:
+          try:
+              cont = Container.open(fn)
+              text = "Signatures: "
+              for n, sig in enumerate(cont.iter_signatures()):
+                  text += f"\n{n+1}) {sig.get_certificate().x509}"
+          except Exception as e:
+              text = str(e)
+          print(fn, ":", text)
+
+  if __name__ == '__main__':
+      main()
+
+
+I had the following traceback::
+
+  Traceback (most recent call last):
+    File "/home/luc/bin/asice.py", line 6, in <module>
+      from pyasice import Container, XmlSignature
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/pyasice/__init__.py", line 11, in <module>
+      from .container import Container
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/pyasice/container.py", line 8, in <module>
+      from oscrypto.asymmetric import Certificate, load_certificate
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/asymmetric.py", line 19, in <module>
+      from ._asymmetric import _unwrap_private_key_info
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/_asymmetric.py", line 27, in <module>
+      from .kdf import pbkdf1, pbkdf2, pkcs12_kdf
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/kdf.py", line 9, in <module>
+      from .util import rand_bytes
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/util.py", line 14, in <module>
+      from ._openssl.util import rand_bytes
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/_openssl/util.py", line 6, in <module>
+      from ._libcrypto import libcrypto, libcrypto_version_info, handle_openssl_error
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/_openssl/_libcrypto.py", line 9, in <module>
+      from ._libcrypto_cffi import (
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/oscrypto/_openssl/_libcrypto_cffi.py", line 44, in <module>
+      raise LibraryNotFoundError('Error detecting the version of libcrypto')
+  oscrypto.errors.LibraryNotFoundError: Error detecting the version of libcrypto
+
+
+After reading `this thread on github
+<https://github.com/wbond/oscrypto/issues/78>`__, worked around this for my
+personal use by saying::
+
+  $ pip uninstall oscrypto
+  $ pip install git+https://github.com/wbond/oscrypto.git@d5f3437
+
+
+Interesting to note that the author of oscrypto, Will Bond, seems a bit special.
+Smells like frustration or burnout. In August 2023 somebody asked "I saw you
+already fixed that in d5f3437, but as this is not released to pypi our Tool does
+not fully work. Would it be possible to release a bug-fix version to pypi?", a
+request that was then backed by half a dozen of other people who had the same
+problem. And in October he finally found some time to write an answer: "No, this
+is a free-time project for me. The commit is there, so it is certainly possible
+to use most Python packaging tools to grab the sha of the commit."
