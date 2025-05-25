@@ -1,0 +1,53 @@
+:date: 2025-05-01
+
+=====================
+I tried lilyponddist
+=====================
+
+Thursday, May 1, 2025
+
+Today I discovered the  `lilyponddist <https://pypi.org/project/lilyponddist>`__
+package and tried it. It works:
+
+>>> import requests
+>>> import lilyponddist
+>>> import subprocess
+
+>>> url = "https://lilypond.org/ly-examples/bach-bwv610.ly"
+>>> src = "/tmp/tmp.ly"
+>>> out = "/tmp/tmp"
+>>> r = requests.get(url)
+>>> open(src, "wt").write(r.text)
+4940
+>>> subprocess.call([lilyponddist.lilypondbin(), '--pdf', '-o', out, src])
+0
+>>> subprocess.call(["xdg-open", out + '.pdf'])
+0
+
+The console output is something like this::
+
+  Processing `tmp.ly'
+  Parsing...
+  Interpreting music...[8]
+  Preprocessing graphical objects...
+  Finding the ideal number of pages...
+  Fitting music on 1 or 2 pages...
+  Drawing systems...
+  Converting to `tmp.pdf'...
+  Success: compilation successfully completed
+
+I'm positively impressed by the ease of installation and execution speed.  It
+also works with svg or png instead of pdf. Cool.
+
+We could this in Lino. Not yet sure how exactly. Wikimedia has `Extension:Score
+<https://www.mediawiki.org/wiki/Extension:Score>`__ but the Lino way would
+probably be to have a ``music`` plugin with a :class:`music.Score` model, or
+maybe even a :class:`music.Song` model with individual text fields like
+``soprano``, ``alto``, ``tenor``, ``bass``, ``lyrics``, etc, as I had in
+songbook.
+
+
+Sources:
+
+- https://pypi.org/project/lilyponddist/
+- https://lilypond.org/examples.html

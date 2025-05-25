@@ -1,0 +1,120 @@
+:date: 2025-05-19
+
+====================
+Monday, May 19, 2025
+====================
+
+Puppeteer
+=========
+
+I tried to run the puppeteer test suite in react::
+
+
+  (dev) luc@frodo:~/work/react$ npx puppeteer browsers install chrome
+  Downloading chrome 131.0.6778.204 - 165.9 MB [====================] 100% 0.0s
+  chrome@131.0.6778.204 /home/luc/.cache/puppeteer/chrome/linux-131.0.6778.204/chrome-linux64/chrome
+
+  (dev) luc@frodo:~/work/react$ npm test
+
+  > lino_react@25.4.2 test
+  > jest
+
+  Error: Jest: Got error running globalSetup - /home/luc/work/react/lino_react/react/testSetup/setupJEST.js, reason: Failed to launch the browser process!
+
+  [1185962:1185962:0519/073804.739181:FATAL:zygote_host_impl_linux.cc(128)] No
+  usable sandbox! If you are running on Ubuntu 23.10+ or another Linux distro
+  that has disabled unprivileged user namespaces with AppArmor, see
+  https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md.
+  Otherwise see
+  https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
+  for more information on developing with the (older) SUID sandbox. If you want
+  to live dangerously and need an immediate workaround, you can try using
+  --no-sandbox.
+
+  TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+      at ChildProcess.onClose (/home/luc/work/react/node_modules/@puppeteer/browsers/src/launch.ts:486:11)
+      at ChildProcess.emit (node:events:531:35)
+      at ChildProcess.emit (node:domain:488:12)
+      at Process.ChildProcess._handle.onexit (node:internal/child_process:294:12)
+
+I read the mentioned  `Chromium Docs
+<https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md>`__
+and did as instructed there::
+
+  echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+
+Now the test suite works::
+
+  (dev) luc@frodo:~/work/react$ npm test
+
+  > lino_react@25.4.2 test
+  > jest
+
+   PASS  lino_react/react/components/__tests__/integrity.ts (14.057 s)
+    integrity.ts
+      ✓ load landing page (1599 ms)
+      ✓ sign in ok (5476 ms)
+
+   PASS  lino_react/react/components/__tests__/cloneUI.ts (17.069 s)
+    cloneUI.ts
+      ✓ clone tickets.AllTickets (10185 ms)
+
+   FAIL  lino_react/react/components/__tests__/test_URLContext.ts (39.691 s)
+    test_URLContext.ts
+      ✓ trading.InvoicesByJournal workflow button (11581 ms)
+      ✕ test grid_put (21015 ms)
+
+    ● test_URLContext.ts › test grid_put
+
+      Could not satisfy condition
+
+        18 |     }
+        19 |
+      > 20 |     let err = Error("Could not satisfy condition");
+           |               ^
+        21 |     throw err;
+        22 | }
+        23 |
+
+        at Object.<anonymous>.global.waitToMeet (lino_react/react/testSetup/setupTests.ts:20:15)
+        at Object.dataContextReady (lino_react/react/testSetup/setupTests.ts:38:9)
+        at Object.<anonymous>.global.signIn (lino_react/react/testSetup/setupTests.ts:78:5)
+        at Object.<anonymous> (lino_react/react/components/__tests__/test_URLContext.ts:48:9)
+
+   FAIL  lino_react/react/components/__tests__/testParamChanges.ts (63.668 s)
+    testParamChanges.ts
+      ✕ test #5792 (56206 ms)
+
+    ● testParamChanges.ts › test #5792
+
+      TypeError: Cannot read properties of null (reading 'getProperty')
+
+        45 |
+        46 |         header = await page.$("div.l-detail-header>span");
+      > 47 |         headerText = await (await header.getProperty("textContent")).jsonValue();
+           |                                          ^
+        48 |
+        49 |         expect(headerText).toBe("Tickets to work (Assigned to Luc) » #101 (Foo never bars)");
+        50 |         header.dispose();
+
+        at Object.<anonymous> (lino_react/react/components/__tests__/testParamChanges.ts:47:42)
+
+  A worker process has failed to exit gracefully and has been force exited. This is likely caused by tests leaking due to improper teardown. Try running with --detectOpenHandles to find leaks. Active timers can also cause this, ensure that .unref() was called on them.
+  Test Suites: 2 failed, 2 passed, 4 total
+  Tests:       2 failed, 4 passed, 6 total
+  Snapshots:   0 total
+  Time:        65.011 s
+  Ran all test suites.
+
+
+This looks well! I won't dive further now, I'm glad to have Sharif for the React
+front end.
+
+
+
+SalesRule becomes TradeRule
+===========================
+
+
+invoicing.SalesRule becomes trading.TradeRule
