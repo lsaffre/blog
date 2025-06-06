@@ -1,0 +1,42 @@
+:date: 2025-06-03
+
+=====================
+Tuesday, June 3, 2025
+=====================
+
+.. Tue 18:00-21:30 (-0:30) tim2peppol
+
+I'm working on miscellaneous optimizations for tim2lino and Peppol.
+
+TODO:
+
+- Lino does not yet delete a supplier on Ibanity when I remove them from our
+  list of suppliers.
+
+- What if a customer becomes send_peppol after the onboarding date, and had
+  already invoices sent before the onboarding date? For example I activate my
+  customer as a supplier, they start sending invoices to some of their
+  customers. One month later, two customers of my customer onboard and ask to
+  receive e-invoices. My customer also has sales invoices to these two customers
+  during the first month, these invoices were sent outside of peppol via email.
+  Right now Lino would send the invoices of the first month to these two
+  customers.
+
+- What happens when a supplier has peppolReceiver set to false and nevertheless
+  asks for inbound documents? Will Ibanity simply return an empty list? Or will
+  it return an error?
+
+- Is is allowed that a supplier sends their invoices with several days of delay?
+  One of my customer wants this as a feature. They would generate a sales
+  invoice, send it as a pro-forma invoice to their customer via email and give
+  them two days for verifying the content.  The real invoice comes only after
+  this verification. But they want the official invoice to be dated on the same
+  date as the pro-forma invoice. They know that they cannot send any other sales
+  invoices while waiting for feedback from the pro-forma invoices. Is this
+  technically possible? Is it legally allowed?
+
+- And another question. Another customer has multiple journals for issuing sales
+  invoices, used by different salesmen. One salesman goes online every day and
+  sends their invoices via Peppol.  The second salesman goes online only once a
+  week. Is the second  salesman allowed to send an invoice dated three days ago
+  when the first salesman has sent an invoice yesterday?
