@@ -1,0 +1,57 @@
+:date: 2025-06-26
+
+=======================
+Thursday, June 26, 2025
+=======================
+
+I was wondering... yes there is a pitfall when using Jinja. When your class
+defines a property, and when, while computing this property, it raises an
+`AttributeError`, then Jinja catches this exception and reports that your object
+doesn't have the requested property instead of showing the full traceback.
+
+
+.. literalinclude:: 0626.py
+
+
+
+Output when there's no bug::
+
+  The answer is 42.
+
+Output with exception of type A::
+
+  Traceback (most recent call last):
+    File "/home/luc/work/blog/docs/blog/2025/0626.py", line 35, in <module>
+      print(tpl.render(foo=Foo()))
+            ^^^^^^^^^^^^^^^^^^^^^
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+      self.environment.handle_exception()
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+      raise rewrite_traceback_stack(source=source)
+    File "<template>", line 1, in top-level template code
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 490, in getattr
+      return getattr(obj, attribute)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+    File "/home/luc/work/blog/docs/blog/2025/0626.py", line 14, in bar
+      self._bar = Answer(self)
+                  ^^^^^^^^^^^^
+    File "/home/luc/work/blog/docs/blog/2025/0626.py", line 22, in __init__
+      raise Exception("Oops")
+  Exception: Oops
+
+
+Output with exception of type B::
+
+  Traceback (most recent call last):
+    File "/home/luc/work/blog/docs/blog/2025/0626.py", line 35, in <module>
+      print(tpl.render(foo=Foo()))
+            ^^^^^^^^^^^^^^^^^^^^^
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+      self.environment.handle_exception()
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+      raise rewrite_traceback_stack(source=source)
+    File "<template>", line 1, in top-level template code
+    File "/home/luc/venvs/dev/lib/python3.12/site-packages/jinja2/environment.py", line 490, in getattr
+      return getattr(obj, attribute)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  jinja2.exceptions.UndefinedError: '__main__.Foo object' has no attribute 'bar'

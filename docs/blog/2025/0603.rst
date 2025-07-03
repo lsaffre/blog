@@ -8,23 +8,23 @@ Tuesday, June 3, 2025
 
 I'm working on miscellaneous optimizations for tim2lino and Peppol.
 
-TODO:
+What if a customer becomes send_peppol after the onboarding date, and had
+already invoices sent before the onboarding date? For example I activate my
+customer as a supplier, they start sending invoices to some of their customers.
+One month later, two customers of my customer onboard and ask to receive
+e-invoices. My customer also has sales invoices to these two customers during
+the first month, these invoices were sent outside of peppol via email. Right now
+Lino would send the invoices of the first month to these two customers.
 
-- Lino does not yet delete a supplier on Ibanity when I remove them from our
-  list of suppliers.
+This is why we now have :attr:`PeppolJournal.last_sending`.
 
-- What if a customer becomes send_peppol after the onboarding date, and had
-  already invoices sent before the onboarding date? For example I activate my
-  customer as a supplier, they start sending invoices to some of their
-  customers. One month later, two customers of my customer onboard and ask to
-  receive e-invoices. My customer also has sales invoices to these two customers
-  during the first month, these invoices were sent outside of peppol via email.
-  Right now Lino would send the invoices of the first month to these two
-  customers.
+Q: What happens when a supplier has peppolReceiver set to false and nevertheless
+   asks for inbound documents? Will Ibanity simply return an empty list? Or will
+   it return an error?
 
-- What happens when a supplier has peppolReceiver set to false and nevertheless
-  asks for inbound documents? Will Ibanity simply return an empty list? Or will
-  it return an error?
+A: It returns an empty list
+
+I asked two more questions on the :term:`Ibanity` forum:
 
 - Is is allowed that a supplier sends their invoices with several days of delay?
   One of my customer wants this as a feature. They would generate a sales
@@ -40,3 +40,13 @@ TODO:
   sends their invoices via Peppol.  The second salesman goes online only once a
   week. Is the second  salesman allowed to send an invoice dated three days ago
   when the first salesman has sent an invoice yesterday?
+
+Both got the same answer: Out of scope of Peppol/API. Peppol doesn't care
+when/what you send. So, it's technically allowed. Regulatory, you'll need to
+find some info per region. My gut feeling is that it's not a problem.
+
+
+TODO:
+
+- Lino does not yet delete a supplier on Ibanity when I remove them from our
+  list of suppliers.

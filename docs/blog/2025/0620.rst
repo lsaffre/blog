@@ -1,0 +1,41 @@
+:date: 2025-06-20
+
+=====================
+Friday, June 20, 2025
+=====================
+
+About the doctest failures in specs/calview.rst and specs/avanti/db.rst
+(avanti1):
+
+The number of cal.Event changed from 278 to 533 (+155). The new events are
+suggested meetings with clients according to their event_policy. Explanation:
+the `generate_calendar_entries` procedure was not being run by `pm prep`, now it
+is being run. Good.
+
+
+
+About the doctest failures in projects/voga2.rst and plugins/checkdata.rst
+(voga2):
+
+(1) plugins/checkdata.rst modified the database but didn't run check_virgin(),
+causing nasty surprises
+
+(2) The `checkdata` procedure (which finds conflicting events) was being run
+before `generate_calendar_entries` (which generates them)::
+
+  $ pm show linod.Procedures
+  =========================== =========================== =========================== ================== ===========================
+   value                       name                        text                        Task class         Suggested recurrency
+  --------------------------- --------------------------- --------------------------- ------------------ ---------------------------
+   checkdata                   checkdata                   checkdata                   linod.SystemTask   every=1, every_unit=daily
+   generate_calendar_entries   generate_calendar_entries   generate_calendar_entries   linod.SystemTask   every=1, every_unit=daily
+   checksummaries              checksummaries              checksummaries              linod.SystemTask   every=1, every_unit=daily
+   run_invoicing_tasks         run_invoicing_tasks         run_invoicing_tasks         invoicing.Task     every=1, every_unit=daily
+   delete_older_changes        delete_older_changes        delete_older_changes        linod.SystemTask   every=1, every_unit=daily
+   update_publisher_pages      update_publisher_pages      update_publisher_pages      linod.SystemTask   every=1, every_unit=daily
+  =========================== =========================== =========================== ================== ===========================
+
+Which means that checkdata messages appeared only during a second loop of the
+task runner.
+
+Both checkdata and generate_calendar_entries are daily background tasks.
