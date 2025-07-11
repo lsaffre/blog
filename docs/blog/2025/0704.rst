@@ -1,0 +1,68 @@
+:date: 2025-07-04
+
+======================
+BeautifulSoup and lxml
+======================
+
+Friday, July 4, 2025
+
+When you build a BeautifulSoup from a plain text, that text was getting wrapped
+into a ``<p>`` tag when the installed lxml version is earlier than 6, but isn't
+any more with the new version of lxml.
+
+>>> from bs4 import BeautifulSoup
+>>> soup = BeautifulSoup("Foo", "lxml")
+
+The following snippet passes with **lxml before 6** ...
+
+>>> print(soup)  # lxml<6  #doctest: +SKIP
+<html><body><p>Foo</p></body></html>
+
+... but **after lxml 6** the output changes:
+
+>>> print(soup)  # lxml>=6 #doctest: +SKIP
+<html><body>Foo</body></html>
+
+This is surprising because the behaviour of lxml itself hasn't changed. The
+following snippet passes with both versions of lxml:
+
+>>> from lxml import etree
+>>> etree.fromstring("Foo")
+Traceback (most recent call last):
+...
+lxml.etree.XMLSyntaxError: Start tag expected, '<' not found, line 1, column 1
+
+How can the behaviour of BeautifulSoup change with the lxml version when the
+behaviour of lxml itself does *not* change? The answer seems to be hidden
+somewhere in the deep waters of the BeautifulSoup source code. I didn't
+understand it fully. But here are some more observations (they all pass with
+*both* lxml versions):
+
+>>> etree.fromstring("")
+Traceback (most recent call last):
+...
+lxml.etree.XMLSyntaxError: Document is empty, line 1, column 1
+
+>>> from pprint import pprint
+>>> from bs4 import builder_registry
+>>> pprint(builder_registry.builders_for_feature)
+defaultdict(<class 'list'>,
+            {'fast': [<class 'bs4.builder._lxml.LXMLTreeBuilder'>,
+                      <class 'bs4.builder._lxml.LXMLTreeBuilderForXML'>],
+             'html': [<class 'bs4.builder._lxml.LXMLTreeBuilder'>,
+                      <class 'bs4.builder._htmlparser.HTMLParserTreeBuilder'>],
+             'html.parser': [<class 'bs4.builder._htmlparser.HTMLParserTreeBuilder'>],
+             'lxml': [<class 'bs4.builder._lxml.LXMLTreeBuilder'>,
+                      <class 'bs4.builder._lxml.LXMLTreeBuilderForXML'>],
+             'lxml-html': [<class 'bs4.builder._lxml.LXMLTreeBuilder'>],
+             'lxml-xml': [<class 'bs4.builder._lxml.LXMLTreeBuilderForXML'>],
+             'permissive': [<class 'bs4.builder._lxml.LXMLTreeBuilder'>,
+                            <class 'bs4.builder._lxml.LXMLTreeBuilderForXML'>],
+             'strict': [<class 'bs4.builder._htmlparser.HTMLParserTreeBuilder'>],
+             'xml': [<class 'bs4.builder._lxml.LXMLTreeBuilderForXML'>]})
+
+>>> soup.builder  #doctest: +ELLIPSIS
+<bs4.builder._lxml.LXMLTreeBuilder object at ...>
+
+>>> print(soup.builder.test_fragment_to_document("Foo"))
+<html><body>Foo</body></html>
