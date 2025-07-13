@@ -37,7 +37,7 @@ but it was still being used, and nobody complained. Which made me suspect that
 the hack wasn't active.
 
 Maybe the following `documented change
-<https://docs.djangoproject.com/en/5.0/releases/3.2/>`__ is responsible: The
+<https://docs.djangoproject.com/en/5.2/releases/3.2/>`__ is responsible: The
 django.db.models.Field equality operator now correctly distinguishes inherited
 field instances across models. Additionally, the ordering of such fields is now
 defined.
@@ -47,7 +47,7 @@ The :class:`lino_xl.lib.contacts.Company` model had no `Meta.ordering` specified
         ordering = ['name']
 
 The docs about `Meta.ordering
-<https://docs.djangoproject.com/en/5.0/ref/models/options/#django.db.models.Options.ordering>`__
+<https://docs.djangoproject.com/en/5.2/ref/models/options/#django.db.models.Options.ordering>`__
 have a warning "Ordering is not a free operation. Each field you add to the
 ordering incurs a cost to your database. Each foreign key you add will
 implicitly include all of its default orderings as well." Not sure how to
@@ -57,7 +57,7 @@ understand this.  Does it mean that we should rather use only
 
 I thought that the issue comes because querysets are no longer automatically
 sorted by `id` (when `Meta.ordering
-<https://docs.djangoproject.com/en/5.0/ref/models/options/#django.db.models.Options.ordering>`__)
+<https://docs.djangoproject.com/en/5.2/ref/models/options/#django.db.models.Options.ordering>`__)
 is not specified. So I replaced, in `welfare/**fixtures/*.py`, all occurrences
 of `.objects.all()` by `.objects.order_by('id')`. And added an `.order_by('id')`
 to all calls to `.objects.filter(...)` that didn't specify any ordering.
