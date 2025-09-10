@@ -13,7 +13,7 @@ messages like the following::
     Exception at /tickets/Ticket/39
 
     20160329 params_layout ParamsLayout on tickets.Tickets has no params_store in <class 'lino_noi.lib.tickets.ui.Tickets'>
-    
+
     ...
 
 I opened :ticket:`960` for this. It seems that the problem comes only
@@ -21,8 +21,8 @@ when the server did not yet serve any *list* view. When the problem is
 "active", any public request for the **detail** of a ticket
 (e.g. http://bugs.lino-framework.org/tickets/Ticket/960) causes the
 internal server error. To "deactivate" the problem, it is enough to do
-a request to the index page (http://bugs.lino-framework.org). 
-    
+a request to the index page (http://bugs.lino-framework.org).
+
 Which means that in some situations Lino somehow "forgets" to set that
 `params_store` at startup.
 
@@ -35,8 +35,8 @@ Then point your browser to some detail view (e.g.
 http://127.0.0.1:8000/tickets/Ticket/13) *without* previously
 requesting the index view http://127.0.0.1:8000.
 
-I added a (hidden) test case in :ref:`noi.specs.bs3` which reproduces
-the problem.
+I added a (hidden) test case in the ``bs3`` demo project to reproduce the
+problem.
 
 I fixed the problem by adding, :mod:`lino.core.requests`, an otherwise
 useless call to :meth:`get_layout_handle
@@ -51,7 +51,7 @@ useless call to :meth:`get_layout_handle
 Yearly reports for ESF
 ======================
 
-Continued to work on :ticket:`584`.  
+Continued to work on :ticket:`584`.
 
 The initial observation was that we cannot manually create a summary
 in :class:`SummariesByClient
@@ -75,5 +75,3 @@ in :class:`SummariesByClient
 TODO:
 - Don't show a sum for the years of a summary
 - Display a help text for each column
-
-
