@@ -1,0 +1,185 @@
+:date: 2026-01-18
+
+========================
+Sunday, January 18, 2026
+========================
+
+After upgrading SR from bookworm to trixie we have the issue that emails don't
+work. SR accepts them but then they vanish, and the :file:`mail.log` says::
+
+  2026-01-18T13:48:22.282711+02:00 saffre-rumma postfix/postdrop[5083]: \
+    warning: mail_queue_enter: create file maildrop/281740.5083: Read-only file system
+
+The authentication seems to work, Thunderbird reports no error, but `journalctl
+-t dovecot` reports that my Thunderbird logged in and  disconnected::
+
+  jaan  18 19:25:28 saffre-rumma.net dovecot[712]: pop3-login: Logged in: user=<luc>, method=PLAIN, rip=90.191.158.109, lip=51.68.71.43, mpid=1476, TLS, sessi>
+  jaan  18 19:25:28 saffre-rumma.net dovecot[712]: pop3(luc)<1476><EOZH3KxIPJJav55t>: Disconnected: Logged out top=0/0, retr=0/0, del=0/0, size=0
+
+I ran `postfix check` and it reported some issues::
+
+  # postfix check
+  postfix: Postfix is using backwards-compatible default settings
+  postfix: See https://www.postfix.org/COMPATIBILITY_README.html for details
+  postfix: To disable backwards compatibility use "postconf compatibility_level=3.6" and "postfix reload"
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtpd_use_tls" will be removed; instead, specify "smtpd_tls_security_level"
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtpd_use_tls" will be removed; instead, specify "smtpd_tls_security_level"
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtpd_use_tls" will be removed; instead, specify "smtpd_tls_security_level"
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtpd_use_tls" will be removed; instead, specify "smtpd_tls_security_level"
+  postfix/postfix-script: warning: group or other writable: /etc/postfix/./redirect.regexp
+  postfix/postfix-script: warning: group or other writable: /etc/postfix/./access
+  postfix/postfix-script: warning: group or other writable: /etc/postfix/./address.txt
+  postfix/postfix-script: warning: group or other writable: /etc/postfix/./redirect.pcre
+
+- In my :file:`/etc/postfix/main.cf` I replaced ``smtpd_use_tls=yes`` by ``smtpd_tls_security_level = may``.
+- I said ``chmod g-w /etc/postfix/./redirect.regexp`` etc for the four mentioned files.
+
+Now `postfix check` no longer warns.
+
+
+
+In ``journalctl -t postfix`` I saw the following series of warnings::
+
+  jaan  18 16:41:49 saffre-rumma.net postfix[11008]: postfix/postlog: warning: not owned by root: /var/spool/postfix/.
+  ...
+
+And yes, most of the files below /var/spool/postfix have postfix as owner.
+
+  # ll /var/spool/postfix/
+  total 2828
+  drwx------  2 postfix postfix  1232896 18. jaan  18:07 active
+  drwx------  2 postfix postfix     4096  6. jaan  16:04 bounce
+  drwx------  2 postfix postfix     4096 15. märts  2021 corrupt
+  drwx------ 18 postfix postfix     4096 29. dets   2021 defer
+  drwx------ 18 postfix postfix     4096 29. dets   2021 deferred
+  drwxr-xr-x  2 root    root        4096 18. jaan  15:43 dev
+  drwxr-xr-x  2 postfix postfix     4096 18. jaan  12:53 etc
+  drwx------  2 postfix postfix     4096 15. märts  2021 flush
+  drwx------  2 postfix postfix     4096 15. märts  2021 hold
+  drwx------  2 postfix postfix  1581056 18. jaan  18:07 incoming
+  drwxr-xr-x  2 postfix postfix     4096 18. jaan  12:53 lib
+  drwx-wx--T  2 postfix postdrop    4096 18. jaan  18:07 maildrop
+  drwxrwxr-x  2 postfix postfix     4096 18. jaan  14:05 opendkim
+  drwxr-xr-x  2 postfix postfix     4096  1. jaan   2022 photos
+  drwxr-xr-x  2 postfix postfix     4096 21. apr    2022 pid
+  drwx------  2 postfix postfix     4096 18. jaan  16:41 private
+  drwx--s---  2 postfix postfix     4096 18. jaan  16:41 public
+  -rw-r--r--  1 postfix postfix        0 21. märts  2025 restart
+  drwx------  2 postfix postfix     4096 15. märts  2021 saved
+  drwx------  2 postfix postfix     4096 18. jaan  16:09 trace
+  drwxr-xr-x  3 postfix postfix     4096 15. märts  2021 usr
+
+Should I change their owner to root? I changed it only for maildrop::
+
+  # chown root /var/spool/postfix/maildrop
+
+No, this caused a fatal error::
+
+  postsuper: fatal: scan_dir_push: open directory maildrop: Permission denied
+
+I removed the sticky bit from this directory as well::
+
+  # chmod -t /var/spool/postfix/maildrop
+
+No, that didn't fix my issue. I reverted the change.
+
+I changed also to root the owner of the other directories mentioned by postfix check.
+
+Now postfix check gives a new warning::
+
+  postsuper: warning: bogus file name: maildrop/NS_CANARY.8142
+
+Okay::
+
+  mv /var/spool/postfix/maildrop/NS_CANARY.8142 /tmp/
+
+Now postfix gives no more warnings::
+
+  # postfix check
+  postfix: Postfix is using backwards-compatible default settings
+  postfix: See https://www.postfix.org/COMPATIBILITY_README.html for details
+  postfix: To disable backwards compatibility use "postconf compatibility_level=3.6" and "postfix reload"
+
+To disable backwards compatibility, I also said::
+
+  # postconf compatibility_level=3.6
+
+Now, "postfix check" gives no output at all. Nice, but my problem isn't fixed.
+Seems that these warnings weren't the cause of my problem.
+
+I don't believe that it is caused by a read-only filesystem.  I guess that the
+warning "Read-only file system" actually means "permission denied". But let's verify::
+
+  # fsck -n -f
+  fsck from util-linux 2.41
+  e2fsck 1.47.2 (1-Jan-2025)
+  Warning!  /dev/sda1 is mounted.
+  Warning: skipping journal recovery because doing a read-only filesystem check.
+  Pass 1: Checking inodes, blocks, and sizes
+  Inode 64 extent tree (at level 1) could be shorter.  Optimize? no
+  Deleted inode 131393 has zero dtime.  Fix? no
+  Pass 2: Checking directory structure
+  Pass 3: Checking directory connectivity
+  Pass 4: Checking reference counts
+  Pass 5: Checking group summary information
+  Free blocks count wrong (5344474, counted=5795181).
+  Fix? no
+  Inode bitmap differences:  -131393
+  Fix? no
+  Free inodes count wrong (2322711, counted=2322773).
+  Fix? no
+  /dev/sda1: ********** WARNING: Filesystem still has errors **********
+  /dev/sda1: 298729/2621440 files (0.3% non-contiguous), 5141025/10485499 blocks
+
+
+So there are indeed some errors in the file system. But (1)
+"fsck -n -f" reports similar errors also on my notebook
+and (2) it is difficult to run fsck on a busy partition::
+
+  # fsck /dev/sda
+  fsck from util-linux 2.41
+  e2fsck 1.47.2 (1-Jan-2025)
+  /dev/sda is in use.
+  e2fsck: Cannot continue, aborting.
+
+  # umount /dev/sda1
+  umount: /: target is busy.
+
+I tried restarting the server in rescue mode, but there fsck fails with "Bad
+magic number in super-block"::
+
+  [RESCUE] root@vps-331a9923:~ $ lsblk
+  NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINTS
+  sda      8:0    0  2.9G  0 disk
+  `-sda1   8:1    0  2.9G  0 part /
+  sdb      8:16   0   40G  0 disk
+  `-sdb1   8:17   0   40G  0 part
+
+  [RESCUE] root@vps-331a9923:~ $ fsck /dev/sdb
+  fsck from util-linux 2.38.1
+  e2fsck 1.47.0 (5-Feb-2023)
+  ext2fs_open2: Bad magic number in super-block
+  fsck.ext2: Superblock invalid, trying backup blocks...
+  fsck.ext2: Bad magic number in super-block while trying to open /dev/sdb
+  The superblock could not be read or does not describe a valid ext2/ext3/ext4
+  filesystem.  If the device is valid and it really contains an ext2/ext3/ext4
+  filesystem (and not swap or ufs or something else), then the superblock
+  is corrupt, and you might try running e2fsck with an alternate superblock:
+      e2fsck -b 8193 <device>
+   or
+      e2fsck -b 32768 <device>
+  Found a dos partition table in /dev/sdb
+
+At this point I gave up for today and restored once more the backup from January
+16 9:19 UTC. So the server runs again on Debian 12, and I don't know when I will
+a next attempt to upgrade to 13. I have been warned:
+
+  In order to avoid potentially extended
+  downtime, you are strongly encouraged to port your configuration in a staging
+  environment before beginning the upgrade of a production mail system.
+
+  -- https://www.debian.org/releases/trixie/release-notes/issues.en.html
+
+I still don't believe that our problem is caused by a read-only filesystem, I
+still believe that the warning "Read-only file system" is not an original
+message from the operating system but actually means "permission denied".

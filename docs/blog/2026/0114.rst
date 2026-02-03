@@ -1,0 +1,42 @@
+:date: 2026-01-14
+
+===========================
+Wednesday, January 14, 2026
+===========================
+
+
+The :meth:`request_handler` method
+==================================
+
+The :meth:`request_handler` method of an action request builds and returns the
+Javascript code that would execute this request on the client.
+
+It obviously depends on the front-end renderer. The publisher renderer returns
+`None`.
+
+It is needed by `WrappedAction`, `ShowSlaveTable`,  `RequestFieldElement`,
+`Renderer.href_to_request()`. It is also needed by ShowSuggestions or
+ShowEntriesByDay, which are similar to ShowSlaveTable
+
+
+It is needed by WrappedAction to build the URI for an action at runtime::
+
+  class WrappedAction(Action):
+    ...
+    def run_from_ui(self, ar, **kw):
+        sar = self.bound_action.request_from(ar)
+        js = ar.renderer.request_handler(sar)
+        ar.set_response(eval_js=js)
+
+WrappedAction is a kind of dynamic URL, it does nothing but return a Javascript
+snippet to be executed on the client.
+
+The :class:`WrappedAction` class is used:
+
+- by :class:`QuickLinksList` (the class of the
+  object sitting on :attr:`settings.SITE.quicklinks`)
+
+- by custom implementations of :meth:`collect_extra_actions`, e.g. the "Pretty
+  view" action on a blog entry, the "Import from VCard" action on a partner, or
+  the actions used by the calendar view to switch between daily, weekly and
+  monthly view.

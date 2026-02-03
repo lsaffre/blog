@@ -1,0 +1,37 @@
+:date: 2026-01-04
+
+=======================
+Sunday, January 4, 2026
+=======================
+
+The :attr:`site_config` property is now defined on the new
+:class:`SiteConfigCache` class, which is inherited by :class:`Site` as before,
+and also by :class:`User` and :class:`AnonymousUser`.
+
+The :attr:`config_id` attribute is renamed to :attr:`tenant_id`.
+This corresponds to the value of the
+:attr:`SiteConfig.id`.
+The default `tenant_id` is 1.
+
+On a multi-tenant site, `User.tenant_id` will become a database field.
+
+
+
+The :func:`today`, :func:`atoday` and :func:`now` functions are also on the new
+SiteConfigCache class.
+
+
+But we keep a limited version of :func:`today`, that does not consider
+SiteConfig, because we use it e.g. in lino.modlib.system.mixins::
+
+  dd.update_field(RecurrenceSet, "start_date", default=dd.today)
+
+A callable field default value must be serializable, so it cannot depend on the
+tenant.
+
+We no longer install a signal handler that calls Site.clear_site_config() when
+setting_changed, testcase_setup, connection_created or post_migrate are emitted.
+
+
+:meth:`BuildMethods.get_system_default` no longer looks up SiteConfig, but
+the new SiteConfigCache.get_printing_build_method does this.

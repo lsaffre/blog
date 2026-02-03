@@ -1,0 +1,70 @@
+:date: 2025-10-29
+
+===========================
+Wonderful world
+===========================
+
+Wednesday, October 29, 2025
+
+I found the `translators <https://github.com/uliontse/translators>`_ package and
+thought by myself: what a wonderful world.
+
+
+>>> title = "Wonderful world"
+>>> body = """I hear babies cry, I watch them grow, they'll learn much more than I'll ever know, and I think to myself: What a wonderful world."""
+>>> html = f'''
+... <!DOCTYPE html><html><head><title>{title}</title></head>
+... <body>
+... <p></p>{body}</body></html>
+... '''
+
+>>> import translators as ts
+
+Optionally caching sessions in advance can help improve access speed:
+
+>>> # ts.preaccelerate_and_speedtest()
+
+>>> # help(ts.translate_text)
+
+
+>>> print(ts.translators_pool)  #doctest: +NORMALIZE_WHITESPACE
+['alibaba', 'apertium', 'argos', 'baidu', 'bing', 'caiyun', 'cloudTranslation',
+'deepl', 'elia', 'google', 'hujiang', 'iciba', 'iflytek', 'iflyrec',
+'itranslate', 'judic', 'languageWire', 'lingvanex', 'niutrans', 'mglip',
+'mirai', 'modernMt', 'myMemory', 'papago', 'qqFanyi', 'qqTranSmart', 'reverso',
+'sogou', 'sysTran', 'tilde', 'translateCom', 'translateMe', 'utibet',
+'volcEngine', 'yandex', 'yeekit', 'youdao']
+
+>>> kwargs = dict(translator='alibaba', to_language="et")
+>>> print(ts.translate_text(body, **kwargs))  #doctest: +NORMALIZE_WHITESPACE
+Ma kuulen beebid nutmas, vaatan neid kasvamas, nad õpivad palju rohkem, kui ma
+kunagi tean. Ja ma mõtlen, milline imeline maailm.
+
+>>> kwargs = dict(translator='google', to_language="et")
+>>> print(ts.translate_text(body, **kwargs))  #doctest: +NORMALIZE_WHITESPACE
+Ma kuulen imikute nuttu, vaatan, kuidas nad kasvavad, nad õpivad palju rohkem,
+kui mina kunagi teada saan, ja ma mõtlen endamisi: milline imeline maailm.
+
+>>> kwargs = dict(translator='deepl', to_language="et")
+>>> print(ts.translate_text(body, **kwargs))  #doctest: +NORMALIZE_WHITESPACE
+Ma kuulen, kuidas lapsed nutavad, ma vaatan, kuidas nad kasvavad, nad õpivad
+palju rohkem, kui mina kunagi teada saan, ja ma mõtlen endamisi: Milline imeline
+maailm.
+
+>>> kwargs = dict(translator='bing', to_language="et")
+>>> print(ts.translate_text(body, **kwargs))  #doctest: +NORMALIZE_WHITESPACE
+Ma kuulen beebide nutmist, ma vaatan, kuidas nad kasvavad, nad õpivad palju
+rohkem, kui mina kunagi tean, ja ma mõtlen endamisi: Kui imeline maailm.
+
+>>> kwargs = dict(translator='google', to_language="bn")
+>>> print(ts.translate_text(body, **kwargs))  #doctest: +NORMALIZE_WHITESPACE
+আমি বাচ্চাদের কান্না শুনতে পাই, আমি তাদের বড় হতে দেখি, তারা আমি যা জানতাম তার
+চেয়েঅনেক বেশি শিখবে, এবং আমি মনে মনে ভাবি: কী চমৎকার পৃথিবী।
+
+
+
+
+Possible exceptions:
+
+- requests.exceptions.HTTPError: 429 Client Error: Too Many Requests for url: https://www2.deepl.com/jsonrpc?method=LMT_split_text
+- translators.server.TranslatorError: Unsupported to_language[et]
