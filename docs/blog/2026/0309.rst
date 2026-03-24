@@ -1,0 +1,23 @@
+:date: 2026-03-09
+
+=====================
+Monday, March 9, 2026
+=====================
+
+
+I'm working on :ticket:`6654` (Language switching and page_name for songbook).
+
+The only problem is that the EN page with page_name "laulud" cannot make a link
+to the corresponding page in ET. I want the text of the English page to say "This
+content is available only in Estonian", followed by a ``[page 20 Click here]`` or
+``[ref page:20 Click here]``.
+
+- lino/modlib/bootstrap5/config/bootstrap5/base.html calls
+  :meth:`ar.get_request_url` for each language except the current one.
+  :meth:`ar.get_request_url` then calls :meth:`Renderer.obj2url`
+
+- The `ref` memo command calls :meth:`MemoReferrable.memo2html`, which calls
+  :meth:`Model.as_summary_item`, which calls :meth:`ar.obj2html`, which calls
+  :meth:`Renderer.obj2url`.
+
+- :meth:`Renderer.obj2url` calls :meth:`Model.get_publisher_pk`

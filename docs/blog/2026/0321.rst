@@ -1,0 +1,45 @@
+:date: 2026-03-21
+
+========================
+Saturday, March 21, 2026
+========================
+
+I'm still trying to understand why emails sent with :cmd:`farm mailto` fail to
+arrive to my inbox when sent from nora but not when sent from LF. And OTOH
+emails sent from jane (on nora) *do* arrive to my inbox.
+
+Mail-related settings on Jane are::
+
+  ADMINS: [['Luc Saffre', 'luc@saffre-rumma.net']]
+  DEFAULT_FROM_EMAIL = noreply@mylino.net
+  EMAIL_BACKEND = django.core.mail.backends.smtp.EmailBackend
+  EMAIL_HOST = localhost
+  EMAIL_HOST_PASSWORD =
+  EMAIL_HOST_USER =
+  EMAIL_PORT = 25
+  EMAIL_SSL_CERTFILE = None
+  EMAIL_SSL_KEYFILE = None
+  EMAIL_SUBJECT_PREFIX = [jane]
+  EMAIL_TIMEOUT = None
+  EMAIL_USE_LOCALTIME = False
+  EMAIL_USE_SSL = False
+  EMAIL_USE_TLS = False
+  SERVER_EMAIL = noreply@mylino.net
+
+Here is the output of :cmd:`journalctl`:
+
+  $ journalctl -f -n 40
+  ...
+  märts 21 09:15:06 nora jane[2713141]: Send email '[jane] Status report' from noreply@mylino.net to ['luc@saffre-rumma.net']
+  märts 21 09:15:06 nora postfix/smtpd[2713200]: connect from localhost[127.0.0.1]
+  märts 21 09:15:06 nora postfix/smtpd[2713200]: ACFF0AA03F: client=localhost[127.0.0.1]
+  märts 21 09:15:06 nora postfix/cleanup[2713203]: ACFF0AA03F: message-id=<177408450669.2713141.1866157075527590826@nora>
+  märts 21 09:15:06 nora postfix/smtpd[2713200]: disconnect from localhost[127.0.0.1] ehlo=1 mail=1 rcpt=1 data=1 quit=1 commands=5
+  märts 21 09:15:06 nora postfix/qmgr[2673489]: ACFF0AA03F: from=<noreply@mylino.net>, size=5291, nrcpt=1 (queue active)
+  märts 21 09:15:06 nora jane[2713141]: Done manage.py status -s luc@saffre-rumma.net (PID 2713141)
+  märts 21 09:15:08 nora postfix/smtp[2713204]: ACFF0AA03F: to=<luc@saffre-rumma.net>, relay=smtp.zone.eu[85.234.244.110]:587, delay=1.5, delays=0.01/0.04/0.68/0.8, dsn=2.0.0, status=sent (250 Message queued as 19d0fad47370002b2c)
+  märts 21 09:15:08 nora postfix/qmgr[2673489]: ACFF0AA03F: removed
+
+The From header of an email received from Jane says::
+
+  From: luc@saffre-rumma.net
