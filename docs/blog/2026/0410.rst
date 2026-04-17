@@ -1,0 +1,136 @@
+:date: 2026-04-10
+
+======================
+Friday, April 10, 2026
+======================
+
+Today I upgraded laudate from Debian 12 to 13
+
+I made a snapshot of ``ets``, the only production Lino site on laudate.
+
+Here is a list of the websites on laudate::
+
+  $ ll /etc/nginx/sites-enabled/
+  total 16
+  drwxr-xr-x 2 root root 4096  4. dets  07:15 .
+  drwxr-xr-x 8 root root 4096 10. apr   20:37 ..
+  -rw-rw-r-- 1 root root  275  3. dets   2024 default.conf
+  -rw-rw-r-- 2 root root 2107  7. dets   2023 ets.conf
+  lrwxrwxrwx 1 root root   36 31. dets   2022 jane.conf -> /etc/nginx/sites-available/jane.conf
+  lrwxrwxrwx 1 root root   42 18. märts  2021 laudate.ee.conf -> /etc/nginx/sites-available/laudate.ee.conf
+  lrwxrwxrwx 1 root root   48 21. sept   2021 lists.laudate.ee.conf -> /etc/nginx/sites-available/lists.laudate.ee.conf
+  lrwxrwxrwx 1 root root   49  2. okt    2021 sinod.katoliku.ee.conf -> /etc/nginx/sites-available/sinod.katoliku.ee.conf
+  lrwxrwxrwx 1 root root   39  1. jaan   2023 welcht1.conf -> /etc/nginx/sites-available/welcht1.conf
+  lrwxrwxrwx 1 root root   39  1. jaan   2023 weleup1.conf -> /etc/nginx/sites-available/weleup1.conf
+
+I removed the obsolete sites jane, lists and weleup1.
+
+I then followed the instructions at
+https://linuxconfig.org/how-to-upgrade-debian-to-latest-version
+
+The `apt update` gives some warnings::
+
+  $ sudo apt update
+  Hit:1 http://deb.debian.org/debian bookworm InRelease
+  Hit:2 http://security.debian.org bookworm-security InRelease
+  Hit:3 http://deb.debian.org/debian bookworm-updates InRelease
+  Hit:4 http://mirror.hetzner.de/debian/packages buster InRelease
+  Hit:5 http://mirror.hetzner.de/debian/packages buster-updates InRelease
+  Hit:6 http://mirror.hetzner.de/debian/packages buster-backports InRelease
+  Ign:7 http://mirror.hetzner.de/debian/security buster/updates InRelease
+  Hit:8 http://apt.postgresql.org/pub/repos/apt bullseye-pgdg InRelease
+  Err:9 http://mirror.hetzner.de/debian/security buster/updates Release
+    404  Not Found [IP: 2a01:4f8:0:1::1:97 80]
+  Hit:10 https://packages.groonga.org/debian bullseye InRelease
+  Reading package lists... Done
+  E: The repository 'http://mirror.hetzner.de/debian/security buster/updates Release' no longer has a Release file.
+  N: Updating from such a repository can't be done securely, and is therefore disabled by default.
+  N: See apt-secure(8) manpage for repository creation and user configuration details.
+  W: http://apt.postgresql.org/pub/repos/apt/dists/bullseye-pgdg/InRelease: Key is stored in legacy trusted.gpg keyring (/etc/apt/trusted.gpg), see the DEPRECATION section in apt-key(8) for details.
+  N: Repository 'Debian bookworm' changed its 'non-free component' value from 'non-free' to 'non-free non-free-firmware'
+  N: More information about this can be found online in the Release notes at: https://www.debian.org/releases/bookworm/amd64/release-notes/ch-information.html#non-free-split
+
+I removed the obsolete files for groonga and hetzner from the :file:`/etc/apt/sources.d`.
+
+I answered to keep current version for the following config files:
+
+| /etc/bash.bashrc
+| /etc/crontab
+| /etc/monit/monitrc
+| /etc/nginx/nginx.conf
+| /etc/default/opendkim
+| /etc/redis/redis.conf
+
+For :file:`/etc/ssh/sshd_config` and, of course, for
+:file:`/etc/dovecot/dovecot.conf`, I decided to install the package maintainer's
+version.
+
+Also for :file:`/etc/default/grub` I took the new version because AFAIK we never
+did any important modification to this. Here is the diff before upgrading::
+
+  │  GRUB_DEFAULT=0
+  │  GRUB_TIMEOUT=5
+  │ -GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+  │ +GRUB_DISTRIBUTOR=`( . /etc/os-release && echo ${NAME} )`
+  │  GRUB_CMDLINE_LINUX_DEFAULT="consoleblank=0 systemd.show_status=true elevator=noop console=tty1 console=ttyS0"
+  │  GRUB_CMDLINE_LINUX=""
+  │  
+  │ +# If your computer has multiple operating systems installed, then you
+  │ +# probably want to run os-prober. However, if your computer is a host
+  │ +# for guest OSes installed via LVM or raw disk devices, running
+  │ +# os-prober can cause damage to those guest OSes as it mounts
+  │ +# filesystems to look for things.
+  │ +#GRUB_DISABLE_OS_PROBER=false
+  │ +
+  │  # Uncomment to enable BadRAM filtering, modify to suit your needs
+  │  # This works with Linux (no patch required) and with any kernel that obtains
+  │  # the memory map information from GRUB (GNU Mach, kernel of FreeBSD ...)
+  │  #GRUB_BADRAM="0x01234567,0xfefefefe,0x89abcdef,0xefefefef"
+  │  
+  │ -# Uncomment to disable graphical terminal (grub-pc only)
+  │ -GRUB_TERMINAL=console
+  │ +# Uncomment to disable graphical terminal
+  │ +#GRUB_TERMINAL=console
+  │  
+  │  # The resolution used on graphical terminal
+  │ -# note that you can use only modes which your graphic card supports via VBE
+  │ -# you can see them in real GRUB with the command `vbeinfo'
+  │ +# note that you can use only modes which your graphic card supports via VBE/GOP/UGA
+  │ +# you can see them in real GRUB with the command `videoinfo'
+  │  #GRUB_GFXMODE=640x480
+
+
+Some issues afterwards::
+
+  postfix[18307]: postfix/postlog: warning: /var/spool/postfix/etc/ssl/certs/GlobalSign_ECC_Root_CA_-_R4.pem and /etc/ssl/certs/GlobalSign_ECC_Root_CA_-_R4.pem differ
+
+I said "postconf compatibility_level=3.6"::
+
+  # postconf compatibility_level=3.6
+  # postfix reload
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtp_use_tls" will be removed; instead, specify "smtp_tls_security_level"
+  /usr/sbin/postconf: warning: /etc/postfix/main.cf: support for parameter "smtpd_use_tls" will be removed; instead, specify "smtpd_tls_security_level"
+  postfix/postfix-script: refreshing the Postfix mail system
+
+And I then did as the warnings told me::
+
+  # smtp_use_tls=yes
+  # smtpd_use_tls=yes
+
+  smtp_tls_security_level = may
+  smtpd_tls_security_level = may
+
+- Thunderbird said "An error occurred while sending mail: Outgoing server (SMTP)
+  error. The server responded:  TLS not available due to local problem." -- this
+  was because i had a typo in the `smtpd_tls_cert_file` filename. A "systemctl
+  status postfix" told me this in a funny way::
+
+    apr   11 10:21:20 laudate postfix/submission/smtpd[19025]: warning: cannot get RSA certificate from file "/etc/letsencrypt/live/laudate.ee/fulchain.pem": disabling TLS support
+    apr   11 10:21:20 laudate postfix/submission/smtpd[19025]: warning: TLS library problem: error:80000002:system library::No such file or directory:../crypto/bio/bss_file.c:288:calling fopen(/etc/letsencrypt/live/laudate.ee/fulchai>
+    apr   11 10:21:20 laudate postfix/submission/smtpd[19025]: warning: TLS library problem: error:10080002:BIO routines::system lib:../crypto/bio/bss_file.c:291:
+    apr   11 10:21:20 laudate postfix/submission/smtpd[19025]: warning: TLS library problem: error:0A080002:SSL routines::system lib:../ssl/ssl_rsa.c:503:
+
+
+- Thunderbird said "Unable to communicate securely with peer: requested domain
+  name does not match the server’s certificate. The configuration related to
+  mail.laudate.ee must be corrected."
