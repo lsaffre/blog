@@ -1,0 +1,115 @@
+:date: 2026-05-02
+
+=====================
+Saturday, May 2, 2026
+=====================
+
+Today I have been playing during 2 hours with 7 postfix config parameters
+(myhostname, myorigin, mydestination, inet_protocols, inet_interfaces,
+local_transport and smtp_bind_address) on two servers (kuu and lumi). There were
+moments when I didn't understand the world and had the feeling that some hidden
+random error generator is running somewhere...
+
+It seems that the article `How to Configure Postfix as a Send-Only SMTP Server
+on IPv4
+<https://oneuptime.com/blog/post/2026-03-20-postfix-send-only-smtp-ipv4/view>`__
+is *not* what we want. A default postfix config is good for us, I just need to
+set three parameters correctly:	myhostname, mydestination and myorigin.
+
+TIL:
+
+
+- :cmd:`postconf key1 key2` shows the current settings, one line ``key=value``
+  for each specified key.
+
+- :cmd:`postconf key=value` updates the :file:`main.cf` file from the command
+  line. This is useful when playing around. You can specify multiple `key=value`
+  pairs. A `value` can be empty. Know your bash rules.
+
+- :cmd:`systemctl restart` is more than :cmd:`systemctl reload`. When you change
+  inet_interfaces or inet_protocols, reloading won't do it and postfix even
+  issues a warning... but only in the system journal, not on the command line.
+
+- Saying "echo foo | mail -s test root" is not enough. It's important to specify
+  ``-r`` (or ``--return-address)`` because  :cmd:`mail` does not consult
+  :file:`/etc/mailname`, it will just say `username@hostname`, and hostname is
+  just our nickname, and most mail servers refuse emails with a non-existing
+  domain name in the ``From`` field. Here is a generic command-line for sending
+  a test email::
+
+    	$ echo foo | mail -r `whoami`@`cat /etc/mailname` -s test root
+
+  (I wonder whether it would be better to set hostname to the the full public
+  name. I set it to the nickname only because I don't want to see the full
+  public name in the prompt.)
+
+- In Postfix you can say "/etc/mailname" as the value for `myorigin`, but not
+  for `myhostname`. Seems that Postfix checks for a "/" at the beginning only
+  for `myorigin`. Don't ask me why.
+
+Here is my recipe for configuring::
+
+	# postconf myhostname=`cat /etc/mailname`
+	# postconf myorigin=/etc/mailname
+	# postconf 'mydestination=$myhostname,localhost'
+	# systemctl restart postfix
+
+To verify these three parameters::
+
+	# postconf myhostname mydestination myorigin
+	myhostname = lumi.mylino.net
+	mydestination = $myhostname,localhost
+	myorigin = /etc/mailname
+
+
+.. The remaining stuff is useless rubbish:
+
+	# postconf myhostname myorigin mydestination inet_protocols inet_interfaces local_transport
+
+	myhostname = kuu.mylino.net
+	myorigin = /etc/mailname
+	mydestination = $myhostname, kuu.mylino.net, localhost.mylino.net, , localhost
+	inet_protocols = all
+	inet_interfaces = all
+	local_transport = local:$myhostname
+
+
+	myhostname = lumi
+	myorigin = /etc/mailname
+	mydestination = $myhostname, lumi.synodalsoft.net, lumi, localhost.localdomain, localhost
+	inet_protocols = all
+	inet_interfaces = all
+	local_transport = local:$myhostname
+
+	# fails in newer postfix
+	# postconf myhostname=/etc/mailname
+	# "parameter myhostname: bad parameter value: /etc/mailname"
+
+
+	# postconf myhostname=$myorigin myorigin=/etc/mailname
+
+
+
+
+
+	# postconf inet_protocols=ipv4
+	# postconf inet_interfaces=loopback-only "local_transport=error:local delivery disabled"
+
+	# postconf mydestination=
+	# postconf 'mydestination=$myhostname, localhost'
+
+	# postconf smtp_bind_address=``
+
+	# systemctl reload postfix
+
+
+	Oops::
+
+		$ echo foo | mail -s test root
+		mail: cannot send message: Process exited with a non-zero status
+
+	This was NOT caused by empty mydestination.
+
+
+
+	# postconf inet_protocols=all inet_interfaces=all

@@ -1,0 +1,65 @@
+:date: 2026-04-22
+
+=========================
+Wednesday, April 22, 2026
+=========================
+
+Working for :ticket:`6733` (laudate server not responding and kswapd0 CPU usage
+at 200%).
+
+I ran :cmd:`diff -y` over the output of :cmd:`postconf` on lumi (left) and lf
+(right). Most differences seem irrelevant, but the following ones are
+interesting::
+
+	mail_name = Postfix                                           | mail_name = mail.lino-framework.org
+	mydestination = $myhostname, laudate.ee, lumi, localhost.loca | mydestination = $myhostname, localhost.org, localhost
+	mydomain = localdomain                                        | mydomain = org
+	myhostname = lumi                                             | myhostname = lino-framework.org
+
+But even after setting these parameters on lumi, I get only 1 of the three
+emails I should get.
+
+Here is the journal for postfix on lumi when I send an email to
+webmaster@laudate.ee::
+
+  postfix/cleanup[93831]: AC41A2893A: message-id=<d0b751ab-280e-4f86-9e97-c4cfb19d0a72@saffre-rumma.net>
+  postfix/local[93832]: 8A1F928936: to=<webmaster@laudate.ee>, relay=local, delay=0.18, delays=0.16/0.01/0/0.01, dsn=2.0.0, status=sent (forwarded as AC41A2893A)
+  postfix/qmgr[93816]: AC41A2893A: from=<luc@saffre-rumma.net>, size=2153, nrcpt=2 (queue active)
+  postfix/qmgr[93816]: 8A1F928936: removed
+  postfix/smtp[93835]: AC41A2893A: to=<luc.saffre@gmail.com>, orig_to=<webmaster@laudate.ee>, relay=gmail-smtp-in.l.google.com[2a00:1450:4010:c07::1b]:25, delay=0.33, delays=0/0.01/0.05/0.26, dsn=2.0.0, status=sent (250 2.0.0 OK  1776852133 2adb3069b0e04-5a4187f1ea2si5982943e87.187 - gsmtp)
+  postfix/smtp[93836]: AC41A2893A: to=<luc.saffre@gmx.net>, orig_to=<webmaster@laudate.ee>, relay=mx01.emig.gmx.net[212.227.17.5]:25, delay=0.66, delays=0/0.02/0.18/0.46, dsn=2.0.0, status=sent (250 Requested mail action okay, completed: id=1MkWc2-1vWpNy3rjC-00o0YX)
+  postfix/qmgr[93816]: AC41A2893A: removed
+
+
+And somebody `on serverfault.com
+<https://serverfault.com/questions/1051407/what-system-mail-name-do-i-put-for-postfix-configuration>`__
+wrote "Please read Postfix's `STANDARD CONFIGURATION README
+<https://www.postfix.org/STANDARD_CONFIGURATION_README.html>`__ carefully.
+Postfix has perfect documentation, it's worth to just dive in it." Yes, seems
+that I am too old or too stupid for running my own mail server.
+
+
+My /etc/dovecot/local.conf contains::
+
+	listen = *, ::
+	auth_mechanisms = plain login
+
+	mail_driver = maildir
+	mail_path = ~/Maildir
+	mail_inbox_path = ~/Maildir/.INBOX
+
+	# unix_listener /var/spool/postfix/private/auth {
+	#   mode = 0666
+	# }
+
+	ssl = yes
+	ssl_server_cert_file = /etc/letsencrypt/live/mail.laudate.ee/fullchain.pem
+	ssl_server_key_file = /etc/letsencrypt/live/mail.laudate.ee/privkey.pem
+
+
+	# Authenticate as system users:
+	passdb pam {
+	}
+
+	log_debug = category=auth
+	auth_debug_passwords = yes

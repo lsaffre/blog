@@ -1,0 +1,68 @@
+:date: 2026-04-30
+
+========================
+Thursday, April 30, 2026
+========================
+
+Today a bug in :ref:`prima` took me a few hours to hunt and fix.
+
+Look at this code::
+
+	class Challenge(Sequenced)::
+
+    def get_siblings(self):
+        if self.exam_id:
+            return self.__class__.objects.filter(exam=self.exam)
+        return self.__class__.objects.filter(project_section=self.project_section)
+
+Above code is bad. Below is the corrected code::
+
+    def get_siblings(self):
+        if self.exam_id:
+            return self.__class__.objects.filter(exam=self.exam)
+        if self.project_section:
+            return self.__class__.objects.filter(project_section=self.project_section)
+        return self.__class__.objects.none()
+
+A :class:`lino_prima.lib.ratings.Challenge` row has always either :attr:`exam`
+or :attr:`project_section` set. But on a row having both :attr:`exam` and
+:attr:`project_section` `None` (a case that theoretically doesn't exist, but
+yesterday it did), the buggy :meth:`get_siblings` will return all rows with
+:attr:`project_section` being null, i.e. all rows that have have an non-null
+`exam_id`. More exactly there were 3454 such rows. How could this exceptional
+situation happen? We don't know. It is not worth to try to find out.
+
+Here is the script I ran in to order to diagnose the problem and to repair the
+data::
+
+	import sys
+	from lino.api.shell import *
+
+	qs = ratings.Challenge.objects.filter(
+	    project_section__isnull=True).order_by('id')
+	print(qs.count(), qs)
+	# 3454 <QuerySet [Challenge #10442 ('Ausdrucksvolles Lesen /10 in Löwen (31.07.)'), Challenge #10443 ('Sprechen /10 in Morgenkreis Experiment (31.07.)'), Challenge #10444 ('Sprechen /10 in Morgenkreis Lesen (31.07.)'), Challenge >
+
+	for obj in qs:
+	    print(obj.seqno, obj)
+
+	seqnos = set([obj.seqno for obj in qs])
+	print("There are", len(seqnos), "different seqnos")
+	# There are 3454 different seqnos
+
+	# sys.exit()
+
+	for obj in qs:
+	  obj.seqno = 0
+	  # do NOT call full_clean() because that would call set_seqno()
+	  obj.save()
+
+	qs = ratings.Challenge.objects.filter(seqno=0).order_by('id')
+
+	for obj in qs:
+	  obj.full_clean()
+	  obj.save()
+
+
+Lesson to learn: Be careful when implementing :meth:`Sequenced.get_siblings
+<lino.mixins.sequenced.Sequenced.get_siblings>`.
