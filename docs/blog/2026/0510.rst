@@ -1,0 +1,46 @@
+:date: 2026-05-10
+
+====================
+Sunday, May 10, 2026
+====================
+
+Here is what happened after :doc:`0428`.
+
+NB I am still unable to send emails to the debian-user mailinglist. I sent an
+email to listmaster@lists.debian.org, but they too didn't respond. That's
+another story.
+
+But the members of debian-users are really great! Without waiting for further
+information from me, they started exploring my problem and discussed among
+themselves: https://lists.debian.org/debian-user/2026/05/threads.html
+
+It's Andy Smith who found the explanation, less than 24 hours after my post.
+`His second post in the thread
+<https://lists.debian.org/debian-user/2026/05/msg00044.html>`__ gave the correct
+explanation, which now helped me to find the solution.
+
+The problem came because Systemd runs the monit service with ``ProtectSystem``
+set to ``strict`` and without adding :file:`/var/spool/postfix/` to
+``ReadWritePaths``.
+
+Here is what I had in my :file:`/usr/lib/systemd/system/monit.service`::
+
+	ProtectSystem=strict
+	ReadWritePaths=/run/ /var/lib/monit/ /var/log/
+
+I just added :file:`/var/spool/postfix/`	to the list of read-write paths::
+
+	ReadWritePaths=/run/ /var/lib/monit/ /var/log/ /var/spool/postfix/
+
+How did I know that it's :file:`/var/spool/postfix` where maildrop tries to
+write to? Because the error message unfortunately specifies only the relative
+path. I guessed that this path is specified somewhere in the postfix configs, so
+I said::
+
+	# postconf | grep queue
+
+Which returned a few settings, and one of them was::
+
+	queue_directory = /var/spool/postfix
+
+My congratulations to the debian-users list. If only I could tell them all this!
