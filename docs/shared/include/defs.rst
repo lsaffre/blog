@@ -33,7 +33,7 @@
   :class: pi-button
   :alt: filter button
 
-.. |plus|  image:: /../docs/shared/images/pi/plus-circle.svg
+.. |plus-circle|  image:: /../docs/shared/images/pi/plus-circle.svg
   :class: pi-button
   :alt: plus-circle button
 
@@ -53,13 +53,25 @@
   :class: pi-button
   :alt: user button
 
-.. |close|  image:: /../docs/shared/images/pi/times-circle.svg
+.. |times-circle|  image:: /../docs/shared/images/pi/times-circle.svg
+  :class: pi-button
+  :alt: close button
+
+.. |close| image:: /../docs/shared/images/pi/times-circle.svg
   :class: pi-button
   :alt: close button
 
 .. |envelope|  image:: /../docs/shared/images/pi/envelope.svg
   :class: pi-button
   :alt: envelope button
+
+.. |pencil|  image:: /../docs/shared/images/pi/pencil.svg
+  :class: pi-button
+  :alt: pencil button
+
+.. |times|  image:: /../docs/shared/images/pi/times.svg
+  :class: pi-button
+  :alt: times button
 
 .. |gear|  image:: /../docs/shared/images/buttons/gear.png
   :height: 1em
@@ -99,6 +111,7 @@
 
 .. |print|  image:: https://gitlab.com/lino-framework/lino/-/raw/master/lino/static/images/mjames/printer.png?inline=false
   :height: 1em
+
 
 
 .. .. |refresh|  image:: /../docs/shared/images/buttons/refresh.png

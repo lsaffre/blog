@@ -1,4 +1,4 @@
-from lino.utils.soup import sanitize
+from lino.utils.soup import sanitize_html
 body = """
 <p>
   <span style="color: rgb(102, 102, 102); background-color: rgb(220, 220, 220);">
@@ -7,4 +7,4 @@ body = """
 </p>
 """.strip()
 
-print(sanitize(body))
+print(sanitize_html(body))
