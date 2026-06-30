@@ -1,0 +1,33 @@
+:date: 2026-05-30
+
+======================
+Saturday, May 30, 2026
+======================
+
+
+:class:`DaySlave` is the only table tha sets :attr:`use_detail_params_value` to
+`True`. What does that mean?
+
+:class:`DaySlave` is the base class for
+
+- DailySlaveBase, WeeklySlaveBase and MonthlySlaveBase,
+
+who themselves are base for
+
+- DailySlave, WeeklySlave and MonthlySlave.
+
+So these three tables are the concrete views that use this option.
+
+It means that these three tables don't define their own parameter panel but use
+the parameter panel of their master. Their master is either  DailyView,
+WeeklyView or MonthlyView.
+These three masters
+inherit from their common parent `CalendarView`. They
+have another attribute,
+:attr:`use_detail_param_panel`, set to `True`.
+
+Maybe the names :attr:`use_detail_param_panel` and
+:attr:`use_detail_params_value` aren't good names.
+
+
+- use_detail_param_panel : whether this table has a parameter panel in detail view.

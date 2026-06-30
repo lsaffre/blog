@@ -1,0 +1,49 @@
+:date: 2026-05-14
+
+======================
+Thursday, May 14, 2026
+======================
+
+A surprise during data migration.
+
+::
+
+	Loading 11734 objects to table cert_sectionresponse...
+	Deferred SectionResponse #358 ('Schriftbild') : 20250927
+	20250927
+	Traceback (most recent call last):
+	  File ".../env/repositories/lino/lino/utils/dpy.py", line 142, in try_save
+	    obj.full_clean()
+	  File ".../env/repositories/prima/lino_prima/lib/cert/models.py", line 285, in full_clean
+	    super().full_clean()
+	  File ".../env/repositories/prima/lino_prima/lib/ratings/mixins.py", line 123, in full_clean
+	    raise Exception("20250927")
+	Exception: 20250927
+	...
+	Exception: Abandoning with 168 unsaved instances:
+	- cert.SectionResponse 20250927 (168 object(s) with primary key 358, 1942, 2349, 1053, 3485, 2264, 2435, 325, 3308, 751, 3870, 712, 721, 1156, 2424, 2016, 3906, 1477, 3163, 41, 579, 1535, 2370, 924, 3512, 1813, 763, 946, 3532, 1879, 1088, 1467, 3122, 731, 977, 1910, 3329, 1530, 3176, 1768, 4706, 1892, 2394, 826, 3945, 1469, 3697, 324, 2455, 1217, 2944, 1805, 3645, 1027, 3726, 1146, 3137, 1591, 2988, 1930, 2696, 182, 4012, 1636, 2076, 4066, 16, 3736, 998, 3376, 2633, 4679, 1584, 3225, 2970, 3251, 1136, 2505, 1278, 3058, 1368, 3556, 2006, 2213, 1081, 3400, 1502, 3300, 2008, 83, 1663, 3160, 2705, 4217, 2064, 1979, 2086, 2555, 1868, 2404, 2163, 4257, 1302, 4278, 367, 4299, 1983, 518, 2031, 4702, 658, 2426, 1497, 4244, 1882, 3571, 716, 4228, 413, 2581, 5, 1955, 350, 3516, 766, 3554, 821, 4705, 883, 3575, 39, 1943, 674, 1905, 1664, 3086, 1698, 2620, 1542, 4197, 952, 3584, 606, 3033, 525, 1974, 1343, 4130, 1646, 3016, 3594, 2694, 4208, 114, 3606, 2083, 2590, 1929, 3501, 1556, 3694, 1749, 3084, 154, 3617, 1248, 4482, 3999)
+
+
+This is because both section.rating_type and score are not `None`.
+
+nano snapshot/cert_sectionresponse.py
+
+# fields: id, body, body_short_preview, body_full_preview, score, smiley, predicate, certificate, section
+
+loader.save(create_cert_sectionresponse(358,
+  '<p>Comment.</p>','Comment.','<p>Comment.</p>',
+	'5.0',None,None,3430,6))
+
+After removing the exception::
+
+	lino.core.exceptions.UnresolvedChoice: Unresolved value '5.0' (<class 'str'>) for ratings.Predicates (set Site.strict_choicelist_values to False to ignore this)
+
+After changing the exception into a warning and return::
+
+	SectionResponse #358 ('Schriftbild') : non-empty rating_type Prädikate and score is given
+
+358 : 1B (2024/25) » AZEMI, Ajan (1B (2024/25)) 2024/25-1 » Schriftbild
+1942 : 1A (2024/25) » BAHA SCHYNS, Andrea (1A (2024/25)) 2024/25-1 » Schriftbild
+2349 : 1A (2024/25) » BAHA SCHYNS, Andrea (1A (2024/25)) 2024/25-2 » Schriftbild
+...
+3999 : 2A (2024/25) » Z-GUSHANI, Leyla (2A (2024/25)) 2024/25-2 » Schriftbild

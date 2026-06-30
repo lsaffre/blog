@@ -9,13 +9,13 @@ Reception clerks should see the calendar tab
 
 In :mod:`lino_welfare.projects.eupen`, a reception clerk (user type
 210) now can see the :guilabel:`Calendar` tab because it contains the
-:class:`EntriesByClient <lino_welfare.modlib.cal.EntriesByClient>`
+:class:`EventsByClient <lino_welfare.modlib.cal.EventsByClient>`
 panel.
 
 I changed the required roles for that panel from just `OfficeUser` to
 `(OfficeUser, OfficeOperatoir)`:
 
->>> rt.models.cal.EntriesByClient.get_view_permission(p210)
+>>> rt.models.cal.EventsByClient.get_view_permission(p210)
 True
 
 I added a :meth:`__getitem__` method to :class:`BaseLayout` to make
@@ -23,7 +23,7 @@ the following doctest snippet more readable:
 
 >>> print(py2rst(pcsw.Clients.detail_layout['calendar']))
 **Kalender** (calendar) [visible for 100 110 120 200 210 220 300 400 410 500 510 800 admin 910]:
-- **Kalendereinträge** (cal.EntriesByClient)
+- **Kalendereinträge** (cal.EventsByClient)
 - **Aufgaben** (cal.TasksByProject) [visible for 100 110 120 200 300 400 410 500 510 admin 910]
 <BLANKLINE>
 
