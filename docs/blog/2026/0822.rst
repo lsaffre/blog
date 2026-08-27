@@ -1,0 +1,59 @@
+:date: 2026-08-22
+
+=========================
+Saturday, August 22, 2026
+=========================
+
+I am trying to report a CVE for Lino.
+
+https://gitlab.com/lino-framework/lino/-/security/vulnerabilities/new
+
+But that form requires an "Identifier code and an URL", it it assumes that
+somebody has already reported an official CVE and I just link to it here. Here
+is what I plan to fill into the form:
+
+Name:
+
+  eval() code executs without being authenticated in version <=26.3.3
+
+Description:
+
+  Summary
+
+  Lino's memo parser until version 26.3.3 evaluates [=<expression>] sequences with an unrestricted Python eval() on every save and every render of a "previewable" field. The behavior is hardcoded on (safe_mode = False) with no site-configuration switch to disable it. Because a comment body is a previewable field writable by the base low-privilege comment-poster role (CommentsUser), an authenticated low-privilege user who posts a comment containing such an expression reaches the eval() sink and achieves server-side Python execution as the application process. Because the payload persists in the stored comment and re-evaluates on render, it also runs when other users view the comment.
+
+  Credit to Santosh Kumar Puppala (https://github.com/Santoshkumarpuppala) for the report.
+
+  Affected
+
+  - Package: lino (PyPI), repository lino-framework/lino
+  - Versions: affected <= 26.3.3; fixed in 26.3.4
+  - Endpoint: POST /api/comments/Comments?an=submit_insert (Comment.body; any previewable field)
+  - Stack: Python / Django
+
+  Key source -> sink
+
+  - lino/modlib/comments/models.py: Comment(Previewable), previewable_field = "body"
+  - lino/modlib/memo/mixins.py:1144,1150: BasePreviewable.save() -> parse_previews(txt) (fires on every save)
+  - lino/modlib/memo/parser.py: safe_mode = False (hardcoded; no config to disable) and
+    if not self.safe_mode: src = EVAL_REGEX.sub(self.eval_match_func(ctx), src)
+  - lino/modlib/memo/parser.py: eval_match_func -> eval(expr, context) (sink; context has no __builtins__ restriction)
+  The same sink is re-entered at render time via the comment card summary (ar.parse_memo(self.body)).
+
+  Suggested fix
+
+  Upgrading to 26.3.4 or later resolves the default-on behavior.
+  Otherwise disable the eval path by default (as 26.3.4 does with the opt-in with_eval = False plugin default), and where an expression language is genuinely required, restrict it to a safe evaluator without access to builtins/import.
+
+  Severity
+
+  CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H = 8.8 (High). CWE-95 (Eval Injection) / CWE-94.
+
+  Verification
+
+  I reproduced this locally against the shipped PyPI release using benign markers only (a positive-control expression evaluated to its value; a benign filesystem-marker expression created a marker file), with a clean negative control against the patched 26.3.4. I'm happy to provide a local proof-of-concept on request.
+
+
+Solution:
+
+  Upgrading to 26.3.4 or later resolves this issue.
