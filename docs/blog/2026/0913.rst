@@ -1,0 +1,144 @@
+:date: 2026-09-13
+
+====================================================
+Install Huion Kamvas 13 graphics tablet on Ubuntu
+====================================================
+
+Sunday, September 13, 2026
+
+I'm still trying to get our new Huion Kamvas 13 graphics tablet to work on
+Ubuntu 26.04. More precisely the model is named GS 1331.
+
+The opentabletdriver is installed, but the pencil isn't detected at all (it
+doesn't cause a mouse cursor to appear). I followed the instructions in
+https://opentabletdriver.net/Wiki/FAQ/General, and :cmd:`lsusb` sees and reports
+it the tablet::
+
+  Bus 001 Device 011: ID 256c:006d HUION Huion Tablet_GS1331
+
+The name "Tablet_GS1331" is indeed not in the  `list of supported tablets
+<https://opentabletdriver.net/Tablets?search=gs%201331>`__.
+
+Gemini told me this:
+
+  Since OpenTabletDriver works entirely in user-space, it relies on explicit
+  layout files (.json) for every specific device revision. Your HUION Kamvas 13
+  (GS1331) under the 256c:006d identifier is a known variant. Support for it was
+  officially tracked and added in OpenTabletDriver Pull Request #3178, but
+  depending on your exact version package on Ubuntu 26, it may not be natively
+  bundled yet.
+  [1] (https://github.com/OpenTabletDriver/OpenTabletDriver/issues/3447),
+  [2] (https://support.huion.com/en/support/solutions/articles/44001769972-does-huion-have-a-tablet-driver-that-supports-linux-),
+  [3] (https://github.com/OpenTabletDriver/OpenTabletDriver/releases)
+
+  You can get your pen working immediately by manually dropping the device
+  configuration file into your local path and ensuring conflicting kernel
+  modules are cleared.
+
+  (Followed by instructions)
+
+::
+
+  mkdir -p ~/.local/share/OpenTabletDriver/Configurations
+  nano ~/.local/share/OpenTabletDriver/Configurations/Huion_GS1331.json
+
+And then pasted the suggested JSON suggested by Gemini (taken from some thread
+on GitHub) into the file::
+
+  {
+    "Name": "Huion Kamvas 13 (GS1331)",
+    "SupportedIdentifiers": [
+      {
+        "VendorID": 9580,
+        "ProductID": 109
+      }
+    ],
+    "Digitizer": {
+      "Width": 293.76,
+      "Height": 165.24,
+      "MaxX": 58752,
+      "MaxY": 33048
+    },
+    "Pen": {
+      "MaxPressure": 8191,
+      "Buttons": {
+        "ButtonCount": 2
+      }
+    },
+    "ReportParser": "OpenTabletDriver.Configurations.Parsers.UCLogic.UCLogicTiltReportParser"
+  }
+
+I also added two lines to my :file:`/etc/modprobe.d/blacklist.conf` file as
+suggested by Gemini::
+
+  blacklist hid_uclogic
+  blacklist wacom
+
+Though this might be complete nonsense in my case. TODO: remove them later and
+test whether it works without them.
+
+I then discovered that actually my ``otd-daemon`` service fails to load. "sudo
+journalctl -t otd-daemon" reports::
+
+  sept  13 21:55:53 ding otd-daemon[334263]: You must install .NET to run this application.
+  sept  13 21:55:53 ding otd-daemon[334263]: App: /usr/lib/opentabletdriver/OpenTabletDriver.Daemon
+  sept  13 21:55:53 ding otd-daemon[334263]: Architecture: x64
+  sept  13 21:55:53 ding otd-daemon[334263]: App host version: 8.0.25
+  sept  13 21:55:53 ding otd-daemon[334263]: .NET location: Not found
+  sept  13 21:55:53 ding otd-daemon[334263]: Learn more:
+  sept  13 21:55:53 ding otd-daemon[334263]: https://aka.ms/dotnet/app-launch-failed
+  sept  13 21:55:53 ding otd-daemon[334263]: Download the .NET runtime:
+  sept  13 21:55:53 ding otd-daemon[334263]: https://aka.ms/dotnet-core-applaunch?missing_runtime=true&arch=x64&rid=linux-x64&os=ubuntu.26.04&apphost_vers>
+  sept  13 21:55:53 ding otd-daemon[334263]: Failed to resolve libhostfxr.so [not found]. Error code: 0x80008083
+
+I have installed two versions of .NET: ``dotnet-runtime-10.0``, which is part of
+the Ubuntu 26.04 distribution, and ``dotnet-runtime-8.0``, which I installed
+manually as instructed in the Microsoft documentation, because "apt install
+opentabletdriver" failed when only version 10 was installed. It reported no
+errors when version 8 was installed as well.
+
+After reading `this
+<https://learn.microsoft.com/fr-be/dotnet/core/runtime-discovery/troubleshoot-app-launch?pivots=os-linux>`__
+I thought okay, it's trying to use the default version (10), let's set
+:envvar:`DOTNET_ROOT` so that it finds the old version.
+
+Indeed I have the following::
+
+  $ cat /etc/dotnet/install_location
+  /usr/lib/dotnet
+
+I said "locate dotnet" to find out that I have a directory
+`/usr/share/dotnet/shared/Microsoft.NETCore.App/8.0.31`, which seems to be the
+root directory of the version 8 because it contains a lot of files.
+
+I then (after reading `this
+<https://serverfault.com/questions/413397/how-to-set-environment-variable-in-systemd-service>`__)
+said "sudo nano /usr/lib/systemd/user/opentabletdriver.service" and added the
+following line in the ``[Service]`` section::
+
+  Environment="DOTNET_ROOT=/usr/share/dotnet"
+
+Now the driver loads, and the pencil works! But the mouse pointer is about 4 cm
+to the right of where it should be. And it doesn't click. Seems that it needs
+calibration or something.
+
+I need to open the OTD GUI. Usually this would go using::
+
+  otd-gui
+
+But because OTD requires the old .NET version, I must use the same trick as with
+the driver::
+
+  DOTNET_ROOT=/usr/share/dotnet otd-gui
+
+Gemini tells me:
+
+  If the cursor moves but tapping the pen on the glass doesn't left-click,
+  OpenTabletDriver isn't passing the pressure threshold as a digital click event
+  to Linux. [1] (https://opentabletdriver.net/Wiki/FAQ/Linux)
+
+  In the OTD GUI, click on the Pen Settings tab. Look at the Tip Binding
+  configuration. Click the ... (Advanced Binding Editor) next to Tip.
+
+These instructions don't work exactly as is, but today I'm too tired to play
+with such things. That's for tomorrow.
