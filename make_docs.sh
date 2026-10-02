@@ -2,6 +2,7 @@
 set -e
 BOOK=../book/docs
 if [ -d $BOOK ] ; then
-  cp -ru $BOOK/shared docs/
-  cp -ru $BOOK/copyright.rst docs/
+  echo "Updating shared docs from $BOOK ..."
+  cp -a $BOOK/shared docs/
+  cp -a $BOOK/copyright.rst docs/
 fi
