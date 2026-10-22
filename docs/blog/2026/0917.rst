@@ -1,0 +1,46 @@
+:date: 2026-09-17
+
+=============================
+python-weather fails at 12:48
+=============================
+
+Thursday, September 17, 2026
+
+Version 2.2.5 of python-weather fails at 12:48 when locale is "fr".
+
+Version 2.2.5 switched from `datetime.strptime` to `babel.dates.parse_time` for
+parsing values in timestamp fields.
+
+For example the `observation_time` field is such a field. It seems that the
+`wttr.in` service reports times between 12:00 and 13:00 differently depending on
+the specified locale. Anyway today in the early aftgernoon, at 12:48, my
+`python_weather.Client` (locale was `python_weather.Locale('fr')`) received the
+following observation time:
+
+>>> observation_time = "12:48 PM"
+
+As far as I understand things, this is indeed an invalid time specification. It
+should be "00:48 PM". This might be a bug in the wttr.in service.
+
+It's interesting that parse_time() refuses it only when locale="en_US".
+
+>>> from datetime import datetime
+>>> from babel.dates import parse_time
+
+>>> parse_time(observation_time)
+datetime.time(12, 48)
+
+>>> datetime.strptime(observation_time, '%I:%M %p').time()
+datetime.time(12, 48)
+
+>>> parse_time(observation_time, locale="en_US")
+Traceback (most recent call last):
+  File "<doctest weather.rst[17]>", line 1, in <module>
+  File "/home/luc/venvs/dev/lib/python3.14/site-packages/babel/dates.py", line 1398, in parse_time
+    return datetime.time(hour, minute, second)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+ValueError: hour must be in 0..23, not 24
+
+I'm not sure how I would fix this.
+
+A workaround is to not specify any locale to the weather client.
