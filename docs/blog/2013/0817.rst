@@ -14,7 +14,7 @@ Fixed the following problem:
 Did some code cleanup before deciding how to actually solve this:
 
 - Removed `lino.core.dbutils.get_model_report`. 
-  Existing code should call :meth:`lino.core.model.get_default_table`.
+  Existing code should call :meth:`lino.core.db.model.get_default_table`.
 
 - Replaced existing occurences of `Model._lino_default_table` 
   by `Model.get_default_table()`.
@@ -29,7 +29,7 @@ The solution was then to write a new table `OneEvent`::
         use_as_default_table = False
         required = dd.required(user_groups='office')
 
-and to override :meth:`lino.core.model.Model.get_default_table`::
+and to override :meth:`lino.core.db.model.Model.get_default_table`::
 
     @classmethod
     def get_default_table(cls):
@@ -163,6 +163,6 @@ And a last user request for this table was relatively easy:
 - Wartende Besucher: "Empfangen" vor "Auschecken"
     
 This needed just a series of manual 
-:mod:`lino.core.actions.Action.sort_index` values for 
+:mod:`lino.core.actions.action.Action.sort_index` values for 
 these three actions.
 

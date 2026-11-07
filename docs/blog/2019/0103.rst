@@ -32,13 +32,13 @@ actor and then used on a subclass of that actor, the first argument ``cls`` was
 the base actor, not the real one. This bug caused an avalanche of internal
 changes about virtual fields and inheritance.
 
-The :attr:`model <lino.core.actors.Actor.model>` of an actor can now be
+The :attr:`model <lino.core.actors.actor.Actor.model>` of an actor can now be
 something else than a Django model. Until now virtual tables required this to
 be `None`.  It is now being resolved in :meth:`class_init`.
 
 In :ref:`noi` we override the :class:`lino_xl.lib.cal.Day` class.
 
-:func:`resolve_model <lino.core.utils.resolve_model>` now accepts to return classes that are
+:func:`resolve_model <lino.core.db.utils.resolve_model>` now accepts to return classes that are
 not Django models.  If you ask ``resolve_model('contacts.Persons')`` you will
 now get the table instead of an error.  Not sure whether this is a good idea.
 
@@ -55,10 +55,10 @@ An actor model which is not a Django model cannot define virtual fields.
 
 I renamed the virtual *actor* field `detail_pointer` to `detail_link` because
 it does the same as the virtual *model* field
-(:attr:`lino.core.model.Model.detail_link`).
+(:attr:`lino.core.db.model.Model.detail_link`).
 
-:class:`lino.core.model.Model` now inherits also from
-:class:`lino.core.fields.TableRow`.
+:class:`lino.core.db.model.Model` now inherits also from
+:class:`lino.core.db.row.TableRow`.
 
 I discovered another side effect of the future package: a Django model may not
 inherit from the future version of :class:`object`.
@@ -67,7 +67,7 @@ The virtual fields caused me some headache.  Lino must resolve their
 return_type. If the return_type is a FK, don't forget to also resolve the
 remote_model of that FK. We sometimes want to update them using
 :func:`update_field<lino.core.inject.update_field>`. The
-:attr:`lino.core.actors.Actor.detail_link` is special because its verbose name
+:attr:`lino.core.actors.actor.Actor.detail_link` is special because its verbose name
 is automatically set to the model's verbose name. Some examples I used during
 testing:
 

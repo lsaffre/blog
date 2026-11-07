@@ -76,15 +76,15 @@ As for the entry date I used the recently discovered approach of using
 a new database model :class:`lino_xl.lib.accounting.LedgerInfo` with a
 OneToOneField (similar to :class:`lino_xl.lib.invoicing.SalesRule`,
 see :doc:`0712`).  Before that date I would have used
-:func:`dd.inject_field <lino.core.fields.inject_field>` in such a
+:func:`dd.inject_field <lino.core.db.fields.inject_field>` in such a
 case.
        
 En passant I fixed another stupid bug that would cause frustration
 once Vera would discover it: after having registered an invoice, the
 insert button was disabled as long as you were in detail view.  You
 had to close the detail view to re-enable the button.  The
-:class:`ShowInsert <lino.core.actions.ShowInsert>` action has now
-:attr:`readonly <lino.core.actions.Action.readonly>` = `True` because
+:class:`ShowInsert <lino.core.actions.common.ShowInsert>` action has now
+:attr:`readonly <lino.core.actions.action.Action.readonly>` = `True` because
 otherwise it was disabled when the current row was a registered
 document.
 

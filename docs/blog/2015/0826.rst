@@ -28,13 +28,13 @@ Discovered a bug that would have been a spoiler in Eupen: the checkin,
 receive and checkout actions (which are no longer readonly because we
 want them to get logged via :ticket:`419`) had disappeared. This is
 because we had the following
-in :meth:`attach_to_actor <lino.core.actions.Action.attach_to_actor>`::
+in :meth:`attach_to_actor <lino.core.actions.action.Action.attach_to_actor>`::
 
     if not actor.editable and not self.readonly:
         return False
 
 This is possibly not the last side effect. of :ticket:`419`.  The
-:attr:`readonly<lino.core.actions.Action.readonly>` attribute is
+:attr:`readonly<lino.core.actions.action.Action.readonly>` attribute is
 documented to mean "only changes *in the current object*". I don't
 remember why this subtlety was needed.
 

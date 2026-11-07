@@ -14,7 +14,7 @@ A generic navigation panel for table views
 Charles asked for a layout where you have a list view for navigating over your
 rows in a panel on the left, but otherwise a detail view. I wanted to know it
 and and finished up with a new generic virtual field
-:attr:`navigation_panel <lino.core.model.Model.navigation_panel>`.  A first use case is the
+:attr:`navigation_panel <lino.core.db.model.Model.navigation_panel>`.  A first use case is the
 `PersonDetail` in :ref:`amici`.  Here is the source code::
 
   class PersonDetail(PersonDetail):
@@ -45,11 +45,11 @@ toolbar when we have such a panel. One disadvantage is that you cannot navigate
 when you have activated the second or third tab panel.
 
 While working on this, I discovered and fixed a rather invisible bug:
-:func:`lino.core.fields.wildcard_data_elems` was returning *all* virtual fields.
+:func:`lino.core.db.fields.wildcard_data_elems` was returning *all* virtual fields.
 The official behaviour is that virtual fields are not returned unless they are
-defined with :attr:`lino.core.fields.VirtualField.wildcard_field` set to `True`.
+defined with :attr:`lino.core.db.fields.VirtualField.wildcard_field` set to `True`.
 This rule is for performance reasons. Some virtual fields a rather heavy (e.g.
-the :attr:`navigation_panel <lino.core.model.Model.navigation_panel>` must query
+the :attr:`navigation_panel <lino.core.db.model.Model.navigation_panel>` must query
 the whole database to get all primary keys), and even when they are hidden, Lino
 has to include :term:`wildcard fields <wildcard field>` in the result because
 the end user might have enabled them. It was a bit stupid to compute the

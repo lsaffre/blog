@@ -49,10 +49,10 @@ to understand myself)
 
 
 >>> obj.get_detail_action(None)
-<BoundAction(courses.Activities, <lino.core.actions.ShowDetail detail ('Detail')>)>
+<BoundAction(courses.Activities, <lino.core.actions.common.ShowDetail detail ('Detail')>)>
 
 Note this returned before::
-  <BoundAction(courses.Courses, <lino.core.actions.ShowDetail detail ('Detail')>)>
+  <BoundAction(courses.Courses, <lino.core.actions.common.ShowDetail detail ('Detail')>)>
 
 Problem: When a session with a user is given, then
 `get_detail_action(ses)` returned None because the default table was
@@ -61,7 +61,7 @@ that we actually do allow to open the detail window because that
 detail window has been inherited from Activities.
 
 >>> obj.get_detail_action(ses)
-<BoundAction(courses.Activities, <lino.core.actions.ShowDetail detail ('Detail')>)>
+<BoundAction(courses.Activities, <lino.core.actions.common.ShowDetail detail ('Detail')>)>
 
 
 >>> obj.line.course_area.courses_table
@@ -70,7 +70,7 @@ u'courses.Courses'
 >>> table
 lino_xl.lib.courses.desktop.Courses
 >>> table.detail_action
-<BoundAction(courses.Courses, <lino.core.actions.ShowDetail detail ('Detail')>)>
+<BoundAction(courses.Courses, <lino.core.actions.common.ShowDetail detail ('Detail')>)>
 
 Teachers have no permission to see the Courses table:
 
@@ -92,7 +92,7 @@ But now we have the following problem:
 
 >>> ba = rt.models.users.MySettings.detail_action
 >>> ba
-<BoundAction(users.MySettings, <lino.core.actions.ShowDetail detail ('Detail')>)>
+<BoundAction(users.MySettings, <lino.core.actions.common.ShowDetail detail ('Detail')>)>
 
 The detail on MySettings now can be viewed only by those who can view
 the Users table:
@@ -124,11 +124,11 @@ MySettings does allow a detail, but Lino
 >>> ba.actor
 lino_xl.lib.courses.desktop.MyCoursesGiven
 >>> ba.action
-<lino.core.actions.ShowDetail detail ('Detail')>
+<lino.core.actions.common.ShowDetail detail ('Detail')>
 >>> ba.get_view_permission(ses.user.user_type)
 True
 >>> rt.models.courses.Courses.detail_action.action
-<lino.core.actions.ShowDetail detail ('Detail')>
+<lino.core.actions.common.ShowDetail detail ('Detail')>
 >>> rt.models.courses.Courses.detail_action.action.defining_actor
 lino_xl.lib.courses.desktop.Activities
 >>> rt.models.courses.Courses.detail_action.action.owner

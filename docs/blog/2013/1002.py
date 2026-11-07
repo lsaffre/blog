@@ -23,7 +23,7 @@ from lino_xl.lib.contacts.utils import street2kw
 
 from lino.api.shell import courses, countries
 from lino.api import dd, rt
-from lino.core.utils import is_valid_email
+from lino.core.db.utils import is_valid_email
 
 
 def string2date(s):

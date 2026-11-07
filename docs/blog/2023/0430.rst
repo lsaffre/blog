@@ -9,27 +9,27 @@ I am trying to understand why the Monthly and Daily views say "None in February
 in Week 7 / 2017 (13 February)".
 
 Theoretically it should work by specifying the right
-:attr:`details_of_master_template <lino.core.actors.Actor.details_of_master_template>`
-and :attr:`title <lino.core.actors.Actor.title>` attributes.
+:attr:`details_of_master_template <lino.core.actors.actor.Actor.details_of_master_template>`
+and :attr:`title <lino.core.actors.actor.Actor.title>` attributes.
 
 I can currently imagine two possible causes:
 
 - some side effect caused by the complex class hierarchy,
-- react does not call :meth:`get_title <lino.core.actors.Actor.get_title>`
+- react does not call :meth:`get_title <lino.core.actors.actor.Actor.get_title>`
 
 .. inheritance-diagram::
     lino_xl.lib.calview.ui.DailyView
     lino_xl.lib.calview.ui.WeeklyView
     lino_xl.lib.calview.ui.MonthlyView
     :parts: 1
-    :top-classes: lino.core.actors.Actor
+    :top-classes: lino.core.actors.actor.Actor
 
 .. inheritance-diagram::
     lino_xl.lib.calview.ui.DailySlave
     lino_xl.lib.calview.ui.WeeklySlave
     lino_xl.lib.calview.ui.MonthlySlave
     :parts: 1
-    :top-classes: lino.core.actors.Actor
+    :top-classes: lino.core.actors.actor.Actor
 
 Presto contacts :
 
@@ -37,7 +37,7 @@ Presto contacts :
     lino_presto.lib.contacts.models.DailyView
     lino_presto.lib.contacts.models.WeeklyView
     :parts: 1
-    :top-classes: lino.core.actors.Actor
+    :top-classes: lino.core.actors.actor.Actor
 
 >>> from lino import startup
 >>> startup('lino_presto.projects.presto1.settings')

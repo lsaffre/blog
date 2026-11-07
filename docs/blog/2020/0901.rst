@@ -16,8 +16,8 @@ This didn't require any change in :ref:`react` because react actually handled
 LFKs better than extjs. I rather adapted Lino to accept the react way as well.
 
 I reviewed the internal API for defining learning FKs.
-Removed the :attr:`disable_create_choice` attribute of :class:`lino.core.model.Model`.
-The :meth:`lino.core.model.Model.choice_text_to_dict` method is now the only thing
+Removed the :attr:`disable_create_choice` attribute of :class:`lino.core.db.model.Model`.
+The :meth:`lino.core.db.model.Model.choice_text_to_dict` method is now the only thing
 to implement. When it returns a dict, then the database object gets created.
 When it returns `None`, the user will see a warning.  Default implementation
 returns `None`.  The only implemented usage so far is in `contacts.Person`.
@@ -70,7 +70,7 @@ In `ParameterStore.parse_params` we do not use the learning FK feature.
 
 I moved the functions :func:`choices_response`  and :func:`choices_for_field`
 from :mod:`lino_react.react.views` to :mod:`lino.core.views` and to
-:mod:`lino.core.fields` because this was duplicated code. 
+:mod:`lino.core.db.fields` because this was duplicated code. 
 
 Another bug
 ===========

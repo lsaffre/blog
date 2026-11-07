@@ -34,7 +34,7 @@ DONE:
 - Auch [Parameters] hat jetzt ein Icon und einen tooltip
 
 - Reihenfolge Aktionen: Insert kommt jetzt an erster Stelle 
-  (:attr:`sort_index <lino.core.actions.Action.sort_index>` 10), 
+  (:attr:`sort_index <lino.core.actions.action.Action.sort_index>` 10), 
   noch vor Detail, weil die ja fast noch eher eine Listenaktion 
   als eine RowAction ist.
 
@@ -46,9 +46,9 @@ DONE:
   der am wenigsten belastete verfügbare Begleiter steht zuerst.
 
 - Neues Attribut 
-  :attr:`lino.core.actors.Actor.hide_sums` wird benutzt in 
+  :attr:`lino.core.actors.actor.Actor.hide_sums` wird benutzt in 
   AvailableCoachesByClient,
-  die jetzt auch :attr:`lino.core.actors.Actor.slave_grid_format` 
+  die jetzt auch :attr:`lino.core.actors.actor.Actor.slave_grid_format` 
   auf `html` hat.
   
 
@@ -56,7 +56,7 @@ Ein cooler Bug
 --------------
 
 Weil AvailableCoachesByClient jetzt mit
-:attr:`slave_grid_format <lino.core.actors.Actor.slave_grid_format>` `html`
+:attr:`slave_grid_format <lino.core.actors.actor.Actor.slave_grid_format>` `html`
 angezeigt wird, kam ein weiterer subtiler Bug zum Vorschein.
 Symptom war: :menuselection`Kontakte --> Klienten` und 
 dann Doppelklick oder Enter. Dann kam auf dem Server::  
@@ -106,7 +106,7 @@ dann Doppelklick oder Enter. Dann kam auf dem Server::
     
     
 Erklärung: weil die AvailableCoachesByClient außerdem 
-:attr:`parameters <lino.core.actors.Actor.parameters>`
+:attr:`parameters <lino.core.actors.actor.Actor.parameters>`
 hat, versuchte sie in diesem Fall, die Parameterwerte 
 aus dem ActionRequest rauszuholen. 
 Die Master Tabelle hat deren auch. Aber die sind ja für 
@@ -114,7 +114,7 @@ den Master und nicht für den Slave gedacht.
 Wenn eine parametrierte Slave-Tabelle im Detail eines Masters angezeigt wird, 
 muss sie dies mit den Default-Serte ihrer Parameter tun.
 Implementierung:
-:meth:`slave_as_html_meth <lino.core.actors.Actor.slave_as_html_meth>`
+:meth:`slave_as_html_meth <lino.core.actors.actor.Actor.slave_as_html_meth>`
 gibt jetzt immer einen expliziten `param_values={}` mit,
 und :class:`ActionRequest` meckert jetzt nicht mehr falls die Tabelle 
 keine Parameter hat ("Cannot request param_values on ") *und* 
@@ -124,13 +124,13 @@ parst den `request` für Parameterwerte jetzt nur noch, wenn dieses
 
 Noch was Neues: 
 Slave-Tabellen im
-:attr:`slave_grid_format <lino.core.actors.Actor.slave_grid_format>`
+:attr:`slave_grid_format <lino.core.actors.actor.Actor.slave_grid_format>`
 `html`
 zeigen jetzt den `no_data_text` korrekt an.
 
 
 Danach habe ich das
-:attr:`slave_grid_format <lino.core.actors.Actor.slave_grid_format>`
+:attr:`slave_grid_format <lino.core.actors.actor.Actor.slave_grid_format>`
 `html`
 der Tabelle "Verfügbare Benutzer" allerdings doch wieder abgeschaltet, 
 weil es da noch ein anderes Problem gibt: die Aktionen (Zuweisen) werden im plain 

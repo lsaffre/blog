@@ -12,7 +12,7 @@ I removed the `AccountDetail` class and use a simple string for
 `detail_layout` instead.  `OrphanedAccounts` now inherits from
 `Accounts` (instead of repeating the definition of `detail_layout`.
 
-I set :attr:`editable <lino.core.actors.Actor.editable>` to `False`
+I set :attr:`editable <lino.core.actors.actor.Actor.editable>` to `False`
 for `Movements` and `Statements` because they should never be edited
 by the users.
 
@@ -70,7 +70,7 @@ look at one of them::
         return self.set_value_in_object(None, instance, value)
       File "/lino/lino/core/fields.py", line 451, in set_value_in_object
         (value, self))
-    NotImplementedError: Cannot write <lino.core.fields.VirtualGetter object at 0x7f95056e8790> to field VirtualField <class 'lino.modlib.households.models.Household'>.overview
+    NotImplementedError: Cannot write <lino.core.db.fields.VirtualGetter object at 0x7f95056e8790> to field VirtualField <class 'lino.modlib.households.models.Household'>.overview
     
     ...
     ======================================================================
@@ -101,17 +101,17 @@ This is a normal read-only virtual field. It is correct that Lino
 complains when you try to write to it. But who is trying to write to
 this and why?
 
-The message :message:`Cannot write <lino.core.fields.VirtualGetter
+The message :message:`Cannot write <lino.core.db.fields.VirtualGetter
 object at 0x7f95056e8790> to field VirtualField <class
 'lino.modlib.households.models.Household'>.overview` is not very
 clear. I add a `__repr__` method to :class:`VirtualGetter
-<lino.core.fields.VirtualGetter>`::
+<lino.core.db.fields.VirtualGetter>`::
 
     def __repr__(self):
         return "<{1}>.{0}".format(self.vf.name, repr(self.instance))
 
 And also optimized the :meth:`__repr__` method of :class:`VirtualField
-<lino.core.fields.VirtualField>`.
+<lino.core.db.fields.VirtualField>`.
 
 The message becomes::
 

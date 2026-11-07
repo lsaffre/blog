@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, print_function
 from lino.api.shell import *
 from clint.textui import puts, prompt, progress
-from lino.core.utils import PseudoRequest
+from lino.core.db.utils import PseudoRequest
 from lino.core.diff import ChangeWatcher
 
 # rt.show(pcsw.ClientStates)

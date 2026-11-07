@@ -21,19 +21,19 @@ Above snippet was `True` until today and will be `False` from now on.
 
 This feature was used when specifying a given Choice instance as the
 `default` value of a :class:`ChoiceListField
-<lino.core.choicelists.ChoiceListField>`.  Unfortunately Django 1.9
+<lino.core.db.clfields.ChoiceListField>`.  Unfortunately Django 1.9
 will deprecate callable values in a database query. So we decided to
 remove the `__call__` method on `Choice`.  And replace it by a new
 explicit method :meth:`lino.core.choicelists.Choice.as_callable` which
 is now being called each time a :class:`ChoiceListField
-<lino.core.choicelists.ChoiceListField>` has a default value.  We did
+<lino.core.db.clfields.ChoiceListField>` has a default value.  We did
 not yet fully understand all the details of why this is necessary. It
 has to do with the fact that Django handles callable default values
 specially.
 
 We also changed the sorting order of the items of
 
-- :func:`lino.core.utils.models_by_base`
+- :func:`lino.core.db.utils.models_by_base`
 - :attr:`lino.core.ddh.DisableDeleteHandler.fklist`
 
 Until now these lists were in a "natural" order (I guess the

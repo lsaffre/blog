@@ -8,7 +8,7 @@ Thursday, October 31, 2024
 
 During the last week I did the following changes, which I plan to push soon.
 
-We have a new attribute :attr:`lino.core.actors.Actor.row_template`, which is a
+We have a new attribute :attr:`lino.core.actors.actor.Actor.row_template`, which is a
 kind of a context-sensitive template for :meth:`__str__` .
 
 An avalanche of changes started because a piece of code in
@@ -26,12 +26,12 @@ Some of the results:
   :attr:`text_renderer <lino.core.kernel.Kernel.text_renderer>` (e.g. during a
   doctest).
 
-- The :func:`rt.login <lino.core.utils.login>` function is no longer implemented
+- The :func:`rt.login <lino.core.db.utils.login>` function is no longer implemented
   as a method of :class:`lino.core.site.Site` but as a stand-alone function in
-  :mod:`lino.core.utils`.
+  :mod:`lino.core.db.utils`.
 
-- The :func:`rt.show <lino.core.utils.show>` function has a wrapper
-  :func:`rt.shows <lino.core.utils.shows>`, which returns the output as a string
+- The :func:`rt.show <lino.core.db.utils.show>` function has a wrapper
+  :func:`rt.shows <lino.core.db.utils.shows>`, which returns the output as a string
   instead of printing it to stdout. In unit tests we had code like this::
 
     s = cal.GuestsByEvent.create_request(evt).to_rst()
@@ -40,7 +40,7 @@ Some of the results:
 
     s = rt.shows(cal.GuestsByEvent, evt)
 
-The signature of :meth:`lino.core.actors.Actor.row_as_summary` is a bit more
+The signature of :meth:`lino.core.actors.actor.Actor.row_as_summary` is a bit more
 explicit. Before::
 
      def row_as_summary(cls, ar, obj, **kwargs):
@@ -49,7 +49,7 @@ After::
 
      def row_as_summary(cls, ar, obj, text=None, **kwargs):
 
-The :attr:`lino.core.actors.Actor.group_by` is back, but in a new form. If
+The :attr:`lino.core.actors.actor.Actor.group_by` is back, but in a new form. If
 specified, it must be a callable, and it currently only for the :term:`display
 mode` "list" and only in the :term:`React front end`. It uses a utility class
 :class:`lino.utils.html.Grouper`. First usage example is in :ref:`prima`::

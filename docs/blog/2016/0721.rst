@@ -71,7 +71,7 @@ contain `None`?
 
 Yes, :class:`lino_welfare.modlib.esf.models.ClientSummary` is indeed
 the first model ever which uses a :class:`DurationField
-<lino.core.fields.DurationField>` with a default value.
+<lino.core.db.fields.DurationField>` with a default value.
 
 I started to search for bugs in the application logic in
 :mod:`lino.modlib.summaries` and :mod:`lino_welfare.modlib.esf`.
@@ -95,7 +95,7 @@ AUSDEMWALD Alfons (116)
 None
 >>> fld = ClientSummary._meta.get_field('esf50')
 >>> fld.__class__
-<class 'lino.core.fields.DurationField'>
+<class 'lino.core.db.fields.DurationField'>
 >>> print(fld.value_from_object(obj))  # AFTER BUGFIX: 0:00
 None
 >>> print(fld.get_default())
@@ -124,7 +124,7 @@ I used doctest in lieu of a debugger as follows::
   $ python -m doctest docs/blog/2016/0721.rst
 
 The problem was in
-:meth:`lino.core.fields.DurationField.from_db_value`::
+:meth:`lino.core.db.fields.DurationField.from_db_value`::
 
     def from_db_value(self, value, expression, connection, context):
         return Duration(value) if value else None
@@ -142,9 +142,9 @@ As a result of all this we have one bug less in Lino:
 
 - Until now Lino did not support well the case of defining a `default`
   value for fields of type :class:`QuantityField
-  <lino.core.fields.QuantityField>`, :class:`DurationField
-  <lino.core.fields.DurationField>` or :class:`IncompleteDateField
-  <lino.core.fields.IncompleteDateField>`.  Changed API for these
+  <lino.core.db.fields.QuantityField>`, :class:`DurationField
+  <lino.core.db.fields.DurationField>` or :class:`IncompleteDateField
+  <lino.core.db.fields.IncompleteDateField>`.  Changed API for these
   fields: when `blank` is True, then `null` must be True as well.  The
   statement "QuantityFields are implemented as CharFields and
   therefore should *not* be declared `null=True`.  But if

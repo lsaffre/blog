@@ -86,7 +86,7 @@ Person model, the help_text for name on the partner became that of the person.
 That was wrong. Seems that this wrong behaviour became visible only now because
 :mod:`lino.sphinxcontrib.help_texts_extractor` was inactive for some time.
 
-The guilty was :meth:`lino.core.fields.VirtualField.lino_resolve_type`, which is
+The guilty was :meth:`lino.core.db.fields.VirtualField.lino_resolve_type`, which is
 called after having set the help texts of the field. It unconditionally
 overwrote the help_text of virtual FK fields by the help_text of the FK they
 were using.  I used the following code when exploring the problem. This is now

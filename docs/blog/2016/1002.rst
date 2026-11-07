@@ -12,20 +12,20 @@ if he's not the author) which I discovered yesterday with
 :ref:`rauno`.
 
 The solution was easy: just set :attr:`readonly
-<lino.core.actions.Action.readonly>` of
+<lino.core.actions.action.Action.readonly>` of
 :class:`lino_noi.lib.clocking.actions.StartTicketSession` to `True`.
 
 I also changed the :attr:`sort_index
-<lino.core.actions.Action.sort_index>` of state actions (instances of
+<lino.core.actions.action.Action.sort_index>` of state actions (instances of
 :class:`ChangeStateAction <lino.core.workflows.ChangeStateAction>`)
 from `10 + i` to `200 + i`. Because state actions should come *after*
 custom actions.
 
 For example in the :attr:`workflow_buttons
-<lino.core.model.Model.workflow_buttons>` of a ticket, I want to have
+<lino.core.db.model.Model.workflow_buttons>` of a ticket, I want to have
 the [▶] button **after** the state change buttons. On a ticket whose
 state is "ToDo", the :attr:`workflow_buttons
-<lino.core.model.Model.workflow_buttons>` column said:
+<lino.core.db.model.Model.workflow_buttons>` column said:
 
     **ToDo** → [🗪] [🕸] [☐] [🗑] [▶] [☆]
 

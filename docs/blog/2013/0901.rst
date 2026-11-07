@@ -9,21 +9,21 @@ Continued inspirational work on  :mod:`lino.utils.actordoc`.
 
 Found a subtle (internal) bug:
 
-When a :class:`ChoiceListField <lino.core.choicelists.ChoiceListField>` is empty
+When a :class:`ChoiceListField <lino.core.db.clfields.ChoiceListField>` is empty
 --------------------------------------------------------------------------------
 
 The :class:`welfare.pcsw.Clients` table showed also "Former" Clients
 at the very first request. A simple Refresh caused it to become 
 "correct" showing only active clients.
 
-This was because an empty :class:`ChoiceListField <lino.core.choicelists.ChoiceListField>` was sometimes an empty string 
+This was because an empty :class:`ChoiceListField <lino.core.db.clfields.ChoiceListField>` was sometimes an empty string 
 (``''``) and sometimes ``None``.
 In get_request_queryset I tested for 
 ``ar.param_values.client_state is None``.
 The application code was right: 
 a 
-:class:`ChoiceListField <lino.core.choicelists.ChoiceListField>`
+:class:`ChoiceListField <lino.core.db.clfields.ChoiceListField>`
 with `blank=True` should never have an empty string as value.
 Solved by setting `empty_strings_allowed = False` on 
-:class:`ChoiceListField <lino.core.choicelists.ChoiceListField>`.
+:class:`ChoiceListField <lino.core.db.clfields.ChoiceListField>`.
 

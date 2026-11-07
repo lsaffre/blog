@@ -12,19 +12,19 @@ Saving a
 whose state is   
 :class:`draft <lino.modlib.trading.models.InvoiceStates>`
 returned no available actions ("<p><b>Draft</b></p>")
-in :meth:`workflow_buttons <lino.core.model.Model.workflow_buttons>`
+in :meth:`workflow_buttons <lino.core.db.model.Model.workflow_buttons>`
 while after clicking the `Refresh` button they showed up correctly.
 
 This was because 
-:meth:`get_workflow_actions <lino.core.actors.Actor.get_workflow_actions>` 
+:meth:`get_workflow_actions <lino.core.actors.actor.Actor.get_workflow_actions>` 
 called 
-:meth:`get_actions <lino.core.actors.Actor.get_actions>` 
+:meth:`get_actions <lino.core.actors.actor.Actor.get_actions>` 
 with the requesting `ar.bound_action.action`
 (for the `Refresh` button this is a `ShowDetailAction`
 while for the `Save` button it's a  SubmitDetail` instance).
 
 Solution:
-Changed :meth:`lino.core.actors.Actor.get_workflow_actions` 
+Changed :meth:`lino.core.actors.actor.Actor.get_workflow_actions` 
 
 But, oops I almost forgot that we're in guinea pig testing mode.
 And that's again a change to the framework which is not 
@@ -59,7 +59,7 @@ This was because I called `setuptools.setup()` with a `name` of
 `"lino_welfare"` instead of `"lino-welfare"`.
 
 After the release, besides restoring 
-:meth:`lino.core.actors.Actor.get_workflow_actions`,
+:meth:`lino.core.actors.actor.Actor.get_workflow_actions`,
 I fiddled again with :xfile:`setup.py`.
 Opened :srcref:`docs/tickets/69`.
 
@@ -82,7 +82,7 @@ order to see the updated totals.
 Changed execution order of 
 :meth:`full_clean <django.db.models.Model.full_clean>` 
 and 
-:meth:`before_ui_save <lino.core.model.Model.before_ui_save>`
+:meth:`before_ui_save <lino.core.db.model.Model.before_ui_save>`
 because it makes a difference when 
 **saving non-dirty records**.
 We agree that `before_ui_save` should **not** run in this case,
