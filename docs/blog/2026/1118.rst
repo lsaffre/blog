@@ -1,0 +1,64 @@
+:date: 2026-11-18
+
+================================
+Don't forget the IPv6 PTR record
+================================
+
+Today I learned something :-)
+
+Q: When my Postfix mail server sends an email to a Google recipient, it gets the
+error message: "The IP address sending this message does not have a PTR record
+setup, or the corresponding forward DNS entry does not match the sending IP. As
+a policy, Gmail does not accept messages from IPs with missing PTR records."
+
+But my server's IP is 128.140.95.108 and the reverse DNS is set to
+stewards.mylino.net. And there is an A record for stewards.mylino.net leads to
+128.140.95.108. So AFAICS the PTR of my server is correctly configured.
+
+A: By default, Postfix prefers IPv6 when connecting to dual-stack mail servers
+like Google's (inet_protocols = all). When you configured your IPv4 address
+(128.140.95.108), your server's IPv6 address was likely left without a matching
+PTR and AAAA record. Every Hetzner Cloud VPS comes with a /64 IPv6 subnet
+enabled by default, which does not have a reverse DNS (PTR) record configured
+out of the box.
+
+Solution: Configure also the IPv6 Reverse DNS
+
+Q: Hetzner says that my server's IP address is 2a01:4f8:c015:4e53::/64 but OVH
+(where I configure the AAAA record) says that this is not a valid IPv6 address.
+Why?
+
+A: The string 2a01:4f8:c015:4e53::/64 is a *network subnet block*, not a single
+IP address. OVH's AAAA record requires one specific IPv6 address without the /64
+suffix. Hetzner assigns your VPS an entire /64 block of IPv6 addresses
+(2a01:4f8:c015:4e53::/64), which contains 18 quintillion individual addresses.
+An AAAA DNS record must point to the single IPv6 address actually bound to your
+server's network card, so including /64 causes a validation error.
+
+How to find your exact IPv6 Address?
+
+1. Check your server's active IPv6 address: Connect to your VPS via SSH and
+run::
+
+  bash ip -6 addr show scope global
+
+The output is something like this::
+
+  2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 state UP qlen 1000
+      inet6 2a01:4f8:c015:4e53::1/64 scope global
+         valid_lft forever preferred_lft forever
+
+Look for the inet6 line on your main interface (eth0 or enp1s0). On Hetzner
+Cloud, this is almost always 2a01:4f8:c015:4e53::1 (the output shows /64 at the
+end—do not copy the /64).
+
+Enter it in OVH: Create the AAAA record for stewards.mylino.net using just
+2a01:4f8:c015:4e53::1 (or whichever specific address your server showed).
+
+Set the matching PTR in Hetzner: In the Hetzner Cloud Console under Networking,
+click the three dots next to 2a01:4f8:c015:4e53::/64, select Edit Reverse DNS,
+and enter the exact same single IP (2a01:4f8:c015:4e53::1) mapped to
+stewards.mylino.net.
+
+
+Wednesday, November 18, 2026
