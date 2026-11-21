@@ -4,8 +4,8 @@
 Thursday, September 26, 2019
 ============================
 
-Make :meth:`ar.confirm <lino.core.requests.BaseRequest.confirm>` blocking
-=========================================================================
+Make :meth:`ar.confirm <lino.core.requests.base.BaseRequest.confirm>` blocking
+==============================================================================
 
 :ticket:`3228` is maybe urgent if the new :ref:`avanti` production server turns
 out to be too slow when 20 users are working on it.
@@ -13,7 +13,7 @@ out to be too slow when 20 users are working on it.
 After a few hours of sleep I think we can do it.
 
 The key point is to accept that we cannot store a running function in another
-process.  But we can simply make :meth:`ar.confirm <lino.core.requests.BaseRequest.confirm>` blocking.  Which will lead
+process.  But we can simply make :meth:`ar.confirm <lino.core.requests.base.BaseRequest.confirm>` blocking.  Which will lead
 to more readable application code because instead of writing action logic in a
 "twisted" way, we write it as it is meant.
 
@@ -33,7 +33,7 @@ Writing it as is is meant::
             ... do it
 
 We don't need to change the syntax. The API of :meth:`ar.confirm
-<lino.core.requests.BaseRequest.confirm>` should remain the same except that it
+<lino.core.requests.base.BaseRequest.confirm>` should remain the same except that it
 will now return True or False, and that the `ok_func` argument would become
 optional.
 
@@ -430,9 +430,9 @@ caused a series of changes and optimizations:
   use the :attr:`default_ui <lino.core.site.Site.default_ui>` when
   :attr:`lino.modlib.memo.Plugin.front_end` is `None`.
 
-- When a :class:`BaseRequest <lino.core.requests.BaseRequest>` is spawned from a
+- When a :class:`BaseRequest <lino.core.requests.base.BaseRequest>` is spawned from a
   parent, it now inherits the :attr:`request
-  <lino.core.requests.BaseRequest.request>` attribute (i.e. the incoming Django
+  <lino.core.requests.base.BaseRequest.request>` attribute (i.e. the incoming Django
   HTTP request that caused the action request). This is needed so that
   subrequests can decide whether to generate links using "javascript:" or not.
   When displaying links in a comment on the exts dashboard, we prefer them to

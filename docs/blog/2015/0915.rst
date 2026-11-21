@@ -5,7 +5,7 @@
 I stumbled over :ticket:`523` and investigated the reason.  We must
 probably just add :attr:`param_values` to the inheritable attributes
 to be copied to the other request (in :meth:`setup_from
-<lino.core.requests.BaseRequest.setup_from>`).  I will not fix it now
+<lino.core.requests.base.BaseRequest.setup_from>`).  I will not fix it now
 since Hamza is working on :ticket:`520`. But I can write a test case
 to reproduce it.
 
@@ -53,7 +53,7 @@ reason why :ticket:`159` had been so hard to find.
 A second subtle consequence: the `known_values` attribute of a
 :class:`TableRequest <lino.core.tablerequests.TableRequest>` had a
 default value `None`, overriding the default value ``{}`` already
-defined in :class:`lino.core.requests.BaseRequest`.  I guess that this
+defined in :class:`lino.core.requests.base.BaseRequest`.  I guess that this
 was not intended.
 
 I also added some explanations in the docstring of
@@ -67,6 +67,6 @@ Since anyway I did some changes to Lino today (and since I hope that
 there won't be any conflicts), I then fixed :ticket:`523`.  Most time
 went (as usual) into writing a test case (in
 :ref:`noi.specs.clocking`).  The actual bug was in
-:meth:`lino.core.requests.BaseRequest.set_selected_pks`.  *En passant*
+:meth:`lino.core.requests.base.BaseRequest.set_selected_pks`.  *En passant*
 I also fixed the test suite (changes in :ref:`noi.specs.tickets`).
 
